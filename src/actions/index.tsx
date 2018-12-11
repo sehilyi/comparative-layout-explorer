@@ -1,6 +1,6 @@
-import {CompareCase, ScatterPlot} from 'src/models/dataset';
+import {CompareCase} from 'src/models/dataset';
 
-export type Action = CompCasesLoad | CompCasesImageDataLoad | ScatterplotLoad;
+export type Action = CompCasesLoad | CompCasesImageDataLoad;
 
 export const COMP_CASES_LOAD = 'COMP_CASES_LOAD';
 export type CompCasesLoad = {
@@ -27,18 +27,5 @@ export function onCompCaseImgDataLoad(action: any): CompCasesImageDataLoad {
   return {
     type: COMP_CASES_IMAGE_DATA_LOAD,
     payload: action.payload
-  }
-}
-
-export const SCATTERPLOT_LOAD = 'SCATTERPLOT_LOAD';
-export type ScatterplotLoad = {
-  type: typeof SCATTERPLOT_LOAD;
-  payload: ScatterPlot[]
-}
-
-export function onLoadScatterplot(action: any): ScatterplotLoad {
-  return {
-    type: SCATTERPLOT_LOAD,
-    payload: action.paylaod
   }
 }

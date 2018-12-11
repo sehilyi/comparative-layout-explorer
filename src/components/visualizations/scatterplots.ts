@@ -7,7 +7,7 @@ import {svgAsImageData} from './svg-as-png';
 
 export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {noGridAxis?: boolean} = {noGridAxis: false}) {
   d3.select(ref).selectAll('*').remove();
-  console.log(ref);
+
   const data = dfp.d,
     xField = dfp.f1,
     yField = dfp.f2;

@@ -25,11 +25,16 @@ export const DEFAULT_SCATTERPLOT = {
 }
 
 export type Scores = {
-  ssim: number
+  ssim: number,
+  msssim: number,
+  mse: number
   // add more
 }
 export const DEFAULT_SCORES: Scores = {
   ssim: -1,
+  //TODO: what should be the default value??
+  msssim: -1,
+  mse: -1
 }
 
 export type CompareCase = ScatterplotCase;
