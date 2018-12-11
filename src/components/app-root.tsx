@@ -93,7 +93,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     }
     return (
       <div className='app-root'>
-        <div className='header'>( vis-diff )</div>
+        <div className='header'>( viz-subtlety-highlighter )</div>
         <div className='main-pane'>
           <h1>Design</h1>
           <div className='result-group test'>
