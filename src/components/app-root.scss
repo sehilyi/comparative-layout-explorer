@@ -1,0 +1,62 @@
+.app-root {
+  height: 100%;
+
+  .header {
+    background: rgb(66, 66, 66);
+    padding-left: 10px;
+    height: 50px;
+    line-height: 50px;
+    color: white;
+    font-weight: 500;
+    font-size: 1.2em;
+  }
+
+  .main-pane {
+    padding: 10px;
+
+    .result-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+
+      .chart {
+        text-align: center;
+      }
+      .option-panel {
+        border: solid lightgray 1px;
+        height: 90%;
+        border-radius: 10px;
+      }
+      .score {
+        align-self: center;
+        text-align: center;
+        font-style: italic;
+        font-size: 1.3rem;
+      }
+
+      button {
+        background: red;
+      }
+
+      // d3-chart-related
+      // removed for directly styling with style(,)
+      // .grid line,
+      // .grid path {
+      //   stroke: rgb(221, 221, 221);
+      //   stroke-width: 1px;
+      // }
+      // .grid text {
+      //   display: none;
+      // }
+      // .axis path,
+      // .axis line {
+      //   stroke-width: 1px;
+      // }
+      // .axis text {
+      //   stroke-width: 0px;
+      // }
+      // .axis .label {
+      //   font-size: 11px;
+      // }
+    }
+  }
+}

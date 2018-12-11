@@ -1,0 +1,15 @@
+{
+  "files.exclude": {
+    "node_modules/**/*": true,
+    "config/**/*": true
+  },
+  "search.exclude": {
+    "node_modules/**/*": true,
+    "config/**/*": true
+  },
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "files.trimTrailingWhitespace": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+  "editor.formatOnSave": true,
+}
