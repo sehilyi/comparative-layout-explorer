@@ -35,7 +35,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   private loadComparisionExamples() {
     ///
     /// Test: data for scatterplot pair list
-    let data2use = DATASET_MOVIES; // TODO: put to state
+    let data2use = DATASET_MOVIES;
     let chartPairList: ScatterplotCase[] = [];
     let id = 0;
     // const numOfPairs = 1;
@@ -98,6 +98,50 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             f2: 'Worldwide_Gross'
           }],
         options: [{}, {hlOutlier: true}]
+      }
+      chartPairList.push(newCase);
+    }
+    ///
+    /// appearance-diff
+    {
+      data2use = DATASET_MOVIES;
+      let newCase: ScatterplotCase = {
+        ...DEFAULT_SCATTERPLOT_CASE,
+        id: id++,
+        name: 'appearance-diff | items-of-no-interest removed | ' + data2use.name + '.json',
+        chartPair: [
+          {
+            d: data2use.rawData,
+            f1: 'US_Gross',
+            f2: 'Worldwide_Gross'
+          }, {
+            d: data2use.rawData.filter((item) => item['Major_Genre'] != 'Action'),
+            f1: 'US_Gross',
+            f2: 'Worldwide_Gross'
+          }],
+        options: [{}, {}]
+      }
+      chartPairList.push(newCase);
+    }
+    ///
+    /// aggregate-diff
+    {
+      data2use = DATASET_MOVIES;
+      let newCase: ScatterplotCase = {
+        ...DEFAULT_SCATTERPLOT_CASE,
+        id: id++,
+        name: 'aggregate-diff | items grouped by category | ' + data2use.name + '.json',
+        chartPair: [
+          {
+            d: data2use.rawData,
+            f1: 'US_Gross',
+            f2: 'Worldwide_Gross'
+          }, {
+            d: data2use.rawData,
+            f1: 'US_Gross',
+            f2: 'Worldwide_Gross'
+          }],
+        options: [{}, {aggregate: 'Director'}]
       }
       chartPairList.push(newCase);
     }

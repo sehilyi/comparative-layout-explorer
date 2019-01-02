@@ -6,7 +6,7 @@ import {FieldPair} from 'src/models/dataset';
 import {svgAsImageData} from './svg-as-png';
 
 //TODO: make options as separate class in models/
-export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {noGridAxis?: boolean, hlOutlier?: boolean} = {noGridAxis: false, hlOutlier: false}) {
+export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {noGridAxis?: boolean, hlOutlier?: boolean, aggregate?: string} = {noGridAxis: false, hlOutlier: false, aggregate: ''}) {
   d3.select(ref).selectAll('*').remove();
 
   const data = dfp.d,
