@@ -6,7 +6,7 @@ import {Dispatch} from 'redux';
 import {CompCasesLoad, loadCompCases, COMP_CASES_LOAD, CompCasesImageDataLoad, onCompCaseImgDataLoad, Action, COMP_CASES_IMAGE_DATA_LOAD} from '../actions';
 import {renderScatterplot} from './visualizations/scatterplots';
 import {ScatterplotCase, CompareCase, DEFAULT_SCATTERPLOT_CASE, ScatterPlot} from 'src/models/dataset';
-import {DATASET_ECOLI} from 'src/datasets/ecoli';
+import {DATASET_MOVIES} from 'src/datasets/movies';
 import {randint} from 'src/useful-factory/utils';
 import {CHART_TOTAL_SIZE} from 'src/useful-factory/constants';
 
@@ -24,9 +24,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
 
     ///
     /// Test: data for scatterplot pair list
-    let data2use = DATASET_ECOLI; // TODO: put to state
+    let data2use = DATASET_MOVIES; // TODO: put to state
     let chartPairList: ScatterplotCase[] = [];
-    const numOfPairs = 10;
+    const numOfPairs = 1;
     for (let i = 0; i < numOfPairs; i++) {
       let newCase: ScatterplotCase = {
         ...DEFAULT_SCATTERPLOT_CASE,
@@ -60,19 +60,19 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
 
   render() {
     const Results = this.props.chartPairList.map(this.renderResult, this);
-    let onPreviewRef = (ref: SVGSVGElement) => {
-      if (ref == null) return;
-      renderScatterplot(ref, {
-        d: DATASET_ECOLI.rawData,
-        f1: DATASET_ECOLI.fields[1],
-        f2: DATASET_ECOLI.fields[2]
-      })
-    }
+    // let onPreviewRef = (ref: SVGSVGElement) => {
+    //   if (ref == null) return;
+    //   renderScatterplot(ref, {
+    //     d: DATASET_ECOLI.rawData,
+    //     f1: DATASET_ECOLI.fields[1],
+    //     f2: DATASET_ECOLI.fields[2]
+    //   })
+    // }
     return (
       <div className='app-root'>
         <div className='header'>( viz-subtlety-highlighter )</div>
         <div className='main-pane'>
-          <h1>Design</h1>
+          {/* <h1>Design</h1>
           <div className='result-group test'>
             <div className='chart'>
               <h2>Preview</h2>
@@ -82,8 +82,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
               <h2>Configure</h2>
               <div className='option-panel'></div>
             </div>
-          </div>
-          <h1>Scatterplot Pairs</h1>
+          </div> */}
+          <h1>Scatterplots</h1>
           {Results}
           {/* canvas2img. this should be invisible to users */}
           <div hidden>
@@ -105,7 +105,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
         payload: {
           index: cc.id,
           pairIndex: 'A',
-          imgData: renderScatterplot(ref, cc.chartPair[0], {noGridAxis: true})
+          imgData: renderScatterplot(ref, cc.chartPair[0], {noGridAxis: false})
         }
       })
     }
@@ -116,7 +116,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
         payload: {
           index: cc.id,
           pairIndex: 'B',
-          imgData: renderScatterplot(ref, cc.chartPair[1], {noGridAxis: true})
+          imgData: renderScatterplot(ref, cc.chartPair[1], {noGridAxis: false})
         }
       })
     }
