@@ -7,6 +7,7 @@ import {CompCasesLoad, loadCompCases, COMP_CASES_LOAD, CompCasesImageDataLoad, o
 import {renderScatterplot} from './visualizations/scatterplots';
 import {ScatterplotCase, CompareCase, DEFAULT_SCATTERPLOT_CASE, ScatterPlot} from 'src/models/dataset';
 import {DATASET_MOVIES} from 'src/datasets/movies';
+import {DATASET_IRIS} from 'src/datasets/iris';
 import {randint} from 'src/useful-factory/utils';
 import {CHART_TOTAL_SIZE} from 'src/useful-factory/constants';
 
@@ -41,6 +42,27 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             d: data2use.rawData,
             f1: data2use.fields[randint(1, 5)],
             f2: data2use.fields[randint(1, 5)]
+          }]
+      }
+      chartPairList.push(newCase);
+    }
+    ///
+    /// position-diff
+    data2use = DATASET_IRIS; // TODO: put to state
+    for (let i = 1; i < 2; i++) {
+      let newCase: ScatterplotCase = {
+        ...DEFAULT_SCATTERPLOT_CASE,
+        id: i,
+        name: 'position-diff | field of interest changed | ' + data2use.name + '.json data',
+        chartPair: [
+          {
+            d: data2use.rawData,
+            f1: 'sepalWidth',
+            f2: 'petalWidth'
+          }, {
+            d: data2use.rawData,
+            f1: 'sepalWidth',
+            f2: 'petalLength'
           }]
       }
       chartPairList.push(newCase);
