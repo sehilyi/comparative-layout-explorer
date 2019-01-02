@@ -1,3 +1,5 @@
+import {DiffType} from 'src/components/visualizations/diff-taxonomy';
+
 export type DataSet = {
   name: string
   fields: string[]
@@ -39,8 +41,10 @@ export const DEFAULT_SCORES: Scores = {
 
 export type CompareCase = ScatterplotCase;
 export type ScatterplotCase = {
-  id: number,
-  name: string
+  id: number
+  diffType: DiffType
+  desc: string
+  dataset: string
   chartPair: [FieldPair, FieldPair]
   imgDataPair: {A: number[], B: number[]} // add to FieldPair?
   scores: Scores
@@ -48,7 +52,9 @@ export type ScatterplotCase = {
 }
 export const DEFAULT_SCATTERPLOT_CASE: ScatterplotCase = {
   id: -1,
-  name: 'undefiend',
+  desc: 'undefiend',
+  diffType: 'none',
+  dataset: 'null',
   chartPair: [DEFAULT_FIELD_PAIR, DEFAULT_FIELD_PAIR],
   imgDataPair: {A: [], B: []},
   scores: DEFAULT_SCORES,

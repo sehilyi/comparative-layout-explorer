@@ -1,0 +1,1 @@
+export type DiffType = 'none' | 'position-diff' | 'color-diff' | 'appearance-diff' | 'area-diff';

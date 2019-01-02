@@ -14,6 +14,19 @@
   .main-pane {
     padding: 10px;
 
+    .position-diff {
+      color: #2d5699;
+    }
+    .color-diff {
+      color: #adad2d;
+    }
+    .appearance-diff {
+      color: #2c7c99;
+    }
+    .area-diff {
+      color: #942a5d;
+    }
+
     .result-group {
       display: grid;
       grid-template-columns: repeat(3, 1fr);

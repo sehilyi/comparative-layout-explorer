@@ -65,7 +65,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       let newCase: ScatterplotCase = {
         ...DEFAULT_SCATTERPLOT_CASE,
         id: id++,
-        name: 'position-diff | fields-of-interest changed | ' + data2use.name + '.json',
+        diffType: 'position-diff',
+        desc: 'fields-of-interest changed',
+        dataset: data2use.name,
         chartPair: [
           {
             d: data2use.rawData,
@@ -86,7 +88,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       let newCase: ScatterplotCase = {
         ...DEFAULT_SCATTERPLOT_CASE,
         id: id++,
-        name: 'color-diff | points-of-interest highlighted | ' + data2use.name + '.json',
+        diffType: 'color-diff',
+        desc: 'points-of-interest highlighted',
+        dataset: data2use.name,
         chartPair: [
           {
             d: data2use.rawData,
@@ -108,7 +112,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       let newCase: ScatterplotCase = {
         ...DEFAULT_SCATTERPLOT_CASE,
         id: id++,
-        name: 'appearance-diff | items-of-no-interest removed | ' + data2use.name + '.json',
+        diffType: 'appearance-diff',
+        desc: 'items-of-no-interest removed',
+        dataset: data2use.name,
         chartPair: [
           {
             d: data2use.rawData,
@@ -130,7 +136,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       let newCase: ScatterplotCase = {
         ...DEFAULT_SCATTERPLOT_CASE,
         id: id++,
-        name: 'area-diff | points resized by another field | ' + data2use.name + '.json',
+        diffType: 'area-diff',
+        desc: 'points resized by another field',
+        dataset: data2use.name,
         chartPair: [
           {
             d: data2use.rawData,
@@ -261,7 +269,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     }
     return (
       <div key={cc.id}>
-        <h3>{cc.name}</h3>
+        <h3 className={cc.diffType}>{cc.diffType}</h3>
+        <h3>{cc.desc + ' | ' + cc.dataset + '.json'}</h3>
         <div className='result-group'>
           <div className='chart'><svg id={cc.id + 'A'} ref={onRefA}></svg></div>
           <div className='chart'><svg id={cc.id + 'B'} ref={onRefB}></svg></div>

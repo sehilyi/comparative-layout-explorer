@@ -30,9 +30,9 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: S
     .nice()
     .rangeRound([CHART_SIZE.height, 0]);
 
-  let size: d3.ScaleLinear<number, number>;
+  let pointSize: d3.ScaleLinear<number, number>;
   if (options.encodeSize != '') {
-    size = d3.scaleLinear()
+    pointSize = d3.scaleLinear()
       .domain([
         Number(d3.min(data.map(d => d[options.encodeSize as string]))),
         Number(d3.max(data.map(d => d[options.encodeSize as string])))])
@@ -150,11 +150,12 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: S
     .attr('opacity', 0.3)
     .attr('stroke', 'none')
     .attr('fill', '#006994')
+    // option related parts
     .attr('r', function (d) {
       if (options.encodeSize == '' || typeof options.encodeSize == 'undefined' || d[options.encodeSize as string] == null)
         return defaultPointSize;
       else
-        return size(d[options.encodeSize as string]) as number;
+        return pointSize(d[options.encodeSize as string]) as number;
     })
 
   if (options.hlOutlier) {
