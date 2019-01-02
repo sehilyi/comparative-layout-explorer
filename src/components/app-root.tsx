@@ -8,7 +8,7 @@ import {renderScatterplot} from './visualizations/scatterplots';
 import {ScatterplotCase, CompareCase, DEFAULT_SCATTERPLOT_CASE, ScatterPlot} from 'src/models/dataset';
 import {DATASET_MOVIES} from 'src/datasets/movies';
 import {DATASET_IRIS} from 'src/datasets/iris';
-import {randint} from 'src/useful-factory/utils';
+// import {randint} from 'src/useful-factory/utils';
 import {CHART_TOTAL_SIZE} from 'src/useful-factory/constants';
 
 export interface AppRootProps {
@@ -23,37 +23,49 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   constructor(props: AppRootProps) {
     super(props);
 
+    this.loadComparisionExamples();
+  }
+
+  public componentDidMount() {
+  }
+
+  public componentDidUpdate() {
+  }
+
+  private loadComparisionExamples() {
     ///
     /// Test: data for scatterplot pair list
     let data2use = DATASET_MOVIES; // TODO: put to state
     let chartPairList: ScatterplotCase[] = [];
-    const numOfPairs = 1;
-    for (let i = 0; i < numOfPairs; i++) {
-      let newCase: ScatterplotCase = {
-        ...DEFAULT_SCATTERPLOT_CASE,
-        id: i,
-        name: 'Different Fields',
-        chartPair: [
-          {
-            d: data2use.rawData,
-            f1: data2use.fields[randint(1, 5)],
-            f2: data2use.fields[randint(1, 5)]
-          }, {
-            d: data2use.rawData,
-            f1: data2use.fields[randint(1, 5)],
-            f2: data2use.fields[randint(1, 5)]
-          }]
-      }
-      chartPairList.push(newCase);
-    }
-    ///
+    let id = 0;
+    // const numOfPairs = 1;
+    // for (let i = 0; i < numOfPairs; i++) {
+    //   let newCase: ScatterplotCase = {
+    //     ...DEFAULT_SCATTERPLOT_CASE,
+    //     id: i,
+    //     name: 'Different Fields',
+    //     chartPair: [
+    //       {
+    //         d: data2use.rawData,
+    //         f1: data2use.fields[randint(1, 5)],
+    //         f2: data2use.fields[randint(1, 5)]
+    //       }, {
+    //         d: data2use.rawData,
+    //         f1: data2use.fields[randint(1, 5)],
+    //         f2: data2use.fields[randint(1, 5)]
+    //       }]
+    //   }
+    //   chartPairList.push(newCase);
+    // }
+    // ///
+
     /// position-diff
-    data2use = DATASET_IRIS; // TODO: put to state
-    for (let i = 1; i < 2; i++) {
+    {
+      data2use = DATASET_IRIS;
       let newCase: ScatterplotCase = {
         ...DEFAULT_SCATTERPLOT_CASE,
-        id: i,
-        name: 'position-diff | field of interest changed | ' + data2use.name + '.json data',
+        id: id++,
+        name: 'position-diff | fields-of-interest changed | ' + data2use.name + '.json',
         chartPair: [
           {
             d: data2use.rawData,
@@ -67,17 +79,35 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       }
       chartPairList.push(newCase);
     }
+    ///
+    /// color-diff
+    {
+      data2use = DATASET_MOVIES;
+      let newCase: ScatterplotCase = {
+        ...DEFAULT_SCATTERPLOT_CASE,
+        id: id++,
+        name: 'color-diff | points-of-interest highlighted | ' + data2use.name + '.json',
+        chartPair: [
+          {
+            d: data2use.rawData,
+            f1: 'US_Gross',
+            f2: 'Worldwide_Gross'
+          }, {
+            d: data2use.rawData,
+            f1: 'US_Gross',
+            f2: 'Worldwide_Gross'
+          }],
+        options: [{}, {hlOutlier: true}]
+      }
+      chartPairList.push(newCase);
+    }
+    ///
+
     this.props.onCompCasesLoad({
       type: COMP_CASES_LOAD,
       payload: chartPairList
     });
     ///
-  }
-
-  public componentDidMount() {
-  }
-
-  public componentDidUpdate() {
   }
 
   render() {
@@ -127,7 +157,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
         payload: {
           index: cc.id,
           pairIndex: 'A',
-          imgData: renderScatterplot(ref, cc.chartPair[0], {noGridAxis: false})
+          imgData: renderScatterplot(ref, cc.chartPair[0], cc.options[0])
         }
       })
     }
@@ -138,7 +168,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
         payload: {
           index: cc.id,
           pairIndex: 'B',
-          imgData: renderScatterplot(ref, cc.chartPair[1], {noGridAxis: false})
+          imgData: renderScatterplot(ref, cc.chartPair[1], cc.options[1])
         }
       })
     }

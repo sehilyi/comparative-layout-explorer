@@ -5,7 +5,8 @@ import {translate} from 'src/useful-factory/utils';
 import {FieldPair} from 'src/models/dataset';
 import {svgAsImageData} from './svg-as-png';
 
-export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {noGridAxis?: boolean} = {noGridAxis: false}) {
+//TODO: make options as separate class in models/
+export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {noGridAxis?: boolean, hlOutlier?: boolean} = {noGridAxis: false, hlOutlier: false}) {
   d3.select(ref).selectAll('*').remove();
 
   const data = dfp.d,
@@ -24,7 +25,7 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {
       Number(d3.min(data.map(d => d[yField]))),
       Number(d3.max(data.map(d => d[yField])))])
     .nice()
-    .rangeRound([0, CHART_SIZE.height]);
+    .rangeRound([CHART_SIZE.height, 0]);
 
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(d3.format('.2s'));
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(d3.format('.2s'));
@@ -136,7 +137,15 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {
     .attr('r', 4)
     .attr('opacity', 0.3)
     .attr('stroke', 'none')
-    .attr('fill', 'red');
+    .attr('fill', '#006994');
+
+  if (options.hlOutlier) {
+    g.selectAll('.point')
+      .data(data)
+      .filter((d, i) => (d[xField] == Number(d3.max(data.map(d => d[xField])))))
+      .attr('fill', 'red')
+      .attr('opacity', 1)
+  }
 
   return svgAsImageData('canvas', d3.select(ref).html());
 }
