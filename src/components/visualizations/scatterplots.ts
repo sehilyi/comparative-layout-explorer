@@ -6,7 +6,14 @@ import {FieldPair} from 'src/models/dataset';
 import {svgAsImageData} from './svg-as-png';
 
 //TODO: make options as separate class in models/
-export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {noGridAxis?: boolean, hlOutlier?: boolean, aggregate?: string} = {noGridAxis: false, hlOutlier: false, aggregate: ''}) {
+export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair,
+  options: {
+    noGridAxis?: boolean,
+    hlOutlier?: boolean,
+    aggregate?: string,
+    encodeSize?: string,
+  } = {noGridAxis: false, hlOutlier: false, aggregate: '', encodeSize: ''}) {
+
   d3.select(ref).selectAll('*').remove();
 
   const data = dfp.d,
@@ -26,6 +33,19 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {
       Number(d3.max(data.map(d => d[yField])))])
     .nice()
     .rangeRound([CHART_SIZE.height, 0]);
+  let size: d3.ScaleLinear<number, number>;
+  if (typeof options.encodeSize != 'undefined' && options.encodeSize as string != '') {
+    console.log(options.encodeSize);
+    console.log(d3.max(data.map(d => d[options.encodeSize as string])));
+    size = d3.scaleLinear()
+      .domain([
+        Number(d3.min(data.map(d => d[options.encodeSize as string]))),
+        Number(d3.max(data.map(d => d[options.encodeSize as string])))])
+      .nice()
+      .rangeRound([3, 8]);
+
+    console.log(size);
+  }
 
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(d3.format('.2s'));
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(d3.format('.2s'));
@@ -134,7 +154,7 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {
       return CHART_MARGIN.left + x(d[xField]);
     })
     .attr('cy', d => CHART_MARGIN.top + y(d[yField]))
-    .attr('r', 4)
+    .attr('r', (d) => (options.encodeSize == '' || typeof options.encodeSize == 'undefined' || d[options.encodeSize as string] == null ? 4 : size(d[options.encodeSize as string]) as number))
     .attr('opacity', 0.3)
     .attr('stroke', 'none')
     .attr('fill', '#006994');
@@ -142,7 +162,7 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: {
   if (options.hlOutlier) {
     g.selectAll('.point')
       .data(data)
-      .filter((d, i) => (d[xField] == Number(d3.max(data.map(d => d[xField])))))
+      .filter((d) => (d[xField] == Number(d3.max(data.map(d => d[xField])))))
       .attr('fill', 'red')
       .attr('opacity', 1)
   }

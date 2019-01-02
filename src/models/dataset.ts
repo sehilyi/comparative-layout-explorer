@@ -44,7 +44,7 @@ export type ScatterplotCase = {
   chartPair: [FieldPair, FieldPair]
   imgDataPair: {A: number[], B: number[]} // add to FieldPair?
   scores: Scores
-  options: {}
+  options: [any, any]
 }
 export const DEFAULT_SCATTERPLOT_CASE: ScatterplotCase = {
   id: -1,
@@ -52,5 +52,5 @@ export const DEFAULT_SCATTERPLOT_CASE: ScatterplotCase = {
   chartPair: [DEFAULT_FIELD_PAIR, DEFAULT_FIELD_PAIR],
   imgDataPair: {A: [], B: []},
   scores: DEFAULT_SCORES,
-  options: {}
+  options: [undefined, undefined]
 }

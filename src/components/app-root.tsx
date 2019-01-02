@@ -75,7 +75,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             d: data2use.rawData,
             f1: 'sepalWidth',
             f2: 'petalLength'
-          }]
+          }],
       }
       chartPairList.push(newCase);
     }
@@ -97,7 +97,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             f1: 'US_Gross',
             f2: 'Worldwide_Gross'
           }],
-        options: [{}, {hlOutlier: true}]
+        options: [undefined, {hlOutlier: true}]
       }
       chartPairList.push(newCase);
     }
@@ -119,18 +119,18 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             f1: 'US_Gross',
             f2: 'Worldwide_Gross'
           }],
-        options: [{}, {}]
+        options: [undefined, undefined]
       }
       chartPairList.push(newCase);
     }
     ///
-    /// aggregate-diff
+    /// area-diff
     {
       data2use = DATASET_MOVIES;
       let newCase: ScatterplotCase = {
         ...DEFAULT_SCATTERPLOT_CASE,
         id: id++,
-        name: 'aggregate-diff | items grouped by category | ' + data2use.name + '.json',
+        name: 'area-diff | points resized by another field | ' + data2use.name + '.json',
         chartPair: [
           {
             d: data2use.rawData,
@@ -141,11 +141,32 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             f1: 'US_Gross',
             f2: 'Worldwide_Gross'
           }],
-        options: [{}, {aggregate: 'Director'}]
+        options: [undefined, {encodeSize: 'IMDB_Rating'}]
       }
       chartPairList.push(newCase);
     }
-    ///
+
+    // /// aggregate-diff
+    // {
+    //   data2use = DATASET_MOVIES;
+    //   let newCase: ScatterplotCase = {
+    //     ...DEFAULT_SCATTERPLOT_CASE,
+    //     id: id++,
+    //     name: 'aggregate-diff | items grouped by category | ' + data2use.name + '.json',
+    //     chartPair: [
+    //       {
+    //         d: data2use.rawData,
+    //         f1: 'US_Gross',
+    //         f2: 'Worldwide_Gross'
+    //       }, {
+    //         d: data2use.rawData,
+    //         f1: 'US_Gross',
+    //         f2: 'Worldwide_Gross'
+    //       }],
+    //     options: [undefined, {aggregate: 'Director'}]
+    //   }
+    //   chartPairList.push(newCase);
+    // }
 
     this.props.onCompCasesLoad({
       type: COMP_CASES_LOAD,
