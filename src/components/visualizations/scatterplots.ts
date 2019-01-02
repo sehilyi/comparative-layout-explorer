@@ -4,15 +4,11 @@ import {CHART_SIZE, CHART_TOTAL_SIZE, CHART_MARGIN} from 'src/useful-factory/con
 import {translate} from 'src/useful-factory/utils';
 import {FieldPair} from 'src/models/dataset';
 import {svgAsImageData} from './svg-as-png';
+import {ScatterPlotOptions, DEFAULT_SCATTERPLOT_OPTIONS} from './design-options';
 
-//TODO: make options as separate class in models/
-export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair,
-  options: {
-    noGridAxis?: boolean,
-    hlOutlier?: boolean,
-    aggregate?: string,
-    encodeSize?: string,
-  } = {noGridAxis: false, hlOutlier: false, aggregate: '', encodeSize: ''}) {
+export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: ScatterPlotOptions = DEFAULT_SCATTERPLOT_OPTIONS) {
+
+  const defaultPointSize = 4;
 
   d3.select(ref).selectAll('*').remove();
 
@@ -33,18 +29,15 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair,
       Number(d3.max(data.map(d => d[yField])))])
     .nice()
     .rangeRound([CHART_SIZE.height, 0]);
+
   let size: d3.ScaleLinear<number, number>;
-  if (typeof options.encodeSize != 'undefined' && options.encodeSize as string != '') {
-    console.log(options.encodeSize);
-    console.log(d3.max(data.map(d => d[options.encodeSize as string])));
+  if (options.encodeSize != '') {
     size = d3.scaleLinear()
       .domain([
         Number(d3.min(data.map(d => d[options.encodeSize as string]))),
         Number(d3.max(data.map(d => d[options.encodeSize as string])))])
       .nice()
-      .rangeRound([3, 8]);
-
-    console.log(size);
+      .rangeRound([2, 8]);
   }
 
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(d3.format('.2s'));
@@ -154,10 +147,15 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair,
       return CHART_MARGIN.left + x(d[xField]);
     })
     .attr('cy', d => CHART_MARGIN.top + y(d[yField]))
-    .attr('r', (d) => (options.encodeSize == '' || typeof options.encodeSize == 'undefined' || d[options.encodeSize as string] == null ? 4 : size(d[options.encodeSize as string]) as number))
     .attr('opacity', 0.3)
     .attr('stroke', 'none')
-    .attr('fill', '#006994');
+    .attr('fill', '#006994')
+    .attr('r', function (d) {
+      if (options.encodeSize == '' || typeof options.encodeSize == 'undefined' || d[options.encodeSize as string] == null)
+        return defaultPointSize;
+      else
+        return size(d[options.encodeSize as string]) as number;
+    })
 
   if (options.hlOutlier) {
     g.selectAll('.point')

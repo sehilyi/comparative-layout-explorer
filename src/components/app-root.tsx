@@ -146,6 +146,28 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       chartPairList.push(newCase);
     }
 
+    /// shape-diff
+    // {
+    //   data2use = DATASET_MOVIES;
+    //   let newCase: ScatterplotCase = {
+    //     ...DEFAULT_SCATTERPLOT_CASE,
+    //     id: id++,
+    //     name: 'shape-diff | points reshaped by category | ' + data2use.name + '.json',
+    //     chartPair: [
+    //       {
+    //         d: data2use.rawData,
+    //         f1: 'US_Gross',
+    //         f2: 'Worldwide_Gross'
+    //       }, {
+    //         d: data2use.rawData,
+    //         f1: 'US_Gross',
+    //         f2: 'Worldwide_Gross'
+    //       }],
+    //     options: [undefined, {encodeSize: 'IMDB_Rating'}]
+    //   }
+    //   chartPairList.push(newCase);
+    // }
+
     // /// aggregate-diff
     // {
     //   data2use = DATASET_MOVIES;
