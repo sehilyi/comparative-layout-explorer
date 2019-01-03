@@ -11,6 +11,11 @@ import {DATASET_IRIS} from 'src/datasets/iris';
 // import {randint} from 'src/useful-factory/utils';
 import {CHART_TOTAL_SIZE} from 'src/useful-factory/constants';
 
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {faHighlighter} from '@fortawesome/free-solid-svg-icons';
+library.add(faHighlighter)
+
 export interface AppRootProps {
   chartPairList: CompareCase[];
   scatterplots: ScatterPlot[];
@@ -217,7 +222,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     // }
     return (
       <div className='app-root'>
-        <div className='header'>( viz-subtlety-highlighter )</div>
+        <div className='header'>
+          <FontAwesomeIcon icon="highlighter" className='trade-mark' /> viz-subtlety-highlighter
+        </div>
         <div className='main-pane'>
           {/* <h1>Design</h1>
           <div className='result-group test'>
