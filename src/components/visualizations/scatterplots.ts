@@ -5,8 +5,9 @@ import {translate} from 'src/useful-factory/utils';
 import {FieldPair} from 'src/models/dataset';
 import {svgAsImageData} from './svg-as-png';
 import {ScatterPlotOptions, DEFAULT_SCATTERPLOT_OPTIONS} from './design-options';
+import {HighlightOptions} from './highlight-options';
 
-export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: ScatterPlotOptions = DEFAULT_SCATTERPLOT_OPTIONS) {
+export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: ScatterPlotOptions = DEFAULT_SCATTERPLOT_OPTIONS, highlight?: HighlightOptions) {
 
   const defaultPointSize = 4;
 
@@ -52,7 +53,7 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: S
   const g = d3.select(ref).append('g');
   g.classed('g', true);
 
-  if (!options.noGridAxis) {
+  if (!options.noGrid) {
     g.append('g')
       .classed('grid', true)
       .attr('transform', translate(CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top))
@@ -62,7 +63,9 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: S
       .classed('grid', true)
       .attr('transform', translate(CHART_MARGIN.left, CHART_MARGIN.top))
       .call(yGrid)
+  }
 
+  if (!options.noAxis) {
     let xaxis = g.append('g')
       .classed('axis', true)
       .attr('stroke', '#888888')
@@ -97,7 +100,7 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: S
       .classed('label', true)
       .attr('transform', 'rotate(-90)')
       .attr('x', -CHART_SIZE.width / 2)
-      .attr('y', -40)
+      .attr('y', -50)
       .attr('dy', '.71em')
       .style('font-weight', 'bold')
       .style('font-family', 'sans-serif')
@@ -150,20 +153,74 @@ export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: S
     .attr('opacity', 0.3)
     .attr('stroke', 'none')
     .attr('fill', '#006994')
-    // option related parts
-    .attr('r', function (d) {
-      if (options.encodeSize == '' || typeof options.encodeSize == 'undefined' || d[options.encodeSize as string] == null)
-        return defaultPointSize;
-      else
-        return pointSize(d[options.encodeSize as string]) as number;
-    })
+    .attr('r', defaultPointSize)
 
+
+  // options
   if (options.hlOutlier) {
     g.selectAll('.point')
       .data(data)
       .filter((d) => (d[xField] == Number(d3.max(data.map(d => d[xField])))))
       .attr('fill', 'red')
       .attr('opacity', 1)
+  }
+  if (options.encodeSize) {
+    g.selectAll('.point').attr('r', function (d) {
+      if (options.encodeSize == '' || typeof options.encodeSize == 'undefined' || d[options.encodeSize as string] == null)
+        return defaultPointSize;
+      else
+        return pointSize(d[options.encodeSize as string]) as number;
+    })
+  }
+
+  // apply highlight methods
+  const defaultAnnotationHue = '#FFA500';
+  if (typeof highlight != 'undefined' && highlight.type != 'none') {
+    switch (highlight.type) {
+      case 'arrow':
+        // TODO: how to find the positions to highlight?
+        g.append('line')
+          .attr('x1', 150)
+          .attr('y1', 21)
+          .attr('x2', 200)
+          .attr('y2', 30)
+          .attr('stroke', defaultAnnotationHue)
+          .attr('stroke-width', 2)
+        g.append('text')
+          .attr('x', 145)
+          .attr('y', 20)
+          .attr('fill', defaultAnnotationHue)
+          .style('font-size', 13)
+          .style('text-anchor', 'end')
+          .style('font-weight', 'bold')
+          .text('outlier')
+        g.append('text')
+          .attr('dy', '1em')
+          .attr('x', 145)
+          .attr('y', 20)
+          .attr('fill', defaultAnnotationHue)
+          .style('font-size', 13)
+          .style('text-anchor', 'end')
+          .style('font-weight', 'bold')
+          .text('highlighted')
+        break;
+      case 'color':
+
+        g.selectAll('.point')
+          .filter((item) => item['Major_Genre'] != 'Drama') // TODO: should I add filter info in "options"?
+          .attr('cx', function (d) {
+            return CHART_MARGIN.left + x(d[xField]);
+          })
+          .attr('cy', d => CHART_MARGIN.top + y(d[yField]))
+          .attr('opacity', 0.5)
+          .attr('stroke', defaultAnnotationHue)
+          .attr('stroke-dasharray', ('1,1'))
+          .attr('fill', '#00000000')
+          .attr('r', defaultPointSize)
+        break;
+      default:
+        break;
+    }
   }
 
   return svgAsImageData('canvas', d3.select(ref).html());

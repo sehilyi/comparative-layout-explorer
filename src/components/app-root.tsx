@@ -8,12 +8,13 @@ import {renderScatterplot} from './visualizations/scatterplots';
 import {ScatterplotCase, CompareCase, DEFAULT_SCATTERPLOT_CASE, ScatterPlot} from 'src/models/dataset';
 import {DATASET_MOVIES} from 'src/datasets/movies';
 import {DATASET_IRIS} from 'src/datasets/iris';
-// import {randint} from 'src/useful-factory/utils';
 import {CHART_TOTAL_SIZE} from 'src/useful-factory/constants';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faHighlighter, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
+import {DEFAULT_SCATTERPLOT_OPTIONS} from './visualizations/design-options';
+import {DEFAULT_HIGHLIGHT_OPTIONS} from './visualizations/highlight-options';
 library.add(faHighlighter, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -38,33 +39,11 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   }
 
   private loadComparisionExamples() {
-    ///
-    /// Test: data for scatterplot pair list
+
     let data2use = DATASET_MOVIES;
     let chartPairList: ScatterplotCase[] = [];
     let id = 0;
-    // const numOfPairs = 1;
-    // for (let i = 0; i < numOfPairs; i++) {
-    //   let newCase: ScatterplotCase = {
-    //     ...DEFAULT_SCATTERPLOT_CASE,
-    //     id: i,
-    //     name: 'Different Fields',
-    //     chartPair: [
-    //       {
-    //         d: data2use.rawData,
-    //         f1: data2use.fields[randint(1, 5)],
-    //         f2: data2use.fields[randint(1, 5)]
-    //       }, {
-    //         d: data2use.rawData,
-    //         f1: data2use.fields[randint(1, 5)],
-    //         f2: data2use.fields[randint(1, 5)]
-    //       }]
-    //   }
-    //   chartPairList.push(newCase);
-    // }
-    // ///
 
-    /// position-diff
     {
       data2use = DATASET_IRIS;
       let newCase: ScatterplotCase = {
@@ -86,8 +65,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       }
       chartPairList.push(newCase);
     }
-    ///
-    /// color-diff
     {
       data2use = DATASET_MOVIES;
       let newCase: ScatterplotCase = {
@@ -106,12 +83,11 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             f1: 'US_Gross',
             f2: 'Worldwide_Gross'
           }],
-        options: [undefined, {hlOutlier: true}]
+        options: [undefined, {...DEFAULT_SCATTERPLOT_OPTIONS, hlOutlier: true}],
+        highlight: {...DEFAULT_HIGHLIGHT_OPTIONS, type: 'arrow'}
       }
       chartPairList.push(newCase);
     }
-    ///
-    /// appearance-diff
     {
       data2use = DATASET_MOVIES;
       let newCase: ScatterplotCase = {
@@ -130,12 +106,10 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             f1: 'US_Gross',
             f2: 'Worldwide_Gross'
           }],
-        options: [undefined, undefined]
+        highlight: {...DEFAULT_HIGHLIGHT_OPTIONS, type: 'color'}
       }
       chartPairList.push(newCase);
     }
-    ///
-    /// area-diff
     {
       data2use = DATASET_MOVIES;
       let newCase: ScatterplotCase = {
@@ -154,7 +128,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             f1: 'US_Gross',
             f2: 'Worldwide_Gross'
           }],
-        options: [undefined, {encodeSize: 'IMDB_Rating'}]
+        options: [undefined, {...DEFAULT_SCATTERPLOT_OPTIONS, encodeSize: 'IMDB_Rating'}]
       }
       chartPairList.push(newCase);
     }
@@ -181,33 +155,10 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     //   chartPairList.push(newCase);
     // }
 
-    // /// aggregate-diff
-    // {
-    //   data2use = DATASET_MOVIES;
-    //   let newCase: ScatterplotCase = {
-    //     ...DEFAULT_SCATTERPLOT_CASE,
-    //     id: id++,
-    //     name: 'aggregate-diff | items grouped by category | ' + data2use.name + '.json',
-    //     chartPair: [
-    //       {
-    //         d: data2use.rawData,
-    //         f1: 'US_Gross',
-    //         f2: 'Worldwide_Gross'
-    //       }, {
-    //         d: data2use.rawData,
-    //         f1: 'US_Gross',
-    //         f2: 'Worldwide_Gross'
-    //       }],
-    //     options: [undefined, {aggregate: 'Director'}]
-    //   }
-    //   chartPairList.push(newCase);
-    // }
-
     this.props.onCompCasesLoad({
       type: COMP_CASES_LOAD,
       payload: chartPairList
     });
-    ///
   }
 
   render() {
@@ -277,6 +228,14 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
         }
       })
     }
+    let onRefA2 = (ref: SVGSVGElement) => {
+      if (ref == null || cc.imgDataPair.A.length != 0) return;
+      renderScatterplot(ref, cc.chartPair[0], cc.options[0])
+    }
+    let onRefB2 = (ref: SVGSVGElement) => {
+      if (ref == null || cc.imgDataPair.B.length != 0) return;
+      renderScatterplot(ref, cc.chartPair[1], cc.options[1], cc.highlight)
+    }
     return (
       <div key={cc.id} className='example-element'>
         <h3 className={cc.diffType}>{cc.diffType}</h3>
@@ -286,8 +245,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
           <div className='chart'><svg id={cc.id + 'A'} ref={onRefA}></svg></div>
           <div className='chart'><svg id={cc.id + 'B'} ref={onRefB}></svg></div>
           <div className='score'><FontAwesomeIcon icon='arrow-circle-right' /></div>
-          <div className='chart'><svg id={cc.id + 'A'} ref={onRefA}></svg></div>
-          <div className='chart'><svg id={cc.id + 'B'} ref={onRefB}></svg></div>
+          <div className='chart'><svg id={cc.id + 'A2'} ref={onRefA2}></svg></div>
+          <div className='chart'><svg id={cc.id + 'B2'} ref={onRefB2}></svg></div>
         </div>
       </div>
     );

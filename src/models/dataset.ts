@@ -1,4 +1,5 @@
-import {DiffType} from 'src/components/visualizations/diff-taxonomy';
+import {DiffType} from 'src/components/visualizations/diff-method-taxonomy';
+import {HighlightOptions, DEFAULT_HIGHLIGHT_OPTIONS} from 'src/components/visualizations/highlight-options';
 
 export type DataSet = {
   name: string
@@ -49,6 +50,7 @@ export type ScatterplotCase = {
   imgDataPair: {A: number[], B: number[]} // add to FieldPair?
   scores: Scores
   options: [any, any]
+  highlight: HighlightOptions
 }
 export const DEFAULT_SCATTERPLOT_CASE: ScatterplotCase = {
   id: -1,
@@ -58,5 +60,6 @@ export const DEFAULT_SCATTERPLOT_CASE: ScatterplotCase = {
   chartPair: [DEFAULT_FIELD_PAIR, DEFAULT_FIELD_PAIR],
   imgDataPair: {A: [], B: []},
   scores: DEFAULT_SCORES,
-  options: [undefined, undefined]
+  options: [undefined, undefined],
+  highlight: DEFAULT_HIGHLIGHT_OPTIONS
 }
