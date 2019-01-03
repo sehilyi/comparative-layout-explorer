@@ -13,8 +13,8 @@ import {CHART_TOTAL_SIZE} from 'src/useful-factory/constants';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {faHighlighter} from '@fortawesome/free-solid-svg-icons';
-library.add(faHighlighter)
+import {faHighlighter, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
+library.add(faHighlighter, faArrowCircleRight)
 
 export interface AppRootProps {
   chartPairList: CompareCase[];
@@ -225,6 +225,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
         <div className='header'>
           <FontAwesomeIcon icon="highlighter" className='trade-mark' /> viz-subtlety-highlighter
         </div>
+        <div className='control-pane'>
+
+        </div>
         <div className='main-pane'>
           {/* <h1>Design</h1>
           <div className='result-group test'>
@@ -275,19 +278,16 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       })
     }
     return (
-      <div key={cc.id}>
+      <div key={cc.id} className='example-element'>
         <h3 className={cc.diffType}>{cc.diffType}</h3>
         <h3>{cc.desc + ' | ' + cc.dataset + '.json'}</h3>
+        <div> SSIM: {cc.scores.ssim.toFixed(2)} | MS-SSIM: {cc.scores.msssim.toFixed(2)} | MSE: {cc.scores.mse.toFixed(2)}</div>
         <div className='result-group'>
           <div className='chart'><svg id={cc.id + 'A'} ref={onRefA}></svg></div>
           <div className='chart'><svg id={cc.id + 'B'} ref={onRefB}></svg></div>
-          <div className='score'>
-            SSIM: {cc.scores.ssim.toFixed(2)}
-            <br />
-            MS-SSIM: {cc.scores.msssim.toFixed(2)}
-            <br />
-            MSE: {cc.scores.mse.toFixed(2)}
-          </div>
+          <div className='score'><FontAwesomeIcon icon='arrow-circle-right' /></div>
+          <div className='chart'><svg id={cc.id + 'A'} ref={onRefA}></svg></div>
+          <div className='chart'><svg id={cc.id + 'B'} ref={onRefB}></svg></div>
         </div>
       </div>
     );

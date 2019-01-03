@@ -2,7 +2,7 @@
   height: 100%;
 
   .header {
-    background: rgb(66, 66, 66);
+    background: #424242;
     padding-left: 10px;
     height: 50px;
     line-height: 50px;
@@ -11,69 +11,84 @@
     font-size: 1.2em;
 
     .trade-mark {
-      color: rgb(233, 252, 61);
+      color: #e9fc3d;
     }
+  }
+
+  .control-pane {
+    height: 150px;
+    background: #ececec;
   }
 
   .main-pane {
     padding: 10px;
-
-    .position-diff {
-      color: #2d5699;
-    }
-    .color-diff {
-      color: #adad2d;
-    }
-    .appearance-diff {
-      color: #2c7c99;
-    }
-    .area-diff {
-      color: #942a5d;
+    overflow-y: scroll;
+    height: calc(100% - 70px - 150px);
+    
+    .example-element:nth-child(odd) {
+      background: #f8f8f8;
     }
 
-    .result-group {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+    .example-element {
+      padding: 10px;
 
-      .chart {
-        text-align: center;
+      .position-diff {
+        color: #2d5699;
       }
-      .option-panel {
-        border: solid lightgray 1px;
-        height: 90%;
-        border-radius: 10px;
+      .color-diff {
+        color: #adad2d;
       }
-      .score {
-        align-self: center;
-        text-align: center;
-        font-style: italic;
-        font-size: 1.3rem;
+      .appearance-diff {
+        color: #2c7c99;
+      }
+      .area-diff {
+        color: #942a5d;
       }
 
-      button {
-        background: red;
-      }
+      .result-group {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
 
-      // d3-chart-related
-      // removed for directly styling with style(,)
-      // .grid line,
-      // .grid path {
-      //   stroke: rgb(221, 221, 221);
-      //   stroke-width: 1px;
-      // }
-      // .grid text {
-      //   display: none;
-      // }
-      // .axis path,
-      // .axis line {
-      //   stroke-width: 1px;
-      // }
-      // .axis text {
-      //   stroke-width: 0px;
-      // }
-      // .axis .label {
-      //   font-size: 11px;
-      // }
+        .chart {
+          text-align: center;
+        }
+        .option-panel {
+          border: solid lightgray 1px;
+          height: 90%;
+          border-radius: 10px;
+        }
+        .score {
+          align-self: center;
+          text-align: center;
+          font-size: 2rem;
+          color: #adadad;
+        }
+
+        button {
+          background: red;
+        }
+
+        // d3-chart-related
+        // removed for directly styling with style(,)
+        // .grid line,
+        // .grid path {
+        //   stroke: rgb(221, 221, 221);
+        //   stroke-width: 1px;
+        // }
+        // .grid text {
+        //   display: none;
+        // }
+        // .axis path,
+        // .axis line {
+        //   stroke-width: 1px;
+        // }
+        // .axis text {
+        //   stroke-width: 0px;
+        // }
+        // .axis .label {
+        //   font-size: 11px;
+        // }
+      }
     }
   }
 }
