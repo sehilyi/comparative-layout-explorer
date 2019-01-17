@@ -12,7 +12,8 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {loadComparisionExamples as getScatterExamples} from 'src/models/example-maker';
-import {renderBarChart, getSimpleBarSpec} from './visualizations/barcharts';
+import {renderBarChart} from './visualizations/barcharts';
+import {DATASET_ECOLI} from 'src/datasets/ecoli';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -53,10 +54,28 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     //   })
     // }
     let onBarChartA = (ref: SVGSVGElement) => {
-      renderBarChart(ref, getSimpleBarSpec());
+      renderBarChart(ref, {
+        data: {
+          values: DATASET_ECOLI.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Result1", type: "ordinal"},
+          y: {field: "GSM535", type: "quantitative", aggregate: "max"}
+        }
+      });
     }
     let onBarChartB = (ref: SVGSVGElement) => {
-      renderBarChart(ref, getSimpleBarSpec());
+      renderBarChart(ref, {
+        data: {
+          values: DATASET_ECOLI.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Result1", type: "ordinal"},
+          y: {field: "GSM535", type: "quantitative", aggregate: "min"}
+        }
+      });
     }
     return (
       <div className='app-root'>
