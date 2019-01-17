@@ -2,7 +2,6 @@ import {Spec} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
 import {CHART_SIZE, CHART_MARGIN} from 'src/useful-factory/constants';
 import {translate} from 'src/useful-factory/utils';
-import {ScaleBand, ScaleLinear} from 'd3';
 
 export const _width = 'width', _height = 'height', _fill = 'fill', _color = 'color', _g = 'g', _rect = 'rect', _x = 'x', _y = 'y';
 
