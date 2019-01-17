@@ -2,22 +2,19 @@ import {Spec} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
 import {CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN} from 'src/useful-factory/constants';
 import {translate, uniqueValues} from 'src/useful-factory/utils';
+import {DATASET_MOVIES} from 'src/datasets/movies';
 
 export const _width = 'width', _height = 'height', _fill = 'fill', _color = 'color', _g = 'g', _rect = 'rect', _x = 'x', _y = 'y';
 
 export function getSimpleBarSpec(): Spec {
   return {
     data: {
-      values: [
-        {"a": "A", "b": 28}, {"a": "B", "b": 55}, {"a": "C", "b": 43},
-        {"a": "A", "b": 91}, {"a": "E", "b": 81}, {"a": "F", "b": 53},
-        {"a": "A", "b": 19}, {"a": "H", "b": 87}, {"a": "I", "b": 52}
-      ]
+      values: DATASET_MOVIES.rawData
     },
     mark: "bar",
     encoding: {
-      x: {field: "a", type: "ordinal"},
-      y: {field: "b", type: "quantitative", aggregate: "sum"}
+      x: {field: "MPAA_Rating", type: "ordinal"},
+      y: {field: "IMDB_Rating", type: "quantitative", aggregate: "max"}
     }
   }
 }
@@ -32,6 +29,16 @@ export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
       switch (aggregate) {
         case 'sum':
           return d3.sum(d, _d => _d[spec.encoding.y.field]) as undefined; // what's wrong when undefined removed?
+        case 'mean':
+          return d3.mean(d, _d => _d[spec.encoding.y.field]) as undefined;
+        case 'median':
+          return d3.median(d, _d => _d[spec.encoding.y.field]) as undefined;
+        case 'min':
+          return d3.min(d, _d => _d[spec.encoding.y.field]) as undefined;
+        case 'max':
+          return d3.max(d, _d => _d[spec.encoding.y.field]) as undefined;
+        case 'count':
+          return d.length as undefined;
         default:
           return d3.sum(d, _d => _d[spec.encoding.y.field]) as undefined;
       }
@@ -113,7 +120,7 @@ export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
     .style('fill', 'black')
     .style('stroke', 'none')
     .style('text-anchor', 'middle')
-    .text(spec.encoding.y.field)
+    .text(aggregate.toUpperCase() + '( ' + spec.encoding.y.field + ' )')
 
   g.selectAll('.axis path')
     .attr('stroke-width', '1px')

@@ -17,4 +17,4 @@ export type Field = {
   aggregate?: Aggregate
 }
 export type DataType = 'ordinal' | 'quantitative';
-export type Aggregate = 'sum';
+export type Aggregate = 'sum' | 'mean' | 'median' | 'max' | 'min' | 'count';
