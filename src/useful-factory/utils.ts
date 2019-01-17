@@ -1,5 +1,11 @@
+import * as d3 from 'd3';
+
 export function translate(x: number, y: number) {
   return `translate(${x}, ${y})`;
+}
+
+export function uniqueValues(o: Object[], k: string) {
+  return d3.set(o.map(d => d[k])).values()
 }
 
 /**

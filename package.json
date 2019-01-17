@@ -59,13 +59,13 @@
     "test": "node scripts/test.js --env=jsdom"
   },
   "devDependencies": {
-    "@types/d3": "^5.0.1",
+    "@types/d3": "5.7.0",
     "@types/jest": "^23.3.9",
     "@types/node": "^10.12.3",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
     "@types/react-redux": "^6.0.9",
-    "typescript": "^3.1.6"
+    "typescript": "3.2.2"
   },
   "jest": {
     "collectCoverageFrom": [

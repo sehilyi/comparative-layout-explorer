@@ -8,7 +8,7 @@ export type ScatterPlotOptions = {
 
 export const DEFAULT_SCATTERPLOT_OPTIONS: ScatterPlotOptions = {
   noAxis: false,
-  noGrid: true,
+  noGrid: false,
   hlOutlier: false,
   aggregate: '',
   encodeSize: ''

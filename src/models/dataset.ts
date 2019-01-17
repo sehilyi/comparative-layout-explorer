@@ -24,7 +24,7 @@ export type ScatterPlot = {
 }
 export const DEFAULT_SCATTERPLOT = {
   fieldPair: DEFAULT_FIELD_PAIR,
-  imgData: []
+  imgData: [] as number[]
 }
 
 export type Scores = {

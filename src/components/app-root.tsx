@@ -5,17 +5,15 @@ import {State} from 'src/models';
 import {Dispatch} from 'redux';
 import {CompCasesLoad, loadCompCases, COMP_CASES_LOAD, CompCasesImageDataLoad, onCompCaseImgDataLoad, Action, COMP_CASES_IMAGE_DATA_LOAD} from '../actions';
 import {renderScatterplot} from './visualizations/scatterplots';
-import {ScatterplotCase, CompareCase, DEFAULT_SCATTERPLOT_CASE, ScatterPlot} from 'src/models/dataset';
-import {DATASET_MOVIES} from 'src/datasets/movies';
-import {DATASET_IRIS} from 'src/datasets/iris';
+import {CompareCase, ScatterPlot} from 'src/models/dataset';
 import {CHART_TOTAL_SIZE} from 'src/useful-factory/constants';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {faHighlighter, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
-import {DEFAULT_SCATTERPLOT_OPTIONS} from './visualizations/design-options';
-import {DEFAULT_HIGHLIGHT_OPTIONS} from './visualizations/highlight-options';
-library.add(faHighlighter, faArrowCircleRight)
+import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
+import {loadComparisionExamples as getScatterExamples} from 'src/models/example-maker';
+import {renderBarChart, getSimpleBarSpec} from './visualizations/barcharts';
+library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
   chartPairList: CompareCase[];
@@ -29,136 +27,19 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   constructor(props: AppRootProps) {
     super(props);
 
-    this.loadComparisionExamples();
+    if (false) {
+      this.props.onCompCasesLoad({
+        type: COMP_CASES_LOAD,
+        payload: getScatterExamples()
+      });
+    }
   }
 
   public componentDidMount() {
   }
 
   public componentDidUpdate() {
-  }
 
-  private loadComparisionExamples() {
-
-    let data2use = DATASET_MOVIES;
-    let chartPairList: ScatterplotCase[] = [];
-    let id = 0;
-
-    {
-      data2use = DATASET_IRIS;
-      let newCase: ScatterplotCase = {
-        ...DEFAULT_SCATTERPLOT_CASE,
-        id: id++,
-        diffType: 'position-diff',
-        desc: 'fields-of-interest changed',
-        dataset: data2use.name,
-        chartPair: [
-          {
-            d: data2use.rawData,
-            f1: 'sepalWidth',
-            f2: 'petalWidth'
-          }, {
-            d: data2use.rawData,
-            f1: 'sepalWidth',
-            f2: 'petalLength'
-          }],
-      }
-      chartPairList.push(newCase);
-    }
-    {
-      data2use = DATASET_MOVIES;
-      let newCase: ScatterplotCase = {
-        ...DEFAULT_SCATTERPLOT_CASE,
-        id: id++,
-        diffType: 'color-diff',
-        desc: 'points-of-interest highlighted',
-        dataset: data2use.name,
-        chartPair: [
-          {
-            d: data2use.rawData,
-            f1: 'US_Gross',
-            f2: 'Worldwide_Gross'
-          }, {
-            d: data2use.rawData,
-            f1: 'US_Gross',
-            f2: 'Worldwide_Gross'
-          }],
-        options: [undefined, {...DEFAULT_SCATTERPLOT_OPTIONS, hlOutlier: true}],
-        highlight: {...DEFAULT_HIGHLIGHT_OPTIONS, type: 'arrow'}
-      }
-      chartPairList.push(newCase);
-    }
-    {
-      data2use = DATASET_MOVIES;
-      let newCase: ScatterplotCase = {
-        ...DEFAULT_SCATTERPLOT_CASE,
-        id: id++,
-        diffType: 'appearance-diff',
-        desc: 'items-of-no-interest removed',
-        dataset: data2use.name,
-        chartPair: [
-          {
-            d: data2use.rawData,
-            f1: 'US_Gross',
-            f2: 'Worldwide_Gross'
-          }, {
-            d: data2use.rawData.filter((item) => item['Major_Genre'] != 'Action'),
-            f1: 'US_Gross',
-            f2: 'Worldwide_Gross'
-          }],
-        highlight: {...DEFAULT_HIGHLIGHT_OPTIONS, type: 'color'}
-      }
-      chartPairList.push(newCase);
-    }
-    {
-      data2use = DATASET_MOVIES;
-      let newCase: ScatterplotCase = {
-        ...DEFAULT_SCATTERPLOT_CASE,
-        id: id++,
-        diffType: 'area-diff',
-        desc: 'points resized by another field',
-        dataset: data2use.name,
-        chartPair: [
-          {
-            d: data2use.rawData,
-            f1: 'US_Gross',
-            f2: 'Worldwide_Gross'
-          }, {
-            d: data2use.rawData,
-            f1: 'US_Gross',
-            f2: 'Worldwide_Gross'
-          }],
-        options: [undefined, {...DEFAULT_SCATTERPLOT_OPTIONS, encodeSize: 'IMDB_Rating'}]
-      }
-      chartPairList.push(newCase);
-    }
-
-    /// shape-diff
-    // {
-    //   data2use = DATASET_MOVIES;
-    //   let newCase: ScatterplotCase = {
-    //     ...DEFAULT_SCATTERPLOT_CASE,
-    //     id: id++,
-    //     name: 'shape-diff | points reshaped by category | ' + data2use.name + '.json',
-    //     chartPair: [
-    //       {
-    //         d: data2use.rawData,
-    //         f1: 'US_Gross',
-    //         f2: 'Worldwide_Gross'
-    //       }, {
-    //         d: data2use.rawData,
-    //         f1: 'US_Gross',
-    //         f2: 'Worldwide_Gross'
-    //       }],
-    //     options: [undefined, {encodeSize: 'IMDB_Rating'}]
-    //   }
-    //   chartPairList.push(newCase);
-    // }
-
-    this.props.onCompCasesLoad({
-      type: COMP_CASES_LOAD,
-      payload: chartPairList
-    });
   }
 
   render() {
@@ -171,10 +52,21 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     //     f2: DATASET_ECOLI.fields[2]
     //   })
     // }
+    let onBarChartA = (ref: SVGSVGElement) => {
+      renderBarChart(ref, getSimpleBarSpec());
+    }
+    let onBarChartB = (ref: SVGSVGElement) => {
+      renderBarChart(ref, getSimpleBarSpec());
+    }
     return (
       <div className='app-root'>
         <div className='header'>
-          <FontAwesomeIcon icon="highlighter" className='trade-mark' /> viz-subtlety-highlighter
+          <FontAwesomeIcon icon="chart-bar" className='trade-mark' /> {' '}
+          <FontAwesomeIcon icon="times" className='trade-mark' /> <sub>{' '}</sub>
+          <FontAwesomeIcon icon="chart-line" className='trade-mark' /> {' for comparison '}
+          <FontAwesomeIcon icon="equals" className='trade-mark' /> {' '}
+          <FontAwesomeIcon icon="question" className='trade-mark' />
+          {/* viz-subtlety-highlighter */}
         </div>
         <div className='control-pane'>
 
@@ -191,6 +83,13 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
               <div className='option-panel'></div>
             </div>
           </div> */}
+          <h1>Bar Charts</h1>
+          <div className='example-element'>
+            <div className='result-group'>
+              <div className='chart'><svg ref={onBarChartA}></svg></div>
+              <div className='chart'><svg ref={onBarChartB}></svg></div>
+            </div>
+          </div>
           <h1>Scatterplots</h1>
           {Results}
           {/* canvas2img. this should be invisible to users */}
