@@ -35,6 +35,7 @@ export function getAggValues(values: object[], keyField: string, valueField: str
 export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xval: string[] | number[], yval: string[] | number[], spec: Spec, style?: object) {
   let noY = (typeof style != 'undefined' && style['noY']);
   let noX = (typeof style != 'undefined' && style['noX']);
+  let rY = (typeof style != 'undefined' && style['rY']);
   // const g = d3.select(g).select('g');
   // const isXOrdinal = spec.encoding.x.type === 'ordinal', isYOrdinal = spec.encoding.y.type === 'ordinal';
 
@@ -62,7 +63,7 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       .domain(
         [d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]
       ).nice()
-      .rangeRound([CHART_SIZE.height, 0]);
+      .rangeRound(rY ? [0, CHART_SIZE.height] : [CHART_SIZE.height, 0]);
 
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null);
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(d3.format('.2s'));

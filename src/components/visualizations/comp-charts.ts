@@ -19,9 +19,10 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 
 function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
-  // if (C.direction === 'horizontal') {
   const {...consistency} = getXYConsistency(A, B, C);
 
+  // determine svg size by direction and consistency
+  // consistency reduce gap between charts
   if (C.direction === 'horizontal') {
     d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height)
     if (consistency.y) {
@@ -41,29 +42,30 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     }
   }
 
+  // determine start X & Y positions for the second chart
+  let transB: {left: number, top: number};
+  if (C.direction === 'horizontal') {
+    if (consistency.y) {
+      transB = {left: CHART_MARGIN.left + CHART_SIZE.width + BAR_CHART_GAP, top: CHART_MARGIN.top};
+    }
+    else {
+      transB = {left: CHART_TOTAL_SIZE.width + CHART_MARGIN.left, top: CHART_MARGIN.top};
+    }
+  }
+  else if (C.direction === 'vertical') {
+    if (consistency.x) {
+      transB = {left: CHART_MARGIN.left, top: CHART_MARGIN.top + CHART_SIZE.height + BAR_CHART_GAP}
+    }
+    else {
+      transB = {left: CHART_MARGIN.left, top: CHART_TOTAL_SIZE.height + CHART_MARGIN.top}
+    }
+  }
+
   const gA = d3.select(ref).append(_g), gB = d3.select(ref).append(_g);
   const {values: valsA} = A.data, {values: valsB} = B.data;
   const {aggregate: aggrA} = A.encoding.y, {aggregate: aggrB} = B.encoding.y;
   const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, aggrA);
   const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, aggrB);
-
-  const gBAxis = gA.append(_g);
-  if (C.direction === 'horizontal') {
-    if (consistency.y) {
-      gBAxis.attr(_transform, translate(CHART_MARGIN.left + CHART_SIZE.width + BAR_CHART_GAP, CHART_MARGIN.top));
-    }
-    else {
-      gBAxis.attr(_transform, translate(CHART_TOTAL_SIZE.width + CHART_MARGIN.left, CHART_MARGIN.top));
-    }
-  }
-  else if (C.direction === 'vertical') {
-    if (consistency.x) {
-      gBAxis.attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top + CHART_SIZE.height + BAR_CHART_GAP));
-    }
-    else {
-      gBAxis.attr(_transform, translate(CHART_MARGIN.left, CHART_TOTAL_SIZE.height + CHART_MARGIN.top));
-    }
-  }
 
   /// A
   {
@@ -91,37 +93,23 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const groups = uniqueValues(valsB, B.encoding.x.field);
     const yDomain = consistency.y ? aggValuesB.concat(aggValuesA) : aggValuesB;
     const noY = consistency.y && C.direction === 'horizontal';
-    const {x, y} = renderAxes(gBAxis, groups, yDomain.map(d => d.value), B, {noY});
-
+    const gBAxis = gA.append(_g)
+      .attr(_transform, translate(transB.left, transB.top));
+    const rY = consistency.y_mirrored;
+    const {x, y} = renderAxes(gBAxis, groups, yDomain.map(d => d.value), B, {noY, rY});
     const barWidth = CHART_SIZE.width / groups.length - BAR_GAP;
-    if (C.direction === 'horizontal') {
-      if (consistency.y) {
-        gB.attr(_transform, translate(CHART_MARGIN.left + CHART_SIZE.width + BAR_CHART_GAP, CHART_MARGIN.top));
-      }
-      else {
-        gB.attr(_transform, translate(CHART_TOTAL_SIZE.width + CHART_MARGIN.left, CHART_MARGIN.top));
-      }
-    }
-    else if (C.direction === 'vertical') {
-      if (consistency.x) {
-        gB.attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top + CHART_SIZE.height + BAR_CHART_GAP));
-      }
-      else {
-        gB.attr(_transform, translate(CHART_MARGIN.left, CHART_TOTAL_SIZE.height + CHART_MARGIN.top));
-      }
-    }
+    gB.attr(_transform, translate(transB.left, transB.top));
 
     gB.selectAll('bar')
       .data(aggValuesB)
       .enter().append(_rect)
       .classed('bar', true)
-      .attr(_y, d => y(d.value))
+      .attr(_y, d => rY ? 0 : y(d.value))
       .attr(_x, d => x(d.key) + 1)
       .attr(_width, barWidth)
-      .attr(_height, d => CHART_SIZE.height - y(d.value))
+      .attr(_height, d => (rY ? y(d.value) : CHART_SIZE.height - y(d.value)))
       .attr(_fill, '#006994')
   }
-  // }
 }
 
 export function getXYConsistency(A: Spec, B: Spec, C: CompSpec) {
@@ -129,9 +117,11 @@ export function getXYConsistency(A: Spec, B: Spec, C: CompSpec) {
     y: (isDeepTrue(C.consistency.y) &&
       A.encoding.y.field === B.encoding.y.field &&
       A.encoding.y.type === B.encoding.y.type),
+    y_mirrored: typeof C.consistency.y != 'undefined' && C.consistency.y['mirrored'],
     x: (isDeepTrue(C.consistency.x) &&
       A.encoding.x.field === B.encoding.x.field &&
       A.encoding.x.type === B.encoding.x.type),
+    x_mirrored: typeof C.consistency.x != 'undefined' && C.consistency.x['mirrored'],
   };
   // warnings
   if (cons.y != isDeepTrue(C.consistency.y)) console.log('y-axis cannot be shared.')
