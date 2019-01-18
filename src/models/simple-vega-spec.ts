@@ -4,7 +4,7 @@ export type Spec = {
   encoding: Encoding
 }
 export type Data = {
-  values: Object[]
+  values: object[]
 }
 export type Mark = 'bar';
 export type Encoding = {

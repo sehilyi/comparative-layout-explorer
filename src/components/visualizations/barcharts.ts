@@ -2,18 +2,18 @@ import {Spec} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
 import {CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN} from 'src/useful-factory/constants';
 import {uniqueValues} from 'src/useful-factory/utils';
-import {DATASET_ECOLI} from 'src/datasets/ecoli';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill} from '.';
+import {DATASET_MOVIES} from 'src/datasets/movies';
 
 export function getSimpleBarSpec(): Spec {
   return {
     data: {
-      values: DATASET_ECOLI.rawData
+      values: DATASET_MOVIES.rawData
     },
     mark: "bar",
     encoding: {
-      x: {field: "Result1", type: "ordinal"},
-      y: {field: "GSM535", type: "quantitative", aggregate: "max"}
+      x: {field: "MPAA_Rating", type: "ordinal"},
+      y: {field: "IMDB_Rating", type: "quantitative", aggregate: "max"}
     }
   }
 }

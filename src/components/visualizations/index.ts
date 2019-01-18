@@ -35,7 +35,9 @@ export function renderAxes(ref: SVGSVGElement, xval: string[] | number[], yval: 
       .range([0, CHART_SIZE.width]);
   const y =
     d3.scaleLinear()
-      .domain(d3.extent(yval as number[]) as [number, number]).nice()
+      .domain(
+        [d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]
+      ).nice()
       .rangeRound([CHART_SIZE.height, 0]);
 
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null);

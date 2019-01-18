@@ -13,7 +13,7 @@ import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {loadComparisionExamples as getScatterExamples} from 'src/models/example-maker';
 import {renderBarChart} from './visualizations/barcharts';
-import {DATASET_ECOLI} from 'src/datasets/ecoli';
+import {DATASET_MOVIES} from 'src/datasets/movies';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -56,24 +56,24 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     let onBarChartA = (ref: SVGSVGElement) => {
       renderBarChart(ref, {
         data: {
-          values: DATASET_ECOLI.rawData
+          values: DATASET_MOVIES.rawData
         },
         mark: "bar",
         encoding: {
-          x: {field: "Result1", type: "ordinal"},
-          y: {field: "GSM535", type: "quantitative", aggregate: "max"}
+          x: {field: "MPAA_Rating", type: "ordinal"},
+          y: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
         }
       });
     }
     let onBarChartB = (ref: SVGSVGElement) => {
       renderBarChart(ref, {
         data: {
-          values: DATASET_ECOLI.rawData
+          values: DATASET_MOVIES.rawData
         },
         mark: "bar",
         encoding: {
-          x: {field: "Result1", type: "ordinal"},
-          y: {field: "GSM535", type: "quantitative", aggregate: "min"}
+          x: {field: "MPAA_Rating", type: "ordinal"},
+          y: {field: "IMDB_Votes", type: "quantitative", aggregate: "mean"}
         }
       });
     }
