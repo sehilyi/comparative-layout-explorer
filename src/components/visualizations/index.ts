@@ -32,8 +32,8 @@ export function getAggValues(values: object[], keyField: string, valueField: str
     })
     .entries(values);
 }
-export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xval: string[] | number[], yval: string[] | number[], spec: Spec) {
-
+export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xval: string[] | number[], yval: string[] | number[], spec: Spec, style?: object) {
+  let noY = (typeof style != 'undefined' && style['noY']);
   // const g = d3.select(g).select('g');
   // const isXOrdinal = spec.encoding.x.type === 'ordinal', isYOrdinal = spec.encoding.y.type === 'ordinal';
 
@@ -102,26 +102,28 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
     .style('text-anchor', 'middle')
     .text(spec.encoding.x.field)
 
-  let yaxis = g.append('g')
-    .classed('axis', true)
-    .attr('stroke', '#888888')
-    .attr('stroke-width', 0.5)
-    .call(yAxis)
+  if (!noY) {
+    let yaxis = g.append('g')
+      .classed('axis', true)
+      .attr('stroke', '#888888')
+      .attr('stroke-width', 0.5)
+      .call(yAxis)
 
-  yaxis
-    .append('text')
-    .classed('label', true)
-    .attr('transform', 'rotate(-90)')
-    .attr('x', -CHART_SIZE.width / 2)
-    .attr('y', -50)
-    .attr('dy', '.71em')
-    .style('font-weight', 'bold')
-    .style('font-family', 'sans-serif')
-    .style('font-size', 11)
-    .style('fill', 'black')
-    .style('stroke', 'none')
-    .style('text-anchor', 'middle')
-    .text(spec.encoding.y.aggregate.toUpperCase() + '( ' + spec.encoding.y.field + ' )')
+    yaxis
+      .append('text')
+      .classed('label', true)
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -CHART_SIZE.width / 2)
+      .attr('y', -50)
+      .attr('dy', '.71em')
+      .style('font-weight', 'bold')
+      .style('font-family', 'sans-serif')
+      .style('font-size', 11)
+      .style('fill', 'black')
+      .style('stroke', 'none')
+      .style('text-anchor', 'middle')
+      .text(spec.encoding.y.aggregate.toUpperCase() + '( ' + spec.encoding.y.field + ' )')
+  }
 
   g.selectAll('.axis path')
     .attr('stroke-width', '1px')

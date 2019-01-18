@@ -6,4 +6,6 @@ export type CompSpec = {
 }
 export type CompType = "stack";
 export type CompDirection = "horizontal" | "vertical";
-export type Consistency = "y-axis";
+export type Consistency = {
+  y: boolean
+}

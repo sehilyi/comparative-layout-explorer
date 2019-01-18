@@ -6,7 +6,7 @@ import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAg
 import {DATASET_MOVIES} from 'src/datasets/movies';
 import {CompSpec} from 'src/models/comp-spec';
 
-export const BAR_GAP = 2;
+export const BAR_GAP = 2, BAR_CHART_GAP = 10;
 
 export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
@@ -27,13 +27,15 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       mark: "bar",
       encoding: {
         x: {field: "MPAA_Rating", type: "ordinal"},
-        y: {field: "IMDB_Votes", type: "quantitative", aggregate: "mean"}
+        y: {field: "IMDB_Rating", type: "quantitative", aggregate: "median"}
       }
     },
     C: {
       type: 'stack',
       direction: 'horizontal',
-      consistency: 'y-axis'
+      consistency: {
+        y: true
+      }
     }
   }
 }
