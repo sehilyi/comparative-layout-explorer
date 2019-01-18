@@ -34,6 +34,7 @@ export function getAggValues(values: object[], keyField: string, valueField: str
 }
 export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xval: string[] | number[], yval: string[] | number[], spec: Spec, style?: object) {
   let noY = (typeof style != 'undefined' && style['noY']);
+  let noX = (typeof style != 'undefined' && style['noX']);
   // const g = d3.select(g).select('g');
   // const isXOrdinal = spec.encoding.x.type === 'ordinal', isYOrdinal = spec.encoding.y.type === 'ordinal';
 
@@ -81,26 +82,28 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
     .classed('grid', true)
     .call(yGrid)
 
-  let xaxis = g.append('g')
-    .classed('axis', true)
-    .attr('stroke', '#888888')
-    .attr('stroke-width', 0.5)
-    .attr('transform', translate(0, CHART_SIZE.height))
-    .call(xAxis)
+  if (!noX) {
+    let xaxis = g.append('g')
+      .classed('axis', true)
+      .attr('stroke', '#888888')
+      .attr('stroke-width', 0.5)
+      .attr('transform', translate(0, CHART_SIZE.height))
+      .call(xAxis)
 
-  xaxis
-    .attr('transform', translate(0, CHART_SIZE.height))
-    .append('text')
-    .classed('label', true)
-    .attr('x', CHART_SIZE.width / 2)
-    .attr('y', CHART_MARGIN.bottom - 10)
-    .style('fill', 'black')
-    .style('stroke', 'none')
-    .style('font-weight', 'bold')
-    .style('font-family', 'sans-serif')
-    .style('font-size', 12 + 'px')
-    .style('text-anchor', 'middle')
-    .text(spec.encoding.x.field)
+    xaxis
+      .attr('transform', translate(0, CHART_SIZE.height))
+      .append('text')
+      .classed('label', true)
+      .attr('x', CHART_SIZE.width / 2)
+      .attr('y', CHART_MARGIN.bottom - 10)
+      .style('fill', 'black')
+      .style('stroke', 'none')
+      .style('font-weight', 'bold')
+      .style('font-family', 'sans-serif')
+      .style('font-size', 12 + 'px')
+      .style('text-anchor', 'middle')
+      .text(spec.encoding.x.field)
+  }
 
   if (!noY) {
     let yaxis = g.append('g')

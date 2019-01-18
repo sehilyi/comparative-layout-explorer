@@ -31,10 +31,17 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       }
     },
     C: {
-      type: 'stack',
-      direction: 'horizontal',
+      layout: 'stack',
+      direction: 'vertical',
       consistency: {
-        y: true
+        y: {
+          value: true,
+          mirrored: true
+        },
+        x: {
+          value: true,
+          mirrored: false
+        }
       }
     }
   }
