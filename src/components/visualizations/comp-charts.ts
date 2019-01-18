@@ -100,6 +100,7 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const barWidth = CHART_SIZE.width / groups.length - BAR_GAP;
     gB.attr(_transform, translate(transB.left, transB.top));
 
+    // TODO: generalize this part and put bar in the middle of the tick!
     gB.selectAll('bar')
       .data(aggValuesB)
       .enter().append(_rect)

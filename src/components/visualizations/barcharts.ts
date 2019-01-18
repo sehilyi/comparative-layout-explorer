@@ -6,7 +6,7 @@ import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAg
 import {DATASET_MOVIES} from 'src/datasets/movies';
 import {CompSpec} from 'src/models/comp-spec';
 
-export const BAR_GAP = 2, BAR_CHART_GAP = 10;
+export const BAR_GAP = 2, BAR_CHART_GAP = 10, MAX_BAR_WIDTH = 30;
 
 export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
@@ -65,14 +65,15 @@ export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
     .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
   const {x, y} = renderAxes(gAxis, groups, aggValues.map(d => d.value), spec);
 
-  const barWidth = CHART_SIZE.width / groups.length - BAR_GAP;
+  const bandUnitSize = CHART_SIZE.width / groups.length;
+  const barWidth = d3.min([CHART_SIZE.width / groups.length - BAR_GAP, MAX_BAR_WIDTH]);
 
   g.selectAll('bar')
     .data(aggValues)
     .enter().append(_rect)
     .classed('bar', true)
     .attr(_y, d => CHART_MARGIN.top + y(d.value))
-    .attr(_x, d => CHART_MARGIN.left + x(d.key) + 1)
+    .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
     .attr(_width, barWidth)
     .attr(_height, d => CHART_SIZE.height - y(d.value))
     .attr(_fill, '#006994')
