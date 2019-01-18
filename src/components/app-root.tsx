@@ -12,8 +12,8 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {loadComparisionExamples as getScatterExamples} from 'src/models/example-maker';
-import {renderBarChart} from './visualizations/barcharts';
-import {DATASET_MOVIES} from 'src/datasets/movies';
+import {renderBarChart, getSimpleBarSpecs} from './visualizations/barcharts';
+import {renderCompChart} from './visualizations/comp-charts';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -53,29 +53,15 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     //     f2: DATASET_ECOLI.fields[2]
     //   })
     // }
+    const {A, B, C} = getSimpleBarSpecs();
     let onBarChartA = (ref: SVGSVGElement) => {
-      renderBarChart(ref, {
-        data: {
-          values: DATASET_MOVIES.rawData
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "MPAA_Rating", type: "ordinal"},
-          y: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
-        }
-      });
+      renderBarChart(ref, A);
     }
     let onBarChartB = (ref: SVGSVGElement) => {
-      renderBarChart(ref, {
-        data: {
-          values: DATASET_MOVIES.rawData
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "MPAA_Rating", type: "ordinal"},
-          y: {field: "IMDB_Votes", type: "quantitative", aggregate: "mean"}
-        }
-      });
+      renderBarChart(ref, B);
+    }
+    let onBarChartAPlusB = (ref: SVGSVGElement) => {
+      renderCompChart(ref, A, B, C)
     }
     return (
       <div className='app-root'>
@@ -88,25 +74,27 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
           {/* viz-subtlety-highlighter */}
         </div>
         <div className='control-pane'>
-
+          <textarea>
+            {JSON.stringify(C, null, '\t')}
+          </textarea>
         </div>
         <div className='main-pane'>
           {/* <h1>Design</h1>
           <div className='result-group test'>
             <div className='chart'>
-              <h2>Preview</h2>
-              <svg ref={onPreviewRef}></svg>
-            </div>
-            <div className='chart'>
-              <h2>Configure</h2>
-              <div className='option-panel'></div>
+              <div className='option-panel'>
+
+              </div>
             </div>
           </div> */}
           <h1>Bar Charts</h1>
           <div className='example-element'>
             <div className='result-group'>
               <div className='chart'><svg ref={onBarChartA}></svg></div>
+              <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /></div>
               <div className='chart'><svg ref={onBarChartB}></svg></div>
+              <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' /></div>
+              <div className='onBarChartAPlusB'><svg ref={onBarChartAPlusB}></svg></div>
             </div>
           </div>
           <h1>Scatterplots</h1>

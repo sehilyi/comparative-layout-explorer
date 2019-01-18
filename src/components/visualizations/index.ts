@@ -1,17 +1,40 @@
-import {Spec} from 'src/models/simple-vega-spec';
+import {Spec, Aggregate} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
 import {CHART_SIZE, CHART_MARGIN} from 'src/useful-factory/constants';
 import {translate} from 'src/useful-factory/utils';
 
-export const _width = 'width', _height = 'height', _fill = 'fill', _color = 'color', _g = 'g', _rect = 'rect', _x = 'x', _y = 'y';
+export const _width = 'width', _height = 'height', _fill = 'fill', _color = 'color', _transform = 'transform', _g = 'g', _rect = 'rect', _x = 'x', _y = 'y';
 
 export function isBarChart(spec: Spec) {
   return spec.encoding.x.type === 'ordinal' && spec.encoding.y.type === 'quantitative';
 }
 
-export function renderAxes(ref: SVGSVGElement, xval: string[] | number[], yval: string[] | number[], spec: Spec) {
+export function getAggValues(values: object[], keyField: string, valueField: string, aggregate: Aggregate) {
+  return d3.nest()
+    .key(d => d[keyField])
+    .rollup(function (d) {
+      switch (aggregate) {
+        case 'sum':
+          return d3.sum(d, _d => _d[valueField]) as undefined; // what's wrong when undefined removed?
+        case 'mean':
+          return d3.mean(d, _d => _d[valueField]) as undefined;
+        case 'median':
+          return d3.median(d, _d => _d[valueField]) as undefined;
+        case 'min':
+          return d3.min(d, _d => _d[valueField]) as undefined;
+        case 'max':
+          return d3.max(d, _d => _d[valueField]) as undefined;
+        case 'count':
+          return d.length as undefined;
+        default:
+          return d3.sum(d, _d => _d[valueField]) as undefined;
+      }
+    })
+    .entries(values);
+}
+export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xval: string[] | number[], yval: string[] | number[], spec: Spec) {
 
-  const g = d3.select(ref).select('g');
+  // const g = d3.select(g).select('g');
   // const isXOrdinal = spec.encoding.x.type === 'ordinal', isYOrdinal = spec.encoding.y.type === 'ordinal';
 
   // const x = isXOrdinal ?
@@ -50,24 +73,23 @@ export function renderAxes(ref: SVGSVGElement, xval: string[] | number[], yval: 
   if (!isBarChart(spec)) {
     g.append('g')
       .classed('grid', true)
-      .attr('transform', translate(CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top))
+      .attr('transform', translate(0, CHART_SIZE.height))
       .call(xGrid)
   }
 
   g.append('g')
     .classed('grid', true)
-    .attr('transform', translate(CHART_MARGIN.left, CHART_MARGIN.top))
     .call(yGrid)
 
   let xaxis = g.append('g')
     .classed('axis', true)
     .attr('stroke', '#888888')
     .attr('stroke-width', 0.5)
-    .attr('transform', translate(CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top))
+    .attr('transform', translate(0, CHART_SIZE.height))
     .call(xAxis)
 
   xaxis
-    .attr('transform', translate(CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top))
+    .attr('transform', translate(0, CHART_SIZE.height))
     .append('text')
     .classed('label', true)
     .attr('x', CHART_SIZE.width / 2)
@@ -84,11 +106,9 @@ export function renderAxes(ref: SVGSVGElement, xval: string[] | number[], yval: 
     .classed('axis', true)
     .attr('stroke', '#888888')
     .attr('stroke-width', 0.5)
-    .attr('transform', translate(CHART_MARGIN.left, CHART_MARGIN.top))
     .call(yAxis)
 
   yaxis
-    .attr('transform', translate(CHART_MARGIN.left, CHART_MARGIN.top))
     .append('text')
     .classed('label', true)
     .attr('transform', 'rotate(-90)')
