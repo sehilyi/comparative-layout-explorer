@@ -1,7 +1,7 @@
 import {Spec, Aggregate} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
-import {CHART_SIZE, CHART_MARGIN} from 'src/useful-factory/constants';
 import {translate} from 'src/useful-factory/utils';
+import {CHART_SIZE, CHART_MARGIN} from './design-settings';
 
 export const _width = 'width', _height = 'height', _fill = 'fill', _color = 'color', _transform = 'transform', _g = 'g', _rect = 'rect', _x = 'x', _y = 'y';
 

@@ -1,12 +1,10 @@
 import {Spec} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
-import {CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN} from 'src/useful-factory/constants';
 import {uniqueValues, translate} from 'src/useful-factory/utils';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues} from '.';
 import {DATASET_MOVIES} from 'src/datasets/movies';
 import {CompSpec} from 'src/models/comp-spec';
-
-export const BAR_GAP = 2, BAR_CHART_GAP = 10, MAX_BAR_WIDTH = 30;
+import {BAR_GAP, MAX_BAR_WIDTH, CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE} from './design-settings';
 
 export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {

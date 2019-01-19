@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 
-import {CHART_SIZE, CHART_TOTAL_SIZE, CHART_MARGIN} from 'src/useful-factory/constants';
 import {translate} from 'src/useful-factory/utils';
 import {FieldPair} from 'src/models/dataset';
 import {svgAsImageData} from './svg-as-png';
 import {ScatterPlotOptions, DEFAULT_SCATTERPLOT_OPTIONS} from './design-options';
 import {HighlightOptions} from './highlight-options';
+import {CHART_SIZE, CHART_TOTAL_SIZE, CHART_MARGIN} from './design-settings';
 
 export function renderScatterplot(ref: SVGSVGElement, dfp: FieldPair, options: ScatterPlotOptions = DEFAULT_SCATTERPLOT_OPTIONS, highlight?: HighlightOptions) {
 

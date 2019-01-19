@@ -2,9 +2,8 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import d3 = require("d3");
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x} from ".";
-import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE} from "src/useful-factory/constants";
 import {uniqueValues, translate} from "src/useful-factory/utils";
-import {BAR_GAP, BAR_CHART_GAP} from "./barcharts";
+import {BAR_CHART_GAP, BAR_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN} from "./design-settings";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();

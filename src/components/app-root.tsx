@@ -6,7 +6,6 @@ import {Dispatch} from 'redux';
 import {CompCasesLoad, loadCompCases, COMP_CASES_LOAD, CompCasesImageDataLoad, onCompCaseImgDataLoad, Action, COMP_CASES_IMAGE_DATA_LOAD} from '../actions';
 import {renderScatterplot} from './visualizations/scatterplots';
 import {CompareCase, ScatterPlot} from 'src/models/dataset';
-import {CHART_TOTAL_SIZE} from 'src/useful-factory/constants';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
@@ -14,6 +13,7 @@ import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRig
 import {loadComparisionExamples as getScatterExamples} from 'src/models/example-maker';
 import {renderBarChart, getSimpleBarSpecs} from './visualizations/barcharts';
 import {renderCompChart} from './visualizations/comp-charts';
+import {CHART_TOTAL_SIZE} from './visualizations/design-settings';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -95,7 +95,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
               <div className='onBarChartAPlusB'><svg ref={onBarChartAPlusB}></svg></div>
             </div>
           </div>
-          <h1>Scatterplots</h1>
+          {/* <h1>Scatterplots</h1> */}
           {Results}
           {/* canvas2img. this should be invisible to users */}
           <div hidden>

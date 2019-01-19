@@ -1,6 +1,6 @@
 import * as canvg from 'canvg-client';
 import ImageSSIM from 'src/metrics/ssim';
-import { CHART_TOTAL_SIZE } from 'src/useful-factory/constants';
+import { CHART_TOTAL_SIZE } from './design-settings';
 
 export function svgAsImageData(cid, svgid) {
   canvg(document.getElementById(cid), svgid);
