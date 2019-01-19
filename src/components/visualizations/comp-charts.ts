@@ -3,7 +3,7 @@ import {CompSpec} from "src/models/comp-spec";
 import d3 = require("d3");
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x} from ".";
 import {uniqueValues, translate} from "src/useful-factory/utils";
-import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, BAR_COLOR, getBarWidth} from "./design-settings";
+import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, BAR_COLOR, getBarWidth, BAR_COLOR2} from "./design-settings";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();
@@ -11,7 +11,10 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
   d3.select(ref).append(_g);
 
   switch (C.layout) {
-    case 'stack': renderStackChart(ref, A, B, C); break;
+    case 'stack':
+      if (C.unit === 'chart') renderStackChart(ref, A, B, C);
+      else if (C.unit === 'element') renderStackChartElement(ref, A, B, C);
+      break;
     default: renderStackChart(ref, A, B, C); break;
   }
 }
@@ -114,6 +117,52 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       .attr(_height, d => (revY ? y(d.value) : CHART_SIZE.height - y(d.value)))
       .attr(_fill, BAR_COLOR)
   }
+}
+
+function renderStackChartElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+  if (C.direction === 'horizontal') {
+    d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height)
+    d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width * 2)
+  }
+  else if (C.direction === 'vertical') {
+    d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width)
+    d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height)// * 2)
+  }
+
+  const gA = d3.select(ref).append(_g);
+  const {values: valsA} = A.data, {values: valsB} = B.data;
+  const {aggregate: aggrA} = A.encoding.y, {aggregate: aggrB} = B.encoding.y;
+  const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, aggrA);
+  const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, aggrB);
+  const aggValuesAPlusB = getAggValues(aggValuesA.concat(aggValuesB), "key", "value", 'sum');
+
+  const gAAxis = gA.append(_g)
+    .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+  const groups = uniqueValues(valsA, A.encoding.x.field);
+  const height = CHART_SIZE.height;
+  const {x, y} = renderAxes(gAAxis, groups, aggValuesAPlusB.map(d => d.value), A, {height}); // TODO: more smart axis name
+
+  const bandUnitSize = CHART_SIZE.width / groups.length;
+  const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
+  gA.selectAll('bar')
+    .data(aggValuesA)
+    .enter().append(_rect)
+    .classed('bar', true)
+    .attr(_y, d => CHART_MARGIN.top + y(d.value))
+    .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
+    .attr(_width, barWidth)
+    .attr(_height, d => height - y(d.value))
+    .attr(_fill, BAR_COLOR)
+
+  gA.selectAll('bar')
+    .data(aggValuesB)
+    .enter().append(_rect)
+    .classed('bar', true)
+    .attr(_y, d => CHART_MARGIN.top + y(d.value) - height + y(aggValuesA.filter(_d => _d.key === d.key)[0].value))
+    .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
+    .attr(_width, barWidth)
+    .attr(_height, d => height - y(d.value))
+    .attr(_fill, BAR_COLOR2)
 }
 
 export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {

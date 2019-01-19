@@ -18,6 +18,7 @@ export const BAR_CHART_GAP = 10;
 export const MAX_BAR_WIDTH = 30;
 
 export const BAR_COLOR = '#006994';
+export const BAR_COLOR2 = '#1133AA';
 
 export function getBarWidth(cw: number, n: number) {
   return d3.min([cw / n - BAR_GAP, MAX_BAR_WIDTH])
@@ -49,15 +50,10 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     C: {
       layout: 'stack',
       direction: 'vertical',
+      unit: "element",
       consistency: {
-        y: {
-          value: true,
-          mirrored: true
-        },
-        x: {
-          value: true,
-          mirrored: false
-        }
+        y: false,
+        x: false
       }
     }
   }
