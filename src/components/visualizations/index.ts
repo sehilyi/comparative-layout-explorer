@@ -69,8 +69,8 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
 
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null);
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(d3.format('.2s'));
-  let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
-  let yGrid = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(null).tickSize(-ch);
+  let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-ch);
+  let yGrid = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
 
   g.classed('g', true);
 

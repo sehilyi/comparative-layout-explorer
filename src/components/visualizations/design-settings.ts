@@ -4,7 +4,7 @@ import {DATASET_MOVIES} from "src/datasets/movies";
 import d3 = require("d3");
 
 // general
-export const CHART_SIZE = {width: 170, height: 170}; // {width: 200, height: 200};
+export const CHART_SIZE = {width: 220, height: 200};
 export const CHART_MARGIN = {top: 10, right: 20, bottom: 40, left: 50};
 export const CHART_PADDING = {right: 20};
 export const CHART_TOTAL_SIZE = {
@@ -13,12 +13,12 @@ export const CHART_TOTAL_SIZE = {
 }
 
 // bar
-export const BAR_GAP = 2;
+export const BAR_GAP = 6;
 export const BAR_CHART_GAP = 10;
 export const MAX_BAR_WIDTH = 30;
 
 export const BAR_COLOR = '#006994';
-export const BAR_COLOR2 = '#1133AA';
+export const BAR_COLOR2 = '#94001f';
 
 export function getBarWidth(cw: number, n: number) {
   return d3.min([cw / n - BAR_GAP, MAX_BAR_WIDTH])
@@ -49,7 +49,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     },
     C: {
       layout: 'stack',
-      direction: 'vertical',
+      direction: "horizontal",
       unit: "element",
       consistency: {
         y: false,

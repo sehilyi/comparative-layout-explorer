@@ -120,14 +120,9 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 }
 
 function renderStackChartElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  if (C.direction === 'horizontal') {
-    d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height)
-    d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width * 2)
-  }
-  else if (C.direction === 'vertical') {
-    d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width)
-    d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height)// * 2)
-  }
+  // stacked bar
+  d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width)
+  d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height)
 
   const gA = d3.select(ref).append(_g);
   const {values: valsA} = A.data, {values: valsB} = B.data;
@@ -135,34 +130,59 @@ function renderStackChartElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSp
   const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, aggrA);
   const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, aggrB);
   const aggValuesAPlusB = getAggValues(aggValuesA.concat(aggValuesB), "key", "value", 'sum');
+  const yDomain = C.direction === "vertical" ? aggValuesAPlusB : aggValuesA.concat(aggValuesB);
 
   const gAAxis = gA.append(_g)
     .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
   const groups = uniqueValues(valsA, A.encoding.x.field);
   const height = CHART_SIZE.height;
-  const {x, y} = renderAxes(gAAxis, groups, aggValuesAPlusB.map(d => d.value), A, {height}); // TODO: more smart axis name
+  const {x, y} = renderAxes(gAAxis, groups, yDomain.map(d => d.value), A, {height}); // TODO: more smart axis name
 
   const bandUnitSize = CHART_SIZE.width / groups.length;
   const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
-  gA.selectAll('bar')
-    .data(aggValuesA)
-    .enter().append(_rect)
-    .classed('bar', true)
-    .attr(_y, d => CHART_MARGIN.top + y(d.value))
-    .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
-    .attr(_width, barWidth)
-    .attr(_height, d => height - y(d.value))
-    .attr(_fill, BAR_COLOR)
 
-  gA.selectAll('bar')
-    .data(aggValuesB)
-    .enter().append(_rect)
-    .classed('bar', true)
-    .attr(_y, d => CHART_MARGIN.top + y(d.value) - height + y(aggValuesA.filter(_d => _d.key === d.key)[0].value))
-    .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
-    .attr(_width, barWidth)
-    .attr(_height, d => height - y(d.value))
-    .attr(_fill, BAR_COLOR2)
+  if (C.direction === "vertical") {
+    gA.selectAll('bar')
+      .data(aggValuesA)
+      .enter().append(_rect)
+      .classed('bar', true)
+      .attr(_y, d => CHART_MARGIN.top + y(d.value))
+      .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
+      .attr(_width, barWidth)
+      .attr(_height, d => height - y(d.value))
+      .attr(_fill, BAR_COLOR)
+
+    gA.selectAll('bar')
+      .data(aggValuesB)
+      .enter().append(_rect)
+      .classed('bar', true)
+      .attr(_y, d => CHART_MARGIN.top + y(d.value) - height + y(aggValuesA.filter(_d => _d.key === d.key)[0].value))
+      .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
+      .attr(_width, barWidth)
+      .attr(_height, d => height - y(d.value))
+      .attr(_fill, BAR_COLOR2)
+  }
+  else if (C.direction === "horizontal") {
+    gA.selectAll('bar')
+      .data(aggValuesA)
+      .enter().append(_rect)
+      .classed('bar', true)
+      .attr(_y, d => CHART_MARGIN.top + y(d.value))
+      .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
+      .attr(_width, barWidth / 2.0)
+      .attr(_height, d => height - y(d.value))
+      .attr(_fill, BAR_COLOR)
+
+    gA.selectAll('bar')
+      .data(aggValuesB)
+      .enter().append(_rect)
+      .classed('bar', true)
+      .attr(_y, d => CHART_MARGIN.top + y(d.value))
+      .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0)
+      .attr(_width, barWidth / 2.0)
+      .attr(_height, d => height - y(d.value))
+      .attr(_fill, BAR_COLOR2)
+  }
 }
 
 export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
