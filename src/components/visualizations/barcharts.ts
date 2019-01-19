@@ -2,7 +2,7 @@ import {Spec} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
 import {uniqueValues, translate} from 'src/useful-factory/utils';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues} from '.';
-import {BAR_GAP, MAX_BAR_WIDTH, CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE} from './design-settings';
+import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth} from './design-settings';
 
 export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
@@ -23,8 +23,7 @@ export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
   const {x, y} = renderAxes(gAxis, groups, aggValues.map(d => d.value), spec);
 
   const bandUnitSize = CHART_SIZE.width / groups.length;
-  const barWidth = d3.min([CHART_SIZE.width / groups.length - BAR_GAP, MAX_BAR_WIDTH]);
-
+  const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
   g.selectAll('bar')
     .data(aggValues)
     .enter().append(_rect)

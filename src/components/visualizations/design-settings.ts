@@ -1,6 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
+import d3 = require("d3");
 
 // general
 export const CHART_SIZE = {width: 170, height: 170}; // {width: 200, height: 200};
@@ -17,6 +18,10 @@ export const BAR_CHART_GAP = 10;
 export const MAX_BAR_WIDTH = 30;
 
 export const BAR_COLOR = '#006994';
+
+export function getBarWidth(cw: number, n: number) {
+  return d3.min([cw / n - BAR_GAP, MAX_BAR_WIDTH])
+}
 
 // test
 export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
@@ -51,7 +56,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
         },
         x: {
           value: true,
-          mirrored: true
+          mirrored: false
         }
       }
     }

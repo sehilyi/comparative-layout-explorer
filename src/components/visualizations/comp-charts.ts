@@ -3,7 +3,7 @@ import {CompSpec} from "src/models/comp-spec";
 import d3 = require("d3");
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x} from ".";
 import {uniqueValues, translate} from "src/useful-factory/utils";
-import {BAR_CHART_GAP, BAR_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, BAR_COLOR} from "./design-settings";
+import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, BAR_COLOR, getBarWidth} from "./design-settings";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();
@@ -17,8 +17,7 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 }
 
 function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-
-  const {...consistency} = getXYConsistency(A, B, C);
+  const {...consistency} = getConsistencySpec(A, B, C);
 
   // determine svg size by direction and consistency
   // consistency reduce gap between charts
@@ -75,13 +74,14 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const noX = consistency.x && C.direction === 'vertical' && !consistency.x_mirrored;
     const {x, y} = renderAxes(gAAxis, groups, yDomain.map(d => d.value), A, {noX});
 
-    const barWidth = CHART_SIZE.width / groups.length - BAR_GAP;
+    const bandUnitSize = CHART_SIZE.width / groups.length;
+    const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
     gA.selectAll('bar')
       .data(aggValuesA)
       .enter().append(_rect)
       .classed('bar', true)
       .attr(_y, d => CHART_MARGIN.top + y(d.value))
-      .attr(_x, d => CHART_MARGIN.left + x(d.key) + 1)
+      .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
       .attr(_width, barWidth)
       .attr(_height, d => CHART_SIZE.height - y(d.value))
       .attr(_fill, BAR_COLOR)
@@ -99,23 +99,24 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const revX = consistency.x_mirrored;
 
     const {x, y} = renderAxes(gBAxis, groups, yDomain.map(d => d.value), B, {noY, revX, revY});
-    const barWidth = CHART_SIZE.width / groups.length - BAR_GAP;
     gB.attr(_transform, translate(transB.left, transB.top));
 
+    const bandUnitSize = CHART_SIZE.width / groups.length;
+    const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
     // TODO: generalize this part and put bar in the middle of the tick!
     gB.selectAll('bar')
       .data(aggValuesB)
       .enter().append(_rect)
       .classed('bar', true)
       .attr(_y, d => revY ? 0 : y(d.value))
-      .attr(_x, d => x(d.key) + 1)
+      .attr(_x, d => x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
       .attr(_width, barWidth)
       .attr(_height, d => (revY ? y(d.value) : CHART_SIZE.height - y(d.value)))
       .attr(_fill, BAR_COLOR)
   }
 }
 
-export function getXYConsistency(A: Spec, B: Spec, C: CompSpec) {
+export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
   const cons = {
     x: (isDeepTrue(C.consistency.x) &&
       A.encoding.x.field === B.encoding.x.field &&
