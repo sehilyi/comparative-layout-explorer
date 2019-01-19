@@ -11,9 +11,9 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {loadComparisionExamples as getScatterExamples} from 'src/models/example-maker';
-import {renderBarChart, getSimpleBarSpecs} from './visualizations/barcharts';
+import {renderBarChart} from './visualizations/barcharts';
 import {renderCompChart} from './visualizations/comp-charts';
-import {CHART_TOTAL_SIZE} from './visualizations/design-settings';
+import {CHART_TOTAL_SIZE, getSimpleBarSpecs} from './visualizations/design-settings';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {

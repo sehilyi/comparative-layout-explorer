@@ -1,7 +1,7 @@
 // TODO: add spec defaults
 export type CompSpec = {
   layout: CompType
-  mirrored?: boolean  // TODO: remove and remain this in Consistency_Y?
+  mirrored?: boolean  // TODO: I think this should be remained and remove in AxisConsistency
   direction?: CompDirection
   consistency: Consistency
 }

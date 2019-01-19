@@ -2,48 +2,7 @@ import {Spec} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
 import {uniqueValues, translate} from 'src/useful-factory/utils';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues} from '.';
-import {DATASET_MOVIES} from 'src/datasets/movies';
-import {CompSpec} from 'src/models/comp-spec';
 import {BAR_GAP, MAX_BAR_WIDTH, CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE} from './design-settings';
-
-export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
-  return {
-    A: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "bar",
-      encoding: {
-        x: {field: "MPAA_Rating", type: "ordinal"},
-        y: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
-      }
-    },
-    B: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "bar",
-      encoding: {
-        x: {field: "MPAA_Rating", type: "ordinal"},
-        y: {field: "IMDB_Rating", type: "quantitative", aggregate: "median"}
-      }
-    },
-    C: {
-      layout: 'stack',
-      direction: 'vertical',
-      consistency: {
-        y: {
-          value: true,
-          mirrored: true
-        },
-        x: {
-          value: true,
-          mirrored: false
-        }
-      }
-    }
-  }
-}
 
 export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
