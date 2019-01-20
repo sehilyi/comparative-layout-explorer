@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import d3 = require("d3");
-import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x} from ".";
+import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width} from ".";
 import {uniqueValues, translate} from "src/useful-factory/utils";
 import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, BAR_COLOR, getBarWidth, BAR_COLOR2} from "./design-settings";
 

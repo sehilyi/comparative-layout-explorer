@@ -1,9 +1,13 @@
 import {Spec, Aggregate} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
 import {translate} from 'src/useful-factory/utils';
-import {CHART_SIZE, CHART_MARGIN} from './design-settings';
+import {CHART_SIZE, CHART_MARGIN, DEFAULT_FONT} from './design-settings';
 
-export const _width = 'width', _height = 'height', _fill = 'fill', _color = 'color', _transform = 'transform', _g = 'g', _rect = 'rect', _x = 'x', _y = 'y';
+export const _width = 'width', _height = 'height',
+  _fill = 'fill', _color = 'color',
+  _transform = 'transform', _g = 'g', _rect = 'rect',
+  _x = 'x', _y = 'y',
+  _stroke = "stroke", _stroke_width = "stroke-width";
 
 export function isBarChart(spec: Spec) {
   return spec.encoding.x.type === 'ordinal' && spec.encoding.y.type === 'quantitative';
@@ -67,7 +71,7 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       ).nice()
       .rangeRound(revY ? [0, ch] : [ch, 0]);
 
-  let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null);
+  let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(d => d.length > 5 ? d.slice(0, 4).concat('...') : d).tickSizeOuter(0);
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(d3.format('.2s'));
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-ch);
   let yGrid = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
@@ -98,19 +102,17 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       .append('text')
       .classed('label', true)
       .attr('x', CHART_SIZE.width / 2)
-      .attr('y', CHART_MARGIN.bottom - 10)
+      .attr('y', CHART_MARGIN.bottom - 5)
       .style('fill', 'black')
       .style('stroke', 'none')
       .style('font-weight', 'bold')
-      .style('font-family', 'sans-serif')
-      .style('font-size', 12 + 'px')
       .style('text-anchor', 'middle')
       .text(spec.encoding.x.field)
   }
 
   if (!noY) {
     let yaxis = g.append('g')
-      .classed('axis', true)
+      .classed('axis y-axis', true)
       .attr('stroke', '#888888')
       .attr('stroke-width', 0.5)
       .call(yAxis)
@@ -120,33 +122,37 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       .classed('label', true)
       .attr('transform', 'rotate(-90)')
       .attr('x', -ch / 2)
-      .attr('y', -50)
+      .attr('y', -45)
       .attr('dy', '.71em')
       .style('font-weight', 'bold')
-      .style('font-family', 'sans-serif')
-      .style('font-size', 11)
       .style('fill', 'black')
       .style('stroke', 'none')
       .style('text-anchor', 'middle')
-      .text(spec.encoding.y.aggregate.toUpperCase() + '( ' + spec.encoding.y.field + ' )')
+      .text(spec.encoding.y.aggregate + ' ' + spec.encoding.y.field + '')
   }
 
   g.selectAll('.axis path')
     .attr('stroke-width', '1px')
     .attr('stroke', 'black')
 
+  g.selectAll('.y-axis path')
+    .attr('stroke-width', '0px')
+    .attr('stroke', 'black')
+
   g.selectAll('.axis line')
-    .attr('stroke-width', '1px')
+    .attr('stroke-width', '0px')  // removed
     .attr('stroke', 'black')
 
   g.selectAll('.axis text')
     .style('stroke-width', '0')
     .style('stroke', 'none')
     .attr('fill', 'black')
-    .attr('font-family', 'Roboto')
+    .style('font-size', '12px')
+    .attr('font-family', DEFAULT_FONT)
 
+  // axis name
   g.selectAll('.axis .label')
-    .style('font-size', '11px')
+    .style('font-size', '12px')
 
   g.selectAll('.grid text')
     .style('display', 'none')
@@ -155,9 +161,10 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
     .attr('stroke', 'rgb(221, 221, 221)')
     .attr('stroke-width', '1px')
 
+  // y-axis line
   g.selectAll('.grid path')
     .attr('stroke', 'rgb(221, 221, 221)')
-    .attr('stroke-width', '1px')
+    .attr('stroke-width', '0px')
 
   return {x, y};
 }

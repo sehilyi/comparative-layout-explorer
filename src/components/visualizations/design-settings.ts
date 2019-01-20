@@ -4,19 +4,21 @@ import {DATASET_MOVIES} from "src/datasets/movies";
 import d3 = require("d3");
 
 // general
-export const CHART_SIZE = {width: 220, height: 200};
+export const CHART_SIZE = {width: 230, height: 200};
 export const CHART_MARGIN = {top: 10, right: 20, bottom: 40, left: 50};
 export const CHART_PADDING = {right: 20};
 export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,
   height: CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom
 }
-export const CATEGORICAL_COLORS = ['#4E79A7', '#F28E2B', '#E15759',
-  '#76B7B2', '#59A14E', '#EDC949',
-  '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC'];
+export const CATEGORICAL_COLORS =
+  ['#4E79A7', '#F28E2B', '#E15759',
+    '#76B7B2', '#59A14E', '#EDC949',
+    '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC'];
+export const DEFAULT_FONT = "Roboto Condensed";
 
 // bar
-export const BAR_GAP = 6;
+export const BAR_GAP = 10;
 export const BAR_CHART_GAP = 10;
 export const MAX_BAR_WIDTH = 30;
 
@@ -55,11 +57,11 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     },
     C: {
       layout: 'stack',
-      direction: "horizontal",
-      unit: "element",
+      direction: "vertical",
+      unit: "chart",
       consistency: {
-        y: false,
-        x: false
+        y: {value: true, mirrored: true},
+        x: true
       }
     }
   }
