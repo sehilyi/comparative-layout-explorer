@@ -11,7 +11,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {loadComparisionExamples as getScatterExamples} from 'src/models/example-maker';
-import {renderBarChart} from './visualizations/barcharts';
+import {renderSingleBarChart} from './visualizations/barcharts';
 import {renderCompChart} from './visualizations/comp-charts';
 import {CHART_TOTAL_SIZE, getSimpleBarSpecs} from './visualizations/design-settings';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
@@ -55,10 +55,10 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     // }
     const {A, B, C} = getSimpleBarSpecs();
     let onBarChartA = (ref: SVGSVGElement) => {
-      renderBarChart(ref, A);
+      renderSingleBarChart(ref, A);
     }
     let onBarChartB = (ref: SVGSVGElement) => {
-      renderBarChart(ref, B);
+      renderSingleBarChart(ref, B);
     }
     let onBarChartAPlusB = (ref: SVGSVGElement) => {
       renderCompChart(ref, A, B, C)
