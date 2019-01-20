@@ -1,10 +1,10 @@
 // TODO: add spec defaults
 export type CompSpec = {
   layout: CompType
-  mirrored?: boolean  // TODO: I think this should be remained and remove in AxisConsistency
-  direction?: CompDirection
-  unit?: CompLevel
-  consistency: Consistency
+  mirrored?: boolean  // TODO: should this be remained here and remove in AxisConsistency?
+  direction?: CompDirection // related: stack operations
+  unit?: CompLevel  // related: stack operations
+  consistency: Consistency  // related: chart-wise stack operations
 }
 export type CompType = "stack"
 export type CompDirection = "horizontal" | "vertical"
@@ -16,5 +16,5 @@ export type Consistency = {
 }
 export type AxisConsistency = {
   value: boolean
-  mirrored: boolean
+  mirrored: boolean // related: chart-wise stack operations
 }
