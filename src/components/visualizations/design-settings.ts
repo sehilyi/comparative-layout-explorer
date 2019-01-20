@@ -35,14 +35,16 @@ export function getBarColor(n: number) {
 // test
 export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
+    // https://vega.github.io/vega-lite/examples/
     A: {
       data: {
         values: DATASET_MOVIES.rawData
       },
       mark: "bar",
       encoding: {
-        x: {field: "MPAA_Rating", type: "ordinal"},
-        y: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "IMDB_Votes", type: "quantitative", aggregate: "mean"},
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     B: {
@@ -51,8 +53,8 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "MPAA_Rating", type: "ordinal"},
-        y: {field: "IMDB_Rating", type: "quantitative", aggregate: "median"}
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "IMDB_Votes", type: "quantitative", aggregate: "median"}
       }
     },
     C: {
@@ -61,7 +63,8 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       unit: "chart",
       consistency: {
         y: {value: true, mirrored: true},
-        x: true
+        x: {value: true, mirrored: false},
+        color: false
       }
     }
   }

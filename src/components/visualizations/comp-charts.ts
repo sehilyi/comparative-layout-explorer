@@ -3,7 +3,8 @@ import {CompSpec} from "src/models/comp-spec";
 import d3 = require("d3");
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width} from ".";
 import {uniqueValues, translate} from "src/useful-factory/utils";
-import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, BAR_COLOR, getBarWidth, BAR_COLOR2} from "./design-settings";
+import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, BAR_COLOR, getBarWidth, BAR_COLOR2, getBarColor} from "./design-settings";
+import {isUndefined} from "util";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();
@@ -67,6 +68,7 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {aggregate: aggrA} = A.encoding.y, {aggregate: aggrB} = B.encoding.y;
   const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, aggrA);
   const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, aggrB);
+  const groupsAPlusB = uniqueValues(valsA.concat(valsB), A.encoding.x.field);
 
   /// A
   {
@@ -76,6 +78,10 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const yDomain = consistency.y ? aggValuesA.concat(aggValuesB) : aggValuesA;
     const noX = consistency.x && C.direction === 'vertical' && !consistency.x_mirrored;
     const {x, y} = renderAxes(gAAxis, groups, yDomain.map(d => d.value), A, {noX});
+    const isColorUsed = !isUndefined(A.encoding.color);
+    const c = d3.scaleOrdinal() // TODO: organize this part
+      .domain(consistency.color ? groupsAPlusB : groups)
+      .range(getBarColor(consistency.color ? groupsAPlusB.length : isColorUsed ? groups.length : 1));
 
     const bandUnitSize = CHART_SIZE.width / groups.length;
     const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
@@ -87,7 +93,7 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
       .attr(_width, barWidth)
       .attr(_height, d => CHART_SIZE.height - y(d.value))
-      .attr(_fill, BAR_COLOR)
+      .attr(_fill, d => c(d.value) as string)
   }
 
   /// B
@@ -102,11 +108,15 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const revX = consistency.x_mirrored;
 
     const {x, y} = renderAxes(gBAxis, groups, yDomain.map(d => d.value), B, {noY, revX, revY});
+    const isColorUsed = !isUndefined(B.encoding.color);
+    const c = d3.scaleOrdinal() // TODO: organize this part
+      .domain(consistency.color ? groupsAPlusB : groups)
+      .range(getBarColor(consistency.color ? groupsAPlusB.length : isColorUsed ? groups.length : 1));
     gB.attr(_transform, translate(transB.left, transB.top));
 
     const bandUnitSize = CHART_SIZE.width / groups.length;
     const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
-    // TODO: generalize this part and put bar in the middle of the tick!
+    // TODO: generalize this part!
     gB.selectAll('bar')
       .data(aggValuesB)
       .enter().append(_rect)
@@ -115,7 +125,7 @@ function renderStackChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       .attr(_x, d => x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
       .attr(_width, barWidth)
       .attr(_height, d => (revY ? y(d.value) : CHART_SIZE.height - y(d.value)))
-      .attr(_fill, BAR_COLOR)
+      .attr(_fill, d => c(d.value) as string)
   }
 }
 
@@ -194,7 +204,8 @@ export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
     y: (isDeepTrue(C.consistency.y) &&
       A.encoding.y.field === B.encoding.y.field &&
       A.encoding.y.type === B.encoding.y.type),
-    y_mirrored: typeof C.consistency.y != 'undefined' && C.consistency.y['mirrored']
+    y_mirrored: typeof C.consistency.y != 'undefined' && C.consistency.y['mirrored'],
+    color: isUndefinedOrFalse(C.consistency.color)
   };
   // warnings
   if (cons.y != isDeepTrue(C.consistency.y)) console.log('y-axis cannot be shared.')
@@ -205,4 +216,8 @@ export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
 
 export function isDeepTrue(o: boolean | object) {
   return o === true || o['value'] === true;
+}
+
+export function isUndefinedOrFalse(o: boolean) {
+  return typeof o !== "undefined" && o !== false;
 }

@@ -12,6 +12,7 @@ export type CompLevel = "chart" | "element"
 export type Consistency = {
   y: boolean | AxisConsistency
   x: boolean | AxisConsistency
+  color?: boolean
 }
 export type AxisConsistency = {
   value: boolean

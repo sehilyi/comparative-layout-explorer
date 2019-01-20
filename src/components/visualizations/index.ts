@@ -10,7 +10,7 @@ export const _width = 'width', _height = 'height',
   _stroke = "stroke", _stroke_width = "stroke-width";
 
 export function isBarChart(spec: Spec) {
-  return spec.encoding.x.type === 'ordinal' && spec.encoding.y.type === 'quantitative';
+  return spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative';
 }
 
 export function getAggValues(values: object[], keyField: string, valueField: string, aggregate: Aggregate) {

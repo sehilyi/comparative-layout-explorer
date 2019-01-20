@@ -7,6 +7,7 @@ import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor} fr
 export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;  // constraint: only vertical bars handled
+  const {color} = spec.encoding;
   const groups = uniqueValues(values, spec.encoding.x.field).sort((a, b) => parseInt(a) < parseInt(b) ? -1 : 1)
   const aggValues = getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate);
 
@@ -21,6 +22,9 @@ export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
   const gAxis = g.append(_g)
     .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
   const {x, y} = renderAxes(gAxis, groups, aggValues.map(d => d.value), spec);
+  const c = d3.scaleOrdinal() // TODO: organize this part
+    .domain(aggValues.map(d => d.value))
+    .range(getBarColor(typeof color == "undefined" ? 1 : aggValues.map(d => d.value).length));
 
   const bandUnitSize = CHART_SIZE.width / groups.length;
   const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
@@ -32,5 +36,5 @@ export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
     .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
     .attr(_width, barWidth)
     .attr(_height, d => CHART_SIZE.height - y(d.value))
-    .attr(_fill, getBarColor(1)[0])
+    .attr(_fill, d => c(d.key) as string)
 }
