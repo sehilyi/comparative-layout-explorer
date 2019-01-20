@@ -2,7 +2,7 @@ import {Spec} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
 import {uniqueValues, translate} from 'src/useful-factory/utils';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues} from '.';
-import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth} from './design-settings';
+import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor} from './design-settings';
 
 export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
@@ -32,5 +32,5 @@ export function renderBarChart(ref: SVGSVGElement, spec: Spec) {
     .attr(_x, d => CHART_MARGIN.left + x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
     .attr(_width, barWidth)
     .attr(_height, d => CHART_SIZE.height - y(d.value))
-    .attr(_fill, '#006994')
+    .attr(_fill, getBarColor(1)[0])
 }

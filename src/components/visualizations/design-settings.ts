@@ -11,17 +11,23 @@ export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,
   height: CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom
 }
+export const CATEGORICAL_COLORS = ['#4E79A7', '#F28E2B', '#E15759',
+  '#76B7B2', '#59A14E', '#EDC949',
+  '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC'];
 
 // bar
 export const BAR_GAP = 6;
 export const BAR_CHART_GAP = 10;
 export const MAX_BAR_WIDTH = 30;
 
-export const BAR_COLOR = '#006994';
-export const BAR_COLOR2 = '#94001f';
+export const BAR_COLOR = '#4E79A7';
+export const BAR_COLOR2 = '#F28E2B';
 
 export function getBarWidth(cw: number, n: number) {
   return d3.min([cw / n - BAR_GAP, MAX_BAR_WIDTH])
+}
+export function getBarColor(n: number) {
+  return CATEGORICAL_COLORS.slice(0, n > CATEGORICAL_COLORS.length ? CATEGORICAL_COLORS.length - 1 : n);
 }
 
 // test
