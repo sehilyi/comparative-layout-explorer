@@ -64,48 +64,51 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     }
   }
 
-  const {values: valsA} = A.data, {values: valsB} = B.data;
-  const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y;
-  const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, funcA);
-  const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, funcB);
-  const groupsUnion = uniqueValues(valsA.concat(valsB), A.encoding.x.field);
+  const {values: valsA} = A.data, {values: valsB} = B.data
+  const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y
+  const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, funcA).map(d => d.value)
+  const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, funcB).map(d => d.value)
+  const groupsUnion = uniqueValues(valsA.concat(valsB), A.encoding.x.field)
+  const aggValuesUnion = aggValuesA.concat(aggValuesB)
 
   /// A
   {
     const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
-    const groups = uniqueValues(valsA, A.encoding.x.field);
-    const xDomain = consistency.x ? groupsUnion : groups;
-    const yDomain = consistency.y ? aggValuesA.concat(aggValuesB) : aggValuesA;
+      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top))
 
-    const noX = consistency.x && C.direction === 'vertical' && !consistency.x_mirrored;
+    const groups = uniqueValues(valsA, A.encoding.x.field)
+    const xDomain = consistency.x ? groupsUnion : groups
+    const yDomain = consistency.y ? aggValuesUnion : aggValuesA
 
-    const isColorUsed = !isUndefined(A.encoding.color);
+    const noX = consistency.x && C.direction === 'vertical' && !consistency.x_mirrored
+
+    const isColorUsed = !isUndefined(A.encoding.color)
     const c = d3.scaleOrdinal()
       .domain(consistency.color ? groupsUnion : groups)
-      .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1));
+      .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
 
-    renderBarChart(g, A, {x: xDomain, y: yDomain.map(d => d.value)}, c, {noX})
+    renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX})
   }
 
   /// B
   {
-    const gB = d3.select(ref).append(_g)
-      .attr(_transform, translate(transB.left, transB.top));
-    const groups = uniqueValues(valsB, B.encoding.x.field);
-    const xDomain = consistency.x ? groupsUnion : groups;
-    const yDomain = consistency.y ? aggValuesB.concat(aggValuesA) : aggValuesB;
+    const g = d3.select(ref).append(_g)
+      .attr(_transform, translate(transB.left, transB.top))
 
-    const noY = consistency.y && C.direction === 'horizontal' && !consistency.y_mirrored;
-    const revY = consistency.y_mirrored;
-    const revX = consistency.x_mirrored;
+    const groups = uniqueValues(valsB, B.encoding.x.field)
+    const xDomain = consistency.x ? groupsUnion : groups
+    const yDomain = consistency.y ? aggValuesB.concat(aggValuesA) : aggValuesB
 
-    const isColorUsed = !isUndefined(B.encoding.color);
+    const noY = consistency.y && C.direction === 'horizontal' && !consistency.y_mirrored
+    const revY = consistency.y_mirrored
+    const revX = consistency.x_mirrored
+
+    const isColorUsed = !isUndefined(B.encoding.color)
     const c = d3.scaleOrdinal()
       .domain(consistency.color ? groupsUnion : groups)
-      .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1));
+      .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
 
-    renderBarChart(gB, B, {x: xDomain, y: yDomain.map(d => d.value)}, c, {noY, revY, revX})
+    renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noY, revY, revX})
   }
 }
 

@@ -2,14 +2,15 @@ import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {uniqueValues, translate} from 'src/useful-factory/utils';
 import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor} from './design-settings';
-import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues} from '.';
+import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey} from '.';
+import {isUndefined} from 'util';
 
 export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
-  const {aggregate} = spec.encoding.y;  // TODO: only vertical bar charts are handled
   const {color} = spec.encoding;
-  const groups = uniqueValues(values, spec.encoding.x.field).sort((a, b) => parseInt(a) < parseInt(b) ? -1 : 1)
-  const aggValues = getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate);
+  const {field: xField} = spec.encoding.x, {field: yField, aggregate} = spec.encoding.y;
+
+  const aggValsByKey = getAggValsByKey(values, xField, yField, aggregate);
 
   d3.select(ref).selectAll('*').remove();
 
@@ -21,12 +22,13 @@ export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
     .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
 
   const c = d3.scaleOrdinal()
-    .domain(aggValues.map(d => d.value))
-    .range(getBarColor(typeof color == "undefined" ? 1 : aggValues.map(d => d.value).length));
+    .domain(aggValsByKey.map(d => d.value))
+    .range(getBarColor(isUndefined(color) ? 1 : aggValsByKey.map(d => d.value).length));
 
-  renderBarChart(g, spec, {x: groups, y: aggValues.map(d => d.value)}, c, {})
+  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, c, {})
 }
 
+// TODO: only vertical bar charts are handled
 export function renderBarChart(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec, // contains actual values to draw bar chart
@@ -36,7 +38,7 @@ export function renderBarChart(
 
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
-  const aggValues = getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate);
+  const aggValues = getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate);
 
   const groups = uniqueValues(values, spec.encoding.x.field);
 
