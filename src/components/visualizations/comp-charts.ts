@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, BAR_COLOR, getBarWidth, BAR_COLOR2, getBarColor} from "./design-settings";
+import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
 
@@ -126,29 +126,40 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
   const height = CHART_SIZE.height;
   const {x, y} = renderAxes(g, groups, yDomain.map(d => d.value), A, {height});
 
-  const bandUnitSize = CHART_SIZE.width / groups.length;
-  const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
+  // const bandUnitSize = CHART_SIZE.width / groups.length;
+  // const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
 
   if (C.direction === "vertical") { // stacked bar
-    g.selectAll('bar')
-      .data(aggValuesA)
-      .enter().append(_rect)
-      .classed('bar', true)
-      .attr(_y, d => y(d.value))
-      .attr(_x, d => x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
-      .attr(_width, barWidth)
-      .attr(_height, d => height - y(d.value))
-      .attr(_fill, BAR_COLOR)
+    // g.selectAll('bar')
+    //   .data(aggValuesA)
+    //   .enter().append(_rect)
+    //   .classed('bar', true)
+    //   .attr(_y, d => y(d.value))
+    //   .attr(_x, d => x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
+    //   .attr(_width, barWidth)
+    //   .attr(_height, d => height - y(d.value))
+    //   .attr(_fill, BAR_COLOR)
 
-    g.selectAll('bar')
-      .data(aggValuesB)
-      .enter().append(_rect)
-      .classed('bar', true)
-      .attr(_y, d => y(d.value) - height + y(aggValuesA.filter(_d => _d.key === d.key)[0].value))
-      .attr(_x, d => x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
-      .attr(_width, barWidth)
-      .attr(_height, d => height - y(d.value))
-      .attr(_fill, BAR_COLOR2)
+    // console.log(aggValuesA);
+    // g.selectAll('bar')
+    //   .data(aggValuesB)
+    //   .enter().append(_rect)
+    //   .classed('bar', true)
+    //   .attr(_y, d => y(d.value) - height + y(aggValuesA.filter(_d => _d.key === d.key)[0].value))
+    //   .attr(_x, d => x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
+    //   .attr(_width, barWidth)
+    //   .attr(_height, d => height - y(d.value))
+    //   .attr(_fill, BAR_COLOR2)
+
+    const colorA = d3.scaleOrdinal()
+      .domain(groups)
+      .range(getBarColor(1));
+    const colorB = d3.scaleOrdinal()
+      .domain(groups)
+      .range(getBarColor(2).slice(1, 2));
+
+    renderBars(g, aggValuesA, "value", "key", groups, x, y, {color: colorA, cKey: "key"}, {})
+    renderBars(g, aggValuesB, "value", "key", groups, x, y, {color: colorB, cKey: "key"}, {yOffsetData: aggValuesA})
   }
   else if (C.direction === "horizontal") {  // grouped bar
     const colorA = d3.scaleOrdinal()

@@ -66,6 +66,7 @@ export function renderBars(
   // mulSize is applied first, and then shift bars
   const mulSize = ifUndefinedGetDefault(styles["mulSize"], 1) as number;
   const shiftBy = ifUndefinedGetDefault(styles["shiftBy"], 0) as number;
+  const yOffsetData = ifUndefinedGetDefault(styles["yOffsetData"], undefined) as object[];
   //
 
   const bandUnitSize = CHART_SIZE.width / groups.length
@@ -74,7 +75,8 @@ export function renderBars(
     .data(data)
     .enter().append(_rect)
     .classed('bar', true)
-    .attr(_y, d => styles["revY"] ? 0 : y(d[vKey]))
+    .attr(_y, d => styles["revY"] ? 0 : y(d[vKey]) + // TOOD: clean up more?
+      (!isUndefined(yOffsetData) ? (- CHART_SIZE.height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0][vKey])) : 0))
     .attr(_x, d => x(d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
     .attr(_width, barWidth)
     .attr(_height, d => (styles["revY"] ? y(d[vKey]) : CHART_SIZE.height - y(d[vKey])))
