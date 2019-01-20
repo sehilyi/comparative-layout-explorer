@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import {isUndefined} from 'util';
 
 export function translate(x: number, y: number) {
   return `translate(${x}, ${y})`;
@@ -8,6 +9,17 @@ export function uniqueValues(o: Object[], k: string) {
   return d3.set(o.map(d => d[k])).values()
 }
 
+export function isDeepTrue(o: boolean | object) {
+  return o === true || o['value'] === true;
+}
+
+export function isUndefinedOrFalse(o: boolean) {
+  return typeof o !== "undefined" && o !== false;
+}
+
+export function ifUndefinedGetDefault(o: object, d: any) {
+  return isUndefined(o) ? d : o;
+}
 /**
  * Return random integers from low (inclusive) to high (exclusive).
  * @param low
