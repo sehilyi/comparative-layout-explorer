@@ -59,12 +59,12 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     },
     C: {
       layout: 'stack',
-      direction: "vertical",
+      direction: "horizontal",
       unit: "chart",
       consistency: {
-        y: {value: true, mirrored: true},
+        y: {value: true, mirrored: false},
         x: {value: true, mirrored: false},
-        color: true
+        color: false
       }
     }
   }
