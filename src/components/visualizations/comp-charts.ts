@@ -115,42 +115,21 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
 
   const g = d3.select(ref).append(_g)
     .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+  const height = CHART_SIZE.height; // TODO: handle this
+
   const {values: valsA} = A.data, {values: valsB} = B.data;
   const {aggregate: aggrA} = A.encoding.y, {aggregate: aggrB} = B.encoding.y;
   const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, aggrA);
   const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, aggrB);
   const aggValuesAPlusB = getAggValues(aggValuesA.concat(aggValuesB), "key", "value", 'sum');
-  const yDomain = C.direction === "vertical" ? aggValuesAPlusB : aggValuesA.concat(aggValuesB);
+  const yDomain = C.direction === "vertical"
+    ? aggValuesAPlusB.map(d => d.value)
+    : aggValuesA.concat(aggValuesB).map(d => d.value);
 
   const groups = uniqueValues(valsA, A.encoding.x.field);
-  const height = CHART_SIZE.height;
-  const {x, y} = renderAxes(g, groups, yDomain.map(d => d.value), A, {height});
-
-  // const bandUnitSize = CHART_SIZE.width / groups.length;
-  // const barWidth = getBarWidth(CHART_SIZE.width, groups.length);
+  const {x, y} = renderAxes(g, groups, yDomain, A, {height});
 
   if (C.direction === "vertical") { // stacked bar
-    // g.selectAll('bar')
-    //   .data(aggValuesA)
-    //   .enter().append(_rect)
-    //   .classed('bar', true)
-    //   .attr(_y, d => y(d.value))
-    //   .attr(_x, d => x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
-    //   .attr(_width, barWidth)
-    //   .attr(_height, d => height - y(d.value))
-    //   .attr(_fill, BAR_COLOR)
-
-    // console.log(aggValuesA);
-    // g.selectAll('bar')
-    //   .data(aggValuesB)
-    //   .enter().append(_rect)
-    //   .classed('bar', true)
-    //   .attr(_y, d => y(d.value) - height + y(aggValuesA.filter(_d => _d.key === d.key)[0].value))
-    //   .attr(_x, d => x(d.key) + bandUnitSize / 2.0 - barWidth / 2.0)
-    //   .attr(_width, barWidth)
-    //   .attr(_height, d => height - y(d.value))
-    //   .attr(_fill, BAR_COLOR2)
-
     const colorA = d3.scaleOrdinal()
       .domain(groups)
       .range(getBarColor(1));
