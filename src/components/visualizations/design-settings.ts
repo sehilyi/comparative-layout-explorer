@@ -42,9 +42,9 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
+        x: {field: "Creative_Type", type: "nominal"},
         y: {field: "IMDB_Votes", type: "quantitative", aggregate: "mean"},
-        color: {field: "MPAA_Rating", type: "nominal"}
+        color: {field: "Source", type: "nominal"}
       }
     },
     B: {
@@ -54,18 +54,18 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       mark: "bar",
       encoding: {
         x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "IMDB_Votes", type: "quantitative", aggregate: "median"},
+        y: {field: "IMDB_Votes", type: "quantitative", aggregate: "mean"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
       layout: 'stack',
       direction: "vertical",
-      unit: "element",
+      unit: "chart",
       consistency: {
-        y: {value: true, mirrored: false},
+        y: {value: false, mirrored: false},
         x: {value: true, mirrored: false},
-        color: false
+        color: true
       }
     }
   }
