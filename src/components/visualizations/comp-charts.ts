@@ -196,13 +196,11 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     }
   }
   else if (C.direction === "horizontal") {
-    const GroupW = 100
+    const GroupW = 150
     const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
     const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
-    // const xDomain = [].concat(...nestedAggVals.map(d => d.values.map((_d: object) => d.key + "-" + _d["key"])))
     const xDomain = nestedAggValsRev.map(d => d.key);
     const yDomain = [].concat(...nestedAggVals.map(d => d.values.map((_d: object) => _d["value"])))  // TODO: clearer method?
-    // const {x, y} = renderAxes(g, xDomain, yDomain, A);
     const groups = uniqueValues(B.data.values, bxField)
 
     d3.select(ref)
@@ -213,8 +211,10 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
 
     for (let i = 0; i < nestedAggVals.length; i++) {
-
-      const gPart = g.append(_g).attr(_transform, translate((GroupW + BAR_CHART_GAP) * i, 0))
+      const noY = i != 0 ? true : false // TOOD: need showY option for grouped bar chart (blend-horizontal)??
+      const gPart = g.append(_g).attr(_transform, translate(
+        (GroupW + BAR_CHART_GAP + (!noY ? CHART_MARGIN.left + CHART_MARGIN.right : 0)) * i, 0)
+      )
 
       const color = d3.scaleOrdinal()
         // const color
@@ -222,7 +222,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         .range(getBarColor(groups.length).slice(i, i + 1))
       const xPreStr = nestedAggVals[i].key;
       renderBarChart(gPart, A, {x: xDomain, y: yDomain}, color, {
-        noY: i != 0 ? true : false, xName: xPreStr, barGap: 1, width: 100,
+        noY, xName: xPreStr, barGap: 1, width: GroupW,
         altVals: nestedAggVals[i].values
       })
     }
