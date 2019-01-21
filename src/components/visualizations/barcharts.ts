@@ -76,7 +76,8 @@ export function renderBars(
     .enter().append(_rect)
     .classed('bar', true)
     .attr(_y, d => styles["revY"] ? 0 : y(d[vKey]) + // TOOD: clean up more?
-      (!isUndefined(yOffsetData) ? (- CHART_SIZE.height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0][vKey])) : 0))
+      (!isUndefined(yOffsetData) && !isUndefined(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0]) ?
+        (- CHART_SIZE.height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0][vKey])) : 0))
     .attr(_x, d => x(d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
     .attr(_width, barWidth)
     .attr(_height, d => (styles["revY"] ? y(d[vKey]) : CHART_SIZE.height - y(d[vKey])))

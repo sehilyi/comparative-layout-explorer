@@ -125,31 +125,31 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
   const yDomain = C.direction === "vertical"
     ? aggValuesAPlusB.map(d => d.value)
     : aggValuesA.concat(aggValuesB).map(d => d.value);
-
-  const groups = uniqueValues(valsA, A.encoding.x.field);
-  const {x, y} = renderAxes(g, groups, yDomain, A, {height});
+  // const groups = uniqueValues(valsA, A.encoding.x.field);
+  const xDomain = uniqueValues(aggValuesAPlusB, 'key')
+  const {x, y} = renderAxes(g, xDomain, yDomain, A, {height});
 
   if (C.direction === "vertical") { // stacked bar
     const colorA = d3.scaleOrdinal()
-      .domain(groups)
+      .domain(xDomain)
       .range(getBarColor(1));
     const colorB = d3.scaleOrdinal()
-      .domain(groups)
+      .domain(xDomain)
       .range(getBarColor(2).slice(1, 2));
 
-    renderBars(g, aggValuesA, "value", "key", groups, x, y, {color: colorA, cKey: "key"}, {})
-    renderBars(g, aggValuesB, "value", "key", groups, x, y, {color: colorB, cKey: "key"}, {yOffsetData: aggValuesA})
+    renderBars(g, aggValuesA, "value", "key", xDomain, x, y, {color: colorA, cKey: "key"}, {})
+    renderBars(g, aggValuesB, "value", "key", xDomain, x, y, {color: colorB, cKey: "key"}, {yOffsetData: aggValuesA})
   }
   else if (C.direction === "horizontal") {  // grouped bar
     const colorA = d3.scaleOrdinal()
-      .domain(groups)
+      .domain(xDomain)
       .range(getBarColor(1));
     const colorB = d3.scaleOrdinal()
-      .domain(groups)
+      .domain(xDomain)
       .range(getBarColor(2).slice(1, 2));
 
-    renderBars(g, aggValuesA, "value", "key", groups, x, y, {color: colorA, cKey: "key"}, {shiftBy: -0.5, mulSize: 0.5})
-    renderBars(g, aggValuesB, "value", "key", groups, x, y, {color: colorB, cKey: "key"}, {shiftBy: 0.5, mulSize: 0.5})
+    renderBars(g, aggValuesA, "value", "key", xDomain, x, y, {color: colorA, cKey: "key"}, {shiftBy: -0.5, mulSize: 0.5})
+    renderBars(g, aggValuesB, "value", "key", xDomain, x, y, {color: colorB, cKey: "key"}, {shiftBy: 0.5, mulSize: 0.5})
   }
 }
 

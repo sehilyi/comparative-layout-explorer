@@ -71,7 +71,7 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       ).nice()
       .rangeRound(revY ? [0, ch] : [ch, 0]);
 
-  let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(d => d.length > 5 ? d.slice(0, 4).concat('...') : d).tickSizeOuter(0);
+  let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(d => d.length > 5 ? d.slice(0, 3).concat('...') : d).tickSizeOuter(0);
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(d3.format('.2s'));
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-ch);
   let yGrid = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);

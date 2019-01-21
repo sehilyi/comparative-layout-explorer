@@ -18,7 +18,7 @@ export const CATEGORICAL_COLORS =
 export const DEFAULT_FONT = "Roboto Condensed";
 
 // bar
-export const BAR_GAP = 10;
+export const BAR_GAP = 7;
 export const BAR_CHART_GAP = 10;
 export const MAX_BAR_WIDTH = 30;
 
@@ -54,7 +54,8 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       mark: "bar",
       encoding: {
         x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "IMDB_Votes", type: "quantitative", aggregate: "median"}
+        y: {field: "IMDB_Votes", type: "quantitative", aggregate: "median"},
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
