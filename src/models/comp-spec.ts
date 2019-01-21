@@ -6,7 +6,7 @@ export type CompSpec = {
   unit?: CompLevel  // related: stack operations
   consistency: Consistency  // related: chart-wise stack operations
 }
-export type CompType = "stack" | "blend" | "overlay"
+export type CompType = "stack" | "blend" | "overlay" | "nest"
 export type CompDirection = "horizontal" | "vertical"
 export type CompLevel = "chart" | "element"
 export type Consistency = {

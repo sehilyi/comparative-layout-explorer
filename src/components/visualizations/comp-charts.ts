@@ -21,6 +21,9 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
     case "overlay":
       renderOverlay(ref, A, B, C)
       break;
+    case "nest":
+      renderNest(ref, A, B, C)
+      break;
     default: renderStackPerChart(ref, A, B, C); break;
   }
 }
@@ -233,6 +236,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   }
 }
 
+// TOOD: any way to generalize this code by combining with stack?!
 function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
@@ -247,7 +251,6 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const groupsUnion = uniqueValues(aggValuesA.concat(aggValuesB), "key")
   const aggValuesUnion = aggValuesA.map(d => d.value).concat(aggValuesB.map(d => d.value))
 
-
   { /// B
     const g = d3.select(ref).append(_g)
       .attr(_transform, translate(CHART_MARGIN.left + 6, CHART_MARGIN.top))
@@ -256,23 +259,19 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const xDomain = consistency.x ? groupsUnion : groups
     const yDomain = consistency.y ? aggValuesB.map(d => d.value).concat(aggValuesA.map(d => d.value)) : aggValuesB.map(d => d.value)
 
+    const isColorUsed = !isUndefined(B.encoding.color)
+    const c = d3.scaleOrdinal()
+      .domain(consistency.color ? groupsUnion : groups)
+      .range(getBarColorDarker(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
+
     const noY = consistency.y
     const noX = true
     const noGrid = true
     const revY = consistency.y_mirrored
     const revX = consistency.x_mirrored
 
-    const isColorUsed = !isUndefined(B.encoding.color)
-    const c = d3.scaleOrdinal()
-      .domain(consistency.color ? groupsUnion : groups)
-      .range(getBarColorDarker(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
-
-    renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {
-      noX, noY, revY, revX, noGrid
-    })
+    renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noX, noY, revY, revX, noGrid})
   }
-
-  // TOOD: any way to generalize this code by combining with stack?
   { /// A
     const g = d3.select(ref).append(_g)
       .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top))
@@ -281,14 +280,94 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const xDomain = consistency.x ? groupsUnion : groups
     const yDomain = consistency.y ? aggValuesUnion : aggValuesA.map(d => d.value)
 
-    const noX = consistency.x && C.direction === 'vertical' && !consistency.x_mirrored
-
     const isColorUsed = !isUndefined(A.encoding.color)
     const c = d3.scaleOrdinal()
       .domain(consistency.color ? groupsUnion : groups)
       .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
 
-    renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX})
+    renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {})
+  }
+}
+
+// TOOD: any way to generalize this code by combining with stack?!
+function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+  const {...consistency} = getConsistencySpec(A, B, C);
+
+  d3.select(ref)
+    .attr(_height, CHART_TOTAL_SIZE.height)
+    .attr(_width, CHART_TOTAL_SIZE.width)
+
+  const {values: valsA} = A.data, {values: valsB} = B.data
+  const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y
+  const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, funcA)
+  const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, funcB)
+  const groupsUnion = uniqueValues(aggValuesA.concat(aggValuesB), "key")
+  const aggValuesUnion = aggValuesA.map(d => d.value).concat(aggValuesB.map(d => d.value))
+
+  { /// A
+    const g = d3.select(ref).append(_g)
+      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top))
+
+    const groups = uniqueValues(valsA, A.encoding.x.field)
+    const xDomain = consistency.x ? groupsUnion : groups
+    const yDomain = consistency.y ? aggValuesUnion : aggValuesA.map(d => d.value)
+
+    // const isColorUsed = !isUndefined(A.encoding.color)
+    const c = d3.scaleOrdinal()
+      .domain(consistency.color ? groupsUnion : groups)
+      .range(getBarColor(1))
+    // .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
+
+    const {designs} = renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {})
+
+    { /// B
+      const g = d3.select(ref).append(_g)
+        .attr(_transform, translate(CHART_MARGIN.left + 0, CHART_MARGIN.top))
+
+      const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
+      const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
+      const padding = 4//, margin = 4
+      const chartWidth = designs["barWidth"], x = designs["x"], y = designs["y"], bandUnitSize = designs["bandUnitSize"]
+      const innerChartWidth = chartWidth - padding * 2.0
+
+      for (let i = 0; i < nestedAggVals.length; i++) {
+        const chartHeight = CHART_SIZE.height - y(aggValuesA[i].value) - padding
+
+        const tg = g.append(_g)
+          .attr(_transform,
+            translate(x(nestedAggVals[i].key) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggValuesA[i].value) + padding));
+
+        // tg.append(_rect)
+        //   .attr(_x, 0)
+        //   .attr(_y, 0)
+        //   .attr(_width, chartWidth - padding * 2.0)
+        //   .attr(_height, chartHeight)
+        // .attr(_fill, "#FAFAFA")
+
+        const ttg = tg.append(_g)
+          .attr(_transform, translate(0, 0))
+
+        const groups = uniqueValues(valsB, B.encoding.x.field)
+        const xDomain = groups
+        const yDomain = nestedAggVals[i].values.map((d: object) => d["value"])
+
+        const isColorUsed = !isUndefined(B.encoding.color)
+        const c = d3.scaleOrdinal()
+          // .domain(consistency.color ? groupsUnion : groups)
+          // .range(["white"])
+          .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
+
+        const noY = true
+        const noX = true
+        const noGrid = true
+        const barGap = 0
+        // console.log(chartHeight)
+        renderBarChart(ttg, B, {x: xDomain, y: yDomain}, c, {
+          noX, noY, noGrid, barGap, width: innerChartWidth, height: chartHeight,
+          altVals: nestedAggVals[i].values
+        })
+      }
+    }
   }
 }
 

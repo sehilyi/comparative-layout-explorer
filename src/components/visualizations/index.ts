@@ -69,7 +69,7 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
   let revX = (typeof style != 'undefined' && style['revX'])
   let xName = (typeof style != 'undefined' ? style['xName'] : undefined)
   let width = (typeof style != 'undefined' && typeof style['width'] != 'undefined') ? style['width'] : CHART_SIZE.width
-  let ch = (typeof style != 'undefined' && typeof style['height'] != 'undefined') ? style['height'] : CHART_SIZE.height;
+  let height = (typeof style != 'undefined' && typeof style['height'] != 'undefined') ? style['height'] : CHART_SIZE.height;
 
   const x =
     d3.scaleBand()
@@ -80,19 +80,19 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       .domain(
         [d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]
       ).nice()
-      .rangeRound(revY ? [0, ch] : [ch, 0]);
+      .rangeRound(revY ? [0, height] : [height, 0]);
 
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(d => d.length > 5 ? d.slice(0, 3).concat('...') : d).tickSizeOuter(0);
-  let yAxis = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(d3.format('.2s'));
-  let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-ch);
-  let yGrid = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(null).tickSize(-width);
+  let yAxis = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(d3.format('.2s'));
+  let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-height);
+  let yGrid = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-width);
 
   g.classed('g', true);
 
   if (!isBarChart(spec) && !noGrid) {
     g.append('g')
       .classed('grid', true)
-      .attr('transform', translate(0, ch))
+      .attr('transform', translate(0, height))
       .call(xGrid)
   }
 
@@ -107,11 +107,11 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       .classed('axis', true)
       .attr('stroke', '#888888')
       .attr('stroke-width', 0.5)
-      .attr('transform', translate(0, ch))
+      .attr('transform', translate(0, height))
       .call(xAxis)
 
     xaxis
-      .attr('transform', translate(0, ch))
+      .attr('transform', translate(0, height))
       .append('text')
       .classed('label', true)
       .attr('x', width / 2)
@@ -134,7 +134,7 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       .append('text')
       .classed('label', true)
       .attr('transform', 'rotate(-90)')
-      .attr('x', -ch / 2)
+      .attr('x', -height / 2)
       .attr('y', -45)
       .attr('dy', '.71em')
       .style('font-weight', 'bold')

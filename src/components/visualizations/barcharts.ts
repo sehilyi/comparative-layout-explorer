@@ -45,6 +45,7 @@ export function renderBarChart(
   const xName = styles["xName"]
   const barGap = styles["barGap"]
   const width = styles["width"]
+  const height = styles["height"]
   const altVals = styles["altVals"]
   const stroke = styles["stroke"]
   const stroke_width = styles["stroke_width"]
@@ -53,10 +54,12 @@ export function renderBarChart(
   const {aggregate} = spec.encoding.y;
   const aggValues = ifUndefinedGetDefault(altVals, getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
 
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, noGrid, xName, width});
-  renderBars(g, aggValues, "value", "key", domain.x, x, y, {color, cKey: "key"}, {
-    revY, barGap, width, stroke, stroke_width
+  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, noGrid, xName, width, height});
+  const {...designs} = renderBars(g, aggValues, "value", "key", domain.x, x, y, {color, cKey: "key"}, {
+    revY, barGap, width, height,
+    stroke, stroke_width
   })
+  return {designs}
 }
 
 export function renderBars(
@@ -78,6 +81,7 @@ export function renderBars(
   const xPreStr = ifUndefinedGetDefault(styles["xPreStr"], "") as string;
   const barGap = ifUndefinedGetDefault(styles["barGap"], BAR_GAP) as number;
   const width = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
+  const height = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
   const stroke = ifUndefinedGetDefault(styles["stroke"], 'null') as string;
   const stroke_width = ifUndefinedGetDefault(styles["stroke_width"], 0) as number;
   //
@@ -90,14 +94,15 @@ export function renderBars(
     .classed('bar', true)
     .attr(_y, d => styles["revY"] ? 0 : y(d[vKey]) + // TOOD: clean up more?
       (!isUndefined(yOffsetData) && !isUndefined(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0]) ?
-        (- CHART_SIZE.height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0][vKey])) : 0))
+        (- height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0][vKey])) : 0))
     .attr(_x, d => x(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
     .attr(_width, barWidth)
-    .attr(_height, d => (styles["revY"] ? y(d[vKey]) : CHART_SIZE.height - y(d[vKey])))
+    .attr(_height, d => (styles["revY"] ? y(d[vKey]) : height - y(d[vKey])))
     .attr(_fill, d => c.color(d[c.cKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
 
+  return {barWidth, x, y, bandUnitSize}
   // d3.select(ref).append("defs")
   //   .append("pattern")
   //   .attr("id", "hash4_4")
