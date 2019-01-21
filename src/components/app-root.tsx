@@ -74,7 +74,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
           {/* viz-subtlety-highlighter */}
         </div>
         <div className='control-pane'>
-          <textarea value={JSON.stringify(C, null, '\t')} />
+          <textarea value={JSON.stringify(C, null, '\t')} readOnly />
         </div>
         <div className='main-pane'>
           {/* <h1>Design</h1>

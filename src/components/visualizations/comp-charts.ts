@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
-import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width} from ".";
+import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
 import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor} from "./design-settings";
 import {isUndefined} from "util";
@@ -14,6 +14,9 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
     case 'stack':
       if (C.unit === 'chart') renderStackPerChart(ref, A, B, C);
       else if (C.unit === 'element') renderStackPerElement(ref, A, B, C);
+      break;
+    case "blend":
+      renderBlend(ref, A, B, C)
       break;
     default: renderStackPerChart(ref, A, B, C); break;
   }
@@ -150,6 +153,46 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
 
     renderBars(g, aggValuesA, "value", "key", xDomain, x, y, {color: colorA, cKey: "key"}, {shiftBy: -0.5, mulSize: 0.5})
     renderBars(g, aggValuesB, "value", "key", xDomain, x, y, {color: colorB, cKey: "key"}, {shiftBy: 0.5, mulSize: 0.5})
+  }
+}
+
+function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+  d3.select(ref)
+    .attr(_width, CHART_TOTAL_SIZE.width)
+    .attr(_height, CHART_TOTAL_SIZE.height)
+
+  const g = d3.select(ref).append(_g)
+    .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+
+  const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
+  const aggValuesByTwoKeys = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
+  const aggValuesByTwoKeysRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
+  const yDomain = [].concat(...aggValuesByTwoKeys.map(d => d3.sum(d.values.map((_d: object) => _d["value"]))))  // TODO: clearer method?
+  const xDomain = aggValuesByTwoKeys.map(d => d.key)
+  const {x, y} = renderAxes(g, xDomain, yDomain, A);
+  const groups = uniqueValues(B.data.values, bxField)
+
+  if (C.direction === "vertical") {
+    const yOffsetData = []
+    // TODO: clear code below!
+    for (let i = 0; i < xDomain.length; i++) {
+      yOffsetData.push({key: xDomain[i], value: 0}) // TODO: init with zero might be improper
+    }
+    for (let i = 0; i < aggValuesByTwoKeysRev.length; i++) {
+      if (i != 0) { // y offset not needed for the first class
+        for (let j = 0; j < xDomain.length; j++) {
+          let baseObject = aggValuesByTwoKeysRev[i - 1].values.filter((_d: object) => _d["key"] == xDomain[j])[0];
+          let baseValue = isUndefined(baseObject) ? 0 : baseObject["value"];
+          yOffsetData.filter(d => d.key === xDomain[j])[0].value += baseValue
+        }
+      }
+      const color = d3.scaleOrdinal()
+        .range(getBarColor(groups.length).slice(i, i + 1))
+      renderBars(g, aggValuesByTwoKeysRev[i].values, "value", "key", xDomain, x, y, {color, cKey: "key"}, {yOffsetData})
+    }
+  }
+  else if (C.direction === "horizontal") {
+    // const xDomain = [].concat(...aggValuesByTwoKeys.map(d => d.values.map((_d: object) => d.key + "-" + _d["key"])))
   }
 }
 
