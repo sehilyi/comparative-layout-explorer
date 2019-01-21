@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor} from "./design-settings";
+import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor, getTotalChartSize} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
 
@@ -157,42 +157,75 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
 }
 
 function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  d3.select(ref)
-    .attr(_width, CHART_TOTAL_SIZE.width)
-    .attr(_height, CHART_TOTAL_SIZE.height)
-
-  const g = d3.select(ref).append(_g)
-    .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
 
   const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
-  const aggValuesByTwoKeys = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
-  const aggValuesByTwoKeysRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
-  const yDomain = [].concat(...aggValuesByTwoKeys.map(d => d3.sum(d.values.map((_d: object) => _d["value"]))))  // TODO: clearer method?
-  const xDomain = aggValuesByTwoKeys.map(d => d.key)
-  const {x, y} = renderAxes(g, xDomain, yDomain, A);
-  const groups = uniqueValues(B.data.values, bxField)
 
   if (C.direction === "vertical") {
+    d3.select(ref)
+      .attr(_width, CHART_TOTAL_SIZE.width)
+      .attr(_height, CHART_TOTAL_SIZE.height)
+
+    const g = d3.select(ref).append(_g)
+      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+
+    const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
+    const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
+    const yDomain = nestedAggVals.map(d => d3.sum(d.values.map((_d: object) => _d["value"])))
+    const xDomain = nestedAggVals.map(d => d.key)
+    const {x, y} = renderAxes(g, xDomain, yDomain, A);
+    const groups = uniqueValues(B.data.values, bxField)
+
     const yOffsetData = []
     // TODO: clear code below!
     for (let i = 0; i < xDomain.length; i++) {
-      yOffsetData.push({key: xDomain[i], value: 0}) // TODO: init with zero might be improper
+      yOffsetData.push({key: xDomain[i], value: 0}) // TODO: init with zero might be improper?
     }
-    for (let i = 0; i < aggValuesByTwoKeysRev.length; i++) {
+    for (let i = 0; i < nestedAggValsRev.length; i++) {
       if (i != 0) { // y offset not needed for the first class
         for (let j = 0; j < xDomain.length; j++) {
-          let baseObject = aggValuesByTwoKeysRev[i - 1].values.filter((_d: object) => _d["key"] == xDomain[j])[0];
+          let baseObject = nestedAggValsRev[i - 1].values.filter((_d: object) => _d["key"] === xDomain[j])[0];
           let baseValue = isUndefined(baseObject) ? 0 : baseObject["value"];
           yOffsetData.filter(d => d.key === xDomain[j])[0].value += baseValue
         }
       }
       const color = d3.scaleOrdinal()
+        // const color
+        // TODO: coloring by another key object
         .range(getBarColor(groups.length).slice(i, i + 1))
-      renderBars(g, aggValuesByTwoKeysRev[i].values, "value", "key", xDomain, x, y, {color, cKey: "key"}, {yOffsetData})
+      renderBars(g, nestedAggValsRev[i].values, "value", "key", xDomain, x, y, {color, cKey: "key"}, {yOffsetData})
     }
   }
   else if (C.direction === "horizontal") {
-    // const xDomain = [].concat(...aggValuesByTwoKeys.map(d => d.values.map((_d: object) => d.key + "-" + _d["key"])))
+    const GroupW = 100
+    const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
+    const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
+    // const xDomain = [].concat(...nestedAggVals.map(d => d.values.map((_d: object) => d.key + "-" + _d["key"])))
+    const xDomain = nestedAggValsRev.map(d => d.key);
+    const yDomain = [].concat(...nestedAggVals.map(d => d.values.map((_d: object) => _d["value"])))  // TODO: clearer method?
+    // const {x, y} = renderAxes(g, xDomain, yDomain, A);
+    const groups = uniqueValues(B.data.values, bxField)
+
+    d3.select(ref)
+      .attr(_width, getTotalChartSize(GroupW, CHART_SIZE.height).width + (GroupW + BAR_CHART_GAP) * (nestedAggVals.length - 1))
+      .attr(_height, CHART_TOTAL_SIZE.height)
+
+    const g = d3.select(ref).append(_g)
+      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+
+    for (let i = 0; i < nestedAggVals.length; i++) {
+
+      const gPart = g.append(_g).attr(_transform, translate((GroupW + BAR_CHART_GAP) * i, 0))
+
+      const color = d3.scaleOrdinal()
+        // const color
+        // TODO: coloring by another key object
+        .range(getBarColor(groups.length).slice(i, i + 1))
+      const xPreStr = nestedAggVals[i].key;
+      renderBarChart(gPart, A, {x: xDomain, y: yDomain}, color, {
+        noY: i != 0 ? true : false, xName: xPreStr, barGap: 1, width: 100,
+        altVals: nestedAggVals[i].values
+      })
+    }
   }
 }
 

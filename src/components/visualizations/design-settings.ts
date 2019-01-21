@@ -25,11 +25,15 @@ export const MAX_BAR_WIDTH = 30;
 export const BAR_COLOR = '#4E79A7';
 export const BAR_COLOR2 = '#F28E2B';
 
-export function getBarWidth(cw: number, n: number) {
-  return d3.min([cw / n - BAR_GAP, MAX_BAR_WIDTH])
+export function getBarWidth(cw: number, n: number, g: number) {
+  return d3.min([cw / n - g as number, MAX_BAR_WIDTH])
 }
 export function getBarColor(n: number) {
   return CATEGORICAL_COLORS.slice(0, n > CATEGORICAL_COLORS.length ? CATEGORICAL_COLORS.length - 1 : n);
+}
+
+export function getTotalChartSize(w: number, h: number) {
+  return {width: w + CHART_MARGIN.left + CHART_MARGIN.right, height: h + CHART_MARGIN.top + CHART_MARGIN.bottom}
 }
 
 // test
@@ -42,7 +46,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
+        x: {field: "Source", type: "nominal"},
         y: {field: "IMDB_Votes", type: "quantitative", aggregate: "sum"},
         color: {field: "Source", type: "nominal"}
       }
@@ -53,14 +57,14 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "Source", type: "nominal"},
+        x: {field: "MPAA_Rating", type: "nominal"},
         y: {field: "IMDB_Votes", type: "quantitative", aggregate: "sum"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
       layout: 'blend',
-      direction: "vertical",
+      direction: "horizontal",
       // unit: "chart",
       consistency: {
         y: {value: true, mirrored: false},

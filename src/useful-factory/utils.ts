@@ -17,7 +17,7 @@ export function isUndefinedOrFalse(o: boolean) {
   return typeof o === "undefined" || o === false;
 }
 
-export function ifUndefinedGetDefault(o: object, d: any) {
+export function ifUndefinedGetDefault(o: any, d: any) {
   return isUndefined(o) ? d : o;
 }
 /**

@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
-import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor} from './design-settings';
+import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, BAR_GAP} from './design-settings';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey} from '.';
 import {isUndefined} from 'util';
 
@@ -36,17 +36,22 @@ export function renderBarChart(
   color: d3.ScaleOrdinal<string, {}>,
   styles: object) {
 
-  const {values} = spec.data;
-  const {aggregate} = spec.encoding.y;
-  const aggValues = getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate);
-
+  // TODO: contain this as style class
   const noX = styles["noX"]
   const noY = styles["noY"]
   const revX = styles["revX"]
   const revY = styles["revY"]
+  const xName = styles["xName"]
+  const barGap = styles["barGap"]
+  const width = styles["width"]
+  const altVals = styles["altVals"]
 
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY});
-  renderBars(g, aggValues, "value", "key", domain.x, x, y, {color, cKey: "key"}, {revY})
+  const {values} = spec.data;
+  const {aggregate} = spec.encoding.y;
+  const aggValues = ifUndefinedGetDefault(altVals, getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
+
+  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, xName, width});
+  renderBars(g, aggValues, "value", "key", domain.x, x, y, {color, cKey: "key"}, {revY, barGap, width})
 }
 
 export function renderBars(
@@ -65,10 +70,13 @@ export function renderBars(
   const mulSize = ifUndefinedGetDefault(styles["mulSize"], 1) as number;
   const shiftBy = ifUndefinedGetDefault(styles["shiftBy"], 0) as number;
   const yOffsetData = ifUndefinedGetDefault(styles["yOffsetData"], undefined) as object[];
+  const xPreStr = ifUndefinedGetDefault(styles["xPreStr"], "") as string;
+  const barGap = ifUndefinedGetDefault(styles["barGap"], BAR_GAP) as number;
+  const width = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
   //
 
-  const bandUnitSize = CHART_SIZE.width / groups.length
-  const barWidth = getBarWidth(CHART_SIZE.width, groups.length) * mulSize
+  const bandUnitSize = width / groups.length
+  const barWidth = getBarWidth(width, groups.length, barGap) * mulSize
   g.selectAll('bar')
     .data(data)
     .enter().append(_rect)
@@ -76,7 +84,7 @@ export function renderBars(
     .attr(_y, d => styles["revY"] ? 0 : y(d[vKey]) + // TOOD: clean up more?
       (!isUndefined(yOffsetData) && !isUndefined(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0]) ?
         (- CHART_SIZE.height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0][vKey])) : 0))
-    .attr(_x, d => x(d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
+    .attr(_x, d => x(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
     .attr(_width, barWidth)
     .attr(_height, d => (styles["revY"] ? y(d[vKey]) : CHART_SIZE.height - y(d[vKey])))
     .attr(_fill, d => c.color(d[c.cKey]) as string)

@@ -65,29 +65,14 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
   let noX = (typeof style != 'undefined' && style['noX']);
   let revY = (typeof style != 'undefined' && style['revY']);
   let revX = (typeof style != 'undefined' && style['revX']);
+  let xName = (typeof style != 'undefined' ? style['xName'] : undefined)
+  let width = (typeof style != 'undefined' && typeof style['width'] != 'undefined') ? style['width'] : CHART_SIZE.width
   let ch = (typeof style != 'undefined' && typeof style['height'] != 'undefined') ? style['height'] : CHART_SIZE.height;
-  // const g = d3.select(g).select('g');
-  // const isXOrdinal = spec.encoding.x.type === 'ordinal', isYOrdinal = spec.encoding.y.type === 'ordinal';
-
-  // const x = isXOrdinal ?
-  //   d3.scaleBand()
-  //     .domain(xval as string[])
-  //     .range([0, CHART_SIZE.width]) :
-  //   d3.scaleLinear()
-  //     .domain(d3.extent(xval as number[]) as [number, number]).nice()
-  //     .range([0, CHART_SIZE.width]);
-  // const y = isYOrdinal ?
-  //   d3.scaleBand()
-  //     .domain(yval as string[])
-  //     .range([CHART_SIZE.height, 0]) :
-  //   d3.scaleLinear()
-  //     .domain(d3.extent(yval as number[]) as [number, number]).nice()
-  //     .rangeRound([CHART_SIZE.height, 0]);
 
   const x =
     d3.scaleBand()
       .domain(xval as string[])
-      .range(revX ? [CHART_SIZE.width, 0] : [0, CHART_SIZE.width]);
+      .range(revX ? [width, 0] : [0, width]);
   const y =
     d3.scaleLinear()
       .domain(
@@ -95,10 +80,10 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       ).nice()
       .rangeRound(revY ? [0, ch] : [ch, 0]);
 
-  let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(d => d.length > 5 ? d.slice(0, 3).concat('...') : d).tickSizeOuter(0);
+  let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(d => d.length > 5 ? d.slice(0, 3).concat('...') : d).tickSizeOuter(0);
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(d3.format('.2s'));
-  let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-ch);
-  let yGrid = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
+  let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-ch);
+  let yGrid = d3.axisLeft(y).ticks(Math.ceil(ch / 40)).tickFormat(null).tickSize(-width);
 
   g.classed('g', true);
 
@@ -125,13 +110,13 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
       .attr('transform', translate(0, ch))
       .append('text')
       .classed('label', true)
-      .attr('x', CHART_SIZE.width / 2)
+      .attr('x', width / 2)
       .attr('y', CHART_MARGIN.bottom - 5)
       .style('fill', 'black')
       .style('stroke', 'none')
       .style('font-weight', 'bold')
       .style('text-anchor', 'middle')
-      .text(spec.encoding.x.field)
+      .text(typeof xName !== "undefined" ? xName : spec.encoding.x.field)
   }
 
   if (!noY) {
