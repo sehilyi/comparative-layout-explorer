@@ -79,7 +79,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     },
     C: {
       layout: 'nest',
-      direction: "horizontal",
+      direction: "vertical",
       unit: "chart",
       consistency: {
         y: {value: false, mirrored: false},

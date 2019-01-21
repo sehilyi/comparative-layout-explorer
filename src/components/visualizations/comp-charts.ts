@@ -326,6 +326,7 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
       const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
       const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
+      // const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
       const padding = 4//, margin = 4
       const chartWidth = designs["barWidth"], x = designs["x"], y = designs["y"], bandUnitSize = designs["bandUnitSize"]
       const innerChartWidth = chartWidth - padding * 2.0
@@ -337,6 +338,7 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
           .attr(_transform,
             translate(x(nestedAggVals[i].key) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggValuesA[i].value) + padding));
 
+        // background color
         // tg.append(_rect)
         //   .attr(_x, 0)
         //   .attr(_y, 0)
@@ -360,12 +362,18 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         const noY = true
         const noX = true
         const noGrid = true
-        const barGap = 0
-        // console.log(chartHeight)
-        renderBarChart(ttg, B, {x: xDomain, y: yDomain}, c, {
-          noX, noY, noGrid, barGap, width: innerChartWidth, height: chartHeight,
-          altVals: nestedAggVals[i].values
-        })
+
+        if (C.direction === "horizontal") {
+          const barGap = 0
+
+          renderBarChart(ttg, B, {x: xDomain, y: yDomain}, c, {
+            noX, noY, noGrid, barGap, width: innerChartWidth, height: chartHeight,
+            altVals: nestedAggVals[i].values
+          })
+        }
+        else {  // C.direction === "vertical"
+
+        }
       }
     }
   }

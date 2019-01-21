@@ -61,7 +61,13 @@ export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyFi
     })
     .entries(values);
 }
-export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xval: string[] | number[], yval: string[] | number[], spec: Spec, style?: object) {
+export function renderAxes(
+  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  xval: string[] | number[],
+  yval: string[] | number[],
+  spec: Spec,
+  style?: object) {
+
   let noY = (typeof style != 'undefined' && style['noY'])
   let noX = (typeof style != 'undefined' && style['noX'])
   let noGrid = !(typeof style === 'undefined' || !style['noGrid'])

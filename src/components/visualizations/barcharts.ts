@@ -81,13 +81,13 @@ export function renderBars(
   const xPreStr = ifUndefinedGetDefault(styles["xPreStr"], "") as string;
   const barGap = ifUndefinedGetDefault(styles["barGap"], BAR_GAP) as number;
   const width = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
+  const bandUnitSize = width / groups.length
+  const barWidth = ifUndefinedGetDefault(styles["barWidth"], getBarWidth(width, groups.length, barGap) * mulSize) as number;
   const height = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
   const stroke = ifUndefinedGetDefault(styles["stroke"], 'null') as string;
   const stroke_width = ifUndefinedGetDefault(styles["stroke_width"], 0) as number;
   //
 
-  const bandUnitSize = width / groups.length
-  const barWidth = getBarWidth(width, groups.length, barGap) * mulSize
   g.selectAll('bar')
     .data(data)
     .enter().append(_rect)
