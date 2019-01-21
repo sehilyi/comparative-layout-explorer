@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
-import {uniqueValues, translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
+import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor} from './design-settings';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey} from '.';
 import {isUndefined} from 'util';
@@ -40,15 +40,13 @@ export function renderBarChart(
   const {aggregate} = spec.encoding.y;
   const aggValues = getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate);
 
-  const groups = uniqueValues(values, spec.encoding.x.field);
-
   const noX = styles["noX"]
   const noY = styles["noY"]
   const revX = styles["revX"]
   const revY = styles["revY"]
 
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY});
-  renderBars(g, aggValues, "value", "key", groups, x, y, {color, cKey: "key"}, {revY})
+  renderBars(g, aggValues, "value", "key", domain.x, x, y, {color, cKey: "key"}, {revY})
 }
 
 export function renderBars(

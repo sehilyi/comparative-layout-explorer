@@ -156,11 +156,11 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
 export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
   const cons = {
     x: (isDeepTrue(C.consistency.x) &&
-      A.encoding.x.field === B.encoding.x.field &&
+      // A.encoding.x.field === B.encoding.x.field && // TOOD: should I constraint this?
       A.encoding.x.type === B.encoding.x.type),
     x_mirrored: typeof C.consistency.x != 'undefined' && C.consistency.x['mirrored'],
     y: (isDeepTrue(C.consistency.y) &&
-      A.encoding.y.field === B.encoding.y.field &&
+      // A.encoding.y.field === B.encoding.y.field &&
       A.encoding.y.type === B.encoding.y.type),
     y_mirrored: typeof C.consistency.y != 'undefined' && C.consistency.y['mirrored'],
     color: !isUndefinedOrFalse(C.consistency.color)

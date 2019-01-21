@@ -64,8 +64,8 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       unit: "chart",
       consistency: {
         y: {value: false, mirrored: false},
-        x: {value: true, mirrored: false},
-        color: true
+        x: {value: false, mirrored: false},
+        color: false
       }
     }
   }
