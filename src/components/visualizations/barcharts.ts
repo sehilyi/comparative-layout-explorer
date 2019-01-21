@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, BAR_GAP} from './design-settings';
-import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey} from '.';
+import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey, _stroke, _stroke_width} from '.';
 import {isUndefined} from 'util';
 
 export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
@@ -41,17 +41,22 @@ export function renderBarChart(
   const noY = styles["noY"]
   const revX = styles["revX"]
   const revY = styles["revY"]
+  const noGrid = styles["noGrid"]
   const xName = styles["xName"]
   const barGap = styles["barGap"]
   const width = styles["width"]
   const altVals = styles["altVals"]
+  const stroke = styles["stroke"]
+  const stroke_width = styles["stroke_width"]
 
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
   const aggValues = ifUndefinedGetDefault(altVals, getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
 
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, xName, width});
-  renderBars(g, aggValues, "value", "key", domain.x, x, y, {color, cKey: "key"}, {revY, barGap, width})
+  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, noGrid, xName, width});
+  renderBars(g, aggValues, "value", "key", domain.x, x, y, {color, cKey: "key"}, {
+    revY, barGap, width, stroke, stroke_width
+  })
 }
 
 export function renderBars(
@@ -73,6 +78,8 @@ export function renderBars(
   const xPreStr = ifUndefinedGetDefault(styles["xPreStr"], "") as string;
   const barGap = ifUndefinedGetDefault(styles["barGap"], BAR_GAP) as number;
   const width = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
+  const stroke = ifUndefinedGetDefault(styles["stroke"], 'null') as string;
+  const stroke_width = ifUndefinedGetDefault(styles["stroke_width"], 0) as number;
   //
 
   const bandUnitSize = width / groups.length
@@ -88,4 +95,19 @@ export function renderBars(
     .attr(_width, barWidth)
     .attr(_height, d => (styles["revY"] ? y(d[vKey]) : CHART_SIZE.height - y(d[vKey])))
     .attr(_fill, d => c.color(d[c.cKey]) as string)
+    .attr(_stroke, stroke)
+    .attr(_stroke_width, stroke_width)
+
+  // d3.select(ref).append("defs")
+  //   .append("pattern")
+  //   .attr("id", "hash4_4")
+  //   .attr(_width, "8")
+  //   .attr(_height, "8")
+  //   .attr("patternUnits", "userSpaceOnUse")
+  //   .attr("patternTransform", "rotate(60)")
+  //   .append("rect")
+  //   .attr(_width, "4")
+  //   .attr(_height, "8")
+  //   .attr(_transform, translate(0, 0))
+  //   .attr(_fill, "#88AAEE");
 }

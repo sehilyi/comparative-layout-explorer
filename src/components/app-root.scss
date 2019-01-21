@@ -65,6 +65,10 @@
         .chart {
           text-align: center;
           align-self: center;
+
+          rect.hbar {
+            mask: url(#mask-stripe);
+          }
         }
         .option-panel {
           border: solid lightgray 1px;

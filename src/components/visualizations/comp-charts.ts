@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
-import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys} from ".";
+import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor, getTotalChartSize} from "./design-settings";
+import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor, getTotalChartSize, getBarColorDarker} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
 
@@ -17,6 +17,9 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
       break;
     case "blend":
       renderBlend(ref, A, B, C)
+      break;
+    case "overlay":
+      renderOverlay(ref, A, B, C)
       break;
     default: renderStackPerChart(ref, A, B, C); break;
   }
@@ -36,7 +39,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
       d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width * 2)
     }
   }
-  else if (C.direction === 'vertical') {
+  else {  // direction === vertical
     d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width)
     if (consistency.x && !consistency.x_mirrored) {
       d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height + CHART_SIZE.height + BAR_CHART_GAP)
@@ -45,6 +48,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
       d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height * 2)
     }
   }
+
 
   // determine start X & Y positions for the second chart
   let transB: {left: number, top: number};
@@ -56,7 +60,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
       transB = {left: CHART_TOTAL_SIZE.width + CHART_MARGIN.left, top: CHART_MARGIN.top};
     }
   }
-  else if (C.direction === 'vertical') {
+  else { // if (C.direction === 'vertical') {
     if (consistency.x && !consistency.x_mirrored) {
       transB = {left: CHART_MARGIN.left, top: CHART_MARGIN.top + CHART_SIZE.height + BAR_CHART_GAP}
     }
@@ -226,6 +230,65 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         altVals: nestedAggVals[i].values
       })
     }
+  }
+}
+
+function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+  const {...consistency} = getConsistencySpec(A, B, C);
+
+  d3.select(ref)
+    .attr(_height, CHART_TOTAL_SIZE.height)
+    .attr(_width, CHART_TOTAL_SIZE.width)
+
+  const {values: valsA} = A.data, {values: valsB} = B.data
+  const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y
+  const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, funcA)
+  const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, funcB)
+  const groupsUnion = uniqueValues(aggValuesA.concat(aggValuesB), "key")
+  const aggValuesUnion = aggValuesA.map(d => d.value).concat(aggValuesB.map(d => d.value))
+
+
+  { /// B
+    const g = d3.select(ref).append(_g)
+      .attr(_transform, translate(CHART_MARGIN.left + 6, CHART_MARGIN.top))
+
+    const groups = uniqueValues(valsB, B.encoding.x.field)
+    const xDomain = consistency.x ? groupsUnion : groups
+    const yDomain = consistency.y ? aggValuesB.map(d => d.value).concat(aggValuesA.map(d => d.value)) : aggValuesB.map(d => d.value)
+
+    const noY = consistency.y
+    const noX = true
+    const noGrid = true
+    const revY = consistency.y_mirrored
+    const revX = consistency.x_mirrored
+
+    const isColorUsed = !isUndefined(B.encoding.color)
+    const c = d3.scaleOrdinal()
+      .domain(consistency.color ? groupsUnion : groups)
+      .range(getBarColorDarker(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
+
+    renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {
+      noX, noY, revY, revX, noGrid
+    })
+  }
+
+  // TOOD: any way to generalize this code by combining with stack?
+  { /// A
+    const g = d3.select(ref).append(_g)
+      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top))
+
+    const groups = uniqueValues(valsA, A.encoding.x.field)
+    const xDomain = consistency.x ? groupsUnion : groups
+    const yDomain = consistency.y ? aggValuesUnion : aggValuesA.map(d => d.value)
+
+    const noX = consistency.x && C.direction === 'vertical' && !consistency.x_mirrored
+
+    const isColorUsed = !isUndefined(A.encoding.color)
+    const c = d3.scaleOrdinal()
+      .domain(consistency.color ? groupsUnion : groups)
+      .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
+
+    renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX})
   }
 }
 

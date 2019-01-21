@@ -7,7 +7,8 @@ export const _width = 'width', _height = 'height',
   _fill = 'fill', _color = 'color',
   _transform = 'transform', _g = 'g', _rect = 'rect',
   _x = 'x', _y = 'y',
-  _stroke = "stroke", _stroke_width = "stroke-width";
+  _stroke = "stroke", _stroke_width = "stroke-width",
+  _opacity = "opacity";
 
 export function isBarChart(spec: Spec) {
   return spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative';
@@ -61,10 +62,11 @@ export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyFi
     .entries(values);
 }
 export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xval: string[] | number[], yval: string[] | number[], spec: Spec, style?: object) {
-  let noY = (typeof style != 'undefined' && style['noY']);
-  let noX = (typeof style != 'undefined' && style['noX']);
-  let revY = (typeof style != 'undefined' && style['revY']);
-  let revX = (typeof style != 'undefined' && style['revX']);
+  let noY = (typeof style != 'undefined' && style['noY'])
+  let noX = (typeof style != 'undefined' && style['noX'])
+  let noGrid = !(typeof style === 'undefined' || !style['noGrid'])
+  let revY = (typeof style != 'undefined' && style['revY'])
+  let revX = (typeof style != 'undefined' && style['revX'])
   let xName = (typeof style != 'undefined' ? style['xName'] : undefined)
   let width = (typeof style != 'undefined' && typeof style['width'] != 'undefined') ? style['width'] : CHART_SIZE.width
   let ch = (typeof style != 'undefined' && typeof style['height'] != 'undefined') ? style['height'] : CHART_SIZE.height;
@@ -87,16 +89,18 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
 
   g.classed('g', true);
 
-  if (!isBarChart(spec)) {
+  if (!isBarChart(spec) && !noGrid) {
     g.append('g')
       .classed('grid', true)
       .attr('transform', translate(0, ch))
       .call(xGrid)
   }
 
-  g.append('g')
-    .classed('grid', true)
-    .call(yGrid)
+  if (!noGrid) {
+    g.append('g')
+      .classed('grid', true)
+      .call(yGrid)
+  }
 
   if (!noX) {
     let xaxis = g.append('g')
@@ -156,7 +160,7 @@ export function renderAxes(g: d3.Selection<SVGGElement, {}, null, undefined>, xv
     .style('stroke-width', '0')
     .style('stroke', 'none')
     .attr('fill', 'black')
-    .style('font-size', '12px')
+    .style('font-size', '11px')
     .attr('font-family', DEFAULT_FONT)
 
   // axis name
