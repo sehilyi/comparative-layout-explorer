@@ -203,7 +203,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     }
   }
   else if (C.direction === "horizontal") {
-    const GroupW = 150
+    const GroupW = 90
     const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
     const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
     const xDomain = nestedAggValsRev.map(d => d.key);
