@@ -40,10 +40,12 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   const noY = consistency.y && !revY && C.direction === 'horizontal'
   const isAColorUsed = !isUndefined(A.encoding.color)
   const isBColorUsed = !isUndefined(B.encoding.color)
+  const isALegendUse = consistency.color && C.direction == "vertical" || !consistency.color && isAColorUsed
+  const isBLegendUse = consistency.color && C.direction == "horizontal" || !consistency.color && isBColorUsed
   let legend: number[] = []
   // TODO: this should be cleaned up
-  if (isAColorUsed && consistency.color && C.direction == "vertical") legend.push(0)
-  if (isBColorUsed && consistency.color && C.direction == "horizontal") legend.push(1)
+  if (isALegendUse) legend.push(0)
+  if (isBLegendUse) legend.push(1)
   const aggD = getAggregatedData(A, B)
   const chartsp = getChartSize(numOfC, numOfR, {noX, noY, legend})
   d3.select(ref)
@@ -60,7 +62,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     const c = getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""])
 
     renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX})
-    if (consistency.color && C.direction === "vertical")
+    if (isALegendUse)
       renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_GAP, 0)), c.domain() as string[], c.range() as string[])
   }
   { /// B
@@ -73,7 +75,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     const c = getColor(consistency.color ? aggD.Union.categories : isBColorUsed ? aggD.B.categories : [""])
 
     renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noY, revY, revX})
-    if (consistency.color && C.direction === "horizontal")
+    if (isBLegendUse)
       renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_GAP, 0)), c.domain() as string[], c.range() as string[])
   }
 }

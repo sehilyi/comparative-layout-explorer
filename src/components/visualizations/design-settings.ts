@@ -121,7 +121,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       encoding: {
         x: {field: "Source", type: "nominal"},
         y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-        color: {field: "MPAA_Rating", type: "nominal"}
+        // color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     B: {
@@ -137,12 +137,12 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     },
     C: {
       layout: "stack",
-      direction: "vertical",
+      direction: "horizontal",
       unit: "chart",
       consistency: {
         y: {value: true, mirrored: false},
         x: {value: false, mirrored: false},
-        color: false
+        color: true
       }
     }
   }
