@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {GAP_BETWEEN_CHARTS, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor, getBarColorDarker, getChartSize as getChartSizeAndPositions} from "./design-settings";
+import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getBarColorDarker, getChartSize as getChartSizeAndPositions} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
 
@@ -101,12 +101,13 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
 function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
+  const chartsp = getChartSizeAndPositions(1, 1, {})
   d3.select(ref)
-    .attr(_width, CHART_TOTAL_SIZE.width)
-    .attr(_height, CHART_TOTAL_SIZE.height)
+    .attr(_width, chartsp.size.width)
+    .attr(_height, chartsp.size.height)
 
   const g = d3.select(ref).append(_g)
-    .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+    .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
   const height = CHART_SIZE.height; // TODO: handle this
 
   const {values: valsA} = A.data, {values: valsB} = B.data;
@@ -150,13 +151,13 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
 
   if (C.direction === "vertical") {
-    const size = getChartSizeAndPositions(1, 1, {}).size
+    const chartsp = getChartSizeAndPositions(1, 1, {})
     d3.select(ref)
-      .attr(_width, size.width)
-      .attr(_height, size.height)
+      .attr(_width, chartsp.size.width)
+      .attr(_height, chartsp.size.height)
 
     const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+      .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
     const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
     const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
@@ -224,10 +225,10 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
-  const size = getChartSizeAndPositions(1, 1, {}).size
+  const chartsp = getChartSizeAndPositions(1, 1, {})
   d3.select(ref)
-    .attr(_height, size.height)
-    .attr(_width, size.width)
+    .attr(_height, chartsp.size.height)
+    .attr(_width, chartsp.size.width)
 
   const {values: valsA} = A.data, {values: valsB} = B.data
   const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y
@@ -238,7 +239,7 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
   { /// B
     const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(CHART_MARGIN.left + 6, CHART_MARGIN.top))
+      .attr(_transform, translate(chartsp.positions[0].left + 6, chartsp.positions[0].top))
 
     const groups = uniqueValues(valsB, B.encoding.x.field)
     const xDomain = consistency.x ? groupsUnion : groups
@@ -259,7 +260,7 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   }
   { /// A
     const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top))
+      .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
 
     const groups = uniqueValues(valsA, A.encoding.x.field)
     const xDomain = consistency.x ? groupsUnion : groups
@@ -278,10 +279,10 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
-  const size = getChartSizeAndPositions(1, 1, {}).size
+  const chartsp = getChartSizeAndPositions(1, 1, {})
   d3.select(ref)
-    .attr(_height, size.height)
-    .attr(_width, size.width)
+    .attr(_height, chartsp.size.height)
+    .attr(_width, chartsp.size.width)
 
   const {values: valsA} = A.data, {values: valsB} = B.data
   const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y
@@ -292,7 +293,7 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
   { /// A
     const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top))
+      .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
 
     const groups = uniqueValues(valsA, A.encoding.x.field)
     const xDomain = consistency.x ? groupsUnion : groups
@@ -308,7 +309,7 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
     { /// B
       const g = d3.select(ref).append(_g)
-        .attr(_transform, translate(CHART_MARGIN.left + 0, CHART_MARGIN.top))
+        .attr(_transform, translate(chartsp.positions[0].left + 0, chartsp.positions[0].top))
 
       const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
       const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
