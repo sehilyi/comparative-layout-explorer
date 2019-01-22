@@ -31,12 +31,17 @@ export const CATEGORICAL_COLORS_DARKEST = [
 export const DEFAULT_FONT = "Roboto Condensed";
 
 // bar
-export const BAR_GAP = 7;
-export const GAP_BETWEEN_CHARTS = 10;
+export const BAR_GAP = 10;
+export const GAP_BETWEEN_CHARTS = 20;
 export const MAX_BAR_WIDTH = 30;
 
 export const BAR_COLOR = '#4E79A7';
 export const BAR_COLOR2 = '#F28E2B';
+
+// legend
+export const LEGEND_GAP = 5
+export const LEGEND_MARK_SIZE = {width: 10, height: 10}
+export const LEGEND_WIDTH = 100
 
 export function getBarWidth(cw: number, n: number, g: number) {
   return d3.min([cw / n - g as number, MAX_BAR_WIDTH])
@@ -61,11 +66,13 @@ export function getChartSize(x: number, y: number, styles: object) {
   const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
   const w = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
   const h = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
+  const legend = ifUndefinedGetDefault(styles["legend"], false) as boolean;
 
-  const width = noY ? (w + GAP_BETWEEN_CHARTS) * x + CHART_MARGIN.left + CHART_MARGIN.right :
-    (w + CHART_MARGIN.left + CHART_MARGIN.right) * x;
+  const lgdWidth = legend ? LEGEND_WIDTH : 0
+  const width = (noY ? (w + GAP_BETWEEN_CHARTS) * x + CHART_MARGIN.left + CHART_MARGIN.right :
+    (w + CHART_MARGIN.left + CHART_MARGIN.right) * x) + lgdWidth
   const height = noX ? (h + GAP_BETWEEN_CHARTS) * y + CHART_MARGIN.top + CHART_MARGIN.bottom :
-    (h + CHART_MARGIN.top + CHART_MARGIN.bottom) * y;
+    (h + CHART_MARGIN.top + CHART_MARGIN.bottom) * y
 
   let positions: {left: number, top: number}[] = [];
   for (let i = 0; i < x; i++) {
@@ -107,7 +114,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "Source", type: "nominal"},
+        x: {field: "MPAA_Rating", type: "nominal"},
         y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
@@ -118,12 +125,12 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "Source", type: "nominal"},
+        x: {field: "MPAA_Rating", type: "nominal"},
         y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
       }
     },
     C: {
-      layout: "overlay",
+      layout: "stack",
       direction: "horizontal",
       unit: "element",
       consistency: {

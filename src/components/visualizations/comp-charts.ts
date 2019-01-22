@@ -5,7 +5,7 @@ import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
 import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getChartSize as getChartSize, getColor, getConstantColor} from "./design-settings";
 import {isUndefined} from "util";
-import {renderBarChart, renderBars} from "./barcharts";
+import {renderBarChart, renderBars, renderLegend} from "./barcharts";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();
@@ -73,19 +73,23 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
 function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C)
+  const aggD = getAggregatedData(A, B)
+  const width = CHART_SIZE.width
   const height = CHART_SIZE.height;
-  const chartsp = getChartSize(1, 1, {height})
+  const chartsp = getChartSize(1, 1, {height, legend: true})
   d3.select(ref)
     .attr(_width, chartsp.size.width)
     .attr(_height, chartsp.size.height)
   const g = d3.select(ref).append(_g)
     .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
-  const aggD = getAggregatedData(A, B)
   const xDomain = consistency.x ? aggD.Union.categories : aggD.A.categories
 
   const colorA = getConstantColor()
   const colorB = getConstantColor(2);
+  renderLegend(g.append(_g).attr(_transform, translate(width + GAP_BETWEEN_CHARTS, 0)),
+    [A.encoding.y.field, B.encoding.y.field],
+    colorA.range().concat(colorB.range()) as string[])
 
   if (C.direction === "vertical") { // stacked bar
     const yDomain = getAggValues(aggD.Union.data, "key", "value", 'sum').map(d => d.value)

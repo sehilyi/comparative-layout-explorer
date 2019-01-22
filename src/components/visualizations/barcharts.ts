@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
-import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, BAR_GAP} from './design-settings';
-import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey, _stroke, _stroke_width} from '.';
+import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, BAR_GAP, LEGEND_MARK_SIZE, LEGEND_GAP} from './design-settings';
+import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey, _stroke, _stroke_width, _color, _text, _text_anchor, _start, _font_size, _alignment_baseline, _middle} from '.';
 import {isUndefined} from 'util';
 
 export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
@@ -115,4 +115,31 @@ export function renderBars(
   //   .attr(_height, "8")
   //   .attr(_transform, translate(0, 0))
   //   .attr(_fill, "#88AAEE");
+}
+
+export function renderLegend(
+  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  domain: string[],
+  range: string[]) {
+
+  g.attr(_fill, 'red')
+  // Notice: domain.length is always equal or larger than range.length
+  for (let i = 0; i < domain.length; i++) {
+    g.append(_rect)
+      .attr(_x, 0)
+      .attr(_y, i * (LEGEND_MARK_SIZE.height + LEGEND_GAP))
+      .attr(_width, LEGEND_MARK_SIZE.width)
+      .attr(_height, LEGEND_MARK_SIZE.height)
+      .attr(_fill, range[i >= range.length ? i - range.length : i])  // handle corner case
+      .attr(_stroke, "null")
+
+    g.append(_text)
+      .attr(_x, LEGEND_MARK_SIZE.width + LEGEND_GAP)
+      .attr(_y, i * (LEGEND_MARK_SIZE.height + LEGEND_GAP) + LEGEND_MARK_SIZE.height / 2.0)
+      .attr(_text_anchor, _start)
+      .attr(_alignment_baseline, _middle)
+      .attr(_fill, "black")
+      .attr(_font_size, "10px")
+      .text(domain[i].length > 17 ? domain[i].slice(0, 15).concat("...") : domain[i])
+  }
 }
