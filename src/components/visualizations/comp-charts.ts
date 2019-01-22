@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {BAR_CHART_GAP, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor, getTotalChartSize, getBarColorDarker} from "./design-settings";
+import {GAP_BETWEEN_CHARTS, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor, getBarColorDarker, getChartSize} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
 
@@ -33,31 +33,32 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
   // determine svg size by direction and consistency
   // consistency reduce gap between charts
+  let size;
   if (C.direction === 'horizontal') {
-    d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height)
     if (consistency.y && !consistency.y_mirrored) {
-      d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width + CHART_SIZE.width + BAR_CHART_GAP)
+      size = getChartSize(2, 1, {noY: true})
     }
     else {
-      d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width * 2)
+      size = getChartSize(2, 1, {})
     }
   }
-  else {  // direction === vertical
-    d3.select(ref).attr(_width, CHART_TOTAL_SIZE.width)
+  else {
     if (consistency.x && !consistency.x_mirrored) {
-      d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height + CHART_SIZE.height + BAR_CHART_GAP)
+      size = getChartSize(1, 2, {noX: true})
     }
     else {
-      d3.select(ref).attr(_height, CHART_TOTAL_SIZE.height * 2)
+      size = getChartSize(1, 2, {})
     }
   }
-
+  d3.select(ref)
+    .attr(_width, size.width)
+    .attr(_height, size.height);
 
   // determine start X & Y positions for the second chart
   let transB: {left: number, top: number};
   if (C.direction === 'horizontal') {
     if (consistency.y && !consistency.y_mirrored) {
-      transB = {left: CHART_MARGIN.left + CHART_SIZE.width + BAR_CHART_GAP, top: CHART_MARGIN.top};
+      transB = {left: CHART_MARGIN.left + CHART_SIZE.width + GAP_BETWEEN_CHARTS, top: CHART_MARGIN.top};
     }
     else {
       transB = {left: CHART_TOTAL_SIZE.width + CHART_MARGIN.left, top: CHART_MARGIN.top};
@@ -65,7 +66,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   }
   else { // if (C.direction === 'vertical') {
     if (consistency.x && !consistency.x_mirrored) {
-      transB = {left: CHART_MARGIN.left, top: CHART_MARGIN.top + CHART_SIZE.height + BAR_CHART_GAP}
+      transB = {left: CHART_MARGIN.left, top: CHART_MARGIN.top + CHART_SIZE.height + GAP_BETWEEN_CHARTS}
     }
     else {
       transB = {left: CHART_MARGIN.left, top: CHART_TOTAL_SIZE.height + CHART_MARGIN.top}
@@ -168,9 +169,10 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
 
   if (C.direction === "vertical") {
+    const size = getChartSize(1, 1, {})
     d3.select(ref)
-      .attr(_width, CHART_TOTAL_SIZE.width)
-      .attr(_height, CHART_TOTAL_SIZE.height)
+      .attr(_width, size.width)
+      .attr(_height, size.height)
 
     const g = d3.select(ref).append(_g)
       .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
@@ -210,9 +212,10 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const yDomain = [].concat(...nestedAggVals.map(d => d.values.map((_d: object) => _d["value"])))  // TODO: clearer method?
     const groups = uniqueValues(B.data.values, bxField)
 
+    const size = getChartSize(nestedAggVals.length, 1, {width: GroupW, noY: true})
     d3.select(ref)
-      .attr(_width, getTotalChartSize(GroupW, CHART_SIZE.height).width + (GroupW + BAR_CHART_GAP) * (nestedAggVals.length - 1))
-      .attr(_height, CHART_TOTAL_SIZE.height)
+      .attr(_width, size.width)
+      .attr(_height, size.height)
 
     const g = d3.select(ref).append(_g)
       .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
@@ -220,7 +223,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     for (let i = 0; i < nestedAggVals.length; i++) {
       const noY = i != 0 ? true : false // TOOD: need showY option for grouped bar chart (blend-horizontal)??
       const gPart = g.append(_g).attr(_transform, translate(
-        (GroupW + BAR_CHART_GAP + (!noY ? CHART_MARGIN.left + CHART_MARGIN.right : 0)) * i, 0)
+        (GroupW + GAP_BETWEEN_CHARTS + (!noY ? CHART_MARGIN.left + CHART_MARGIN.right : 0)) * i, 0)
       )
 
       const color = d3.scaleOrdinal()
@@ -240,9 +243,10 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
+  const size = getChartSize(1, 1, {})
   d3.select(ref)
-    .attr(_height, CHART_TOTAL_SIZE.height)
-    .attr(_width, CHART_TOTAL_SIZE.width)
+    .attr(_height, size.height)
+    .attr(_width, size.width)
 
   const {values: valsA} = A.data, {values: valsB} = B.data
   const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y
@@ -293,9 +297,10 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
+  const size = getChartSize(1, 1, {})
   d3.select(ref)
-    .attr(_height, CHART_TOTAL_SIZE.height)
-    .attr(_width, CHART_TOTAL_SIZE.width)
+    .attr(_height, size.height)
+    .attr(_width, size.width)
 
   const {values: valsA} = A.data, {values: valsB} = B.data
   const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y

@@ -2,6 +2,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import d3 = require("d3");
+import {ifUndefinedGetDefault} from "src/useful-factory/utils";
 
 // general
 export const CHART_SIZE = {width: 230, height: 200};
@@ -28,7 +29,7 @@ export const DEFAULT_FONT = "Roboto Condensed";
 
 // bar
 export const BAR_GAP = 7;
-export const BAR_CHART_GAP = 10;
+export const GAP_BETWEEN_CHARTS = 10;
 export const MAX_BAR_WIDTH = 30;
 
 export const BAR_COLOR = '#4E79A7';
@@ -47,8 +48,21 @@ export function getBarColorDarkest(n: number) {
   return CATEGORICAL_COLORS_DARKEST.slice(0, n > CATEGORICAL_COLORS_DARKEST.length ? CATEGORICAL_COLORS_DARKEST.length - 1 : n);
 }
 
-export function getTotalChartSize(w: number, h: number) {
-  return {width: w + CHART_MARGIN.left + CHART_MARGIN.right, height: h + CHART_MARGIN.top + CHART_MARGIN.bottom}
+// export function getTotalChartSize(w: number, h: number) {
+//   return {width: w + CHART_MARGIN.left + CHART_MARGIN.right, height: h + CHART_MARGIN.top + CHART_MARGIN.bottom}
+// }
+
+export function getChartSize(x: number, y: number, styles: object): {width: number, height: number} {
+  const noX = ifUndefinedGetDefault(styles["noY"], false) as boolean;
+  const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
+  const w = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
+  const h = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
+
+  const width = noY ? (w + GAP_BETWEEN_CHARTS) * x + CHART_MARGIN.left + CHART_MARGIN.right :
+    (w + CHART_MARGIN.left + CHART_MARGIN.right) * x;
+  const height = noX ? (h + GAP_BETWEEN_CHARTS) * y + CHART_MARGIN.top + CHART_MARGIN.bottom :
+    (h + CHART_MARGIN.top + CHART_MARGIN.bottom) * y;
+  return {width, height}
 }
 
 // test
@@ -80,7 +94,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     C: {
       layout: 'blend',
       direction: "horizontal",
-      // unit: "element",
+      unit: "chart",
       consistency: {
         y: {value: true, mirrored: false},
         x: {value: false, mirrored: false},

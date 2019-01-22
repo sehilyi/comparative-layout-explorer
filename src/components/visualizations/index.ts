@@ -149,7 +149,7 @@ export function renderAxes(
       .classed('label', true)
       .attr('transform', 'rotate(-90)')
       .attr('x', -height / 2)
-      .attr('y', -45)
+      .attr('y', -50)
       .attr('dy', '.71em')
       .style('font-weight', 'bold')
       .style('fill', 'black')
