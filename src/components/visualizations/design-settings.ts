@@ -3,6 +3,7 @@ import {CompSpec} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import d3 = require("d3");
 import {ifUndefinedGetDefault} from "src/useful-factory/utils";
+import {isUndefined} from "util";
 
 // general
 export const CHART_SIZE = {width: 230, height: 200};
@@ -12,6 +13,8 @@ export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,
   height: CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom
 }
+
+// TOOD: add more pallete
 export const CATEGORICAL_COLORS = [
   '#4E79A7', '#F28E2B', '#E15759',
   '#76B7B2', '#59A14E', '#EDC949',
@@ -39,7 +42,8 @@ export function getBarWidth(cw: number, n: number, g: number) {
   return d3.min([cw / n - g as number, MAX_BAR_WIDTH])
 }
 export function getBarColor(n: number) {
-  return CATEGORICAL_COLORS.slice(0, n > CATEGORICAL_COLORS.length ? CATEGORICAL_COLORS.length - 1 : n);
+  const pallete = CATEGORICAL_COLORS.concat(CATEGORICAL_COLORS_DARKER);
+  return pallete.slice(0, n > pallete.length ? pallete.length - 1 : n);
 }
 export function getBarColorDarker(n: number) {
   return CATEGORICAL_COLORS_DARKER.slice(0, n > CATEGORICAL_COLORS_DARKER.length ? CATEGORICAL_COLORS_DARKER.length - 1 : n);
@@ -77,6 +81,22 @@ export function getChartSize(x: number, y: number, styles: object) {
   return {size: {width, height}, positions}
 }
 
+export function getColor(d: string[], styles?: {darker: boolean}) {
+  const stl = ifUndefinedGetDefault(styles, {})
+  const darker = ifUndefinedGetDefault(stl["darker"], false)
+
+  return d3.scaleOrdinal()
+    .domain(d)
+    .range(darker ? getBarColorDarker(d.length) : getBarColor(d.length))
+}
+
+export function getConstantColor(index?: number) {
+  let i = isUndefined(index) || index <= 0 ? 1 : index > CATEGORICAL_COLORS.length ? index - CATEGORICAL_COLORS.length : index
+  return d3.scaleOrdinal()
+    // no domain
+    .range(getBarColor(i).slice(i - 1, i))
+}
+
 // test
 export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
@@ -99,12 +119,11 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       mark: "bar",
       encoding: {
         x: {field: "Source", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
-        color: {field: "Major_Genre", type: "nominal"}
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
       }
     },
     C: {
-      layout: 'overlay',
+      layout: "overlay",
       direction: "horizontal",
       unit: "element",
       consistency: {
