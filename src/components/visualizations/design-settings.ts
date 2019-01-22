@@ -62,13 +62,16 @@ export function getBarColorDarkest(n: number) {
 // }
 
 export function getChartSize(x: number, y: number, styles: object) {
-  const noX = ifUndefinedGetDefault(styles["noY"], false) as boolean;
+  const noX = ifUndefinedGetDefault(styles["noX"], false) as boolean;
   const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
   const w = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
   const h = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
-  const legend = ifUndefinedGetDefault(styles["legend"], false) as boolean;
+  // specify **column** indexes that legend exists
+  // TODO: this should be revised!!! not natural to specify only the column
+  const legend = ifUndefinedGetDefault(styles["legend"], []) as number[];
 
-  const lgdWidth = legend ? LEGEND_WIDTH : 0
+  const lgdWidth = legend.length * LEGEND_WIDTH
+  console.log(legend)
   const width = (noY ? (w + GAP_BETWEEN_CHARTS) * x + CHART_MARGIN.left + CHART_MARGIN.right :
     (w + CHART_MARGIN.left + CHART_MARGIN.right) * x) + lgdWidth
   const height = noX ? (h + GAP_BETWEEN_CHARTS) * y + CHART_MARGIN.top + CHART_MARGIN.bottom :
@@ -78,8 +81,10 @@ export function getChartSize(x: number, y: number, styles: object) {
   for (let i = 0; i < x; i++) {
     for (let j = 0; j < y; j++) {
       positions.push({
-        left: noY ? CHART_MARGIN.left + (w + GAP_BETWEEN_CHARTS) * i :
-          CHART_MARGIN.left + (CHART_MARGIN.left + w + CHART_MARGIN.right) * i,
+        left: (noY ? CHART_MARGIN.left + (w + GAP_BETWEEN_CHARTS) * i :
+          CHART_MARGIN.left + (CHART_MARGIN.left + w + CHART_MARGIN.right) * i) +
+          // TODO: clear this up!
+          (legend.filter(d => d < i).length != 0 ? legend.filter(d => d < i).length * LEGEND_WIDTH : 0),
         top: noX ? CHART_MARGIN.top + (h + GAP_BETWEEN_CHARTS) * j :
           CHART_MARGIN.top + (CHART_MARGIN.top + h + CHART_MARGIN.bottom) * j
       })
@@ -114,7 +119,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
+        x: {field: "Source", type: "nominal"},
         y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
@@ -126,17 +131,18 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       mark: "bar",
       encoding: {
         x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
       layout: "stack",
-      direction: "horizontal",
-      unit: "element",
+      direction: "vertical",
+      unit: "chart",
       consistency: {
         y: {value: true, mirrored: false},
-        x: {value: true, mirrored: false},
-        color: true
+        x: {value: false, mirrored: false},
+        color: false
       }
     }
   }

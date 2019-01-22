@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getChartSize as getChartSize, getColor, getConstantColor} from "./design-settings";
+import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getChartSize as getChartSize, getColor, getConstantColor, LEGEND_GAP} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars, renderLegend} from "./barcharts";
 
@@ -36,11 +36,16 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   // second chart's properties
   const revY = consistency.y_mirrored
   const revX = consistency.x_mirrored
-  const noX = consistency.y && !revY && C.direction === 'vertical'
-  const noY = consistency.x && !revX && C.direction === 'horizontal'
-
+  const noX = consistency.x && !revX && C.direction === 'vertical'
+  const noY = consistency.y && !revY && C.direction === 'horizontal'
+  const isAColorUsed = !isUndefined(A.encoding.color)
+  const isBColorUsed = !isUndefined(B.encoding.color)
+  let legend: number[] = []
+  // TODO: this should be cleaned up
+  if (isAColorUsed && consistency.color && C.direction == "vertical") legend.push(0)
+  if (isBColorUsed && consistency.color && C.direction == "horizontal") legend.push(1)
   const aggD = getAggregatedData(A, B)
-  const chartsp = getChartSize(numOfC, numOfR, {noX, noY})
+  const chartsp = getChartSize(numOfC, numOfR, {noX, noY, legend})
   d3.select(ref)
     .attr(_width, chartsp.size.width)
     .attr(_height, chartsp.size.height);
@@ -52,10 +57,11 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     const xDomain = consistency.x ? aggD.Union.categories : aggD.A.categories
     const yDomain = consistency.y ? aggD.Union.values : aggD.A.values
 
-    const isColorUsed = !isUndefined(A.encoding.color)
-    const c = getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.A.categories : [""])
+    const c = getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""])
 
     renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX})
+    if (consistency.color && C.direction === "vertical")
+      renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_GAP, 0)), c.domain() as string[], c.range() as string[])
   }
   { /// B
     const g = d3.select(ref).append(_g)
@@ -64,10 +70,11 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     const xDomain = consistency.x ? aggD.Union.categories : aggD.B.categories
     const yDomain = consistency.y ? aggD.B.values.concat(aggD.A.values) : aggD.B.values
 
-    const isColorUsed = !isUndefined(B.encoding.color)
-    const c = getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.B.categories : [""])
+    const c = getColor(consistency.color ? aggD.Union.categories : isBColorUsed ? aggD.B.categories : [""])
 
     renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noY, revY, revX})
+    if (consistency.color && C.direction === "horizontal")
+      renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_GAP, 0)), c.domain() as string[], c.range() as string[])
   }
 }
 
@@ -76,7 +83,7 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
   const aggD = getAggregatedData(A, B)
   const width = CHART_SIZE.width
   const height = CHART_SIZE.height;
-  const chartsp = getChartSize(1, 1, {height, legend: true})
+  const chartsp = getChartSize(1, 1, {height, legend: [0]})
   d3.select(ref)
     .attr(_width, chartsp.size.width)
     .attr(_height, chartsp.size.height)
