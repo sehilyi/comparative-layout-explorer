@@ -18,10 +18,12 @@
 
   .control-pane {
     height: 300px;
-    background: #ececec;
+    background: #f1f1f1;
+    border-radius: 10px;
 
     textarea {
       padding: 10px;
+      padding-left: 30px;
       width: calc(100% - 20px);
       height: calc(100% - 20px);
       background: none;
@@ -29,6 +31,8 @@
       font-family: "Roboto Condensed";
       // font-size: 1em;
       font-weight: bold;
+      resize: none;
+      overflow-y: hidden;
     }
   }
 
@@ -37,9 +41,9 @@
     overflow-y: auto;
     height: calc(100% - 70px - 150px);
 
-    .example-element:nth-child(odd) {
-      background: #f8f8f8;
-    }
+    // .example-element:nth-child(odd) {
+    //   background: #f8f8f8;
+    // }
 
     .example-element {
       padding: 10px;
@@ -59,8 +63,8 @@
 
       .result-group {
         display: grid;
-        // grid-template-columns: repeat(5, 1fr);
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(5, 1fr);
+        // grid-template-columns: repeat(3, 1fr);
 
         .chart {
           text-align: center;

@@ -63,6 +63,11 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     let onBarChartAPlusB = (ref: SVGSVGElement) => {
       renderCompChart(ref, A, B, C)
     }
+    let _A = JSON.parse(JSON.stringify(A))
+    _A.data.values = "..."
+    let _B = JSON.parse(JSON.stringify(B))
+    _B.data.values = "..."
+    let _C = JSON.parse(JSON.stringify(C))
     return (
       <div className='app-root'>
         <div className='header'>
@@ -73,9 +78,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
           <FontAwesomeIcon icon="question" className='trade-mark' />
           {/* viz-subtlety-highlighter */}
         </div>
-        <div className='control-pane'>
+        {/* <div className='control-pane'>
           <textarea value={JSON.stringify(C, null, '\t')} readOnly />
-        </div>
+        </div> */}
         <div className='main-pane'>
           {/* <h1>Design</h1>
           <div className='result-group test'>
@@ -93,6 +98,15 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
               <div className='chart'><svg ref={onBarChartB}></svg></div>
               <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' /></div>
               <div className='onBarChartAPlusB'><svg ref={onBarChartAPlusB}></svg></div>
+            </div>
+          </div>
+          <div className='example-element'>
+            <div className='result-group'>
+              <div className='control-pane'><textarea value={JSON.stringify(_A, null, 2)} readOnly /></div>
+              <div></div>
+              <div className='control-pane'><textarea value={JSON.stringify(_B, null, 2)} readOnly /></div>
+              <div></div>
+              <div className='control-pane'><textarea value={JSON.stringify(_C, null, 2)} readOnly /></div>
             </div>
           </div>
           {/* <h1>Scatterplots</h1> */}
