@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {GAP_BETWEEN_CHARTS, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor, getBarColorDarker, getChartSize} from "./design-settings";
+import {GAP_BETWEEN_CHARTS, CHART_TOTAL_SIZE, CHART_SIZE, CHART_MARGIN, getBarColor, getBarColorDarker, getChartSize as getChartSizeAndPositions} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
 
@@ -33,45 +33,26 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
   // determine svg size by direction and consistency
   // consistency reduce gap between charts
-  let size;
+  let chartsp;
   if (C.direction === 'horizontal') {
     if (consistency.y && !consistency.y_mirrored) {
-      size = getChartSize(2, 1, {noY: true})
+      chartsp = getChartSizeAndPositions(2, 1, {noY: true})
     }
     else {
-      size = getChartSize(2, 1, {})
+      chartsp = getChartSizeAndPositions(2, 1, {})
     }
   }
   else {
     if (consistency.x && !consistency.x_mirrored) {
-      size = getChartSize(1, 2, {noX: true})
+      chartsp = getChartSizeAndPositions(1, 2, {noX: true})
     }
     else {
-      size = getChartSize(1, 2, {})
+      chartsp = getChartSizeAndPositions(1, 2, {})
     }
   }
   d3.select(ref)
-    .attr(_width, size.width)
-    .attr(_height, size.height);
-
-  // determine start X & Y positions for the second chart
-  let transB: {left: number, top: number};
-  if (C.direction === 'horizontal') {
-    if (consistency.y && !consistency.y_mirrored) {
-      transB = {left: CHART_MARGIN.left + CHART_SIZE.width + GAP_BETWEEN_CHARTS, top: CHART_MARGIN.top};
-    }
-    else {
-      transB = {left: CHART_TOTAL_SIZE.width + CHART_MARGIN.left, top: CHART_MARGIN.top};
-    }
-  }
-  else { // if (C.direction === 'vertical') {
-    if (consistency.x && !consistency.x_mirrored) {
-      transB = {left: CHART_MARGIN.left, top: CHART_MARGIN.top + CHART_SIZE.height + GAP_BETWEEN_CHARTS}
-    }
-    else {
-      transB = {left: CHART_MARGIN.left, top: CHART_TOTAL_SIZE.height + CHART_MARGIN.top}
-    }
-  }
+    .attr(_width, chartsp.size.width)
+    .attr(_height, chartsp.size.height);
 
   const {values: valsA} = A.data, {values: valsB} = B.data
   const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y
@@ -82,7 +63,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
   { /// A
     const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top))
+      .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
 
     const groups = uniqueValues(valsA, A.encoding.x.field)
     const xDomain = consistency.x ? groupsUnion : groups
@@ -99,7 +80,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   }
   { /// B
     const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(transB.left, transB.top))
+      .attr(_transform, translate(chartsp.positions[1].left, chartsp.positions[1].top))
 
     const groups = uniqueValues(valsB, B.encoding.x.field)
     const xDomain = consistency.x ? groupsUnion : groups
@@ -169,7 +150,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
 
   if (C.direction === "vertical") {
-    const size = getChartSize(1, 1, {})
+    const size = getChartSizeAndPositions(1, 1, {}).size
     d3.select(ref)
       .attr(_width, size.width)
       .attr(_height, size.height)
@@ -212,7 +193,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const yDomain = [].concat(...nestedAggVals.map(d => d.values.map((_d: object) => _d["value"])))  // TODO: clearer method?
     const groups = uniqueValues(B.data.values, bxField)
 
-    const size = getChartSize(nestedAggVals.length, 1, {width: GroupW, noY: true})
+    const size = getChartSizeAndPositions(nestedAggVals.length, 1, {width: GroupW, noY: true}).size
     d3.select(ref)
       .attr(_width, size.width)
       .attr(_height, size.height)
@@ -243,7 +224,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
-  const size = getChartSize(1, 1, {})
+  const size = getChartSizeAndPositions(1, 1, {}).size
   d3.select(ref)
     .attr(_height, size.height)
     .attr(_width, size.width)
@@ -297,7 +278,7 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
-  const size = getChartSize(1, 1, {})
+  const size = getChartSizeAndPositions(1, 1, {}).size
   d3.select(ref)
     .attr(_height, size.height)
     .attr(_width, size.width)

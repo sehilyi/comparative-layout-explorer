@@ -52,7 +52,7 @@ export function getBarColorDarkest(n: number) {
 //   return {width: w + CHART_MARGIN.left + CHART_MARGIN.right, height: h + CHART_MARGIN.top + CHART_MARGIN.bottom}
 // }
 
-export function getChartSize(x: number, y: number, styles: object): {width: number, height: number} {
+export function getChartSize(x: number, y: number, styles: object) {
   const noX = ifUndefinedGetDefault(styles["noY"], false) as boolean;
   const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
   const w = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
@@ -62,7 +62,19 @@ export function getChartSize(x: number, y: number, styles: object): {width: numb
     (w + CHART_MARGIN.left + CHART_MARGIN.right) * x;
   const height = noX ? (h + GAP_BETWEEN_CHARTS) * y + CHART_MARGIN.top + CHART_MARGIN.bottom :
     (h + CHART_MARGIN.top + CHART_MARGIN.bottom) * y;
-  return {width, height}
+
+  let positions: {left: number, top: number}[] = [];
+  for (let i = 0; i < x; i++) {
+    for (let j = 0; j < y; j++) {
+      positions.push({
+        left: noY ? CHART_MARGIN.left + (w + GAP_BETWEEN_CHARTS) * i :
+          CHART_MARGIN.left + (CHART_MARGIN.left + w + CHART_MARGIN.right) * i,
+        top: noX ? CHART_MARGIN.top + (h + GAP_BETWEEN_CHARTS) * j :
+          CHART_MARGIN.top + (CHART_MARGIN.top + h + CHART_MARGIN.bottom) * j
+      })
+    }
+  }
+  return {size: {width, height}, positions}
 }
 
 // test
@@ -92,11 +104,11 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       }
     },
     C: {
-      layout: 'blend',
+      layout: 'stack',
       direction: "horizontal",
       unit: "chart",
       consistency: {
-        y: {value: true, mirrored: false},
+        y: {value: false, mirrored: false},
         x: {value: false, mirrored: false},
         color: true
       }
