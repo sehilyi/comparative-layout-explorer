@@ -2,7 +2,11 @@ import * as d3 from 'd3';
 import {isUndefined} from 'util';
 
 export function translate(x: number, y: number) {
-  return `translate(${x}, ${y})`;
+  return `translate(${x}, ${y})`
+}
+
+export function rotate(d: number) {
+  return `rotate(${d})`
 }
 
 export function uniqueValues(o: Object[], k: string) {
@@ -10,15 +14,15 @@ export function uniqueValues(o: Object[], k: string) {
 }
 
 export function isDeepTrue(o: boolean | object) {
-  return o === true || o['value'] === true;
+  return o === true || o['value'] === true
 }
 
 export function isUndefinedOrFalse(o: boolean) {
-  return typeof o === "undefined" || o === false;
+  return typeof o === "undefined" || o === false
 }
 
 export function ifUndefinedGetDefault(o: any, d: any) {
-  return isUndefined(o) ? d : o;
+  return isUndefined(o) ? d : o
 }
 /**
  * Return random integers from low (inclusive) to high (exclusive).
@@ -26,7 +30,7 @@ export function ifUndefinedGetDefault(o: any, d: any) {
  * @param high
  */
 export function randint(low: number, high: number) {
-  return Math.floor(Math.random() * (high - low)) + low;
+  return Math.floor(Math.random() * (high - low)) + low
 }
 
 export function removeItemFromArray(array: ReadonlyArray<any>, index: number) {
@@ -36,7 +40,7 @@ export function removeItemFromArray(array: ReadonlyArray<any>, index: number) {
       ...array.slice(0, index),
       ...array.slice(index + 1)
     ]
-  };
+  }
 }
 
 export function insertItemToArray<T>(array: ReadonlyArray<T>, index: number, item: T) {
@@ -44,7 +48,7 @@ export function insertItemToArray<T>(array: ReadonlyArray<T>, index: number, ite
     ...array.slice(0, index),
     item,
     ...array.slice(index)
-  ];
+  ]
 }
 
 export function modifyItemInArray<T>(array: ReadonlyArray<T>, index: number, modifier: (t: Readonly<T>) => T) {
@@ -52,5 +56,5 @@ export function modifyItemInArray<T>(array: ReadonlyArray<T>, index: number, mod
     ...array.slice(0, index),
     modifier(array[index]),
     ...array.slice(index + 1)
-  ];
+  ]
 }

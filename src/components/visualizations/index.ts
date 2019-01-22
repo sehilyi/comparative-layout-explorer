@@ -1,6 +1,6 @@
 import {Spec, Aggregate} from 'src/models/simple-vega-spec';
 import * as d3 from 'd3';
-import {translate} from 'src/useful-factory/utils';
+import {translate, rotate} from 'src/useful-factory/utils';
 import {CHART_SIZE, CHART_MARGIN, DEFAULT_FONT} from './design-settings';
 
 export const _width = 'width', _height = 'height',
@@ -8,7 +8,9 @@ export const _width = 'width', _height = 'height',
   _transform = 'transform', _g = 'g', _rect = 'rect',
   _x = 'x', _y = 'y',
   _stroke = "stroke", _stroke_width = "stroke-width",
-  _opacity = "opacity";
+  _opacity = "opacity",
+  // text-related
+  _text_anchor = "text-anchor", _start = "start", _end = "end";
 
 export function isBarChart(spec: Spec) {
   return spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative';
@@ -88,7 +90,7 @@ export function renderAxes(
       ).nice()
       .rangeRound(revY ? [0, height] : [height, 0]);
 
-  let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(d => d.length > 5 ? d.slice(0, 3).concat('...') : d).tickSizeOuter(0);
+  let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0);
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(d3.format('.2s'));
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-height);
   let yGrid = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-width);
@@ -110,11 +112,17 @@ export function renderAxes(
 
   if (!noX) {
     let xaxis = g.append('g')
-      .classed('axis', true)
+      .classed('axis x-axis', true)
       .attr('stroke', '#888888')
       .attr('stroke-width', 0.5)
       .attr('transform', translate(0, height))
       .call(xAxis)
+
+    g.selectAll('.x-axis text')
+      .attr(_x, -6)
+      .attr(_y, 0)
+      .attr(_transform, rotate(310))
+      .attr(_text_anchor, _end)
 
     xaxis
       .attr('transform', translate(0, height))
@@ -166,7 +174,7 @@ export function renderAxes(
     .style('stroke-width', '0')
     .style('stroke', 'none')
     .attr('fill', 'black')
-    .style('font-size', '11px')
+    .style('font-size', '12px')
     .attr('font-family', DEFAULT_FONT)
 
   // axis name

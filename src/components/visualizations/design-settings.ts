@@ -5,7 +5,7 @@ import d3 = require("d3");
 
 // general
 export const CHART_SIZE = {width: 230, height: 200};
-export const CHART_MARGIN = {top: 10, right: 20, bottom: 40, left: 50};
+export const CHART_MARGIN = {top: 10, right: 20, bottom: 80, left: 50};
 export const CHART_PADDING = {right: 20};
 export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,
@@ -79,7 +79,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     },
     C: {
       layout: 'stack',
-      direction: "horizontal",
+      direction: "vertical",
       unit: "element",
       consistency: {
         y: {value: true, mirrored: true},
