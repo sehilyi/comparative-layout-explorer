@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getBarColorDarker, getChartSize as getChartSizeAndPositions} from "./design-settings";
+import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getBarColorDarker, getChartSize as getChartSize} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
 
@@ -33,23 +33,12 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
   // determine svg size by direction and consistency
   // consistency reduce gap between charts
-  let chartsp;
-  if (C.direction === 'horizontal') {
-    if (consistency.y && !consistency.y_mirrored) {
-      chartsp = getChartSizeAndPositions(2, 1, {noY: true})
-    }
-    else {
-      chartsp = getChartSizeAndPositions(2, 1, {})
-    }
-  }
-  else {
-    if (consistency.x && !consistency.x_mirrored) {
-      chartsp = getChartSizeAndPositions(1, 2, {noX: true})
-    }
-    else {
-      chartsp = getChartSizeAndPositions(1, 2, {})
-    }
-  }
+  const numOfC = C.direction === 'horizontal' ? 2 : 1
+  const numOfR = C.direction === 'vertical' ? 2 : 1
+  const noX = consistency.y && !consistency.y_mirrored;
+  const noY = consistency.x && !consistency.x_mirrored
+  const chartsp = getChartSize(numOfC, numOfR, {noX, noY})
+
   d3.select(ref)
     .attr(_width, chartsp.size.width)
     .attr(_height, chartsp.size.height);
@@ -101,7 +90,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
 function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
-  const chartsp = getChartSizeAndPositions(1, 1, {})
+  const chartsp = getChartSize(1, 1, {})
   d3.select(ref)
     .attr(_width, chartsp.size.width)
     .attr(_height, chartsp.size.height)
@@ -151,7 +140,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
 
   if (C.direction === "vertical") {
-    const chartsp = getChartSizeAndPositions(1, 1, {})
+    const chartsp = getChartSize(1, 1, {})
     d3.select(ref)
       .attr(_width, chartsp.size.width)
       .attr(_height, chartsp.size.height)
@@ -194,7 +183,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const yDomain = [].concat(...nestedAggVals.map(d => d.values.map((_d: object) => _d["value"])))  // TODO: clearer method?
     const groups = uniqueValues(B.data.values, bxField)
 
-    const size = getChartSizeAndPositions(nestedAggVals.length, 1, {width: GroupW, noY: true}).size
+    const size = getChartSize(nestedAggVals.length, 1, {width: GroupW, noY: true}).size
     d3.select(ref)
       .attr(_width, size.width)
       .attr(_height, size.height)
@@ -225,7 +214,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
-  const chartsp = getChartSizeAndPositions(1, 1, {})
+  const chartsp = getChartSize(1, 1, {})
   d3.select(ref)
     .attr(_height, chartsp.size.height)
     .attr(_width, chartsp.size.width)
@@ -279,7 +268,7 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
 
-  const chartsp = getChartSizeAndPositions(1, 1, {})
+  const chartsp = getChartSize(1, 1, {})
   d3.select(ref)
     .attr(_height, chartsp.size.height)
     .attr(_width, chartsp.size.width)
