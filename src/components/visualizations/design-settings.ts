@@ -39,9 +39,11 @@ export const BAR_COLOR = '#4E79A7';
 export const BAR_COLOR2 = '#F28E2B';
 
 // legend
+export const LEGEND_PADDING = 10
 export const LEGEND_GAP = 5
 export const LEGEND_MARK_SIZE = {width: 10, height: 10}
 export const LEGEND_WIDTH = 100
+export const LEGEND_VISIBLE_LIMIT = 15  // limit the number of legends for visible
 
 export function getBarWidth(cw: number, n: number, g: number) {
   return d3.min([cw / n - g as number, MAX_BAR_WIDTH])
@@ -71,7 +73,7 @@ export function getChartSize(x: number, y: number, styles: object) {
   const legend = ifUndefinedGetDefault(styles["legend"], []) as number[];
 
   const lgdWidth = legend.length * LEGEND_WIDTH
-  console.log(legend)
+
   const width = (noY ? (w + GAP_BETWEEN_CHARTS) * x + CHART_MARGIN.left + CHART_MARGIN.right :
     (w + CHART_MARGIN.left + CHART_MARGIN.right) * x) + lgdWidth
   const height = noX ? (h + GAP_BETWEEN_CHARTS) * y + CHART_MARGIN.top + CHART_MARGIN.bottom :
@@ -138,9 +140,9 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     C: {
       layout: "stack",
       direction: "horizontal",
-      unit: "chart",
+      unit: "element",
       consistency: {
-        y: {value: true, mirrored: false},
+        y: {value: false, mirrored: false},
         x: {value: false, mirrored: false},
         color: true
       }

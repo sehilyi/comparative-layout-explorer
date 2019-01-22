@@ -13,7 +13,8 @@ export const _width = 'width', _height = 'height',
   _text = "text",
   _text_anchor = "text-anchor", _start = "start", _end = "end",
   _font_size = "font-size",
-  _alignment_baseline = "alignment-baseline", _middle = "middle"
+  _alignment_baseline = "alignment-baseline", _middle = "middle",
+  _font_weight = "font-weight", _bold = "bold"
 
 export function isBarChart(spec: Spec) {
   return spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative';

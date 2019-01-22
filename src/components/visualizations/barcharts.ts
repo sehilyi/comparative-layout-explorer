@@ -1,8 +1,11 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
-import {CHART_TOTAL_SIZE, CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, BAR_GAP, LEGEND_MARK_SIZE, LEGEND_GAP} from './design-settings';
-import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey, _stroke, _stroke_width, _color, _text, _text_anchor, _start, _font_size, _alignment_baseline, _middle} from '.';
+import {
+  CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, BAR_GAP, LEGEND_MARK_SIZE,
+  LEGEND_GAP, LEGEND_VISIBLE_LIMIT, getChartSize, LEGEND_PADDING
+} from './design-settings';
+import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey, _stroke, _stroke_width, _color, _text, _text_anchor, _start, _font_size, _alignment_baseline, _middle, _font_weight, _bold} from '.';
 import {isUndefined} from 'util';
 
 export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
@@ -14,16 +17,22 @@ export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
 
   d3.select(ref).selectAll('*').remove();
 
+  const chartsp = getChartSize(1, 1, {legend: [0]})
   d3.select(ref)
-    .attr(_width, CHART_TOTAL_SIZE.width)
-    .attr(_height, CHART_TOTAL_SIZE.height)
+    .attr(_width, chartsp.size.width)
+    .attr(_height, chartsp.size.height)
 
   const g = d3.select(ref).append(_g)
     .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
 
   const c = d3.scaleOrdinal()
-    .domain(aggValsByKey.map(d => d.value))
-    .range(getBarColor(isUndefined(color) ? 1 : aggValsByKey.map(d => d.value).length));
+    .domain(aggValsByKey.map(d => d.key))
+    .range(getBarColor(isUndefined(color) ? 1 : aggValsByKey.map(d => d.key).length));
+
+  if (!isUndefined(color))
+    renderLegend(
+      g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)),
+      c.domain() as string[], c.range() as string[])
 
   renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, c, {})
 }
@@ -122,7 +131,6 @@ export function renderLegend(
   domain: string[],
   range: string[]) {
 
-  g.attr(_fill, 'red')
   // Notice: domain.length is always equal or larger than range.length
   for (let i = 0; i < domain.length; i++) {
     g.append(_rect)
@@ -141,5 +149,20 @@ export function renderLegend(
       .attr(_fill, "black")
       .attr(_font_size, "10px")
       .text(domain[i].length > 17 ? domain[i].slice(0, 15).concat("...") : domain[i])
+
+    // omit rest of us when two many of them
+    if (i == LEGEND_VISIBLE_LIMIT) {
+      g.append(_text)
+        .attr(_x, LEGEND_MARK_SIZE.width + LEGEND_GAP)
+        .attr(_y, (i + 1) * (LEGEND_MARK_SIZE.height + LEGEND_GAP) + LEGEND_MARK_SIZE.height / 2.0)
+        .attr(_text_anchor, _start)
+        .attr(_alignment_baseline, _middle)
+        .attr(_fill, "black")
+        .attr(_font_weight, _bold)
+        .attr(_font_size, "18px")
+        .text("...")
+      break
+    }
+
   }
 }

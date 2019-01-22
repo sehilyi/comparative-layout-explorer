@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getChartSize as getChartSize, getColor, getConstantColor, LEGEND_GAP} from "./design-settings";
+import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getChartSize as getChartSize, getColor, getConstantColor, LEGEND_PADDING} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars, renderLegend} from "./barcharts";
 
@@ -62,8 +62,8 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     const c = getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""])
 
     renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX})
-    if (isALegendUse)
-      renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_GAP, 0)), c.domain() as string[], c.range() as string[])
+    if (isALegendUse) // TODO: clean this up
+      renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), c.domain() as string[], c.range() as string[])
   }
   { /// B
     const g = d3.select(ref).append(_g)
@@ -76,7 +76,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
     renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noY, revY, revX})
     if (isBLegendUse)
-      renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_GAP, 0)), c.domain() as string[], c.range() as string[])
+      renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), c.domain() as string[], c.range() as string[])
   }
 }
 
@@ -311,17 +311,21 @@ export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
   const cons = {
     x: (isDeepTrue(C.consistency.x) &&
       // A.encoding.x.field === B.encoding.x.field && // TOOD: should I constraint this?
-      A.encoding.x.type === B.encoding.x.type),
+      A.encoding.x.type === B.encoding.x.type) ||
+      // always true for stack x element x bar chart
+      (C.layout === "stack" && C.unit === "element"),
     x_mirrored: typeof C.consistency.x != 'undefined' && C.consistency.x['mirrored'],
     y: (isDeepTrue(C.consistency.y) &&
       // A.encoding.y.field === B.encoding.y.field &&
-      A.encoding.y.type === B.encoding.y.type),
+      A.encoding.y.type === B.encoding.y.type) ||
+      // always true for stack x element x bar chart
+      (C.layout === "stack" && C.unit === "element"),
     y_mirrored: typeof C.consistency.y != 'undefined' && C.consistency.y['mirrored'],
     color: !isUndefinedOrFalse(C.consistency.color)
   };
   // warnings
-  if (cons.y != isDeepTrue(C.consistency.y)) console.log('y-axis cannot be shared.')
-  if (cons.x != isDeepTrue(C.consistency.x)) console.log('x-axis cannot be shared.')
+  if (cons.y != isDeepTrue(C.consistency.y)) console.log('consistency.y has been changed to ' + cons.y)
+  if (cons.x != isDeepTrue(C.consistency.x)) console.log('consistency.x has been changed to ' + cons.x)
 
   return cons
 }
