@@ -239,7 +239,7 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const xDomain = aggD.A.categories
     const yDomain = aggD.A.values
 
-    const c = getConstantColor()
+    const c = getConstantColor(10)
     const {designs} = renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {})
 
     { /// B
@@ -281,7 +281,25 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
           })
         }
         else {  // C.direction === "vertical"
+          const xDomain = nestedAggVals[i].values.map((d: object) => d["key"])
+          const yDomain = [d3.sum(nestedAggVals[i].values.map((d: object) => d["value"]))]
+          const c = //getConstantColor(1);
+            d3.scaleOrdinal()
+              .domain(xDomain)
+              .range(getBarColor(aggD.B.categories.length))
 
+          // TODO: last one (i.e., on the top) is not rendered at all
+          for (let j = 0; j < xDomain.length; j++) {  // add bar one by one
+            const {x, y} = renderAxes(ttg, [xDomain[j]], yDomain, B, {noX, noY, noGrid, width: innerChartWidth, height: chartHeight});
+            const {...designs} = renderBars(ttg, [nestedAggVals[i].values[j]], "value", "key", [xDomain[j]], x, y, {color: c, cKey: "key"}, {
+              noX, noY, noGrid, barGap: 0, width: innerChartWidth, height: chartHeight,
+              yOffsetData: [{
+                key: xDomain[j], value: j == 0 ? 0 :
+                  d3.sum(nestedAggVals[i].values.slice(0, j).map((d: object) => d["value"]))
+              }]
+            })
+            console.log(designs)
+          }
         }
       }
     }
