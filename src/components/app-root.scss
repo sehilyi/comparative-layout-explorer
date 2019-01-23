@@ -19,20 +19,20 @@
   .control-pane {
     height: 300px;
     background: #f1f1f1;
-    border-radius: 10px;
+    border-radius: 7px;
 
     textarea {
       padding: 10px;
       padding-left: 30px;
-      width: calc(100% - 20px);
+      width: calc(100% - 40px);
       height: calc(100% - 20px);
       background: none;
       border: none;
-      font-family: "Roboto Condensed";
+      font-family: "Consolas", "Courier New", "monospace";
       // font-size: 1em;
       font-weight: bold;
       resize: none;
-      overflow-y: hidden;
+      overflow-y: auto;
     }
   }
 
@@ -63,7 +63,7 @@
 
       .result-group {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         // grid-template-columns: repeat(3, 1fr);
 
         .chart {

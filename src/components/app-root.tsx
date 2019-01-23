@@ -94,13 +94,32 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
           <div className='example-element'>
             <div className='result-group'>
               <div className='chart'><svg ref={onBarChartA}></svg></div>
-              <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {C.layout}</div>
-              <div className='chart'><svg ref={onBarChartB}></svg></div>
-              <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' /></div>
-              <div className='onBarChartAPlusB'><svg ref={onBarChartAPlusB}></svg></div>
+              <div className='control-pane'><textarea value={JSON.stringify(_A, null, 2)} readOnly /></div>
             </div>
           </div>
           <div className='example-element'>
+            <div className='result-group'>
+              <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {C.layout}</div>
+            </div>
+          </div>
+          <div className='example-element'>
+            <div className='result-group'>
+              <div className='chart'><svg ref={onBarChartB}></svg></div>
+              <div className='control-pane'><textarea value={JSON.stringify(_B, null, 2)} readOnly /></div>
+            </div>
+          </div>
+          <div className="example-element">
+            <div className="result-group">
+              <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' />{""}</div>
+            </div>
+          </div>
+          <div className='example-element'>
+            <div className='result-group'>
+              <div className='chart'><svg ref={onBarChartAPlusB}></svg></div>
+              <div className='control-pane'><textarea value={JSON.stringify(_C, null, 2)} readOnly /></div>
+            </div>
+          </div>
+          {/* <div className='example-element'>
             <div className='result-group'>
               <div className='control-pane'><textarea value={JSON.stringify(_A, null, 2)} readOnly /></div>
               <div></div>
@@ -108,7 +127,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
               <div></div>
               <div className='control-pane'><textarea value={JSON.stringify(_C, null, 2)} readOnly /></div>
             </div>
-          </div>
+          </div> */}
           {/* <h1>Scatterplots</h1> */}
           {Results}
           {/* canvas2img. this should be invisible to users */}
