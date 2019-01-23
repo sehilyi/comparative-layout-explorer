@@ -28,6 +28,7 @@
       height: calc(100% - 20px);
       background: none;
       border: none;
+      outline: none;
       font-family: "Consolas", "Courier New", "monospace";
       // font-size: 1em;
       font-weight: bold;
@@ -39,7 +40,7 @@
   .main-pane {
     padding: 10px;
     overflow-y: auto;
-    height: calc(100% - 70px - 150px);
+    height: calc(100% - 70px);
 
     // .example-element:nth-child(odd) {
     //   background: #f8f8f8;

@@ -59,6 +59,22 @@ export function getBarColorDarkest(n: number) {
   return CATEGORICAL_COLORS_DARKEST.slice(0, n > CATEGORICAL_COLORS_DARKEST.length ? CATEGORICAL_COLORS_DARKEST.length - 1 : n);
 }
 
+export function getColor(d: string[], styles?: {darker: boolean}) {
+  const stl = ifUndefinedGetDefault(styles, {})
+  const darker = ifUndefinedGetDefault(stl["darker"], false)
+
+  return d3.scaleOrdinal()
+    .domain(d)
+    .range(darker ? getBarColorDarker(d.length) : getBarColor(d.length))
+}
+
+export function getConstantColor(index?: number) {
+  let i = isUndefined(index) || index <= 0 ? 1 : index > CATEGORICAL_COLORS.length ? index - CATEGORICAL_COLORS.length : index
+  return d3.scaleOrdinal()
+    // no domain
+    .range(getBarColor(i).slice(i - 1, i))
+}
+
 // export function getTotalChartSize(w: number, h: number) {
 //   return {width: w + CHART_MARGIN.left + CHART_MARGIN.right, height: h + CHART_MARGIN.top + CHART_MARGIN.bottom}
 // }
@@ -95,22 +111,6 @@ export function getChartSize(x: number, y: number, styles: object) {
   return {size: {width, height}, positions}
 }
 
-export function getColor(d: string[], styles?: {darker: boolean}) {
-  const stl = ifUndefinedGetDefault(styles, {})
-  const darker = ifUndefinedGetDefault(stl["darker"], false)
-
-  return d3.scaleOrdinal()
-    .domain(d)
-    .range(darker ? getBarColorDarker(d.length) : getBarColor(d.length))
-}
-
-export function getConstantColor(index?: number) {
-  let i = isUndefined(index) || index <= 0 ? 1 : index > CATEGORICAL_COLORS.length ? index - CATEGORICAL_COLORS.length : index
-  return d3.scaleOrdinal()
-    // no domain
-    .range(getBarColor(i).slice(i - 1, i))
-}
-
 // test
 export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
@@ -121,7 +121,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
+        x: {field: "Source", type: "nominal"},
         y: {field: "US_Gross", type: "quantitative", aggregate: "sum"},
         // color: {field: "MPAA_Rating", type: "nominal"}
       }
@@ -138,12 +138,12 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       }
     },
     C: {
-      layout: "nest",
-      direction: "horizontal",
+      layout: "stack",
+      direction: "vertical",
       unit: "chart",
       consistency: {
-        y: {value: true, mirrored: false},
-        x: {value: false, mirrored: false},
+        y: {value: false, mirrored: true},
+        x: {value: true, mirrored: false},
         color: true
       }
     }

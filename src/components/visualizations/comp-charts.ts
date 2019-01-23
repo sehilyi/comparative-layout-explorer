@@ -3,7 +3,10 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
-import {GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getBarColor, getChartSize as getChartSize, getColor, getConstantColor, LEGEND_PADDING} from "./design-settings";
+import {
+  GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
+  getColor, getConstantColor, LEGEND_PADDING, getBarColor
+} from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars, renderLegend} from "./barcharts";
 
@@ -223,69 +226,47 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
 // TOOD: any way to generalize this code by combining with stack?!
 function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const {...consistency} = getConsistencySpec(A, B, C);
   const chartsp = getChartSize(1, 1, {})
   d3.select(ref)
     .attr(_height, chartsp.size.height)
     .attr(_width, chartsp.size.width)
 
-  const {values: valsA} = A.data, {values: valsB} = B.data
-  const {aggregate: funcA} = A.encoding.y, {aggregate: funcB} = B.encoding.y
-  const aggValuesA = getAggValues(valsA, A.encoding.x.field, A.encoding.y.field, funcA)
-  const aggValuesB = getAggValues(valsB, B.encoding.x.field, B.encoding.y.field, funcB)
-  const groupsUnion = uniqueValues(aggValuesA.concat(aggValuesB), "key")
-  const aggValuesUnion = aggValuesA.map(d => d.value).concat(aggValuesB.map(d => d.value))
-
   { /// A
     const g = d3.select(ref).append(_g)
       .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
 
-    const groups = uniqueValues(valsA, A.encoding.x.field)
-    const xDomain = consistency.x ? groupsUnion : groups
-    const yDomain = consistency.y ? aggValuesUnion : aggValuesA.map(d => d.value)
+    const aggD = getAggregatedData(A, B)
+    const xDomain = aggD.A.categories
+    const yDomain = aggD.A.values
 
     const c = getConstantColor()
-
     const {designs} = renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {})
 
     { /// B
       const g = d3.select(ref).append(_g)
         .attr(_transform, translate(chartsp.positions[0].left + 0, chartsp.positions[0].top))
 
-      const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
-      const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
-      // const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
-      const padding = 4//, margin = 4
+      const nestedAggVals = getAggValuesByTwoKeys(A.data.values, A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, A.encoding.x.aggregate)
       const chartWidth = designs["barWidth"], x = designs["x"], y = designs["y"], bandUnitSize = designs["bandUnitSize"]
+      const padding = 3
       const innerChartWidth = chartWidth - padding * 2.0
 
       for (let i = 0; i < nestedAggVals.length; i++) {
-        const chartHeight = CHART_SIZE.height - y(aggValuesA[i].value) - padding
+        const chartHeight = CHART_SIZE.height - y(aggD.A.data[i].value) - padding
 
         const tg = g.append(_g)
           .attr(_transform,
-            translate(x(nestedAggVals[i].key) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggValuesA[i].value) + padding));
-
-        // background color
-        // tg.append(_rect)
-        //   .attr(_x, 0)
-        //   .attr(_y, 0)
-        //   .attr(_width, chartWidth - padding * 2.0)
-        //   .attr(_height, chartHeight)
-        // .attr(_fill, "#FAFAFA")
+            translate(x(nestedAggVals[i].key) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggD.A.data[i].value) + padding));
 
         const ttg = tg.append(_g)
           .attr(_transform, translate(0, 0))
 
-        const groups = uniqueValues(valsB, B.encoding.x.field)
-        const xDomain = groups
+        const xDomain = aggD.B.categories
         const yDomain = nestedAggVals[i].values.map((d: object) => d["value"])
 
-        const isColorUsed = !isUndefined(B.encoding.color)
         const c = d3.scaleOrdinal()
-          // .domain(consistency.color ? groupsUnion : groups)
-          // .range(["white"])
-          .range(getBarColor(consistency.color ? groupsUnion.length : isColorUsed ? groups.length : 1))
+          // no domain
+          .range(getBarColor(aggD.B.categories.length))
 
         const noY = true
         const noX = true
