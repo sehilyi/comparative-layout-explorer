@@ -138,7 +138,7 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       }
     },
     C: {
-      layout: "stack",
+      layout: "blend",
       direction: "vertical",
       unit: "chart",
       consistency: {

@@ -5,7 +5,7 @@ import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
-  getColor, getConstantColor, getBarColor
+  getColor, getConstantColor, getBarColor, LEGEND_WIDTH, LEGEND_PADDING
 } from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars, renderLegend} from "./barcharts";
@@ -51,32 +51,27 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   if (isBLegendUse) legend.push(1)
   const aggD = getAggregatedData(A, B)
   const chartsp = getChartSize(numOfC, numOfR, {noX, noY, legend})
-  d3.select(ref)
+  const svg = d3.select(ref)
     .attr(_width, chartsp.size.width)
     .attr(_height, chartsp.size.height);
 
-  { /// A
-    const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
+  /// A
+  renderBarChart(
+    svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
+    A, {
+      x: consistency.x ? aggD.Union.categories : aggD.A.categories,
+      y: consistency.y ? aggD.Union.values : aggD.A.values
+    }, getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""]),
+    {noX, legend: isALegendUse})
 
-    const xDomain = consistency.x ? aggD.Union.categories : aggD.A.categories
-    const yDomain = consistency.y ? aggD.Union.values : aggD.A.values
-
-    const c = getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""])
-
-    renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX, legend: isALegendUse})
-  }
-  { /// B
-    const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(chartsp.positions[1].left, chartsp.positions[1].top))
-
-    const xDomain = consistency.x ? aggD.Union.categories : aggD.B.categories
-    const yDomain = consistency.y ? aggD.B.values.concat(aggD.A.values) : aggD.B.values
-
-    const c = getColor(consistency.color ? aggD.Union.categories : isBColorUsed ? aggD.B.categories : [""])
-
-    renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noY, revY, revX, isBLegendUse})
-  }
+  /// B
+  renderBarChart(
+    svg.append(_g).attr(_transform, translate(chartsp.positions[1].left, chartsp.positions[1].top)),
+    B, {
+      x: consistency.x ? aggD.Union.categories : aggD.B.categories,
+      y: consistency.y ? aggD.B.values.concat(aggD.A.values) : aggD.B.values
+    }, getColor(consistency.color ? aggD.Union.categories : isBColorUsed ? aggD.B.categories : [""]),
+    {noY, revY, revX, legend: isBLegendUse})
 }
 
 function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
@@ -85,30 +80,30 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
   const width = CHART_SIZE.width
   const height = CHART_SIZE.height;
   const chartsp = getChartSize(1, 1, {height, legend: [0]})
-  d3.select(ref)
+  const svg = d3.select(ref)
     .attr(_width, chartsp.size.width)
     .attr(_height, chartsp.size.height)
-  const g = d3.select(ref).append(_g)
+  const g = svg.append(_g)
     .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
   const xDomain = consistency.x ? aggD.Union.categories : aggD.A.categories
 
   const colorA = getConstantColor()
   const colorB = getConstantColor(2);
-  renderLegend(g.append(_g).attr(_transform, translate(width + GAP_BETWEEN_CHARTS, 0)),
+  renderLegend(
+    g.append(_g).attr(_transform, translate(width + GAP_BETWEEN_CHARTS, 0)),
     [A.encoding.y.field, B.encoding.y.field],
     colorA.range().concat(colorB.range()) as string[])
 
   if (C.direction === "vertical") { // stacked bar
-    const yDomain = getAggValues(aggD.Union.data, "key", "value", 'sum').map(d => d.value)
-    const {x, y} = renderAxes(g, xDomain, yDomain, A, {height});
+    const aggSumByKey = getAggValues(aggD.Union.data, "key", "value", 'sum').map(d => d.value)
+    const {x, y} = renderAxes(g, xDomain, aggSumByKey, A, {height});
 
     renderBars(g, aggD.A.data, "value", "key", xDomain.length, x, y, {color: colorA, cKey: "key"}, {})
     renderBars(g, aggD.B.data, "value", "key", xDomain.length, x, y, {color: colorB, cKey: "key"}, {yOffsetData: aggD.A.data})
   }
   else if (C.direction === "horizontal") {  // grouped bar
-    const yDomain = aggD.Union.values
-    const {x, y} = renderAxes(g, xDomain, yDomain, A, {height});
+    const {x, y} = renderAxes(g, xDomain, aggD.Union.values, A, {height});
 
     renderBars(g, aggD.A.data, "value", "key", xDomain.length, x, y, {color: colorA, cKey: "key"}, {shiftBy: -0.5, mulSize: 0.5})
     renderBars(g, aggD.B.data, "value", "key", xDomain.length, x, y, {color: colorB, cKey: "key"}, {shiftBy: 0.5, mulSize: 0.5})
@@ -116,66 +111,65 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
 }
 
 function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const {field: axField} = A.encoding.x, {field: bxField} = B.encoding.x;
 
   if (C.direction === "vertical") {
-    const chartsp = getChartSize(1, 1, {})
-    d3.select(ref)
+    const chartsp = getChartSize(1, 1, {legend: [0]})
+    const svg = d3.select(ref)
       .attr(_width, chartsp.size.width)
       .attr(_height, chartsp.size.height)
-
-    const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
-
-    const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
-    const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
-    const yDomain = nestedAggVals.map(d => d3.sum(d.values.map((_d: object) => _d["value"])))
-    const xDomain = nestedAggVals.map(d => d.key)
-    const {x, y} = renderAxes(g, xDomain, yDomain, A);
+    const g = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
+    const aggD = getAggregatedData(A, B)
+    const {x, y} = renderAxes(g, aggD.A.categories, aggD.AbyB.sums, A);
 
     const yOffsetData = []
     // TODO: clear code below!
-    for (let i = 0; i < xDomain.length; i++) {
-      yOffsetData.push({key: xDomain[i], value: 0}) // TODO: init with zero might be improper?
+    for (let i = 0; i < aggD.A.categories.length; i++) {
+      yOffsetData.push({key: aggD.A.categories[i], value: 0}) // TODO: init with zero might be improper?
     }
-    for (let i = 0; i < nestedAggValsRev.length; i++) {
+    for (let i = 0; i < aggD.B.categories.length; i++) {
       if (i != 0) { // y offset not needed for the first class
-        for (let j = 0; j < xDomain.length; j++) {
-          let baseObject = nestedAggValsRev[i - 1].values.filter((_d: object) => _d["key"] === xDomain[j])[0];
+        for (let j = 0; j < aggD.A.categories.length; j++) {
+          let baseObject = aggD.BbyA.data[i - 1].values.filter((_d: object) => _d["key"] === aggD.A.categories[j])[0];
           let baseValue = isUndefined(baseObject) ? 0 : baseObject["value"];
-          yOffsetData.filter(d => d.key === xDomain[j])[0].value += baseValue
+          yOffsetData.filter(d => d.key === aggD.A.categories[j])[0].value += baseValue
         }
       }
-      const color = getConstantColor(i + 1)
-      renderBars(g, nestedAggValsRev[i].values, "value", "key", xDomain.length, x, y, {color, cKey: "key"}, {yOffsetData})
+      renderBars(
+        g,
+        aggD.BbyA.data[i].values,
+        "value", "key",
+        aggD.A.categories.length,
+        x, y,
+        {color: getConstantColor(i + 1), cKey: "key"},
+        {yOffsetData})
     }
+    renderLegend(
+      g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)),
+      aggD.B.categories,
+      getBarColor(aggD.B.categories.length))
   }
   else if (C.direction === "horizontal") {
     const GroupW = 90
-    const nestedAggVals = getAggValuesByTwoKeys(A.data.values, axField, bxField, A.encoding.y.field, A.encoding.x.aggregate)
-    const nestedAggValsRev = getAggValuesByTwoKeys(A.data.values, bxField, axField, A.encoding.y.field, A.encoding.x.aggregate)
-    const xDomain = nestedAggValsRev.map(d => d.key);
-    const yDomain = [].concat(...nestedAggVals.map(d => d.values.map((_d: object) => _d["value"])))  // TODO: clearer method?
-    const size = getChartSize(nestedAggVals.length, 1, {width: GroupW, noY: true}).size
-    d3.select(ref)
-      .attr(_width, size.width)
-      .attr(_height, size.height)
-    const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+    const aggD = getAggregatedData(A, B)
+    const chartsp = getChartSize(aggD.A.categories.length, 1, {width: GroupW, noY: true, legend: [aggD.A.categories.length - 1]})
+    const svg = d3.select(ref)
+      .attr(_width, chartsp.size.width)
+      .attr(_height, chartsp.size.height)
+    const g = svg.append(_g).attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
 
-    for (let i = 0; i < nestedAggVals.length; i++) {
-      const noY = i != 0 ? true : false // TOOD: need showY option for grouped bar chart (blend-horizontal)??
-      const gPart = g.append(_g).attr(_transform, translate(
-        (GroupW + GAP_BETWEEN_CHARTS + (!noY ? CHART_MARGIN.left + CHART_MARGIN.right : 0)) * i, 0))
-
-      const color = getConstantColor(i + 1)
-
-      const xPreStr = nestedAggVals[i].key;
-      renderBarChart(gPart, A, {x: xDomain, y: yDomain}, color, {
-        noY, xName: xPreStr, barGap: 1, width: GroupW,
-        altVals: nestedAggVals[i].values
-      })
+    for (let i = 0; i < aggD.A.categories.length; i++) {
+      renderBarChart(
+        g.append(_g).attr(_transform, translate(chartsp.positions[i].left, 0)),
+        A, {
+          x: aggD.B.categories,
+          y: aggD.AbyB.values
+        }, getConstantColor(i + 1),
+        {noY: i != 0 ? true : false, xName: aggD.A.categories[i], barGap: 1, width: GroupW, altVals: aggD.AbyB.data[i].values})
     }
+    renderLegend(
+      g.append(_g).attr(_transform, translate(chartsp.size.width - CHART_MARGIN.right - LEGEND_WIDTH, 0)),
+      aggD.A.categories,
+      getBarColor(aggD.B.categories.length))
   }
 }
 
@@ -184,7 +178,7 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
   const aggD = getAggregatedData(A, B)
   const chartsp = getChartSize(1, 1, {})
-  d3.select(ref)
+  const svg = d3.select(ref)
     .attr(_height, chartsp.size.height)
     .attr(_width, chartsp.size.width)
 
@@ -194,29 +188,30 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const noGrid = true
     const revY = consistency.y_mirrored
     const revX = consistency.x_mirrored
-
-    const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(chartsp.positions[0].left + 6, chartsp.positions[0].top))
-
-    const xDomain = consistency.x ? aggD.Union.categories : aggD.B.categories
-    const yDomain = consistency.y ? aggD.Union.values : aggD.B.values
-
     const isColorUsed = !isUndefined(B.encoding.color)
-    const c = getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.B.categories : [""], {darker: true})
 
-    renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noX, noY, revY, revX, noGrid})
+    renderBarChart(
+      svg.append(_g).attr(_transform, translate(chartsp.positions[0].left + 6, chartsp.positions[0].top)),
+      B,
+      {
+        x: consistency.x ? aggD.Union.categories : aggD.B.categories,
+        y: consistency.y ? aggD.Union.values : aggD.B.values
+      },
+      getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.B.categories : [""], {darker: true}),
+      {noX, noY, revY, revX, noGrid})
   }
   { /// A
-    const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
-
-    const xDomain = consistency.x ? aggD.Union.categories : aggD.A.categories
-    const yDomain = consistency.y ? aggD.Union.values : aggD.A.values
-
     const isColorUsed = !isUndefined(A.encoding.color)
-    const c = getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.A.categories : [""])
 
-    renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {})
+    renderBarChart(
+      svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
+      A,
+      {
+        x: consistency.x ? aggD.Union.categories : aggD.A.categories,
+        y: consistency.y ? aggD.Union.values : aggD.A.values
+      },
+      getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.A.categories : [""]),
+      {})
   }
 }
 
@@ -328,6 +323,8 @@ export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
 function getAggregatedData(a: Spec, b: Spec) {
   const aval = getAggValues(a.data.values, a.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)
   const bval = getAggValues(b.data.values, b.encoding.x.field, b.encoding.y.field, b.encoding.y.aggregate)
+  const abybval = getAggValuesByTwoKeys(a.data.values, a.encoding.x.field, b.encoding.x.field, a.encoding.y.field, a.encoding.x.aggregate)
+  const bbyaval = getAggValuesByTwoKeys(a.data.values, b.encoding.x.field, a.encoding.x.field, a.encoding.y.field, a.encoding.x.aggregate)
   const unionval = aval.concat(bval)
 
   const acat = uniqueValues(aval, "key")
@@ -342,6 +339,15 @@ function getAggregatedData(a: Spec, b: Spec) {
     },
     Union: {
       values: unionval.map(d => d.value), categories: unioncat, data: unionval
+    },
+    AbyB: {
+      values: [].concat(...abybval.map(d => d.values.map((_d: object) => _d["value"]))),
+      data: abybval,
+      sums: abybval.map(d => d3.sum(d.values.map((_d: object) => _d["value"])))
+    },
+    BbyA: {
+      values: [].concat(...bbyaval.map(d => d.values.map((_d: object) => _d["value"]))),
+      data: bbyaval
     }
   }
 }
