@@ -58,16 +58,18 @@ export function renderBarChart(
   const altVals = styles["altVals"]
   const stroke = styles["stroke"]
   const stroke_width = styles["stroke_width"]
+  const legend = styles["legend"]
 
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
   const aggValues = ifUndefinedGetDefault(altVals, getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
 
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, noGrid, xName, width, height});
-  const {...designs} = renderBars(g, aggValues, "value", "key", domain.x, x, y, {color, cKey: "key"}, {
+  const {...designs} = renderBars(g, aggValues, "value", "key", domain.x.length, x, y, {color, cKey: "key"}, {
     revY, barGap, width, height,
     stroke, stroke_width
   })
+  if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), color.domain() as string[], color.range() as string[])
   return {designs}
 }
 
@@ -76,7 +78,7 @@ export function renderBars(
   data: object[],
   vKey: string,
   gKey: string,
-  groups: string[],
+  numOfX: number,
   x: d3.ScaleBand<string>,
   y: d3.ScaleLinear<number, number>,
   c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
@@ -90,8 +92,8 @@ export function renderBars(
   const xPreStr = ifUndefinedGetDefault(styles["xPreStr"], "") as string;
   const barGap = ifUndefinedGetDefault(styles["barGap"], BAR_GAP) as number;
   const width = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
-  const bandUnitSize = width / groups.length
-  const barWidth = ifUndefinedGetDefault(styles["barWidth"], getBarWidth(width, groups.length, barGap) * mulSize) as number;
+  const bandUnitSize = width / numOfX
+  const barWidth = ifUndefinedGetDefault(styles["barWidth"], getBarWidth(width, numOfX, barGap) * mulSize) as number;
   const height = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
   const stroke = ifUndefinedGetDefault(styles["stroke"], 'null') as string;
   const stroke_width = ifUndefinedGetDefault(styles["stroke_width"], 0) as number;

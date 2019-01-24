@@ -5,7 +5,7 @@ import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
-  getColor, getConstantColor, LEGEND_PADDING, getBarColor
+  getColor, getConstantColor, getBarColor
 } from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars, renderLegend} from "./barcharts";
@@ -64,9 +64,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
     const c = getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""])
 
-    renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX})
-    if (isALegendUse) // TODO: clean this up
-      renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), c.domain() as string[], c.range() as string[])
+    renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {noX, legend: isALegendUse})
   }
   { /// B
     const g = d3.select(ref).append(_g)
@@ -77,9 +75,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
     const c = getColor(consistency.color ? aggD.Union.categories : isBColorUsed ? aggD.B.categories : [""])
 
-    renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noY, revY, revX})
-    if (isBLegendUse)
-      renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), c.domain() as string[], c.range() as string[])
+    renderBarChart(g, B, {x: xDomain, y: yDomain}, c, {noY, revY, revX, isBLegendUse})
   }
 }
 
@@ -107,15 +103,15 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
     const yDomain = getAggValues(aggD.Union.data, "key", "value", 'sum').map(d => d.value)
     const {x, y} = renderAxes(g, xDomain, yDomain, A, {height});
 
-    renderBars(g, aggD.A.data, "value", "key", xDomain, x, y, {color: colorA, cKey: "key"}, {})
-    renderBars(g, aggD.B.data, "value", "key", xDomain, x, y, {color: colorB, cKey: "key"}, {yOffsetData: aggD.A.data})
+    renderBars(g, aggD.A.data, "value", "key", xDomain.length, x, y, {color: colorA, cKey: "key"}, {})
+    renderBars(g, aggD.B.data, "value", "key", xDomain.length, x, y, {color: colorB, cKey: "key"}, {yOffsetData: aggD.A.data})
   }
   else if (C.direction === "horizontal") {  // grouped bar
     const yDomain = aggD.Union.values
     const {x, y} = renderAxes(g, xDomain, yDomain, A, {height});
 
-    renderBars(g, aggD.A.data, "value", "key", xDomain, x, y, {color: colorA, cKey: "key"}, {shiftBy: -0.5, mulSize: 0.5})
-    renderBars(g, aggD.B.data, "value", "key", xDomain, x, y, {color: colorB, cKey: "key"}, {shiftBy: 0.5, mulSize: 0.5})
+    renderBars(g, aggD.A.data, "value", "key", xDomain.length, x, y, {color: colorA, cKey: "key"}, {shiftBy: -0.5, mulSize: 0.5})
+    renderBars(g, aggD.B.data, "value", "key", xDomain.length, x, y, {color: colorB, cKey: "key"}, {shiftBy: 0.5, mulSize: 0.5})
   }
 }
 
@@ -151,7 +147,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         }
       }
       const color = getConstantColor(i + 1)
-      renderBars(g, nestedAggValsRev[i].values, "value", "key", xDomain, x, y, {color, cKey: "key"}, {yOffsetData})
+      renderBars(g, nestedAggValsRev[i].values, "value", "key", xDomain.length, x, y, {color, cKey: "key"}, {yOffsetData})
     }
   }
   else if (C.direction === "horizontal") {
@@ -291,7 +287,7 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
           // TODO: last one (i.e., on the top) is not rendered at all
           for (let j = 0; j < xDomain.length; j++) {  // add bar one by one
             const {x, y} = renderAxes(ttg, [xDomain[j]], yDomain, B, {noX, noY, noGrid, width: innerChartWidth, height: chartHeight});
-            const {...designs} = renderBars(ttg, [nestedAggVals[i].values[j]], "value", "key", [xDomain[j]], x, y, {color: c, cKey: "key"}, {
+            const {...designs} = renderBars(ttg, [nestedAggVals[i].values[j]], "value", "key", 1, x, y, {color: c, cKey: "key"}, {
               noX, noY, noGrid, barGap: 0, width: innerChartWidth, height: chartHeight,
               yOffsetData: [{
                 key: xDomain[j], value: j == 0 ? 0 :
