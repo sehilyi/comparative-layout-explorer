@@ -192,12 +192,10 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
     renderBarChart(
       svg.append(_g).attr(_transform, translate(chartsp.positions[0].left + 6, chartsp.positions[0].top)),
-      B,
-      {
+      B, {
         x: consistency.x ? aggD.Union.categories : aggD.B.categories,
         y: consistency.y ? aggD.Union.values : aggD.B.values
-      },
-      getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.B.categories : [""], {darker: true}),
+      }, getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.B.categories : [""], {darker: true}),
       {noX, noY, revY, revX, noGrid})
   }
   { /// A
@@ -205,12 +203,10 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
     renderBarChart(
       svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
-      A,
-      {
+      A, {
         x: consistency.x ? aggD.Union.categories : aggD.A.categories,
         y: consistency.y ? aggD.Union.values : aggD.A.values
-      },
-      getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.A.categories : [""]),
+      }, getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.A.categories : [""]),
       {})
   }
 }
@@ -218,13 +214,12 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 // TOOD: any way to generalize this code by combining with stack?!
 function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const chartsp = getChartSize(1, 1, {})
-  d3.select(ref)
+  const svg = d3.select(ref)
     .attr(_height, chartsp.size.height)
     .attr(_width, chartsp.size.width)
 
   { /// A
-    const g = d3.select(ref).append(_g)
-      .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
+    const g = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
 
     const aggD = getAggregatedData(A, B)
     const xDomain = aggD.A.categories
@@ -234,62 +229,52 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     const {designs} = renderBarChart(g, A, {x: xDomain, y: yDomain}, c, {})
 
     { /// B
-      const g = d3.select(ref).append(_g)
+      const g = svg.append(_g)
         .attr(_transform, translate(chartsp.positions[0].left + 0, chartsp.positions[0].top))
 
-      const nestedAggVals = getAggValuesByTwoKeys(A.data.values, A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, A.encoding.x.aggregate)
+      const aggD = getAggregatedData(A, B)
       const chartWidth = designs["barWidth"], x = designs["x"], y = designs["y"], bandUnitSize = designs["bandUnitSize"]
       const padding = 3
       const innerChartWidth = chartWidth - padding * 2.0
 
-      for (let i = 0; i < nestedAggVals.length; i++) {
+      for (let i = 0; i < aggD.A.categories.length; i++) {
         const chartHeight = CHART_SIZE.height - y(aggD.A.data[i].value) - padding
-
         const tg = g.append(_g)
-          .attr(_transform,
-            translate(x(nestedAggVals[i].key) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggD.A.data[i].value) + padding));
+          .attr(_transform, translate(x(aggD.A.categories[i]) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggD.A.data[i].value) + padding));
+        const ttg = tg.append(_g).attr(_transform, translate(0, 0))
 
-        const ttg = tg.append(_g)
-          .attr(_transform, translate(0, 0))
-
-        const xDomain = aggD.B.categories
-        const yDomain = nestedAggVals[i].values.map((d: object) => d["value"])
-
-        const c = d3.scaleOrdinal()
-          // no domain
-          .range(getBarColor(aggD.B.categories.length))
+        const yDomain = aggD.AbyB.data[i].values.map((d: object) => d["value"])
 
         const noY = true
         const noX = true
         const noGrid = true
 
         if (C.direction === "horizontal") {
-          const barGap = 0
-
-          renderBarChart(ttg, B, {x: xDomain, y: yDomain}, c, {
-            noX, noY, noGrid, barGap, width: innerChartWidth, height: chartHeight,
-            altVals: nestedAggVals[i].values
-          })
+          renderBarChart(
+            ttg,
+            B, {
+              x: aggD.B.categories,
+              y: yDomain
+            }, d3.scaleOrdinal().range(getBarColor(aggD.B.categories.length)),
+            {noX, noY, noGrid, barGap: 0, width: innerChartWidth, height: chartHeight, altVals: aggD.AbyB.data[i].values})
         }
         else {  // C.direction === "vertical"
-          const xDomain = nestedAggVals[i].values.map((d: object) => d["key"])
-          const yDomain = [d3.sum(nestedAggVals[i].values.map((d: object) => d["value"]))]
-          const c = //getConstantColor(1);
-            d3.scaleOrdinal()
-              .domain(xDomain)
-              .range(getBarColor(aggD.B.categories.length))
+          const xDomain = aggD.AbyB.data[i].values.map((d: object) => d["key"])
+          const yDomain = [d3.sum(aggD.AbyB.data[i].values.map((d: object) => d["value"]))]
+          const c = d3.scaleOrdinal()
+            .domain(xDomain)
+            .range(getBarColor(aggD.B.categories.length))
 
           // TODO: last one (i.e., on the top) is not rendered at all
           for (let j = 0; j < xDomain.length; j++) {  // add bar one by one
             const {x, y} = renderAxes(ttg, [xDomain[j]], yDomain, B, {noX, noY, noGrid, width: innerChartWidth, height: chartHeight});
-            const {...designs} = renderBars(ttg, [nestedAggVals[i].values[j]], "value", "key", 1, x, y, {color: c, cKey: "key"}, {
+            renderBars(ttg, [aggD.AbyB.data[i].values[j]], "value", "key", 1, x, y, {color: c, cKey: "key"}, {
               noX, noY, noGrid, barGap: 0, width: innerChartWidth, height: chartHeight,
               yOffsetData: [{
                 key: xDomain[j], value: j == 0 ? 0 :
-                  d3.sum(nestedAggVals[i].values.slice(0, j).map((d: object) => d["value"]))
+                  d3.sum(aggD.AbyB.data[i].values.slice(0, j).map((d: object) => d["value"]))
               }]
             })
-            console.log(designs)
           }
         }
       }
