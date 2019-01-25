@@ -1,4 +1,6 @@
-export type barStyle = {
+import {BAR_GAP, CHART_SIZE} from "src/components/visualizations/design-settings";
+
+export type barchartStyle = {
   noX: boolean
   noY: boolean
   revX: boolean
@@ -9,7 +11,34 @@ export type barStyle = {
   width: number
   height: number
   altVals: object[]
-  stroke: number
+  stroke: string
   stroke_width: number
-  legend: number[]
+  legend: boolean
+  mulSize: number
+  shiftBy: number
+  yOffsetData: object[]
+  xPreStr: string
+  barWidth: string
+}
+export const DEFAULT_BARCHART_STYLE: barchartStyle = {
+  noX: false,
+  noY: false,
+  revX: false,
+  revY: false,
+  noGrid: false,
+  xName: undefined,
+  barGap: BAR_GAP,
+  width: CHART_SIZE.width,
+  height: CHART_SIZE.height,
+  altVals: undefined,
+  stroke: 'null',
+  stroke_width: 0,
+  legend: false,
+  // below options are relative numbers (e.g., 0.5, 1.0, ...)
+  // mulSize is applied first, and then shift bars
+  mulSize: 1,
+  shiftBy: 0,
+  yOffsetData: undefined,
+  xPreStr: "",
+  barWidth: undefined
 }

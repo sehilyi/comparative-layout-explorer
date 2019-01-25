@@ -7,6 +7,7 @@ import {
 } from './design-settings';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey, _stroke, _stroke_width, _color, _text, _text_anchor, _start, _font_size, _alignment_baseline, _middle, _font_weight, _bold} from '.';
 import {isUndefined} from 'util';
+import {barchartStyle, DEFAULT_BARCHART_STYLE} from 'src/models/barchart-style';
 
 export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
@@ -34,7 +35,7 @@ export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
       g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)),
       c.domain() as string[], c.range() as string[])
 
-  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, c, {})
+  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, c, {...DEFAULT_BARCHART_STYLE})
 }
 
 // TODO: only vertical bar charts are handled
@@ -43,31 +44,16 @@ export function renderBarChart(
   spec: Spec, // contains actual values to draw bar chart
   domain: {x: string[], y: number[]}, // determine the axis range
   color: d3.ScaleOrdinal<string, {}>,
-  styles: object) {
+  s: barchartStyle) {
 
-  // TODO: contain this as style class
-  const noX = styles["noX"]
-  const noY = styles["noY"]
-  const revX = styles["revX"]
-  const revY = styles["revY"]
-  const noGrid = styles["noGrid"]
-  const xName = styles["xName"]
-  const barGap = styles["barGap"]
-  const width = styles["width"]
-  const height = styles["height"]
-  const altVals = styles["altVals"]
-  const stroke = styles["stroke"]
-  const stroke_width = styles["stroke_width"]
-  const legend = styles["legend"]
-
+  const {noX, noY, revX, revY, noGrid, xName, width, height, barGap, stroke, stroke_width, legend} = s
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
-  const aggValues = ifUndefinedGetDefault(altVals, getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
+  const aggValues = ifUndefinedGetDefault(s.altVals, getAggValsByKey(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
 
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, noGrid, xName, width, height});
   const {...designs} = renderBars(g, aggValues, "value", "key", domain.x.length, x, y, {color, cKey: "key"}, {
-    revY, barGap, width, height,
-    stroke, stroke_width
+    ...DEFAULT_BARCHART_STYLE, revY, barGap, width, height, stroke, stroke_width
   })
   if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), color.domain() as string[], color.range() as string[])
   return {designs}
@@ -82,22 +68,11 @@ export function renderBars(
   x: d3.ScaleBand<string>,
   y: d3.ScaleLinear<number, number>,
   c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
-  styles: object) {
+  styles: barchartStyle) {
 
-  // below options are relative numbers (e.g., 0.5, 1.0, ...)
-  // mulSize is applied first, and then shift bars
-  const mulSize = ifUndefinedGetDefault(styles["mulSize"], 1) as number;
-  const shiftBy = ifUndefinedGetDefault(styles["shiftBy"], 0) as number;
-  const yOffsetData = ifUndefinedGetDefault(styles["yOffsetData"], undefined) as object[];
-  const xPreStr = ifUndefinedGetDefault(styles["xPreStr"], "") as string;
-  const barGap = ifUndefinedGetDefault(styles["barGap"], BAR_GAP) as number;
-  const width = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
+  const {mulSize, shiftBy, yOffsetData, xPreStr, barGap, width, height, stroke, stroke_width} = styles
   const bandUnitSize = width / numOfX
-  const barWidth = ifUndefinedGetDefault(styles["barWidth"], getBarWidth(width, numOfX, barGap) * mulSize) as number;
-  const height = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
-  const stroke = ifUndefinedGetDefault(styles["stroke"], 'null') as string;
-  const stroke_width = ifUndefinedGetDefault(styles["stroke_width"], 0) as number;
-  //
+  const barWidth = ifUndefinedGetDefault(styles.barWidth, getBarWidth(width, numOfX, barGap) * mulSize) as number;
 
   g.selectAll('bar')
     .data(data)
@@ -114,18 +89,6 @@ export function renderBars(
     .attr(_stroke_width, stroke_width)
 
   return {barWidth, x, y, bandUnitSize}
-  // d3.select(ref).append("defs")
-  //   .append("pattern")
-  //   .attr("id", "hash4_4")
-  //   .attr(_width, "8")
-  //   .attr(_height, "8")
-  //   .attr("patternUnits", "userSpaceOnUse")
-  //   .attr("patternTransform", "rotate(60)")
-  //   .append("rect")
-  //   .attr(_width, "4")
-  //   .attr(_height, "8")
-  //   .attr(_transform, translate(0, 0))
-  //   .attr(_fill, "#88AAEE");
 }
 
 export function renderLegend(
