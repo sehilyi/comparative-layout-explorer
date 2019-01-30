@@ -3,19 +3,16 @@ import {CompSpec, Consistency} from "src/models/comp-spec";
 import {isDeepTrue, isUndefinedOrFalse, uniqueValues} from "src/useful-factory/utils";
 import {isBarChart, isScatterplot} from "..";
 import {getAggregatedData} from "../comp-charts";
+import {getAggValues} from "../data-handler";
 
 export function correctConsistency(A: Spec, B: Spec, C: CompSpec): Consistency {
   const cons = {
     x_axis: (isDeepTrue(C.consistency.x_axis) &&
-      // A.encoding.x.field === B.encoding.x.field && // TOOD: should I constraint this?
       A.encoding.x.type === B.encoding.x.type) ||
-      // always true for stack x element x bar chart
-      (C.layout === "juxtaposition" && C.unit === "element"),
+      (C.layout === "juxtaposition" && C.unit === "element"), // always true for element-wise jux
     y_axis: (isDeepTrue(C.consistency.y_axis) &&
-      // A.encoding.y.field === B.encoding.y.field &&
       A.encoding.y.type === B.encoding.y.type) ||
-      // always true for stack x element x bar chart
-      (C.layout === "juxtaposition" && C.unit === "element"),
+      (C.layout === "juxtaposition" && C.unit === "element"), // always true for element-wise jux
     color: !isUndefinedOrFalse(C.consistency.color),
 
     // deprecated
@@ -42,7 +39,20 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
   let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
   let ack: string, bck: string
 
-  if (C.layout === "juxtaposition") {
+  if (C.layout === "juxtaposition" && C.unit === "element") {
+    // x_axis and y_axis are always true
+    if (isBarChart(A) && isBarChart(B)) {
+      const aggD = getAggregatedData(A, B)
+      ax = bx = aggD.Union.categories
+      ay = by = C.direction === "horizontal" ? aggD.Union.values : getAggValues(aggD.Union.data, "key", "value", 'sum').map(d => d.value) // stacked bar chart
+      ac = bc = [""]
+      ack = bck = ""
+    }
+    else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
+      // TODO:
+    }
+  }
+  else if (C.layout === "juxtaposition" && C.unit === "chart") {
     if (isBarChart(A) && isBarChart(B)) {
       const aggD = getAggregatedData(A, B)
       if (consistency.x_axis) {

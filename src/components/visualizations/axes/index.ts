@@ -20,7 +20,6 @@ export function renderAxes(
   let noY = (typeof style != 'undefined' && style.noY)
   let noX = (typeof style != 'undefined' && style.noX)
   let noGrid = !(typeof style === 'undefined' || !style.noGrid)
-  const noYLine = ifUndefinedGetDefault(style["noYLine"], false) as boolean
   let revY = (typeof style != 'undefined' && style['revY'])
   let revX = (typeof style != 'undefined' && style['revX'])
   let xName = (typeof style != 'undefined' ? style['xName'] : undefined)
@@ -127,7 +126,7 @@ export function renderAxes(
     .attr('stroke-width', '1px')
     .attr('stroke', 'black')
 
-  if (noYLine) {
+  if (isXCategorical) {
     g.selectAll('.y-axis path')
       .attr('stroke-width', '0px')
       .attr('stroke', 'black')

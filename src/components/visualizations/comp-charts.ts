@@ -82,9 +82,10 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
 function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
+  const {...domains} = getDomains(A, B, C, consistency)
   const aggD = getAggregatedData(A, B)
   const width = CHART_SIZE.width
-  const height = CHART_SIZE.height;
+  const height = CHART_SIZE.height
   const chartsp = getChartSize(1, 1, {height, legend: [0]})
   const svg = d3.select(ref)
     .attr(_width, chartsp.size.width)
@@ -92,7 +93,7 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   const g = svg.append(_g)
     .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
-  const xDomain = consistency.x_axis ? aggD.Union.categories : aggD.A.categories
+  const xDomain = uniqueValues(domains.A.x, "")
 
   const colorA = getConstantColor()
   const colorB = getConstantColor(2);
@@ -101,16 +102,16 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     [A.encoding.y.field, B.encoding.y.field],
     colorA.range().concat(colorB.range()) as string[])
 
+  // TODO: use renderBarChart functions rather than renderBars
   if (C.direction === "vertical") { // stacked bar
-    const aggSumByKey = getAggValues(aggD.Union.data, "key", "value", 'sum').map(d => d.value)
-    const {x, y} = renderAxes(g, xDomain, aggSumByKey, A, {...DEFAULT_CHART_STYLE, height});
-
+    const {x, y} = renderAxes(g, xDomain, domains.A.y, A, {...DEFAULT_CHART_STYLE, height});
     renderBars(g, aggD.A.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorA, cKey: "key"}, {...DEFAULT_CHART_STYLE})
+    // renderBarChart(g, A, {x: domains.A.x, y: domains.B.x}, {color: colorA, cKey: "key"}, {...DEFAULT_CHART_STYLE})
     renderBars(g, aggD.B.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorB, cKey: "key"}, {...DEFAULT_CHART_STYLE, yOffsetData: aggD.A.data})
+    // renderBars(g, aggD.B.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorB, cKey: "key"}, {...DEFAULT_CHART_STYLE, yOffsetData: aggD.A.data})
   }
   else if (C.direction === "horizontal") {  // grouped bar
-    const {x, y} = renderAxes(g, xDomain, aggD.Union.values, A, {...DEFAULT_CHART_STYLE, height});
-
+    const {x, y} = renderAxes(g, xDomain, domains.A.y, A, {...DEFAULT_CHART_STYLE, height});
     renderBars(g, aggD.A.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorA, cKey: "key"}, {...DEFAULT_CHART_STYLE, shiftBy: -0.5, mulSize: 0.5})
     renderBars(g, aggD.B.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorB, cKey: "key"}, {...DEFAULT_CHART_STYLE, shiftBy: 0.5, mulSize: 0.5})
   }
