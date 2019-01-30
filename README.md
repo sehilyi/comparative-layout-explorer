@@ -1,1 +1,1 @@
-# vis-comp-enhancer
+# vis-comparison-framework
