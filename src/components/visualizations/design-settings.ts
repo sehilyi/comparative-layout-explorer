@@ -1,5 +1,5 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {CompSpec} from "src/models/comp-spec";
+import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import d3 = require("d3");
 import {ifUndefinedGetDefault} from "src/useful-factory/utils";
@@ -138,13 +138,12 @@ export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       }
     },
     C: {
-      layout: "blend",
-      direction: "vertical",
+      ...DEFAULT_COMP_SPEC,
+      layout: "juxtaposition",
+      direction: "horizontal",
       unit: "chart",
       consistency: {
-        y: {value: false, mirrored: true},
-        x: {value: true, mirrored: false},
-        color: true
+        x_axis: false, y_axis: false, color: false
       }
     }
   }

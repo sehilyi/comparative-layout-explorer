@@ -15,33 +15,35 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
   d3.select(ref).selectAll('*').remove();
 
   switch (C.layout) {
-    case 'stack':
-      if (C.unit === 'chart') renderStackPerChart(ref, A, B, C);
-      else if (C.unit === 'element') renderStackPerElement(ref, A, B, C);
+    case "juxtaposition":
+      if (C.unit === 'chart') renderJuxPerChart(ref, A, B, C);
+      else if (C.unit === 'element') renderJuxPerElement(ref, A, B, C);
       break;
-    case "blend":
-      renderBlend(ref, A, B, C)
-      break;
-    case "overlay":
-      renderOverlay(ref, A, B, C)
-      break;
-    case "nest":
-      renderNest(ref, A, B, C)
-      break;
-    default: renderStackPerChart(ref, A, B, C); break;
+    // case "blend":
+    //   renderBlend(ref, A, B, C)
+    //   break;
+    // case "overlay":
+    //   renderOverlay(ref, A, B, C)
+    //   break;
+    // case "nest":
+    //   renderNest(ref, A, B, C)
+    // break;s
+    default: renderJuxPerChart(ref, A, B, C); break;
   }
 }
 
-function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   // both charts' properties
   const {...consistency} = getConsistencySpec(A, B, C);
   const numOfC = C.direction === 'horizontal' ? 2 : 1
   const numOfR = C.direction === 'vertical' ? 2 : 1
+  const aggD = getAggregatedData(A, B)
   // second chart's properties
-  const revY = consistency.y_mirrored
-  const revX = consistency.x_mirrored
+  const revY = C.direction === "vertical" && C.mirrored
+  const revX = C.direction === "horizontal" && C.mirrored
   const noX = consistency.x && !revX && C.direction === 'vertical'
   const noY = consistency.y && !revY && C.direction === 'horizontal'
+  // legends
   const isAColorUsed = !isUndefined(A.encoding.color)
   const isBColorUsed = !isUndefined(B.encoding.color)
   const isALegendUse = consistency.color && C.direction == "vertical" || !consistency.color && isAColorUsed
@@ -50,7 +52,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   // TODO: this should be cleaned up
   if (isALegendUse) legend.push(0)
   if (isBLegendUse) legend.push(1)
-  const aggD = getAggregatedData(A, B)
+  // visual properties
   const chartsp = getChartSize(numOfC, numOfR, {noX, noY, legend})
   const svg = d3.select(ref)
     .attr(_width, chartsp.size.width)
@@ -75,7 +77,7 @@ function renderStackPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     {...DEFAULT_BARCHART_STYLE, noY, revY, revX, legend: isBLegendUse})
 }
 
-function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C)
   const aggD = getAggregatedData(A, B)
   const width = CHART_SIZE.width
@@ -111,7 +113,7 @@ function renderStackPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec
   }
 }
 
-function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
   if (C.direction === "vertical") {
     const chartsp = getChartSize(1, 1, {legend: [0]})
@@ -175,7 +177,7 @@ function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 }
 
 // TOOD: any way to generalize this code by combining with stack?!
-function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+export function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = getConsistencySpec(A, B, C);
   const aggD = getAggregatedData(A, B)
   const chartsp = getChartSize(1, 1, {})
@@ -213,7 +215,7 @@ function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 }
 
 // TOOD: any way to generalize this code by combining with stack?!
-function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+export function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const chartsp = getChartSize(1, 1, {})
   const svg = d3.select(ref)
     .attr(_height, chartsp.size.height)
@@ -285,23 +287,24 @@ function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
 export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
   const cons = {
-    x: (isDeepTrue(C.consistency.x) &&
+    x: (isDeepTrue(C.consistency.x_axis) &&
       // A.encoding.x.field === B.encoding.x.field && // TOOD: should I constraint this?
       A.encoding.x.type === B.encoding.x.type) ||
       // always true for stack x element x bar chart
-      (C.layout === "stack" && C.unit === "element"),
-    x_mirrored: typeof C.consistency.x != 'undefined' && C.consistency.x['mirrored'],
-    y: (isDeepTrue(C.consistency.y) &&
+      (C.layout === "juxtaposition" && C.unit === "element"),
+    y: (isDeepTrue(C.consistency.y_axis) &&
       // A.encoding.y.field === B.encoding.y.field &&
       A.encoding.y.type === B.encoding.y.type) ||
       // always true for stack x element x bar chart
-      (C.layout === "stack" && C.unit === "element"),
-    y_mirrored: typeof C.consistency.y != 'undefined' && C.consistency.y['mirrored'],
-    color: !isUndefinedOrFalse(C.consistency.color)
+      (C.layout === "juxtaposition" && C.unit === "element"),
+    color: !isUndefinedOrFalse(C.consistency.color),
+    // deprecated
+    x_mirrored: typeof C.consistency.x_axis != 'undefined' && C.consistency.x_axis['mirrored'],
+    y_mirrored: typeof C.consistency.y_axis != 'undefined' && C.consistency.y_axis['mirrored'],
   };
   // warnings
-  if (cons.y != isDeepTrue(C.consistency.y)) console.log('consistency.y has been changed to ' + cons.y)
-  if (cons.x != isDeepTrue(C.consistency.x)) console.log('consistency.x has been changed to ' + cons.x)
+  if (cons.y != isDeepTrue(C.consistency.y_axis)) console.log('consistency.y has been changed to ' + cons.y)
+  if (cons.x != isDeepTrue(C.consistency.x_axis)) console.log('consistency.x has been changed to ' + cons.x)
 
   return cons
 }

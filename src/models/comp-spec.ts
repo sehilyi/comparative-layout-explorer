@@ -1,20 +1,44 @@
-// TODO: add spec defaults
+// Specs are defined here
+// https://paper.dropbox.com/doc/Operations--AWlp37~UtWSS83hWWg25wGgxAg-dr2UHiPbc3qvqqS1rQHn1
+
 export type CompSpec = {
   layout: CompType
-  mirrored?: boolean  // TODO: should this be remained here and remove in AxisConsistency?
-  direction?: CompDirection // related: stack operations
-  unit?: CompLevel  // related: stack operations
-  consistency: Consistency  // related: chart-wise stack operations
+  unit?: CompUnit
+  consistency: Consistency
+
+  mirrored?: boolean
+  direction?: CompDirection
 }
-export type CompType = "stack" | "blend" | "overlay" | "nest"
+export type CompType = "juxtaposition" | "superimposition" | "blending" | "explicit-encoding"
+
 export type CompDirection = "horizontal" | "vertical"
-export type CompLevel = "chart" | "element"
+
+export type CompUnit = JuxCompUnit | SupCompUnit
+export type commonCompUnit = "chart" | "element"
+export type JuxCompUnit = commonCompUnit | "time"
+export type SupCompUnit = commonCompUnit | "area" // TODO: think about this more
+
 export type Consistency = {
-  y: boolean | AxisConsistency
-  x: boolean | AxisConsistency
+  x_axis?: boolean
+  y_axis?: boolean
+  x_arrangement?: boolean
+  y_arrangement?: boolean
   color?: boolean
 }
+
+// TODO: separate default by layout
+export const DEFAULT_COMP_SPEC: CompSpec = {
+  layout: "juxtaposition",
+  unit: "chart",
+  consistency: {x_axis: false, y_axis: false, color: false, x_arrangement: false, y_arrangement: false},
+  mirrored: false,
+  direction: "horizontal"
+}
+
+/**
+ * deprecated
+ */
 export type AxisConsistency = {
   value: boolean
-  mirrored: boolean // related: chart-wise stack operations
+  mirrored: boolean
 }
