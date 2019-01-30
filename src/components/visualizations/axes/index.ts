@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CHART_SIZE, CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle} from "../design-settings";
-import {translate, rotate, ifUndefinedGetDefault} from "src/useful-factory/utils";
+import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isBarChart} from "..";
 
 export function renderAxes(
@@ -27,13 +27,13 @@ export function renderAxes(
   let height = (typeof style != 'undefined' && typeof style['height'] != 'undefined') ? style['height'] : CHART_SIZE.height;
 
   const cX = d3.scaleBand()
-    .domain(xval as string[])
+    .domain(uniqueValues(xval, "") as string[])
     .range(revX ? [width, 0] : [0, width]);
   const nX = d3.scaleLinear()
     .domain([d3.min([d3.min(xval as number[]), 0]), d3.max(xval as number[])]).nice()
     .rangeRound(revX ? [width, 0] : [0, width]);
   const cY = d3.scaleBand()
-    .domain(yval as string[])
+    .domain(uniqueValues(yval, "") as string[])
     .range(revY ? [0, height] : [height, 0]);
   const nY = d3.scaleLinear()
     .domain([d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]).nice()

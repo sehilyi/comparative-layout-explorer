@@ -2,7 +2,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import d3 = require("d3");
-import {ifUndefinedGetDefault} from "src/useful-factory/utils";
+import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined} from "util";
 import {LEGEND_WIDTH} from "./legends/default-design";
 
@@ -67,13 +67,14 @@ export function getBarColorDarkest(n: number) {
   return CATEGORICAL_COLORS_DARKEST.slice(0, n > CATEGORICAL_COLORS_DARKEST.length ? CATEGORICAL_COLORS_DARKEST.length - 1 : n);
 }
 
-export function getColor(d: string[], styles?: {darker: boolean}) {
+export function getColor(d: string[] | number[], styles?: {darker: boolean}) {
   const stl = ifUndefinedGetDefault(styles, {})
   const darker = ifUndefinedGetDefault(stl["darker"], false)
+  const domain = uniqueValues(d, "")
 
   return d3.scaleOrdinal()
-    .domain(d)
-    .range(darker ? getBarColorDarker(d.length) : getBarColor(d.length))
+    .domain(domain as string[])
+    .range(darker ? getBarColorDarker(domain.length) : getBarColor(domain.length))
 }
 
 export function getConstantColor(index?: number) {
@@ -151,7 +152,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       direction: "horizontal",
       unit: "chart",
       consistency: {
-        x_axis: false, y_axis: false, color: false
+        x_axis: true, y_axis: false, color: false
       }
     }
   }

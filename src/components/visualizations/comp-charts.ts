@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
-import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
+import {uniqueValues, translate} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
   getColor, getConstantColor, getBarColor, _width, _height, _g, _transform
@@ -16,6 +16,7 @@ import {LEGEND_PADDING, LEGEND_WIDTH} from "./legends/default-design";
 import {ScaleBand, ScaleLinear} from "d3";
 import {getChartType} from ".";
 import {renderScatterplot} from "./scatterplots";
+import {correctConsistency, getDomains} from "./consistency";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();
@@ -40,15 +41,14 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 
 function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   // both charts' properties
-  const {...consistency} = getConsistencySpec(A, B, C);
-  const numOfC = C.direction === 'horizontal' ? 2 : 1
-  const numOfR = C.direction === 'vertical' ? 2 : 1
-  const aggD = getAggregatedData(A, B)
+  const {...consistency} = correctConsistency(A, B, C);
+  // const aggD = getAggregatedData(A, B)
+  const {...domains} = getDomains(A, B, C, consistency)
   // second chart's properties
   const revY = C.direction === "vertical" && C.mirrored
   const revX = C.direction === "horizontal" && C.mirrored
-  const noX = consistency.x && !revX && C.direction === 'vertical'
-  const noY = consistency.y && !revY && C.direction === 'horizontal'
+  const noX = consistency.x_axis && !revX && C.direction === 'vertical'
+  const noY = consistency.y_axis && !revY && C.direction === 'horizontal'
   // legends
   const isAColorUsed = !isUndefined(A.encoding.color)
   const isBColorUsed = !isUndefined(B.encoding.color)
@@ -59,6 +59,8 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   if (isALegendUse) legend.push(0)
   if (isBLegendUse) legend.push(1)
   // visual properties
+  const numOfC = C.direction === 'horizontal' ? 2 : 1
+  const numOfR = C.direction === 'vertical' ? 2 : 1
   const chartsp = getChartSize(numOfC, numOfR, {noX, noY, legend})
   const svg = d3.select(ref)
     .attr(_width, chartsp.size.width)
@@ -68,19 +70,15 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   if (getChartType(A) === "barchart") {
     renderBarChart(
       svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
-      A, {
-        x: consistency.x ? aggD.Union.categories : aggD.A.categories,
-        y: consistency.y ? aggD.Union.values : aggD.A.values
-      }, getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""]),
+      A, {x: domains.A.x, y: domains.A.y},
+      getColor(domains.A.c),
       {...DEFAULT_BARCHART_STYLE, noX, legend: isALegendUse})
   }
   else {
     renderScatterplot(
       svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
-      A, {
-        x: A.data.values.map(d => d[A.encoding.x.field]),
-        y: A.data.values.map(d => d[A.encoding.y.field])
-      }, getColor(isAColorUsed ? uniqueValues(A.data.values, A.encoding.color.field) : [""]),
+      A, {x: domains.A.x, y: domains.A.y},
+      getColor(domains.A.c),
       {legend: isAColorUsed}
     )
   }
@@ -88,15 +86,14 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   /// B
   renderBarChart(
     svg.append(_g).attr(_transform, translate(chartsp.positions[1].left, chartsp.positions[1].top)),
-    B, {
-      x: consistency.x ? aggD.Union.categories : aggD.B.categories,
-      y: consistency.y ? aggD.B.values.concat(aggD.A.values) : aggD.B.values
-    }, getColor(consistency.color ? aggD.Union.categories : isBColorUsed ? aggD.B.categories : [""]),
+    B, {x: domains.B.x, y: domains.B.y},
+    getColor(domains.B.c),
     {...DEFAULT_BARCHART_STYLE, noY, revY, revX, legend: isBLegendUse})
+
 }
 
 function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const {...consistency} = getConsistencySpec(A, B, C)
+  const {...consistency} = correctConsistency(A, B, C)
   const aggD = getAggregatedData(A, B)
   const width = CHART_SIZE.width
   const height = CHART_SIZE.height;
@@ -107,7 +104,7 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   const g = svg.append(_g)
     .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
-  const xDomain = consistency.x ? aggD.Union.categories : aggD.A.categories
+  const xDomain = consistency.x_axis ? aggD.Union.categories : aggD.A.categories
 
   const colorA = getConstantColor()
   const colorB = getConstantColor(2);
@@ -196,7 +193,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
 // TOOD: any way to generalize this code by combining with stack?!
 export function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const {...consistency} = getConsistencySpec(A, B, C);
+  const {...consistency} = correctConsistency(A, B, C);
   const aggD = getAggregatedData(A, B)
   const chartsp = getChartSize(1, 1, {})
   const svg = d3.select(ref)
@@ -204,18 +201,18 @@ export function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     .attr(_width, chartsp.size.width)
 
   { /// B
-    const noY = consistency.y
+    const noY = consistency.y_axis
     const noX = true
     const noGrid = true
-    const revY = consistency.y_mirrored
-    const revX = consistency.x_mirrored
+    const revY = false //consistency.y_mirrored // TODO:
+    const revX = false //consistency.x_mirrored // TODO:
     const isColorUsed = !isUndefined(B.encoding.color)
 
     renderBarChart(
       svg.append(_g).attr(_transform, translate(chartsp.positions[0].left + 6, chartsp.positions[0].top)),
       B, {
-        x: consistency.x ? aggD.Union.categories : aggD.B.categories,
-        y: consistency.y ? aggD.Union.values : aggD.B.values
+        x: consistency.x_axis ? aggD.Union.categories : aggD.B.categories,
+        y: consistency.y_axis ? aggD.Union.values : aggD.B.values
       }, getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.B.categories : [""], {darker: true}),
       {...DEFAULT_BARCHART_STYLE, noX, noY, revY, revX, noGrid})
   }
@@ -225,8 +222,8 @@ export function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     renderBarChart(
       svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
       A, {
-        x: consistency.x ? aggD.Union.categories : aggD.A.categories,
-        y: consistency.y ? aggD.Union.values : aggD.A.values
+        x: consistency.x_axis ? aggD.Union.categories : aggD.A.categories,
+        y: consistency.y_axis ? aggD.Union.values : aggD.A.values
       }, getColor(consistency.color ? aggD.Union.categories : isColorUsed ? aggD.A.categories : [""]),
       {...DEFAULT_BARCHART_STYLE})
   }
@@ -303,31 +300,7 @@ export function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   }
 }
 
-export function getConsistencySpec(A: Spec, B: Spec, C: CompSpec) {
-  const cons = {
-    x: (isDeepTrue(C.consistency.x_axis) &&
-      // A.encoding.x.field === B.encoding.x.field && // TOOD: should I constraint this?
-      A.encoding.x.type === B.encoding.x.type) ||
-      // always true for stack x element x bar chart
-      (C.layout === "juxtaposition" && C.unit === "element"),
-    y: (isDeepTrue(C.consistency.y_axis) &&
-      // A.encoding.y.field === B.encoding.y.field &&
-      A.encoding.y.type === B.encoding.y.type) ||
-      // always true for stack x element x bar chart
-      (C.layout === "juxtaposition" && C.unit === "element"),
-    color: !isUndefinedOrFalse(C.consistency.color),
-    // deprecated
-    x_mirrored: typeof C.consistency.x_axis != 'undefined' && C.consistency.x_axis['mirrored'],
-    y_mirrored: typeof C.consistency.y_axis != 'undefined' && C.consistency.y_axis['mirrored'],
-  };
-  // warnings
-  if (cons.y != isDeepTrue(C.consistency.y_axis)) console.log('consistency.y has been changed to ' + cons.y)
-  if (cons.x != isDeepTrue(C.consistency.x_axis)) console.log('consistency.x has been changed to ' + cons.x)
-
-  return cons
-}
-
-function getAggregatedData(a: Spec, b: Spec) {
+export function getAggregatedData(a: Spec, b: Spec) {
   const aval = getAggValues(a.data.values, a.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)
   const bval = getAggValues(b.data.values, b.encoding.x.field, b.encoding.y.field, b.encoding.y.aggregate)
   const abybval = getAggValuesByTwoKeys(a.data.values, a.encoding.x.field, b.encoding.x.field, a.encoding.y.field, a.encoding.x.aggregate)

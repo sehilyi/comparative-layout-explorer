@@ -9,8 +9,13 @@ export function rotate(d: number) {
   return `rotate(${d})`
 }
 
+/**
+ * When k === "", returns unique o
+ * @param o
+ * @param k
+ */
 export function uniqueValues(o: Object[], k: string) {
-  return d3.set(o.map(d => d[k])).values()
+  return d3.set(k === "" ? o : o.map(d => d[k])).values()
 }
 
 export function isDeepTrue(o: boolean | object) {

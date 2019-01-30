@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
-import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
+import {translate, ifUndefinedGetDefault, uniqueValues} from 'src/useful-factory/utils';
 import {CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, getChartSize, _width, _height, _g, _transform, _rect, _y, _x, _fill, _stroke, _stroke_width} from '../design-settings';
 import {isUndefined} from 'util';
 import {barchartStyle, DEFAULT_BARCHART_STYLE} from 'src/models/barchart-style';
@@ -43,7 +43,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 export function renderBarChart(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec, // contains actual values to draw bar chart
-  domain: {x: string[], y: number[]}, // determine the axis range
+  domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
   color: d3.ScaleOrdinal<string, {}>,
   s: barchartStyle) {
 
@@ -53,7 +53,7 @@ export function renderBarChart(
   const aggValues = ifUndefinedGetDefault(s.altVals, getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
 
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, noGrid, xName, width, height, noYLine});
-  const {...designs} = renderBars(g, aggValues, "value", "key", domain.x.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color, cKey: "key"}, {
+  const {...designs} = renderBars(g, aggValues, "value", "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color, cKey: "key"}, {
     ...DEFAULT_BARCHART_STYLE, revY, barGap, width, height, stroke, stroke_width
   })
   if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), color.domain() as string[], color.range() as string[])
