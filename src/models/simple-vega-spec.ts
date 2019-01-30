@@ -6,7 +6,7 @@ export type Spec = {
 export type Data = {
   values: object[]
 }
-export type Mark = "bar" | "point";
+export type Mark = "bar" | "point" | "line";
 export type Encoding = {
   x: Field
   y: Field

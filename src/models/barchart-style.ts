@@ -6,7 +6,9 @@ export type barchartStyle = {
   revX: boolean
   revY: boolean
   noGrid: boolean
+  noYLine: boolean
   xName: string
+  xSlant: boolean
   barGap: number
   width: number
   height: number
@@ -26,7 +28,9 @@ export const DEFAULT_BARCHART_STYLE: barchartStyle = {
   revX: false,
   revY: false,
   noGrid: false,
+  noYLine: true,
   xName: undefined,
+  xSlant: true,
   barGap: BAR_GAP,
   width: CHART_SIZE.width,
   height: CHART_SIZE.height,

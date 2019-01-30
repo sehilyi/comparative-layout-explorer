@@ -4,7 +4,7 @@ import {CompSpec} from "src/models/comp-spec";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
-  getColor, getConstantColor, getBarColor, LEGEND_WIDTH, LEGEND_PADDING, _width, _height, _g, _transform
+  getColor, getConstantColor, getBarColor, _width, _height, _g, _transform
 } from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
@@ -12,6 +12,7 @@ import {DEFAULT_BARCHART_STYLE} from "src/models/barchart-style";
 import {renderLegend} from "./legends";
 import {renderAxes} from "./axes";
 import {getAggValues, getAggValuesByTwoKeys} from "./data-handler";
+import {LEGEND_PADDING, LEGEND_WIDTH} from "./legends/default-design";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();
@@ -124,7 +125,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       .attr(_height, chartsp.size.height)
     const g = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
     const aggD = getAggregatedData(A, B)
-    const {x, y} = renderAxes(g, aggD.A.categories, aggD.AbyB.sums, A);
+    const {x, y} = renderAxes(g, aggD.A.categories, aggD.AbyB.sums, A, {});
 
     const yOffsetData = []
     // TODO: clear code below!

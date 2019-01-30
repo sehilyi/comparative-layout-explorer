@@ -4,6 +4,7 @@ import {DATASET_MOVIES} from "src/datasets/movies";
 import d3 = require("d3");
 import {ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {isUndefined} from "util";
+import {LEGEND_WIDTH} from "./legends/default-design";
 
 // svg attributes
 export const _width = 'width', _height = 'height',
@@ -51,13 +52,6 @@ export const MAX_BAR_WIDTH = 30;
 
 export const BAR_COLOR = '#4E79A7';
 export const BAR_COLOR2 = '#F28E2B';
-
-// legend
-export const LEGEND_PADDING = 10
-export const LEGEND_GAP = 5
-export const LEGEND_MARK_SIZE = {width: 10, height: 10}
-export const LEGEND_WIDTH = 100
-export const LEGEND_VISIBLE_LIMIT = 15  // limit the number of legends for visible
 
 export function getBarWidth(cw: number, n: number, g: number) {
   return d3.min([cw / n - g as number, MAX_BAR_WIDTH])
@@ -135,9 +129,9 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "point",
       encoding: {
-        x: {field: "Worldwide_Gross", type: "quantitative"},
+        x: {field: "Production_Budget", type: "quantitative"},
         y: {field: "US_Gross", type: "quantitative"},
-        // color: {field: "MPAA_Rating", type: "nominal"}
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     B: {

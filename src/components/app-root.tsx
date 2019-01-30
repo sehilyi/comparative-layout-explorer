@@ -5,13 +5,12 @@ import {State} from 'src/models';
 import {Dispatch} from 'redux';
 import {CompCasesLoad, loadCompCases, CompCasesImageDataLoad, onCompCaseImgDataLoad, Action} from '../actions';
 import {CompareCase, ScatterPlot} from 'src/models/dataset';
-
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
-import {renderSimpleBarChart} from './visualizations/barcharts';
 import {renderCompChart} from './visualizations/comp-charts';
 import {getExampleSpecs} from './visualizations/design-settings';
+import {renderChart} from './visualizations';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -37,10 +36,10 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   render() {
     const {A, B, C} = getExampleSpecs();
     let onBarChartA = (ref: SVGSVGElement) => {
-      renderSimpleBarChart(ref, A);
+      renderChart(ref, A);
     }
     let onBarChartB = (ref: SVGSVGElement) => {
-      renderSimpleBarChart(ref, B);
+      renderChart(ref, B);
     }
     let onBarChartAPlusB = (ref: SVGSVGElement) => {
       renderCompChart(ref, A, B, C)

@@ -1,0 +1,1 @@
+export type ChartTypes = "scatterplot" | "barchart" | "linechart"

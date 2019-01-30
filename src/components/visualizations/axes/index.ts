@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
-import {CHART_SIZE, CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end} from "../design-settings";
-import {translate, rotate} from "src/useful-factory/utils";
+import {CHART_SIZE, CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle} from "../design-settings";
+import {translate, rotate, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {isBarChart} from "..";
 
 export function renderAxes(
@@ -9,32 +9,48 @@ export function renderAxes(
   xval: string[] | number[],
   yval: string[] | number[],
   spec: Spec,
-  style?: object) {
+  style: object) {
 
+  // TODO: make this class
+  const isXCategorical = spec.encoding.x.type === "nominal"
+  const isYCategorical = spec.encoding.y.type === "nominal"
+  const xFunc = ifUndefinedGetDefault(spec.encoding.x.aggregate, "") as string
+  const yFunc = ifUndefinedGetDefault(spec.encoding.y.aggregate, "") as string
   let noY = (typeof style != 'undefined' && style['noY'])
   let noX = (typeof style != 'undefined' && style['noX'])
   let noGrid = !(typeof style === 'undefined' || !style['noGrid'])
+  const noYLine = ifUndefinedGetDefault(style["noYLine"], false) as boolean
   let revY = (typeof style != 'undefined' && style['revY'])
   let revX = (typeof style != 'undefined' && style['revX'])
   let xName = (typeof style != 'undefined' ? style['xName'] : undefined)
   let width = (typeof style != 'undefined' && typeof style['width'] != 'undefined') ? style['width'] : CHART_SIZE.width
   let height = (typeof style != 'undefined' && typeof style['height'] != 'undefined') ? style['height'] : CHART_SIZE.height;
 
-  const x =
-    d3.scaleBand()
-      .domain(xval as string[])
-      .range(revX ? [width, 0] : [0, width]);
-  const y =
-    d3.scaleLinear()
-      .domain(
-        [d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]
-      ).nice()
-      .rangeRound(revY ? [0, height] : [height, 0]);
+  const cX = d3.scaleBand()
+    .domain(xval as string[])
+    .range(revX ? [width, 0] : [0, width]);
+  const nX = d3.scaleLinear()
+    .domain([d3.min([d3.min(xval as number[]), 0]), d3.max(xval as number[])]).nice()
+    .rangeRound(revX ? [width, 0] : [0, width]);
+  const cY = d3.scaleBand()
+    .domain(yval as string[])
+    .range(revY ? [0, height] : [height, 0]);
+  const nY = d3.scaleLinear()
+    .domain([d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]).nice()
+    .rangeRound(revY ? [0, height] : [height, 0]);
 
-  let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0);
-  let yAxis = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(d3.format('.2s'));
-  let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-height);
-  let yGrid = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-width);
+  let xAxis = isXCategorical ?
+    d3.axisBottom(cX).ticks(Math.ceil(width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+    d3.axisBottom(nX).ticks(Math.ceil(height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+  let yAxis = isYCategorical ?
+    d3.axisLeft(cY).ticks(Math.ceil(height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+    d3.axisLeft(nY).ticks(Math.ceil(height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+  let xGrid = isXCategorical ?
+    d3.axisBottom(cX).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-height) :
+    d3.axisBottom(nX).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-height)
+  let yGrid = isYCategorical ?
+    d3.axisLeft(cY).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-width) :
+    d3.axisLeft(nY).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-width)
 
   g.classed('g', true);
 
@@ -59,23 +75,30 @@ export function renderAxes(
       .attr('transform', translate(0, height))
       .call(xAxis)
 
-    g.selectAll('.x-axis text')
-      .attr(_x, -6)
-      .attr(_y, 0)
-      .attr(_transform, rotate(310))
-      .attr(_text_anchor, _end)
+    if (isXCategorical) {
+      g.selectAll('.x-axis text')
+        .attr(_x, -6)
+        .attr(_y, 0)
+        .attr(_transform, rotate(310))
+        .attr(_text_anchor, _end)
+    }
 
     xaxis
       .attr('transform', translate(0, height))
       .append('text')
       .classed('label', true)
       .attr('x', width / 2)
-      .attr('y', CHART_MARGIN.bottom - 5)
+      .attr('y', CHART_MARGIN.bottom - 40)
       .style('fill', 'black')
       .style('stroke', 'none')
       .style('font-weight', 'bold')
       .style('text-anchor', 'middle')
-      .text(typeof xName !== "undefined" ? xName : spec.encoding.x.field)
+      .text(typeof xName !== "undefined" ? xName : xFunc + ' ' + spec.encoding.x.field)
+
+    if (isXCategorical) {
+      xaxis.selectAll(".label")
+        .attr('y', CHART_MARGIN.bottom - 5)
+    }
   }
 
   if (!noY) {
@@ -96,16 +119,18 @@ export function renderAxes(
       .style('fill', 'black')
       .style('stroke', 'none')
       .style('text-anchor', 'middle')
-      .text(spec.encoding.y.aggregate + ' ' + spec.encoding.y.field + '')
+      .text(yFunc + ' ' + spec.encoding.y.field)
   }
 
   g.selectAll('.axis path')
     .attr('stroke-width', '1px')
     .attr('stroke', 'black')
 
-  g.selectAll('.y-axis path')
-    .attr('stroke-width', '0px')
-    .attr('stroke', 'black')
+  if (noYLine) {
+    g.selectAll('.y-axis path')
+      .attr('stroke-width', '0px')
+      .attr('stroke', 'black')
+  }
 
   g.selectAll('.axis line')
     .attr('stroke-width', '0px')  // removed
@@ -134,5 +159,5 @@ export function renderAxes(
     .attr('stroke', 'rgb(221, 221, 221)')
     .attr('stroke-width', '0px')
 
-  return {x, y};
+  return {x: cX, y: nY};
 }
