@@ -13,6 +13,9 @@ import {renderLegend} from "./legends";
 import {renderAxes} from "./axes";
 import {getAggValues, getAggValuesByTwoKeys} from "./data-handler";
 import {LEGEND_PADDING, LEGEND_WIDTH} from "./legends/default-design";
+import {ScaleBand, ScaleLinear} from "d3";
+import {getChartType} from ".";
+import {renderScatterplot} from "./scatterplots";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();
@@ -62,13 +65,25 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     .attr(_height, chartsp.size.height);
 
   /// A
-  renderBarChart(
-    svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
-    A, {
-      x: consistency.x ? aggD.Union.categories : aggD.A.categories,
-      y: consistency.y ? aggD.Union.values : aggD.A.values
-    }, getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""]),
-    {...DEFAULT_BARCHART_STYLE, noX, legend: isALegendUse})
+  if (getChartType(A) === "barchart") {
+    renderBarChart(
+      svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
+      A, {
+        x: consistency.x ? aggD.Union.categories : aggD.A.categories,
+        y: consistency.y ? aggD.Union.values : aggD.A.values
+      }, getColor(consistency.color ? aggD.Union.categories : isAColorUsed ? aggD.A.categories : [""]),
+      {...DEFAULT_BARCHART_STYLE, noX, legend: isALegendUse})
+  }
+  else {
+    renderScatterplot(
+      svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
+      A, {
+        x: A.data.values.map(d => d[A.encoding.x.field]),
+        y: A.data.values.map(d => d[A.encoding.y.field])
+      }, getColor(uniqueValues(A.data.values, A.encoding.color.field)),
+      {legend: true}
+    )
+  }
 
   /// B
   renderBarChart(
@@ -105,14 +120,14 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     const aggSumByKey = getAggValues(aggD.Union.data, "key", "value", 'sum').map(d => d.value)
     const {x, y} = renderAxes(g, xDomain, aggSumByKey, A, {height});
 
-    renderBars(g, aggD.A.data, "value", "key", xDomain.length, x, y, {color: colorA, cKey: "key"}, {...DEFAULT_BARCHART_STYLE})
-    renderBars(g, aggD.B.data, "value", "key", xDomain.length, x, y, {color: colorB, cKey: "key"}, {...DEFAULT_BARCHART_STYLE, yOffsetData: aggD.A.data})
+    renderBars(g, aggD.A.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorA, cKey: "key"}, {...DEFAULT_BARCHART_STYLE})
+    renderBars(g, aggD.B.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorB, cKey: "key"}, {...DEFAULT_BARCHART_STYLE, yOffsetData: aggD.A.data})
   }
   else if (C.direction === "horizontal") {  // grouped bar
     const {x, y} = renderAxes(g, xDomain, aggD.Union.values, A, {height});
 
-    renderBars(g, aggD.A.data, "value", "key", xDomain.length, x, y, {color: colorA, cKey: "key"}, {...DEFAULT_BARCHART_STYLE, shiftBy: -0.5, mulSize: 0.5})
-    renderBars(g, aggD.B.data, "value", "key", xDomain.length, x, y, {color: colorB, cKey: "key"}, {...DEFAULT_BARCHART_STYLE, shiftBy: 0.5, mulSize: 0.5})
+    renderBars(g, aggD.A.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorA, cKey: "key"}, {...DEFAULT_BARCHART_STYLE, shiftBy: -0.5, mulSize: 0.5})
+    renderBars(g, aggD.B.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorB, cKey: "key"}, {...DEFAULT_BARCHART_STYLE, shiftBy: 0.5, mulSize: 0.5})
   }
 }
 
@@ -145,7 +160,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         aggD.BbyA.data[i].values,
         "value", "key",
         aggD.A.categories.length,
-        x, y,
+        x as ScaleBand<string>, y as ScaleLinear<number, number>,
         {color: getConstantColor(i + 1), cKey: "key"},
         {...DEFAULT_BARCHART_STYLE, yOffsetData})
     }
@@ -274,7 +289,7 @@ export function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
           // TODO: last one (i.e., on the top) is not rendered at all
           for (let j = 0; j < xDomain.length; j++) {  // add bar one by one
             const {x, y} = renderAxes(ttg, [xDomain[j]], yDomain, B, {noX, noY, noGrid, width: innerChartWidth, height: chartHeight});
-            renderBars(ttg, [aggD.AbyB.data[i].values[j]], "value", "key", 1, x, y, {color: c, cKey: "key"}, {
+            renderBars(ttg, [aggD.AbyB.data[i].values[j]], "value", "key", 1, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: c, cKey: "key"}, {
               ...DEFAULT_BARCHART_STYLE, noX, noY, noGrid, barGap: 0, width: innerChartWidth, height: chartHeight,
               yOffsetData: [{
                 key: xDomain[j], value: j == 0 ? 0 :

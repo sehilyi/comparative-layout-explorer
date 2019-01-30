@@ -8,6 +8,7 @@ import {renderLegend} from '../legends';
 import {renderAxes} from '../axes';
 import {getAggValues} from '../data-handler';
 import {LEGEND_PADDING} from '../legends/default-design';
+import {ScaleBand, ScaleLinear} from 'd3';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
@@ -46,13 +47,13 @@ export function renderBarChart(
   color: d3.ScaleOrdinal<string, {}>,
   s: barchartStyle) {
 
-  const {noX, noY, revX, revY, noGrid, xName, width, height, barGap, stroke, stroke_width, legend} = s
+  const {noX, noY, revX, revY, noGrid, xName, width, height, barGap, stroke, stroke_width, legend, noYLine} = s
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
   const aggValues = ifUndefinedGetDefault(s.altVals, getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
 
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, noGrid, xName, width, height});
-  const {...designs} = renderBars(g, aggValues, "value", "key", domain.x.length, x, y, {color, cKey: "key"}, {
+  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {noX, noY, revX, revY, noGrid, xName, width, height, noYLine});
+  const {...designs} = renderBars(g, aggValues, "value", "key", domain.x.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color, cKey: "key"}, {
     ...DEFAULT_BARCHART_STYLE, revY, barGap, width, height, stroke, stroke_width
   })
   if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), color.domain() as string[], color.range() as string[])

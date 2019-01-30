@@ -159,5 +159,5 @@ export function renderAxes(
     .attr('stroke', 'rgb(221, 221, 221)')
     .attr('stroke-width', '0px')
 
-  return {x: cX, y: nY};
+  return {x: isXCategorical ? cX : nX, y: isYCategorical ? cY : nY};
 }
