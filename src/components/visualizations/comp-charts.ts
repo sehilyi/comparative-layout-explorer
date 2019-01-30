@@ -80,8 +80,8 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       A, {
         x: A.data.values.map(d => d[A.encoding.x.field]),
         y: A.data.values.map(d => d[A.encoding.y.field])
-      }, getColor(uniqueValues(A.data.values, A.encoding.color.field)),
-      {legend: true}
+      }, getColor(isAColorUsed ? uniqueValues(A.data.values, A.encoding.color.field) : [""]),
+      {legend: isAColorUsed}
     )
   }
 
