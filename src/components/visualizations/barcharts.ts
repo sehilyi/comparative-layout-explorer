@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {
-  CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, BAR_GAP, LEGEND_MARK_SIZE,
+  CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, LEGEND_MARK_SIZE,
   LEGEND_GAP, LEGEND_VISIBLE_LIMIT, getChartSize, LEGEND_PADDING
 } from './design-settings';
 import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues as getAggValsByKey, _stroke, _stroke_width, _color, _text, _text_anchor, _start, _font_size, _alignment_baseline, _middle, _font_weight, _bold} from '.';
