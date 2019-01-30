@@ -10,7 +10,7 @@ import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {renderCompChart} from './visualizations/comp-charts';
 import {getExampleSpecs} from './visualizations/design-settings';
-import {renderChart} from './visualizations';
+import {renderSimpleChart} from './visualizations';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -36,10 +36,10 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   render() {
     const {A, B, C} = getExampleSpecs();
     let onBarChartA = (ref: SVGSVGElement) => {
-      renderChart(ref, A);
+      renderSimpleChart(ref, A);
     }
     let onBarChartB = (ref: SVGSVGElement) => {
-      renderChart(ref, B);
+      renderSimpleChart(ref, B);
     }
     let onBarChartAPlusB = (ref: SVGSVGElement) => {
       renderCompChart(ref, A, B, C)

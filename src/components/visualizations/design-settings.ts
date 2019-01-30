@@ -128,22 +128,22 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "point",
+      mark: "bar",
       encoding: {
-        x: {field: "Production_Budget", type: "quantitative"},
-        y: {field: "US_Gross", type: "quantitative"},
-        // color: {field: "MPAA_Rating", type: "nominal"}
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     B: {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "bar",
+      mark: "point",
       encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-        color: {field: "MPAA_Rating", type: "nominal"}
+        x: {field: "Production_Budget", type: "quantitative"},
+        y: {field: "US_Gross", type: "quantitative"},
+        // color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
@@ -152,7 +152,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       direction: "horizontal",
       unit: "chart",
       consistency: {
-        x_axis: true, y_axis: false, color: false
+        x_axis: true, y_axis: true, color: true
       }
     }
   }

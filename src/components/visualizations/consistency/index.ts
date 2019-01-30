@@ -40,6 +40,7 @@ export function correctConsistency(A: Spec, B: Spec, C: CompSpec): Consistency {
  */
 export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
+  let ack: string, bck: string
 
   if (C.layout === "juxtaposition") {
     if (isBarChart(A) && isBarChart(B)) {
@@ -60,10 +61,13 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       }
       if (consistency.color) {
         ac = bc = aggD.Union.categories
+        ack = bck = A.encoding.x.field
       }
       else {
         ac = aggD.A.categories
+        ack = A.encoding.x.field
         bc = aggD.B.categories
+        bck = B.encoding.x.field
       }
     }
     else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
@@ -88,15 +92,18 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         by = isBarChart(B) ? aggD.B.values : B.data.values.map(d => d[B.encoding.y.field])
       }
       if (consistency.color) {
-        // use category for bar chart
+        // encode color by category used in a bar chart
         const aggD = getAggregatedData(A, B)
         ac = bc = isBarChart(A) ? aggD.A.categories : aggD.B.categories
+        ack = bck = isBarChart(A) ? A.encoding.x.field : B.encoding.x.field
       }
       else {
         ac = typeof A.encoding.color !== "undefined" ? uniqueValues(A.data.values, A.encoding.color.field) : [""]
         bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
+        ack = typeof A.encoding.color !== "undefined" ? A.encoding.color.field : A.encoding.x.field
+        bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
       }
     }
   }
-  return {A: {x: ax, y: ay, c: ac}, B: {x: bx, y: by, c: bc}}
+  return {A: {x: ax, y: ay, c: ac, ck: ack}, B: {x: bx, y: by, c: bc, ck: bck}}
 }

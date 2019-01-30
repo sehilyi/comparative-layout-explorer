@@ -1,15 +1,39 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {renderSimpleBarChart} from "./barcharts";
+import {renderSimpleBarChart, renderBarChart} from "./barcharts";
 import {ChartTypes} from "src/models/chart-types";
-import {renderSimpleScatterplot} from "./scatterplots";
+import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
+import {ChartStyle} from "./chart-styles";
 
-export function renderChart(ref: SVGSVGElement, spec: Spec) {
+export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   switch (getChartType(spec)) {
     case "scatterplot":
       renderSimpleScatterplot(ref, spec)
       break;
     case "barchart":
       renderSimpleBarChart(ref, spec)
+      break;
+    case "linechart":
+      //
+      break;
+    default:
+      break;
+  }
+}
+
+// TODO: this should be combined with renderSimpleChart
+export function renderChart(
+  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  spec: Spec, // contains actual values to draw bar chart
+  domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
+  c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
+  s: ChartStyle) {
+
+  switch (getChartType(spec)) {
+    case "scatterplot":
+      renderScatterplot(g, spec, domain, c, s)
+      break;
+    case "barchart":
+      renderBarChart(g, spec, domain, c, s)
       break;
     case "linechart":
       //

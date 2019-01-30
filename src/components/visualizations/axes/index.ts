@@ -3,22 +3,23 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CHART_SIZE, CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle} from "../design-settings";
 import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isBarChart} from "..";
+import {ChartStyle} from "../chart-styles";
 
 export function renderAxes(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   xval: string[] | number[],
   yval: string[] | number[],
   spec: Spec,
-  style: object) {
+  style: ChartStyle) {
 
   // TODO: make this class
   const isXCategorical = spec.encoding.x.type === "nominal"
   const isYCategorical = spec.encoding.y.type === "nominal"
   const xFunc = ifUndefinedGetDefault(spec.encoding.x.aggregate, "") as string
   const yFunc = ifUndefinedGetDefault(spec.encoding.y.aggregate, "") as string
-  let noY = (typeof style != 'undefined' && style['noY'])
-  let noX = (typeof style != 'undefined' && style['noX'])
-  let noGrid = !(typeof style === 'undefined' || !style['noGrid'])
+  let noY = (typeof style != 'undefined' && style.noY)
+  let noX = (typeof style != 'undefined' && style.noX)
+  let noGrid = !(typeof style === 'undefined' || !style.noGrid)
   const noYLine = ifUndefinedGetDefault(style["noYLine"], false) as boolean
   let revY = (typeof style != 'undefined' && style['revY'])
   let revX = (typeof style != 'undefined' && style['revX'])
