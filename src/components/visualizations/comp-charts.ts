@@ -8,8 +8,9 @@ import {
   getColor, getConstantColor, getBarColor, LEGEND_WIDTH, LEGEND_PADDING
 } from "./design-settings";
 import {isUndefined} from "util";
-import {renderBarChart, renderBars, renderLegend} from "./barcharts";
+import {renderBarChart, renderBars} from "./barcharts";
 import {DEFAULT_BARCHART_STYLE} from "src/models/barchart-style";
+import {renderLegend} from "./legends";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();

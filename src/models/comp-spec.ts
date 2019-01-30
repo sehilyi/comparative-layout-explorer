@@ -6,7 +6,7 @@ export type CompSpec = {
   unit?: CompUnit
   consistency: Consistency
 
-  mirrored?: boolean
+  mirrored?: boolean  // TODO: move to layout??
   direction?: CompDirection
 }
 export type CompType = "juxtaposition" | "superimposition" | "blending" | "explicit-encoding"
@@ -16,7 +16,7 @@ export type CompDirection = "horizontal" | "vertical"
 export type CompUnit = JuxCompUnit | SupCompUnit
 export type commonCompUnit = "chart" | "element"
 export type JuxCompUnit = commonCompUnit | "time"
-export type SupCompUnit = commonCompUnit | "area" // TODO: think about this more
+export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to constraint this?
 
 export type Consistency = {
   x_axis?: boolean
