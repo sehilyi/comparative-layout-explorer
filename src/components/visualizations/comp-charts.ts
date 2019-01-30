@@ -1,16 +1,17 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
-import {_g, _width, _height, _color, _fill, renderAxes, getAggValues, _transform, _rect, _y, _x, _stroke, _stroke_width, getAggValuesByTwoKeys, _opacity} from ".";
 import {uniqueValues, translate, isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
-  getColor, getConstantColor, getBarColor, LEGEND_WIDTH, LEGEND_PADDING
+  getColor, getConstantColor, getBarColor, LEGEND_WIDTH, LEGEND_PADDING, _width, _height, _g, _transform
 } from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
 import {DEFAULT_BARCHART_STYLE} from "src/models/barchart-style";
 import {renderLegend} from "./legends";
+import {renderAxes} from "./axes";
+import {getAggValues, getAggValuesByTwoKeys} from "./data-handler";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   d3.select(ref).selectAll('*').remove();

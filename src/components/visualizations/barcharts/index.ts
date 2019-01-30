@@ -1,13 +1,15 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
-import {CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, getChartSize, LEGEND_PADDING} from './design-settings';
-import {renderAxes, _width, _height, _g, _rect, _y, _x, _fill, _transform, getAggValues, _stroke, _stroke_width, _color, _text, _text_anchor, _start, _font_size, _alignment_baseline, _middle, _font_weight, _bold} from '.';
+import {CHART_MARGIN, CHART_SIZE, getBarWidth, getBarColor, getChartSize, LEGEND_PADDING, _width, _height, _g, _transform, _rect, _y, _x, _fill, _stroke, _stroke_width} from '../design-settings';
 import {isUndefined} from 'util';
 import {barchartStyle, DEFAULT_BARCHART_STYLE} from 'src/models/barchart-style';
-import {renderLegend} from './legends';
+import {renderLegend} from '../legends';
+import {renderAxes} from '../axes';
+import {getAggValues} from '../data-handler';
 
-export function renderSingleBarChart(ref: SVGSVGElement, spec: Spec) {
+
+export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
   const {color} = spec.encoding;
   const {field: xField} = spec.encoding.x, {field: yField, aggregate} = spec.encoding.y;

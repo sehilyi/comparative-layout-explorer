@@ -5,6 +5,20 @@ import d3 = require("d3");
 import {ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {isUndefined} from "util";
 
+// svg attributes
+export const _width = 'width', _height = 'height',
+  _fill = 'fill', _color = 'color',
+  _transform = 'transform', _g = 'g', _rect = 'rect',
+  _x = 'x', _y = 'y',
+  _stroke = "stroke", _stroke_width = "stroke-width",
+  _opacity = "opacity",
+  // text-related
+  _text = "text",
+  _text_anchor = "text-anchor", _start = "start", _end = "end",
+  _font_size = "font-size",
+  _alignment_baseline = "alignment-baseline", _middle = "middle",
+  _font_weight = "font-weight", _bold = "bold"
+
 // general
 export const CHART_SIZE = {width: 230, height: 200};
 export const CHART_MARGIN = {top: 10, right: 20, bottom: 80, left: 50};
@@ -112,17 +126,17 @@ export function getChartSize(x: number, y: number, styles: object) {
 }
 
 // test
-export function getSimpleBarSpecs(): {A: Spec, B: Spec, C: CompSpec} {
+export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
     // https://vega.github.io/vega-lite/examples/
     A: {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "bar",
+      mark: "point",
       encoding: {
-        x: {field: "Source", type: "nominal"},
-        y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+        x: {field: "Worldwide_Gross", type: "quantitative"},
+        y: {field: "US_Gross", type: "quantitative"},
         // color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
