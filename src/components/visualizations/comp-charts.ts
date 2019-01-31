@@ -14,10 +14,12 @@ import {getAggValues, getAggValuesByTwoKeys} from "./data-handler";
 import {LEGEND_PADDING, LEGEND_WIDTH} from "./legends/default-design";
 import {ScaleBand, ScaleLinear} from "d3";
 import {correctConsistency, getDomains} from "./consistency";
-import {renderChart} from ".";
+import {renderChart, canRenderCompChart} from ".";
 import {DEFAULT_CHART_STYLE} from "./chart-styles";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+  if (!canRenderCompChart(A, B, C)) return;
+
   d3.select(ref).selectAll('*').remove();
 
   switch (C.layout) {
@@ -74,7 +76,7 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   renderChart(
     svg.append(_g).attr(_transform, translate(chartsp.positions[1].left, chartsp.positions[1].top)),
     B, {x: domains.B.x, y: domains.B.y},
-    {color: getColor(domains.B.c), cKey: domains.A.ck},
+    {color: getColor(domains.B.c), cKey: domains.B.ck},
     {...DEFAULT_CHART_STYLE, noY, revY, revX, legend: isBLegendUse})
 }
 
@@ -82,7 +84,7 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   // common properties
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
-  const aggD = getAggregatedData(A, B)
+  const aggD = getAggregatedDatas(A, B)
   // visual properties
   const width = CHART_SIZE.width
   const height = CHART_SIZE.height
@@ -110,8 +112,8 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     styleA = {...styleA, shiftBy: -0.5, mulSize: 0.5}
     styleB = {...styleA, shiftBy: 0.5, mulSize: 0.5, noAxes: true}
   }
-  renderBarChart(g, A, {x: domains.A.x, y: domains.A.y}, {color: colorA, cKey: "key"}, styleA)
-  renderBarChart(g, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styleB)
+  renderChart(g, A, {x: domains.A.x, y: domains.A.y}, {color: colorA, cKey: "key"}, styleA)
+  renderChart(g, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styleB)
 }
 
 export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
@@ -122,7 +124,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       .attr(_width, chartsp.size.width)
       .attr(_height, chartsp.size.height)
     const g = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
-    const aggD = getAggregatedData(A, B)
+    const aggD = getAggregatedDatas(A, B)
     const {x, y} = renderAxes(g, aggD.A.categories, aggD.AbyB.sums, A, {...DEFAULT_CHART_STYLE, });
 
     const yOffsetData = []
@@ -154,7 +156,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   }
   else if (C.direction === "horizontal") {
     const GroupW = 90
-    const aggD = getAggregatedData(A, B)
+    const aggD = getAggregatedDatas(A, B)
     const chartsp = getChartSize(aggD.A.categories.length, 1, {width: GroupW, noY: true, legend: [aggD.A.categories.length - 1]})
     const svg = d3.select(ref)
       .attr(_width, chartsp.size.width)
@@ -180,7 +182,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 // TOOD: any way to generalize this code by combining with stack?!
 export function renderOverlay(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C);
-  const aggD = getAggregatedData(A, B)
+  const aggD = getAggregatedDatas(A, B)
   const chartsp = getChartSize(1, 1, {})
   const svg = d3.select(ref)
     .attr(_height, chartsp.size.height)
@@ -231,7 +233,7 @@ export function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   { /// A
     const g = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
 
-    const aggD = getAggregatedData(A, B)
+    const aggD = getAggregatedDatas(A, B)
     const xDomain = aggD.A.categories
     const yDomain = aggD.A.values
 
@@ -242,7 +244,7 @@ export function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       const g = svg.append(_g)
         .attr(_transform, translate(chartsp.positions[0].left + 0, chartsp.positions[0].top))
 
-      const aggD = getAggregatedData(A, B)
+      const aggD = getAggregatedDatas(A, B)
       const chartWidth = designs["barWidth"], x = designs["x"], y = designs["y"], bandUnitSize = designs["bandUnitSize"]
       const padding = 3
       const innerChartWidth = chartWidth - padding * 2.0
@@ -292,26 +294,24 @@ export function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   }
 }
 
-export function getAggregatedData(a: Spec, b: Spec) {
-  const aval = getAggValues(a.data.values, a.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)
-  const bval = getAggValues(b.data.values, b.encoding.x.field, b.encoding.y.field, b.encoding.y.aggregate)
+export function getAggregatedData(s: Spec) {
+  const data = getAggValues(s.data.values, s.encoding.x.field, s.encoding.y.field, s.encoding.y.aggregate)
+  const categories = uniqueValues(data, "key")
+  const values = data.map(d => d.value)
+  return {values, categories, data}
+}
+
+export function getAggregatedDatas(a: Spec, b: Spec) {
+  const {...dataA} = getAggregatedData(a), {...dataB} = getAggregatedData(b)
   const abybval = getAggValuesByTwoKeys(a.data.values, a.encoding.x.field, b.encoding.x.field, a.encoding.y.field, a.encoding.x.aggregate)
   const bbyaval = getAggValuesByTwoKeys(a.data.values, b.encoding.x.field, a.encoding.x.field, a.encoding.y.field, a.encoding.x.aggregate)
-  const unionval = aval.concat(bval)
+  const unionval = dataA.data.concat(dataB.data)
 
-  const acat = uniqueValues(aval, "key")
-  const bcat = uniqueValues(bval, "key")
-  const unioncat = uniqueValues(aval.concat(bval), "key")
+  const unioncat = uniqueValues(dataA.data.concat(dataB.data), "key")
   return {
-    A: {
-      values: aval.map(d => d.value), categories: acat, data: aval
-    },
-    B: {
-      values: bval.map(d => d.value), categories: bcat, data: bval
-    },
-    Union: {
-      values: unionval.map(d => d.value), categories: unioncat, data: unionval
-    },
+    A: {values: dataA.values, categories: dataA.categories, data: dataA.data},
+    B: {values: dataB.values, categories: dataB.categories, data: dataB.data},
+    Union: {values: unionval.map(d => d.value), categories: unioncat, data: unionval},
     AbyB: {
       values: [].concat(...abybval.map(d => d.values.map((_d: object) => _d["value"]))),
       data: abybval,

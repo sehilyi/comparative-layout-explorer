@@ -4,10 +4,9 @@
 export type CompSpec = {
   layout: CompType
   unit?: CompUnit
-  consistency: Consistency
-
   mirrored?: boolean  // TODO: move to layout??
   direction?: CompDirection
+  consistency: Consistency
 }
 export type CompType = "juxtaposition" | "superimposition" | "blending" | "explicit-encoding"
 
@@ -18,7 +17,7 @@ export type commonCompUnit = "chart" | "element"
 export type JuxCompUnit = commonCompUnit | "time"
 export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to constraint this?
 
-export type Consistency = {
+export type Consistency = { // TODO: this should also consider differnce for superimposition
   x_axis?: boolean
   y_axis?: boolean
   x_arrangement?: boolean
@@ -30,9 +29,9 @@ export type Consistency = {
 export const DEFAULT_COMP_SPEC: CompSpec = {
   layout: "juxtaposition",
   unit: "chart",
-  consistency: {x_axis: false, y_axis: false, color: false, x_arrangement: false, y_arrangement: false},
   mirrored: false,
-  direction: "horizontal"
+  direction: "horizontal",
+  consistency: {x_axis: false, y_axis: false, color: false, x_arrangement: false, y_arrangement: false},
 }
 
 /**

@@ -3,6 +3,7 @@ import {renderSimpleBarChart, renderBarChart} from "./barcharts";
 import {ChartTypes} from "src/models/chart-types";
 import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
 import {ChartStyle} from "./chart-styles";
+import {CompSpec} from "src/models/comp-spec";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   switch (getChartType(spec)) {
@@ -41,6 +42,15 @@ export function renderChart(
     default:
       break;
   }
+}
+
+export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
+  let can = true;
+  // exceptions
+  if ((isScatterplot(A) || isScatterplot(A)) && C.layout === "juxtaposition" && C.unit === "element") can = false
+
+  if (!can) console.log("error: comparison is not supported.")
+  return can
 }
 
 export function getChartType(spec: Spec): ChartTypes {
