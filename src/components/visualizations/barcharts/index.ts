@@ -46,7 +46,6 @@ export function renderBarChart(
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
   const aggValues = ifUndefinedGetDefault(s.altVals, getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
-
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, s);
   const {...designs} = renderBars(g, aggValues, "value", "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: c.color, cKey: "key"}, s)
   if (s.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
@@ -72,12 +71,12 @@ export function renderBars(
     .data(data)
     .enter().append(_rect)
     .classed('bar', true)
-    .attr(_y, d => styles["revY"] ? 0 : y(d[vKey]) + // TOOD: clean up more?
+    .attr(_y, d => styles.revY ? 0 : y(d[vKey]) + // TOOD: clean up more?
       (!isUndefined(yOffsetData) && !isUndefined(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0]) ?
         (- height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0][vKey])) : 0))
     .attr(_x, d => x(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
     .attr(_width, barWidth)
-    .attr(_height, d => (styles["revY"] ? y(d[vKey]) : height - y(d[vKey])))
+    .attr(_height, d => (styles.revY ? y(d[vKey]) : height - y(d[vKey])))
     .attr(_fill, d => c.color(d[c.cKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)

@@ -48,6 +48,13 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         if (!consistency.x_axis) S.B.topX = true
         if (!consistency.y_axis) S.B.rightY = true
       }
+      else if (C.unit === "element") {
+        // TODO: only consider bar x bar now
+        S.B.noY = true
+        S.B.noX = true
+        S.B.noGrid = true
+        S.B.barGap = 0
+      }
       break
     default:
       break

@@ -25,6 +25,13 @@ export function correctConsistency(A: Spec, B: Spec, C: CompSpec): Consistency {
   return cons
 }
 
+export type DomainData = {
+  x: string[] | number[]
+  y: string[] | number[]
+  c: string[] | number[]
+  ck: string
+}
+
 /**
  * this function does not returns unique values in domains.
  * do not consider horizontal bar charts.
@@ -33,10 +40,7 @@ export function correctConsistency(A: Spec, B: Spec, C: CompSpec): Consistency {
 export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
   let ack: string, bck: string
-
-  // default
-
-  //
+  let Bs: DomainData[] = []
 
   if (C.layout === "juxtaposition" && C.unit === "element") {
     // consistency.x_axis and y_axis are always true
@@ -147,6 +151,28 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       }
     }
   }
+  else if ((C.layout === "superimposition" && C.unit === "element")) {
+    // nesting
+    if (isBarChart(A) && isBarChart(B)) {
+      const aggD = getAggregatedDatas(A, B)
+      ax = aggD.A.categories
+      ay = aggD.A.values
+      ac = [""]
+      ack = A.encoding.x.field  // default, not meaningful
 
-  return {A: {x: ax, y: ay, c: ac, ck: ack}, B: {x: bx, y: by, c: bc, ck: bck}}
+      bx = aggD.B.categories
+      bc = aggD.B.categories  // color by x-axis as a default
+      bck = B.encoding.x.field
+
+      for (let i = 0; i < aggD.A.categories.length; i++) {
+        let by = aggD.AbyB.data[i].values.map((d: object) => d["value"])
+        Bs.push({x: bx, y: by, c: bc, ck: bck})
+      }
+    }
+    else {
+      // TODO:
+    }
+  }
+
+  return {A: {x: ax, y: ay, c: ac, ck: ack}, B: {x: bx, y: by, c: bc, ck: bck}, Bs}
 }

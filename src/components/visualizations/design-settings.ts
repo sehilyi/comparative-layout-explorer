@@ -10,18 +10,7 @@ import {LEGEND_WIDTH} from "./legends/default-design";
 export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
     // https://vega.github.io/vega-lite/examples/
-    A:{
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "point",
-      encoding: {
-        x: {field: "IMDB_Rating", type: "quantitative"},
-        y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-        color: {field: "MPAA_Rating", type: "nominal"}
-      }
-    },
-    B:  {
+    A: {
       data: {
         values: DATASET_MOVIES.rawData
       },
@@ -32,11 +21,22 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
+    B: {
+      data: {
+        values: DATASET_MOVIES.rawData
+      },
+      mark: "bar",
+      encoding: {
+        x: {field: "Major_Genre", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+        color: {field: "MPAA_Rating", type: "nominal"}
+      }
+    },
     C: {
       ...DEFAULT_COMP_SPEC,
       layout: "superimposition",
       // direction: "vertical",
-      unit: "chart",
+      unit: "element",
       // mirrored: false,
       consistency: {
         x_axis: false, y_axis: true, color: false,
@@ -50,7 +50,8 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
 export const _width = 'width', _height = 'height',
   _fill = 'fill', _color = 'color',
   _transform = 'transform', _g = 'g', _rect = 'rect',
-  _x = 'x', _y = 'y',
+  _x = 'x', _y = 'y', _cx = "cx", _cy = "cy",
+  _circle = "circle", _r = "r",
   _stroke = "stroke", _stroke_width = "stroke-width",
   _opacity = "opacity",
   // text-related

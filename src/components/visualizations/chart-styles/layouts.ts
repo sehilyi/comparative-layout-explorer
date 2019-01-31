@@ -25,6 +25,9 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       if (C.unit === "chart") {
         chartsp = getChartSize(1, 1, {legend: [0]})
       }
+      else if (C.unit === "element") {
+        chartsp = getChartSize(1, 1, {legend: [0]})
+      }
     default:
       break;
   }
