@@ -4,6 +4,7 @@ import {BAR_GAP, CHART_SIZE} from "../design-settings";
 export type ChartStyle = BarchartStyle | CommonChartStyle
 
 export interface CommonChartStyle {
+  noAxes: boolean
   noX: boolean
   noY: boolean
   revX: boolean
@@ -27,6 +28,7 @@ export interface CommonChartStyle {
 }
 
 export const DEFAULT_CHART_STYLE: BarchartStyle = {
+  noAxes: false,
   noX: false,
   noY: false,
   revX: false,

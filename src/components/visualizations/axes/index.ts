@@ -17,6 +17,7 @@ export function renderAxes(
   const isYCategorical = spec.encoding.y.type === "nominal"
   const xFunc = ifUndefinedGetDefault(spec.encoding.x.aggregate, "") as string
   const yFunc = ifUndefinedGetDefault(spec.encoding.y.aggregate, "") as string
+  const noAxes = ifUndefinedGetDefault(style.noAxes, false) as boolean
   let noY = (typeof style != 'undefined' && style.noY)
   let noX = (typeof style != 'undefined' && style.noX)
   let noGrid = !(typeof style === 'undefined' || !style.noGrid)
@@ -51,7 +52,8 @@ export function renderAxes(
   let yGrid = isYCategorical ?
     d3.axisLeft(cY).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-width) :
     d3.axisLeft(nY).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-width)
-
+  
+  if(!noAxes){
   g.classed('g', true);
 
   if (!isBarChart(spec) && !noGrid) {
@@ -158,6 +160,6 @@ export function renderAxes(
   g.selectAll('.grid path')
     .attr('stroke', 'rgb(221, 221, 221)')
     .attr('stroke-width', '0px')
-
+  }
   return {x: isXCategorical ? cX : nX, y: isYCategorical ? cY : nY};
 }

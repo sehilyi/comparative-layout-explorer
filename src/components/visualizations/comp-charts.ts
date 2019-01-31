@@ -33,13 +33,13 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
     //   break;
     // case "nest":
     //   renderNest(ref, A, B, C)
-    // break;s
+    // break;
     default: renderJuxPerChart(ref, A, B, C); break;
   }
 }
 
 function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  // both charts' properties
+  // common properties
   const {...consistency} = correctConsistency(A, B, C);
   const {...domains} = getDomains(A, B, C, consistency)
   // second chart's properties
@@ -53,8 +53,7 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const isALegendUse = consistency.color && C.direction == "vertical" || !consistency.color && isAColorUsed
   const isBLegendUse = consistency.color && C.direction == "horizontal" || !consistency.color && isBColorUsed
   let legend: number[] = []
-  // TODO: this should be cleaned up
-  if (isALegendUse) legend.push(0)
+  if (isALegendUse) legend.push(0)  // TODO: this should be cleaned up
   if (isBLegendUse) legend.push(1)
   // visual properties
   const numOfC = C.direction === 'horizontal' ? 2 : 1
@@ -77,23 +76,22 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
     B, {x: domains.B.x, y: domains.B.y},
     {color: getColor(domains.B.c), cKey: domains.A.ck},
     {...DEFAULT_CHART_STYLE, noY, revY, revX, legend: isBLegendUse})
-
 }
 
 function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+  // common properties
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
   const aggD = getAggregatedData(A, B)
+  // visual properties
   const width = CHART_SIZE.width
   const height = CHART_SIZE.height
-  const chartsp = getChartSize(1, 1, {height, legend: [0]})
+  const chartsp = getChartSize(1, 1, {width, height, legend: [0]})
   const svg = d3.select(ref)
     .attr(_width, chartsp.size.width)
     .attr(_height, chartsp.size.height)
   const g = svg.append(_g)
     .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
-
-  const xDomain = uniqueValues(domains.A.x, "")
 
   const colorA = getConstantColor()
   const colorB = getConstantColor(2);
@@ -102,19 +100,18 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
     [A.encoding.y.field, B.encoding.y.field],
     colorA.range().concat(colorB.range()) as string[])
 
-  // TODO: use renderBarChart functions rather than renderBars
-  if (C.direction === "vertical") { // stacked bar
-    const {x, y} = renderAxes(g, xDomain, domains.A.y, A, {...DEFAULT_CHART_STYLE, height});
-    renderBars(g, aggD.A.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorA, cKey: "key"}, {...DEFAULT_CHART_STYLE})
-    // renderBarChart(g, A, {x: domains.A.x, y: domains.B.x}, {color: colorA, cKey: "key"}, {...DEFAULT_CHART_STYLE})
-    renderBars(g, aggD.B.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorB, cKey: "key"}, {...DEFAULT_CHART_STYLE, yOffsetData: aggD.A.data})
-    // renderBars(g, aggD.B.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorB, cKey: "key"}, {...DEFAULT_CHART_STYLE, yOffsetData: aggD.A.data})
+  let styleA = {...DEFAULT_CHART_STYLE}, styleB = {...DEFAULT_CHART_STYLE}
+  if (C.direction === "vertical") {
+    // stacked bar
+    styleB = {...styleB, noAxes: true, yOffsetData: aggD.A.data}
   }
-  else if (C.direction === "horizontal") {  // grouped bar
-    const {x, y} = renderAxes(g, xDomain, domains.A.y, A, {...DEFAULT_CHART_STYLE, height});
-    renderBars(g, aggD.A.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorA, cKey: "key"}, {...DEFAULT_CHART_STYLE, shiftBy: -0.5, mulSize: 0.5})
-    renderBars(g, aggD.B.data, "value", "key", xDomain.length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: colorB, cKey: "key"}, {...DEFAULT_CHART_STYLE, shiftBy: 0.5, mulSize: 0.5})
+  else if (C.direction === "horizontal") {
+    // grouped bar
+    styleA = {...styleA, shiftBy: -0.5, mulSize: 0.5}
+    styleB = {...styleA, shiftBy: 0.5, mulSize: 0.5, noAxes: true}
   }
+  renderBarChart(g, A, {x: domains.A.x, y: domains.A.y}, {color: colorA, cKey: "key"}, styleA)
+  renderBarChart(g, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styleB)
 }
 
 export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {

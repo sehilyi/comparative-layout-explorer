@@ -48,16 +48,13 @@ export function renderBarChart(
   c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
   s: BarchartStyle) {
 
-  const {revY, width, height, barGap, stroke, stroke_width, legend} = s
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
   const aggValues = ifUndefinedGetDefault(s.altVals, getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
 
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, s);
-  const {...designs} = renderBars(g, aggValues, "value", "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: c.color, cKey: "key"}, {
-    ...DEFAULT_CHART_STYLE, revY, barGap, width, height, stroke, stroke_width
-  })
-  if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
+  const {...designs} = renderBars(g, aggValues, "value", "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: c.color, cKey: "key"}, s)
+  if (s.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
   return {designs}
 }
 
