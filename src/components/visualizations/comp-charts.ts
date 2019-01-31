@@ -127,15 +127,16 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
   const g = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   const aggD = getAggregatedDatas(A, B)
-  const chartWidth = designs["barWidth"], x = designs["x"], y = designs["y"], bandUnitSize = designs["bandUnitSize"]
+  const chartWidth = designs["barWidth"], y = designs["y"]
   const padding = 3
   const innerChartWidth = chartWidth - padding * 2.0
 
   for (let i = 0; i < domains.A.x.length; i++) {
     const chartHeight = CHART_SIZE.height - y(aggD.A.data[i].value) - padding
-    const gB = g.append(_g).attr(_transform, translate(x(aggD.A.categories[i]) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggD.A.data[i].value) + padding))
+    // const gB = g.append(_g).attr(_transform, translate(x(aggD.A.categories[i]) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggD.A.data[i].value) + padding))
+    const gB = g.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
-    /// TODO: filtered data => make a class
+    /// TODO: filter data => make a class
     let filteredSpec = {...B, data: {...B.data, values: B.data.values.filter(d => d[A.encoding.x.field] == domains.A.x[i])}}
     //
     renderBarChart(gB, filteredSpec, {x: domains.Bs[i].x, y: domains.Bs[i].y}, {color: getColor(domains.Bs[i].c), cKey: "key"}, {...styles.B, width: innerChartWidth, height: chartHeight})
