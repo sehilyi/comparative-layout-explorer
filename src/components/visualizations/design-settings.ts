@@ -25,21 +25,21 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "bar",
+      mark: "point",
       encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
+        x: {field: "IMDB_Rating", type: "quantitative"},
         y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-        color: {field: "MPAA_Rating", type: "nominal"}
+        
       }
     },
     C: {
       ...DEFAULT_COMP_SPEC,
-      layout: "juxtaposition",
-      direction: "vertical",
-      unit: "element",
-      mirrored: false,
+      layout: "superimposition",
+      // direction: "vertical",
+      unit: "chart",
+      // mirrored: false,
       consistency: {
-        x_axis: false, y_axis: false, color: false,
+        x_axis: true, y_axis: true, color: false,
         x_arrangement: true, y_arrangement: true
       }
     }

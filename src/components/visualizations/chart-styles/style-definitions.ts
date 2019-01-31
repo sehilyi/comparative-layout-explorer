@@ -34,9 +34,19 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
           S.B.noAxes = true
         }
       }
-      break;
+      break
+    case "superimposition":
+      if (C.unit === "chart") {
+        const isAColorUsed = !isUndefined(A.encoding.color)
+        const isBColorUsed = !isUndefined(B.encoding.color)
+        S.A.legend = isAColorUsed // TODO: should consider false consistency
+        S.B.legend = isBColorUsed
+        S.B.noX = consistency.x_axis
+        S.B.noY = consistency.y_axis
+      }
+      break
     default:
-      break;
+      break
   }
   return S
 }

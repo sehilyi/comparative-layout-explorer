@@ -151,5 +151,6 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       }
     }
   }
+
   return {A: {x: ax, y: ay, c: ac, ck: ack}, B: {x: bx, y: by, c: bc, ck: bck}}
 }

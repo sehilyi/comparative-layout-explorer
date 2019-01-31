@@ -43,7 +43,6 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 }
 
 function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  // common properties
   const {...consistency} = correctConsistency(A, B, C)
   const {...styles} = getStyles(A, B, C, consistency)
   const {...layouts} = getLayouts(A, B, C, consistency, styles)
@@ -83,103 +82,24 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styles.B)
 }
 
-export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-
-  if (C.direction === "vertical") {
-    const chartsp = getChartSize(1, 1, {legend: [0]})
-    const svg = d3.select(ref)
-      .attr(_width, chartsp.size.width)
-      .attr(_height, chartsp.size.height)
-    const g = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
-    const aggD = getAggregatedDatas(A, B)
-    const {x, y} = renderAxes(g, aggD.A.categories, aggD.AbyB.sums, A, {...DEFAULT_CHART_STYLE, });
-
-    const yOffsetData = []
-    // TODO: clear code below!
-    for (let i = 0; i < aggD.A.categories.length; i++) {
-      yOffsetData.push({key: aggD.A.categories[i], value: 0}) // TODO: init with zero might be improper?
-    }
-    for (let i = 0; i < aggD.B.categories.length; i++) {
-      if (i != 0) { // y offset not needed for the first class
-        for (let j = 0; j < aggD.A.categories.length; j++) {
-          let baseObject = aggD.BbyA.data[i - 1].values.filter((_d: object) => _d["key"] === aggD.A.categories[j])[0];
-          let baseValue = isUndefined(baseObject) ? 0 : baseObject["value"];
-          yOffsetData.filter(d => d.key === aggD.A.categories[j])[0].value += baseValue
-        }
-      }
-      renderBars(
-        g,
-        aggD.BbyA.data[i].values,
-        "value", "key",
-        aggD.A.categories.length,
-        x as ScaleBand<string>, y as ScaleLinear<number, number>,
-        {color: getConstantColor(i + 1), cKey: "key"},
-        {...DEFAULT_CHART_STYLE, yOffsetData})
-    }
-    renderLegend(
-      g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)),
-      aggD.B.categories,
-      getBarColor(aggD.B.categories.length))
-  }
-  else if (C.direction === "horizontal") {
-    const GroupW = 90
-    const aggD = getAggregatedDatas(A, B)
-    const chartsp = getChartSize(aggD.A.categories.length, 1, {width: GroupW, noY: true, legend: [aggD.A.categories.length - 1]})
-    const svg = d3.select(ref)
-      .attr(_width, chartsp.size.width)
-      .attr(_height, chartsp.size.height)
-    const g = svg.append(_g).attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
-
-    for (let i = 0; i < aggD.A.categories.length; i++) {
-      renderBarChart(
-        g.append(_g).attr(_transform, translate(chartsp.positions[i].left, 0)),
-        A, {
-          x: aggD.B.categories,
-          y: aggD.AbyB.values
-        }, {color: getConstantColor(i + 1), cKey: "key"},
-        {...DEFAULT_CHART_STYLE, noY: i != 0 ? true : false, xName: aggD.A.categories[i], barGap: 1, width: GroupW, altVals: aggD.AbyB.data[i].values})
-    }
-    renderLegend(
-      g.append(_g).attr(_transform, translate(chartsp.size.width - CHART_MARGIN.right - LEGEND_WIDTH, 0)),
-      aggD.A.categories,
-      getBarColor(aggD.B.categories.length))
-  }
-}
-
 // TODO: this should be combined with renderJuxChart
 export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  // common properties
-  const {...consistency} = correctConsistency(A, B, C);
+  const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
-  // TODO: add style extracter function by getting specs
-  // second chart's properties
-  // const noX = consistency.x_axis && !revX && C.direction === 'vertical'
-  // const noY = consistency.y_axis && !revY && C.direction === 'horizontal'
-  // legends
-  // const isAColorUsed = !isUndefined(A.encoding.color)
-  // const isBColorUsed = !isUndefined(B.encoding.color)
-  // const isALegendUse = consistency.color && C.direction == "vertical" || !consistency.color && isAColorUsed
-  // const isBLegendUse = consistency.color && C.direction == "horizontal" || !consistency.color && isBColorUsed
+  const {...styles} = getStyles(A, B, C, consistency)
 
   // visual properties
   const chartsp = getChartSize(1, 1, {})
-  const svg = d3.select(ref)
-    .attr(_height, chartsp.size.height)
-    .attr(_width, chartsp.size.width)
-
-  /// B
-  renderChart(
-    svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
-    B, {x: domains.B.x, y: domains.B.y},
-    {color: getColor(domains.B.c), cKey: domains.B.ck},
-    {...DEFAULT_CHART_STYLE, legend: true, noAxes: true})
+  const svg = d3.select(ref).attr(_height, chartsp.size.height).attr(_width, chartsp.size.width)
+  const gA = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
+  const gB = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
 
   /// A
-  renderChart(
-    svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
-    A, {x: domains.A.x, y: domains.A.y},
-    {color: getColor(domains.A.c), cKey: domains.A.ck},
-    {...DEFAULT_CHART_STYLE, legend: true})
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.ck}, styles.A)
+  /// B
+  renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.ck}, styles.B)
+
+  if (true) gA.raise()  // TODO: get option as spec?
 }
 
 // TOOD: any way to generalize this code by combining with stack?!
@@ -250,5 +170,68 @@ export function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         }
       }
     }
+  }
+}
+
+export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+
+  if (C.direction === "vertical") {
+    const chartsp = getChartSize(1, 1, {legend: [0]})
+    const svg = d3.select(ref)
+      .attr(_width, chartsp.size.width)
+      .attr(_height, chartsp.size.height)
+    const g = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
+    const aggD = getAggregatedDatas(A, B)
+    const {x, y} = renderAxes(g, aggD.A.categories, aggD.AbyB.sums, A, {...DEFAULT_CHART_STYLE, });
+
+    const yOffsetData = []
+    // TODO: clear code below!
+    for (let i = 0; i < aggD.A.categories.length; i++) {
+      yOffsetData.push({key: aggD.A.categories[i], value: 0}) // TODO: init with zero might be improper?
+    }
+    for (let i = 0; i < aggD.B.categories.length; i++) {
+      if (i != 0) { // y offset not needed for the first class
+        for (let j = 0; j < aggD.A.categories.length; j++) {
+          let baseObject = aggD.BbyA.data[i - 1].values.filter((_d: object) => _d["key"] === aggD.A.categories[j])[0];
+          let baseValue = isUndefined(baseObject) ? 0 : baseObject["value"];
+          yOffsetData.filter(d => d.key === aggD.A.categories[j])[0].value += baseValue
+        }
+      }
+      renderBars(
+        g,
+        aggD.BbyA.data[i].values,
+        "value", "key",
+        aggD.A.categories.length,
+        x as ScaleBand<string>, y as ScaleLinear<number, number>,
+        {color: getConstantColor(i + 1), cKey: "key"},
+        {...DEFAULT_CHART_STYLE, yOffsetData})
+    }
+    renderLegend(
+      g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)),
+      aggD.B.categories,
+      getBarColor(aggD.B.categories.length))
+  }
+  else if (C.direction === "horizontal") {
+    const GroupW = 90
+    const aggD = getAggregatedDatas(A, B)
+    const chartsp = getChartSize(aggD.A.categories.length, 1, {width: GroupW, noY: true, legend: [aggD.A.categories.length - 1]})
+    const svg = d3.select(ref)
+      .attr(_width, chartsp.size.width)
+      .attr(_height, chartsp.size.height)
+    const g = svg.append(_g).attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+
+    for (let i = 0; i < aggD.A.categories.length; i++) {
+      renderBarChart(
+        g.append(_g).attr(_transform, translate(chartsp.positions[i].left, 0)),
+        A, {
+          x: aggD.B.categories,
+          y: aggD.AbyB.values
+        }, {color: getConstantColor(i + 1), cKey: "key"},
+        {...DEFAULT_CHART_STYLE, noY: i != 0 ? true : false, xName: aggD.A.categories[i], barGap: 1, width: GroupW, altVals: aggD.AbyB.data[i].values})
+    }
+    renderLegend(
+      g.append(_g).attr(_transform, translate(chartsp.size.width - CHART_MARGIN.right - LEGEND_WIDTH, 0)),
+      aggD.A.categories,
+      getBarColor(aggD.B.categories.length))
   }
 }
