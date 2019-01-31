@@ -30,22 +30,22 @@ export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyFi
   return d3.nest()
     .key(d => d[keyField1])
     .key(d => d[keyField2])
-    .rollup(function (d) {
+    .rollup(function (leaves) {
       switch (aggregate) {
         case 'sum':
-          return d3.sum(d, _d => _d[valueField]) as undefined; // what's wrong when undefined removed?
+          return d3.sum(leaves, _d => _d[valueField]) as undefined; // what's wrong when undefined removed?
         case 'mean':
-          return d3.mean(d, _d => _d[valueField]) as undefined;
+          return d3.mean(leaves, _d => _d[valueField]) as undefined;
         case 'median':
-          return d3.median(d, _d => _d[valueField]) as undefined;
+          return d3.median(leaves, _d => _d[valueField]) as undefined;
         case 'min':
-          return d3.min(d, _d => _d[valueField]) as undefined;
+          return d3.min(leaves, _d => _d[valueField]) as undefined;
         case 'max':
-          return d3.max(d, _d => _d[valueField]) as undefined;
+          return d3.max(leaves, _d => _d[valueField]) as undefined;
         case 'count':
-          return d.length as undefined;
+          return leaves.length as undefined;
         default:
-          return d3.sum(d, _d => _d[valueField]) as undefined;
+          return d3.sum(leaves, _d => _d[valueField]) as undefined;
       }
     })
     .entries(values);
@@ -60,8 +60,8 @@ export function getAggregatedData(s: Spec) {
 
 export function getAggregatedDatas(a: Spec, b: Spec) {
   const {...dataA} = getAggregatedData(a), {...dataB} = getAggregatedData(b)
-  const abybval = getAggValuesByTwoKeys(a.data.values, a.encoding.x.field, b.encoding.x.field, a.encoding.y.field, a.encoding.x.aggregate)
-  const bbyaval = getAggValuesByTwoKeys(a.data.values, b.encoding.x.field, a.encoding.x.field, a.encoding.y.field, a.encoding.x.aggregate)
+  const abybval = getAggValuesByTwoKeys(a.data.values, a.encoding.x.field, b.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)  // TODO: what aggregation functions to use?
+  const bbyaval = getAggValuesByTwoKeys(a.data.values, b.encoding.x.field, a.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)
   const unionval = dataA.data.concat(dataB.data)
 
   const unioncat = uniqueValues(dataA.data.concat(dataB.data), "key")

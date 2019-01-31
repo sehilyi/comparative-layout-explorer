@@ -39,7 +39,9 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
     // case "nest":
     //   renderNest(ref, A, B, C)
     // break;
-    default: renderJuxPerChart(ref, A, B, C); break;
+    default:
+      renderJuxPerChart(ref, A, B, C)
+      break
   }
 }
 
@@ -119,7 +121,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
 
   /// A
   // TODO: this should be changed to general chart renderer
-  const {designs} = renderBarChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: "key"}, {...DEFAULT_CHART_STYLE})
+  const {designs} = renderBarChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: "key"}, styles.A)
 
   /// B
   const g = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
@@ -136,7 +138,6 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     /// TODO: filtered data => make a class
     let filteredSpec = {...B, data: {...B.data, values: B.data.values.filter(d => d[A.encoding.x.field] == domains.A.x[i])}}
     //
-
     renderBarChart(gB, filteredSpec, {x: domains.Bs[i].x, y: domains.Bs[i].y}, {color: getColor(domains.Bs[i].c), cKey: "key"}, {...styles.B, width: innerChartWidth, height: chartHeight})
   }
 }

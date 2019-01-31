@@ -17,7 +17,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       mark: "bar",
       encoding: {
         x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
@@ -27,8 +27,8 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "Major_Genre", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+        x: {field: "Source", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
