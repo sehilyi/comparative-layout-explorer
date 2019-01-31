@@ -2,8 +2,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, Consistency} from "src/models/comp-spec";
 import {isDeepTrue, isUndefinedOrFalse, uniqueValues} from "src/useful-factory/utils";
 import {isBarChart, isScatterplot} from "..";
-import {getAggregatedDatas} from "../comp-charts";
-import {getAggValues} from "../data-handler";
+import {getAggValues, getAggregatedDatas} from "../data-handler";
 
 export function correctConsistency(A: Spec, B: Spec, C: CompSpec): Consistency {
   const cons = {
