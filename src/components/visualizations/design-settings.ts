@@ -6,6 +6,46 @@ import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined} from "util";
 import {LEGEND_WIDTH} from "./legends/default-design";
 
+// test
+export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
+  return {
+    // https://vega.github.io/vega-lite/examples/
+    A: {
+      data: {
+        values: DATASET_MOVIES.rawData
+      },
+      mark: "bar",
+      encoding: {
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+        color: {field: "MPAA_Rating", type: "nominal"}
+      }
+    },
+    B: {
+      data: {
+        values: DATASET_MOVIES.rawData
+      },
+      mark: "bar",
+      encoding: {
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+        color: {field: "MPAA_Rating", type: "nominal"}
+      }
+    },
+    C: {
+      ...DEFAULT_COMP_SPEC,
+      layout: "juxtaposition",
+      direction: "vertical",
+      unit: "element",
+      mirrored: false,
+      consistency: {
+        x_axis: false, y_axis: false, color: false,
+        x_arrangement: true, y_arrangement: true
+      }
+    }
+  }
+}
+
 // svg attributes
 export const _width = 'width', _height = 'height',
   _fill = 'fill', _color = 'color',
@@ -84,10 +124,6 @@ export function getConstantColor(index?: number) {
     .range(getBarColor(i).slice(i - 1, i))
 }
 
-// export function getTotalChartSize(w: number, h: number) {
-//   return {width: w + CHART_MARGIN.left + CHART_MARGIN.right, height: h + CHART_MARGIN.top + CHART_MARGIN.bottom}
-// }
-
 export function getChartSize(x: number, y: number, styles: object) {
   const noX = ifUndefinedGetDefault(styles["noX"], false) as boolean;
   const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
@@ -118,44 +154,4 @@ export function getChartSize(x: number, y: number, styles: object) {
     }
   }
   return {size: {width, height}, positions}
-}
-
-// test
-export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
-  return {
-    // https://vega.github.io/vega-lite/examples/
-    A: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "bar",
-      encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "IMDB_Votes", type: "quantitative", aggregate: "max"},
-        color: {field: "MPAA_Rating", type: "nominal"}
-      }
-    },
-    B: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "point",
-      encoding: {
-        x: {field: "Worldwide_Gross", type: "quantitative"},
-        y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-        color: {field: "MPAA_Rating", type: "nominal"}
-      }
-    },
-    C: {
-      ...DEFAULT_COMP_SPEC,
-      layout: "superimposition",
-      direction: "horizontal",
-      unit: "chart",
-      mirrored: false,
-      consistency: {
-        x_axis: false, y_axis: false, color: false,
-        x_arrangement: true, y_arrangement: true
-      }
-    }
-  }
 }

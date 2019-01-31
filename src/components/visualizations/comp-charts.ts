@@ -16,6 +16,8 @@ import {correctConsistency, getDomains} from "./consistency";
 import {renderChart, canRenderCompChart} from ".";
 import {DEFAULT_CHART_STYLE} from "./chart-styles";
 import {getAggregatedDatas} from "./data-handler";
+import {getStyles} from "./chart-styles/style-definitions";
+import {getLayouts} from "./chart-styles/layouts";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   if (!canRenderCompChart(A, B, C)) return;
@@ -42,79 +44,43 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 
 function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   // common properties
-  const {...consistency} = correctConsistency(A, B, C);
+  const {...consistency} = correctConsistency(A, B, C)
+  const {...styles} = getStyles(A, B, C, consistency)
+  const {...layouts} = getLayouts(A, B, C, consistency, styles)
   const {...domains} = getDomains(A, B, C, consistency)
-  // second chart's properties
-  const revY = C.direction === "vertical" && C.mirrored
-  const revX = C.direction === "horizontal" && C.mirrored
-  const noX = consistency.x_axis && !revX && C.direction === 'vertical'
-  const noY = consistency.y_axis && !revY && C.direction === 'horizontal'
-  // legends
-  const isAColorUsed = !isUndefined(A.encoding.color)
-  const isBColorUsed = !isUndefined(B.encoding.color)
-  const isALegendUse = consistency.color && C.direction == "vertical" || !consistency.color && isAColorUsed
-  const isBLegendUse = consistency.color && C.direction == "horizontal" || !consistency.color && isBColorUsed
-  let legend: number[] = []
-  if (isALegendUse) legend.push(0)  // TODO: this should be cleaned up
-  if (isBLegendUse) legend.push(1)
-  // visual properties
-  const numOfC = C.direction === 'horizontal' ? 2 : 1
-  const numOfR = C.direction === 'vertical' ? 2 : 1
 
-  const chartsp = getChartSize(numOfC, numOfR, {noX, noY, legend})
-  const svg = d3.select(ref)
-    .attr(_width, chartsp.size.width)
-    .attr(_height, chartsp.size.height);
+  const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
+  const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top))
+  const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// A
-  renderChart(
-    svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top)),
-    A, {x: domains.A.x, y: domains.A.y},
-    {color: getColor(domains.A.c), cKey: domains.A.ck},
-    {...DEFAULT_CHART_STYLE, noX, legend: isALegendUse})
-
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.ck}, styles.A)
   /// B
-  renderChart(
-    svg.append(_g).attr(_transform, translate(chartsp.positions[1].left, chartsp.positions[1].top)),
-    B, {x: domains.B.x, y: domains.B.y},
-    {color: getColor(domains.B.c), cKey: domains.B.ck},
-    {...DEFAULT_CHART_STYLE, noY, revY, revX, legend: isBLegendUse})
+  renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.ck}, styles.B)
 }
 
 function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  // common properties
   const {...consistency} = correctConsistency(A, B, C)
+  const {...styles} = getStyles(A, B, C, consistency)
   const {...domains} = getDomains(A, B, C, consistency)
-  const aggD = getAggregatedDatas(A, B)
-  // visual properties
-  const width = CHART_SIZE.width
-  const height = CHART_SIZE.height
-  const chartsp = getChartSize(1, 1, {width, height, legend: [0]})
-  const svg = d3.select(ref)
-    .attr(_width, chartsp.size.width)
-    .attr(_height, chartsp.size.height)
-  const g = svg.append(_g)
-    .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
+  const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
+  const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
+  const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top))
+  const gB = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top))
+
+  /// legend
   const colorA = getConstantColor()
   const colorB = getConstantColor(2);
-  renderLegend(
-    g.append(_g).attr(_transform, translate(width + GAP_BETWEEN_CHARTS, 0)),
+  renderLegend(gB.append(_g).attr(_transform, translate(CHART_SIZE.width + GAP_BETWEEN_CHARTS, 0)),
     [A.encoding.y.field, B.encoding.y.field],
     colorA.range().concat(colorB.range()) as string[])
+  //
 
-  let styleA = {...DEFAULT_CHART_STYLE}, styleB = {...DEFAULT_CHART_STYLE}
-  if (C.direction === "vertical") {
-    // stacked bar
-    styleB = {...styleB, noAxes: true, yOffsetData: aggD.A.data}
-  }
-  else if (C.direction === "horizontal") {
-    // grouped bar
-    styleA = {...styleA, shiftBy: -0.5, mulSize: 0.5}
-    styleB = {...styleA, shiftBy: 0.5, mulSize: 0.5, noAxes: true}
-  }
-  renderChart(g, A, {x: domains.A.x, y: domains.A.y}, {color: colorA, cKey: "key"}, styleA)
-  renderChart(g, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styleB)
+  /// A
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: colorA, cKey: "key"}, styles.A)
+  /// B
+  renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styles.B)
 }
 
 export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
