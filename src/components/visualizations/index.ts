@@ -46,6 +46,7 @@ export function renderChart(
 
 export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
   let can = true;
+
   // exceptions
   if ((isScatterplot(A) || isScatterplot(A)) && C.layout === "juxtaposition" && C.unit === "element") can = false
 

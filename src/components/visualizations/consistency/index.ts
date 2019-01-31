@@ -59,7 +59,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       // TODO:
     }
   }
-  else if (C.layout === "juxtaposition" && C.unit === "chart") {
+  else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart")) {
     if (isBarChart(A) && isBarChart(B)) {
       const aggD = getAggregatedDatas(A, B)
       if (consistency.x_axis) {
