@@ -66,7 +66,7 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
 
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
   const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top))
-  const gB = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top))
+  const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// legend
   const colorA = getConstantColor()
@@ -87,12 +87,11 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency)
+  const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
-  // visual properties
-  const chartsp = getChartSize(1, 1, {})
-  const svg = d3.select(ref).attr(_height, chartsp.size.height).attr(_width, chartsp.size.width)
-  const gA = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
-  const gB = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
+  const svg = d3.select(ref).attr(_height, layouts.height).attr(_width, layouts.width)
+  const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top))
+  const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// A
   renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.ck}, styles.A)

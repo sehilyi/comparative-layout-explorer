@@ -21,6 +21,10 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         chartsp = getChartSize(1, 1, {w, h, legend: [0]})
       }
       break;
+    case "superimposition":
+      if (C.unit === "chart") {
+        chartsp = getChartSize(1, 1, {})
+      }
     default:
       break;
   }
@@ -29,6 +33,6 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     width: chartsp.size.width,
     height: chartsp.size.height,
     A: {...chartsp.positions[0]},
-    B: {...chartsp.positions[1]}
+    B: chartsp.positions.length <= 1 ? {...chartsp.positions[0]} : {...chartsp.positions[1]}
   }
 }
