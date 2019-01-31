@@ -40,6 +40,7 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
         S.A.legend = isAColorUsed // TODO: should consider false consistency
+        S.A.noGrid = true // for clutter reduction
         S.B.legend = isBColorUsed
         S.B.noGrid = true
         if (consistency.x_axis) S.B.noX = true

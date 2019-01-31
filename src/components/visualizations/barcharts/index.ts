@@ -32,12 +32,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
     .domain(aggValsByKey.map(d => d.key))
     .range(getBarColor(isUndefined(color) ? 1 : aggValsByKey.map(d => d.key).length));
 
-  if (!isUndefined(color))
-    renderLegend(
-      g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)),
-      c.domain() as string[], c.range() as string[])
-
-  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, {color: c, cKey: "key"}, {...DEFAULT_CHART_STYLE})
+  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, {color: c, cKey: "key"}, {...DEFAULT_CHART_STYLE, legend: !isUndefined(color)})
 }
 
 // TODO: only vertical bar charts are handled
@@ -54,7 +49,7 @@ export function renderBarChart(
 
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, s);
   const {...designs} = renderBars(g, aggValues, "value", "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: c.color, cKey: "key"}, s)
-  if (s.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
+  if (s.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
   return {designs}
 }
 

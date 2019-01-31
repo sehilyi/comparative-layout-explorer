@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
-import {CHART_SIZE, CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle} from "../design-settings";
+import {CHART_SIZE, CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle, _start} from "../design-settings";
 import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isBarChart} from "..";
 import {ChartStyle} from "../chart-styles";
@@ -39,16 +39,20 @@ export function renderAxes(
     .domain([d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]).nice()
     .rangeRound(revY ? [0, height] : [height, 0]);
 
-  let xAxis = styles.topX ?
+  let xAxis = styles.topX ? // TODO: any clearer way??
     isXCategorical ?
       d3.axisTop(cX).ticks(Math.ceil(width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
       d3.axisTop(nX).ticks(Math.ceil(width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
     : isXCategorical ?
       d3.axisBottom(cX).ticks(Math.ceil(width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
       d3.axisBottom(nX).ticks(Math.ceil(width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
-  let yAxis = isYCategorical ?
-    d3.axisLeft(cY).ticks(Math.ceil(height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
-    d3.axisLeft(nY).ticks(Math.ceil(height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+  let yAxis = styles.rightY ?
+    isYCategorical ?
+      d3.axisRight(cY).ticks(Math.ceil(height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisRight(nY).ticks(Math.ceil(height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
+    isYCategorical ?
+      d3.axisLeft(cY).ticks(Math.ceil(height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisLeft(nY).ticks(Math.ceil(height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   let xGrid = isXCategorical ?
     d3.axisBottom(cX).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-height) :
     d3.axisBottom(nX).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-height)
@@ -82,10 +86,10 @@ export function renderAxes(
 
       if (isXCategorical) {
         g.selectAll('.x-axis text')
-          .attr(_x, -6)
+          .attr(_x, styles.topX ? 6 : -6)
           .attr(_y, 0)
           .attr(_transform, rotate(310))
-          .attr(_text_anchor, _end)
+          .attr(_text_anchor, styles.topX ? _start : _end)
       }
 
       xaxis
@@ -102,7 +106,7 @@ export function renderAxes(
 
       if (isXCategorical) {
         xaxis.selectAll(".label")
-          .attr('y', CHART_MARGIN.bottom - 5)
+          .attr('y', styles.topX ? -60 : (CHART_MARGIN.bottom - 5))
       }
     }
 
@@ -114,11 +118,12 @@ export function renderAxes(
         .call(yAxis)
 
       yaxis
+        .attr(_transform, translate(styles.rightY ? width : 0, 0))
         .append('text')
         .classed('label', true)
-        .attr('transform', 'rotate(-90)')
+        .attr('transform', rotate(-90))
         .attr('x', -height / 2)
-        .attr('y', -50)
+        .attr('y', styles.rightY ? 50 : -50)
         .attr('dy', '.71em')
         .style('font-weight', 'bold')
         .style('fill', 'black')
@@ -131,7 +136,13 @@ export function renderAxes(
       .attr('stroke-width', '1px')
       .attr('stroke', 'black')
 
-    if (isXCategorical) {
+    if (isYCategorical || styles.topX) {
+      g.selectAll('.x-axis path')
+        .attr('stroke-width', '0px')
+        .attr('stroke', 'black')
+    }
+
+    if (isXCategorical || styles.rightY) {
       g.selectAll('.y-axis path')
         .attr('stroke-width', '0px')
         .attr('stroke', 'black')

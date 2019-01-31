@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 import {translate, ifUndefinedGetDefault, uniqueValues} from 'src/useful-factory/utils';
-import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getColor, getConstantColor} from '../design-settings';
+import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getColor, getConstantColor, CHART_MARGIN} from '../design-settings';
 import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_SIZE, SCATTER_POINT_OPACITY} from './default-design';
 import {renderAxes} from '../axes';
@@ -45,7 +45,7 @@ export function renderScatterplot(
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, s);
 
   renderPoints(g, values, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, c, s)
-  if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
+  if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
 }
 
 export function renderPoints(

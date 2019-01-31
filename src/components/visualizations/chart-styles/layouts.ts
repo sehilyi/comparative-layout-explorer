@@ -23,7 +23,7 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       break;
     case "superimposition":
       if (C.unit === "chart") {
-        chartsp = getChartSize(1, 1, {})
+        chartsp = getChartSize(1, 1, {legend: [0]})
       }
     default:
       break;

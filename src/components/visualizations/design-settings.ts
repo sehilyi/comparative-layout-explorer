@@ -10,18 +10,7 @@ import {LEGEND_WIDTH} from "./legends/default-design";
 export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
     // https://vega.github.io/vega-lite/examples/
-    A: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "bar",
-      encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
-        color: {field: "MPAA_Rating", type: "nominal"}
-      }
-    },
-    B: {
+    A:{
       data: {
         values: DATASET_MOVIES.rawData
       },
@@ -29,6 +18,17 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       encoding: {
         x: {field: "IMDB_Rating", type: "quantitative"},
         y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+        color: {field: "MPAA_Rating", type: "nominal"}
+      }
+    },
+    B:  {
+      data: {
+        values: DATASET_MOVIES.rawData
+      },
+      mark: "bar",
+      encoding: {
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
@@ -62,7 +62,7 @@ export const _width = 'width', _height = 'height',
 
 // general
 export const CHART_SIZE = {width: 230, height: 200};
-export const CHART_MARGIN = {top: 80, right: 20, bottom: 80, left: 50};
+export const CHART_MARGIN = {top: 80, right: 50, bottom: 80, left: 50};
 export const CHART_PADDING = {right: 20};
 export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,
