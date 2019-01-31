@@ -59,7 +59,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
           <FontAwesomeIcon icon="question" className='trade-mark' />
         </div>
         <div className='main-pane'>
-          <h1>Bar Charts</h1>
+          {/* <h1>Bar Charts</h1> */}
           <div className='example-element'>
             <div className='result-group'>
               <div className='chart'><svg ref={onBarChartA}></svg></div>

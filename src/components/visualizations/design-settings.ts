@@ -62,7 +62,7 @@ export const _width = 'width', _height = 'height',
   _font_weight = "font-weight", _bold = "bold"
 
 // general
-export const CHART_SIZE = {width: 230, height: 200};
+export const CHART_SIZE = {width: 280, height: 200};
 export const CHART_MARGIN = {top: 80, right: 50, bottom: 80, left: 50};
 export const CHART_PADDING = {right: 20};
 export const CHART_TOTAL_SIZE = {
