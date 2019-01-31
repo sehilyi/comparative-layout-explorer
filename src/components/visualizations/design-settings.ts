@@ -17,7 +17,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       mark: "bar",
       encoding: {
         x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
@@ -29,7 +29,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       encoding: {
         x: {field: "IMDB_Rating", type: "quantitative"},
         y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-        
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
@@ -39,7 +39,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       unit: "chart",
       // mirrored: false,
       consistency: {
-        x_axis: true, y_axis: true, color: false,
+        x_axis: false, y_axis: true, color: false,
         x_arrangement: true, y_arrangement: true
       }
     }
@@ -62,7 +62,7 @@ export const _width = 'width', _height = 'height',
 
 // general
 export const CHART_SIZE = {width: 230, height: 200};
-export const CHART_MARGIN = {top: 10, right: 20, bottom: 80, left: 50};
+export const CHART_MARGIN = {top: 80, right: 20, bottom: 80, left: 50};
 export const CHART_PADDING = {right: 20};
 export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,

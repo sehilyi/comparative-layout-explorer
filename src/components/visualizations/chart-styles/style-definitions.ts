@@ -41,8 +41,11 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         const isBColorUsed = !isUndefined(B.encoding.color)
         S.A.legend = isAColorUsed // TODO: should consider false consistency
         S.B.legend = isBColorUsed
-        S.B.noX = consistency.x_axis
-        S.B.noY = consistency.y_axis
+        S.B.noGrid = true
+        if (consistency.x_axis) S.B.noX = true
+        if (consistency.y_axis) S.B.noY = true
+        if (!consistency.x_axis) S.B.topX = true
+        if (!consistency.y_axis) S.B.rightY = true
       }
       break
     default:

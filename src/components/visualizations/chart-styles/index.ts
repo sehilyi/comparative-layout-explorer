@@ -7,6 +7,8 @@ export interface CommonChartStyle {
   noAxes: boolean
   noX: boolean
   noY: boolean
+  topX: boolean
+  rightY: boolean
   revX: boolean
   revY: boolean
   noGrid: boolean
@@ -31,6 +33,8 @@ export const DEFAULT_CHART_STYLE: BarchartStyle = {
   noAxes: false,
   noX: false,
   noY: false,
+  topX: false,
+  rightY: false,
   revX: false,
   revY: false,
   noGrid: false,

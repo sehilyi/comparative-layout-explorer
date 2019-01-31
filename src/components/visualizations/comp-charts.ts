@@ -4,7 +4,7 @@ import {CompSpec} from "src/models/comp-spec";
 import {translate} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
-  getColor, getConstantColor, getBarColor, _width, _height, _g, _transform
+  getColor, getConstantColor, getBarColor, _width, _height, _g, _transform, _opacity
 } from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
@@ -98,7 +98,13 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
   /// B
   renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.ck}, styles.B)
 
+  /// TODO: options for this?
+  gB.attr(_opacity, 0.3)
+  //
+
+  /// show B on the back
   if (true) gA.raise()  // TODO: get option as spec?
+  //
 }
 
 // TOOD: any way to generalize this code by combining with stack?!

@@ -25,14 +25,10 @@ export function correctConsistency(A: Spec, B: Spec, C: CompSpec): Consistency {
   return cons
 }
 
-// TODO: consider bar and scatter only here.
 /**
- * Notice: This function does not returns unique values in domains.
- * Notice: do not consider horizontal bar charts
- * @param A
- * @param B
- * @param C
- * @param consistency
+ * this function does not returns unique values in domains.
+ * do not consider horizontal bar charts.
+ * scatterplots and bar charts are handled.
  */
 export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
