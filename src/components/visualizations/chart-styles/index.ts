@@ -1,5 +1,6 @@
 import {BarchartStyle} from "src/models/barchart-style";
 import {BAR_GAP, CHART_SIZE} from "../design-settings";
+import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 
 export type ChartStyle = BarchartStyle | CommonChartStyle
 
@@ -15,21 +16,26 @@ export interface CommonChartStyle {
   noYLine: boolean
   xName: string
   xSlant: boolean
-  barGap: number
   width: number
   height: number
   altVals: object[]
   stroke: string
   stroke_width: number
   legend: boolean
-  mulSize: number
-  shiftBy: number
   yOffsetData: object[]
   xPreStr: string
+
+  // bar chart
+  barGap: number
   barWidth: string
+  mulSize: number
+  shiftBy: number
+
+  // scatterplot
+  pointSize: number
 }
 
-export const DEFAULT_CHART_STYLE: BarchartStyle = {
+export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   noAxes: false,
   noX: false,
   noY: false,
@@ -54,5 +60,7 @@ export const DEFAULT_CHART_STYLE: BarchartStyle = {
   shiftBy: 0,
   yOffsetData: undefined,
   xPreStr: "",
-  barWidth: undefined
+  barWidth: undefined,
+
+  pointSize: SCATTER_POINT_SIZE
 }

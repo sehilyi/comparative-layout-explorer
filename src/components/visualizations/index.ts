@@ -49,8 +49,9 @@ export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
 
   // exceptions
   if ((isScatterplot(A) || isScatterplot(A)) && C.layout === "juxtaposition" && C.unit === "element") can = false
+  if (isScatterplot(A) && C.layout === "superimposition" && C.unit === "element") can = false
 
-  if (!can) console.log("error: comparison is not supported.")
+  if (!can) console.log("error: such comparison is not supported.")
   return can
 }
 

@@ -54,6 +54,7 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.B.noX = true
         S.B.noGrid = true
         S.B.barGap = 0
+        S.B.pointSize = 1
       }
       break
     default:

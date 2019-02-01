@@ -80,3 +80,7 @@ export function getAggregatedDatas(a: Spec, b: Spec) {
     }
   }
 }
+
+export function getFilteredData(d: object[], k: string, v: string | number) {
+  return d.filter(d => v === "null" ? d[k] == null : d[k] == v)
+}

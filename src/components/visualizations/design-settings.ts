@@ -25,9 +25,9 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "bar",
+      mark: "point",
       encoding: {
-        x: {field: "Source", type: "nominal"},
+        x: {field: "US_Gross", type: "quantitative"},
         y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }

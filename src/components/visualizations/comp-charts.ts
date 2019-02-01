@@ -12,12 +12,13 @@ import {renderLegend} from "./legends";
 import {renderAxes} from "./axes";
 import {LEGEND_PADDING, LEGEND_WIDTH} from "./legends/default-design";
 import {ScaleBand, ScaleLinear} from "d3";
-import {correctConsistency, getDomains} from "./consistency";
+import {correctConsistency} from "./consistency";
 import {renderChart, canRenderCompChart} from ".";
 import {DEFAULT_CHART_STYLE} from "./chart-styles";
-import {getAggregatedDatas} from "./data-handler";
+import {getAggregatedDatas, getFilteredData} from "./data-handler";
 import {getStyles} from "./chart-styles/style-definitions";
 import {getLayouts} from "./chart-styles/layouts";
+import {getDomains} from "./data-handler/domain-calculator";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   if (!canRenderCompChart(A, B, C)) return;
@@ -121,7 +122,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
 
   /// A
   // TODO: color should be handled for visual clutter
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getConstantColor(9), cKey: "key"}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getConstantColor(10), cKey: "key"}, styles.A)
 
   /// B
   const g = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
@@ -129,10 +130,8 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
   for (let i = 0; i < layouts.subBs.length; i++) {
     const gB = g.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
-    /// TODO: filter data => make a class
-    // TODO: "null" should be compared with null
-    let filteredSpec = {...B, data: {...B.data, values: B.data.values.filter(d => domains.A.x[i] === "null" ? d[A.encoding.x.field] == null : d[A.encoding.x.field] == domains.A.x[i])}}
-    //
+    let filteredData = getFilteredData(B.data.values, A.encoding.x.field, domains.A.x[i] as string)
+    let filteredSpec = {...B, data: {...B.data, values: filteredData}}
 
     // TODO: width and height is not included in styles => any way to make this more clear?
     renderChart(gB, filteredSpec, {x: domains.Bs[i].x, y: domains.Bs[i].y}, {color: getColor(domains.Bs[i].c), cKey: "key"}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
