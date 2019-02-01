@@ -5,6 +5,7 @@ import {DEFAULT_CHART_STYLE} from ".";
 import {getAggregatedDatas} from "../data-handler";
 import {isUndefined} from "util";
 import {DomainData} from "../data-handler/domain-calculator";
+import {getColor, getConstantColor} from "../design-settings";
 
 // TOOD: any better way to define domains' type?
 export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, d: {A: DomainData, B: DomainData | DomainData[]}) {
@@ -22,6 +23,11 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.B.revX = C.direction === "horizontal" && C.mirrored
         S.A.noX = consistency.x_axis && !S.B.revX && C.direction === 'vertical'
         S.B.noY = consistency.y_axis && !S.B.revY && C.direction === 'horizontal'
+
+        S.A.color = getColor(d.A.c)
+        S.A.colorKey = d.A.cKey
+        S.B.color = getColor((d.B as DomainData).c)
+        S.B.colorKey = (d.B as DomainData).cKey
       }
       else if (C.unit === "element") {
         if (C.direction === "vertical") { // stacked bar
@@ -35,6 +41,11 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
           S.B.mulSize = 0.5
           S.B.noAxes = true
         }
+
+        S.A.color = getConstantColor() // getColor(d.A.c)
+        S.A.colorKey = d.A.cKey
+        S.B.color = getConstantColor(2) // getColor((d.B as DomainData).c)
+        S.B.colorKey = (d.B as DomainData).cKey
       }
       break
     case "superimposition":
@@ -49,6 +60,11 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         if (consistency.y_axis) S.B.noY = true
         if (!consistency.x_axis) S.B.topX = true
         if (!consistency.y_axis) S.B.rightY = true
+
+        S.A.color = getColor(d.A.c)
+        S.A.colorKey = d.A.cKey
+        S.B.color = getColor((d.B as DomainData).c)
+        S.B.colorKey = (d.B as DomainData).cKey
       }
       else if (C.unit === "element") {
         // TODO: only consider a.charttype === bar now
@@ -60,6 +76,11 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.B.noGrid = true
         S.B.barGap = 0
         S.B.pointSize = 1.5
+
+        S.A.color = getColor(d.A.c)
+        S.A.colorKey = d.A.cKey
+        S.B.color = getColor((d.B as DomainData).c)
+        S.B.colorKey = (d.B as DomainData).cKey
       }
       break
     default:

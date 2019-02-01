@@ -32,7 +32,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
     .domain(aggValsByKey.map(d => d.key))
     .range(getBarColor(isUndefined(color) ? 1 : aggValsByKey.map(d => d.key).length));
 
-  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, {color: c, cKey: "key"}, {...DEFAULT_CHART_STYLE, legend: !isUndefined(color)})
+  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, {color: c, cKey: "key"}, {...DEFAULT_CHART_STYLE, color: c, colorKey: "key", legend: !isUndefined(color)})
 }
 
 // TODO: only vertical bar charts are handled
@@ -41,14 +41,14 @@ export function renderBarChart(
   spec: Spec, // contains actual values to draw bar chart
   domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
   c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
-  s: BarchartStyle) {
+  styles: BarchartStyle) {
 
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
-  const aggValues = ifUndefinedGetDefault(s.altVals, getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, s);
-  const {...designs} = renderBars(g, aggValues, "value", "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: c.color, cKey: "key"}, s)
-  if (s.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
+  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
+  const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
+  const {...designs} = renderBars(g, aggValues, "value", "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles, colorKey: "key"})
+  if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
   return {designs}
 }
 
@@ -60,7 +60,6 @@ export function renderBars(
   numOfX: number,
   x: d3.ScaleBand<string>,
   y: d3.ScaleLinear<number, number>,
-  c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
   styles: BarchartStyle) {
 
   const {mulSize, shiftBy, yOffsetData, xPreStr, barGap, width, height, stroke, stroke_width} = styles
@@ -77,7 +76,7 @@ export function renderBars(
     .attr(_x, d => x(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
     .attr(_width, barWidth)
     .attr(_height, d => (styles.revY ? y(d[vKey]) : height - y(d[vKey])))
-    .attr(_fill, d => c.color(d[c.cKey]) as string)
+    .attr(_fill, d => styles.color(d[styles.colorKey === "" ? vKey : styles.colorKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
 

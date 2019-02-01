@@ -29,23 +29,22 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
   const color = isColorUsed ? getColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
   const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
 
-  renderScatterplot(g, spec, {x: domain.x, y: domain.y}, {color, cKey}, {...DEFAULT_CHART_STYLE, legend: isColorUsed})
+  renderScatterplot(g, spec, {x: domain.x, y: domain.y}, {...DEFAULT_CHART_STYLE, color, colorKey: cKey, legend: isColorUsed})
 }
 
 export function renderScatterplot(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec, // contains actual values to draw bar chart
   domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
-  c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
-  s: ScatterplotStyle) {
+  styles: ScatterplotStyle) {
 
-  const legend = ifUndefinedGetDefault(s["legend"], false) as boolean
+  const legend = ifUndefinedGetDefault(styles["legend"], false) as boolean
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, s);
+  const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
 
-  renderPoints(g, values, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, c, s)
-  if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), c.color.domain() as string[], c.color.range() as string[])
+  renderPoints(g, values, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, styles)
+  if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
 }
 
 export function renderPoints(
@@ -55,7 +54,6 @@ export function renderPoints(
   yKey: string,
   x: d3.ScaleLinear<number, number>,
   y: d3.ScaleLinear<number, number>,
-  c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
   styles: ScatterplotStyle) {
 
   g.append(_g).selectAll('.point')
@@ -67,6 +65,6 @@ export function renderPoints(
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, styles.stroke)
     .attr(_stroke_width, styles.stroke_width)
-    .attr(_fill, d => c.color(d[c.cKey]) as string)
+    .attr(_fill, d => styles.color(d[styles.colorKey]) as string)
     .attr(_r, styles.pointSize)
 }

@@ -59,8 +59,12 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   /// A
   renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.cKey}, styles.A)
   /// B
-  if (!Array.isArray(domains.B))
+  if (!Array.isArray(domains.B)) {
     renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.cKey}, styles.B)
+  }
+  else {
+    // TODO:
+  }
 }
 
 function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
@@ -172,7 +176,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         "value", "key",
         aggD.A.categories.length,
         x as ScaleBand<string>, y as ScaleLinear<number, number>,
-        {color: getConstantColor(i + 1), cKey: "key"},
+        // {color: getConstantColor(i + 1), cKey: "key"},
         {...DEFAULT_CHART_STYLE, yOffsetData})
     }
     renderLegend(

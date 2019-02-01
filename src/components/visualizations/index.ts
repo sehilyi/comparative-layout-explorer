@@ -25,18 +25,29 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "point",
+      mark: "bar",
       encoding: {
-        x: {field: "US_Gross", type: "quantitative"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
-        // color: {field: "MPAA_Rating", type: "nominal"}
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
+    // B: {
+    //   data: {
+    //     values: DATASET_MOVIES.rawData
+    //   },
+    //   mark: "point",
+    //   encoding: {
+    //     x: {field: "US_Gross", type: "quantitative"},
+    //     y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
+    //     color: {field: "MPAA_Rating", type: "nominal"}
+    //   }
+    // },
     C: {
       ...DEFAULT_COMP_SPEC,
       layout: "superimposition",
       // direction: "vertical",
-      unit: "element",
+      unit: "chart",
       // mirrored: false,
       consistency: {
         x_axis: false, y_axis: true, color: false
@@ -71,7 +82,7 @@ export function renderChart(
 
   switch (getChartType(spec)) {
     case "scatterplot":
-      renderScatterplot(g, spec, domain, c, s)
+      renderScatterplot(g, spec, domain, s)
       break;
     case "barchart":
       renderBarChart(g, spec, domain, c, s)
@@ -88,7 +99,7 @@ export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
   let can = true;
 
   // exceptions
-  if ((isScatterplot(A) || isScatterplot(A)) && C.layout === "juxtaposition" && C.unit === "element") can = false
+  if ((isScatterplot(A) || isScatterplot(B)) && C.layout === "juxtaposition" && C.unit === "element") can = false
   if (isScatterplot(A) && C.layout === "superimposition" && C.unit === "element") can = false
 
   if (!can) console.log("error: such comparison is not supported.")

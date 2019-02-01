@@ -41,6 +41,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     else if (isScatterplot(A) && isScatterplot(B)) {
       // TODO:
     }
+    Bs = {x: bx, y: by, c: bc, cKey: bck}
   }
   else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart")) {
     if (isBarChart(A) && isBarChart(B)) {
