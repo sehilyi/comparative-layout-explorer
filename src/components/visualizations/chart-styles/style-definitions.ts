@@ -53,7 +53,7 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
         S.A.legend = isAColorUsed // TODO: should consider false consistency
-        S.A.noGrid = true // for clutter reduction
+        // S.A.noGrid = true // for clutter reduction
         S.B.legend = isBColorUsed
         S.B.noGrid = true
         if (consistency.x_axis) S.B.noX = true
@@ -65,6 +65,9 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.A.colorKey = d.A.cKey
         S.B.color = getColor(d.B.c)
         S.B.colorKey = d.B.cKey
+
+        S.B.opacity = 0.4
+        S.A.onTop = true
       }
       else if (C.unit === "element") {
         // TODO: only consider a.charttype === bar now

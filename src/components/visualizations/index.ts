@@ -5,6 +5,7 @@ import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
 import {ChartStyle} from "./chart-styles";
 import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
+import {_opacity} from "./design-settings";
 
 // test
 export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
@@ -27,9 +28,9 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-        color: {field: "MPAA_Rating", type: "nominal"}
+        x: {field: "Source", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+        // color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     // B: {
@@ -40,7 +41,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     //   encoding: {
     //     x: {field: "US_Gross", type: "quantitative"},
     //     y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
-    //     color: {field: "MPAA_Rating", type: "nominal"}
+    //     // color: {field: "MPAA_Rating", type: "nominal"}
     //   }
     // },
     C: {

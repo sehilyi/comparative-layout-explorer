@@ -18,6 +18,7 @@ export const _width = 'width', _height = 'height',
   _alignment_baseline = "alignment-baseline", _middle = "middle",
   _font_weight = "font-weight", _bold = "bold"
 
+export const AXIS_ROOT_ID = "axis-root--"
 // general
 export const CHART_SIZE = {width: 280, height: 200}
 export const CHART_MARGIN = {top: 80, right: 50, bottom: 80, left: 50}

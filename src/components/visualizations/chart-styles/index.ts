@@ -5,9 +5,12 @@ import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 export type ChartStyle = BarchartStyle | CommonChartStyle
 
 export interface CommonChartStyle {
+  // globar style
+  opacity: number
   // chart common
   color: d3.ScaleOrdinal<string, {}>
   colorKey: string
+  onTop: boolean
   // axes common
   noAxes: boolean
   noGrid: boolean
@@ -43,8 +46,11 @@ export interface CommonChartStyle {
 }
 
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {
+  opacity: 1,
+
   color: getConstantColor(),
   colorKey: "",
+  onTop: false,
 
   noAxes: false,
   noX: false,
