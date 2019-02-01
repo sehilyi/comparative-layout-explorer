@@ -29,7 +29,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       encoding: {
         x: {field: "US_Gross", type: "quantitative"},
         y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
-        color: {field: "MPAA_Rating", type: "nominal"}
+        // color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
@@ -90,7 +90,7 @@ export const DEFAULT_FONT = "Roboto Condensed";
 // bar
 export const BAR_GAP = 10;
 export const GAP_BETWEEN_CHARTS = 20;
-export const MAX_BAR_WIDTH = 30;
+export const MAX_BAR_WIDTH = 100;
 
 export const BAR_COLOR = '#4E79A7';
 export const BAR_COLOR2 = '#F28E2B';

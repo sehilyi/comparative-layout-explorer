@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import {translate, ifUndefinedGetDefault, uniqueValues} from 'src/useful-factory/utils';
 import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getColor, getConstantColor, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle} from '../design-settings';
 import {Spec} from 'src/models/simple-vega-spec';
-import {SCATTER_POINT_OPACITY, SCATTER_POINT_STROKE, SCATTER_POITN_STROKE_WIDTH} from './default-design';
+import {SCATTER_POINT_OPACITY} from './default-design';
 import {renderAxes} from '../axes';
 import {renderLegend} from '../legends';
 import {LEGEND_PADDING} from '../legends/default-design';
@@ -65,8 +65,8 @@ export function renderPoints(
     .attr(_cx, d => x(d[xKey]))
     .attr(_cy, d => y(d[yKey]))
     .attr(_opacity, SCATTER_POINT_OPACITY)
-    .attr(_stroke, SCATTER_POINT_STROKE)
-    .attr(_stroke_width, SCATTER_POITN_STROKE_WIDTH)
+    .attr(_stroke, styles.stroke)
+    .attr(_stroke_width, styles.stroke_width)
     .attr(_fill, d => c.color(d[c.cKey]) as string)
     .attr(_r, styles.pointSize)
 }

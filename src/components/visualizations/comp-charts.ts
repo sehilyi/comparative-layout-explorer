@@ -113,8 +113,8 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
 
 export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
-  const {...styles} = getStyles(A, B, C, consistency)
   const {...domains} = getDomains(A, B, C, consistency)
+  const {...styles} = getStyles(A, B, C, consistency) // TODO: this should get domains parameter!
   const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
   const svg = d3.select(ref).attr(_height, layouts.height).attr(_width, layouts.width)
@@ -122,7 +122,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
 
   /// A
   // TODO: color should be handled for visual clutter
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getConstantColor(10), cKey: "key"}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.ck}, styles.A)
 
   /// B
   const g = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
@@ -134,79 +134,8 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     let filteredSpec = {...B, data: {...B.data, values: filteredData}}
 
     // TODO: width and height is not included in styles => any way to make this more clear?
-    renderChart(gB, filteredSpec, {x: domains.Bs[i].x, y: domains.Bs[i].y}, {color: getColor(domains.Bs[i].c), cKey: "key"}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
+    renderChart(gB, filteredSpec, {x: domains.Bs[i].x, y: domains.Bs[i].y}, {color: getColor(domains.Bs[i].c), cKey: domains.Bs[i].ck}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
   }
-}
-
-// deprecated
-export function renderNest(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  // const chartsp = getChartSize(1, 1, {})
-  // const svg = d3.select(ref)
-  //   .attr(_height, chartsp.size.height)
-  //   .attr(_width, chartsp.size.width)
-
-  // { /// A
-  //   const g = svg.append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
-
-  //   const aggD = getAggregatedDatas(A, B)
-  //   const xDomain = aggD.A.categories
-  //   const yDomain = aggD.A.values
-
-  //   const c = getConstantColor(10)
-  //   const {designs} = renderBarChart(g, A, {x: xDomain, y: yDomain}, {color: c, cKey: "key"}, {...DEFAULT_CHART_STYLE})
-
-  //   { /// B
-  //     const g = svg.append(_g)
-  //       .attr(_transform, translate(chartsp.positions[0].left + 0, chartsp.positions[0].top))
-
-  //     const aggD = getAggregatedDatas(A, B)
-  //     const chartWidth = designs["barWidth"], x = designs["x"], y = designs["y"], bandUnitSize = designs["bandUnitSize"]
-  //     const padding = 3
-  //     const innerChartWidth = chartWidth - padding * 2.0
-
-  //     for (let i = 0; i < aggD.A.categories.length; i++) {
-  //       const chartHeight = CHART_SIZE.height - y(aggD.A.data[i].value) - padding
-  //       const tg = g.append(_g)
-  //         .attr(_transform, translate(x(aggD.A.categories[i]) - chartWidth / 2.0 + bandUnitSize / 2.0 + padding, y(aggD.A.data[i].value) + padding));
-  //       const ttg = tg.append(_g).attr(_transform, translate(0, 0))
-
-  //       const yDomain = aggD.AbyB.data[i].values.map((d: object) => d["value"])
-
-  //       const noY = true
-  //       const noX = true
-  //       const noGrid = true
-
-  //       if (C.direction === "horizontal") {
-  //         renderBarChart(
-  //           ttg,
-  //           B, {
-  //             x: aggD.B.categories,
-  //             y: yDomain
-  //           }, {color: d3.scaleOrdinal().range(getBarColor(aggD.B.categories.length)), cKey: "key"},
-  //           {...DEFAULT_CHART_STYLE, noX, noY, noGrid, barGap: 0, width: innerChartWidth, height: chartHeight, altVals: aggD.AbyB.data[i].values})
-  //       }
-  //       else {  // C.direction === "vertical"
-  //         const xDomain = aggD.AbyB.data[i].values.map((d: object) => d["key"])
-  //         const yDomain = [d3.sum(aggD.AbyB.data[i].values.map((d: object) => d["value"]))]
-  //         const c = d3.scaleOrdinal()
-  //           .domain(xDomain)
-  //           .range(getBarColor(aggD.B.categories.length))
-
-  //         // TODO: last one (i.e., on the top) is not rendered at all
-  //         for (let j = 0; j < xDomain.length; j++) {  // add bar one by one
-  //           const {x, y} = renderAxes(ttg, [xDomain[j]], yDomain, B, {...DEFAULT_CHART_STYLE, noX, noY, noGrid, width: innerChartWidth, height: chartHeight});
-  //           renderBars(ttg, [aggD.AbyB.data[i].values[j]], "value", "key", 1, x as ScaleBand<string>, y as ScaleLinear<number, number>, {color: c, cKey: "key"}, {
-  //             ...DEFAULT_CHART_STYLE, noX, noY, noGrid, barGap: 0, width: innerChartWidth, height: chartHeight,
-  //             yOffsetData: [{
-  //               key: xDomain[j], value: j == 0 ? 0 :
-  //                 d3.sum(aggD.AbyB.data[i].values.slice(0, j).map((d: object) => d["value"]))
-  //             }]
-  //           })
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
 }
 
 export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {

@@ -141,6 +141,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       const aggD = getAggregatedDatas(A, B)
       ax = aggD.A.categories
       ay = aggD.A.values
+
       ac = [""]
       ack = A.encoding.x.field  // default, not meaningful
 
@@ -157,15 +158,16 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       const aggD = getAggregatedDatas(A, B)
       ax = aggD.A.categories
       ay = aggD.A.values
-      ac = [""]
-      ack = A.encoding.x.field  // default, not meaningful
+
+      ac = typeof A.encoding.color !== "undefined" ? uniqueValues(A.data.values, A.encoding.color.field) : [""]
+      ack = typeof A.encoding.color !== "undefined" ? A.encoding.color.field : A.encoding.x.field
+      bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
+      bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
 
       for (let i = 0; i < aggD.A.categories.length; i++) {
         let filteredData = getFilteredData(B.data.values, A.encoding.x.field, aggD.A.categories[i])
         let bx = filteredData.map(d => d[B.encoding.x.field])
         let by = filteredData.map(d => d[B.encoding.y.field])
-        bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
-        bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
         Bs.push({x: bx, y: by, c: bc, ck: bck})
       }
     }
