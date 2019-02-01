@@ -1,50 +1,7 @@
-import {Spec} from "src/models/simple-vega-spec";
-import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
-import {DATASET_MOVIES} from "src/datasets/movies";
-import d3 = require("d3");
+import * as d3 from "d3";
 import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined} from "util";
 import {LEGEND_WIDTH} from "./legends/default-design";
-
-// test
-export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
-  return {
-    // https://vega.github.io/vega-lite/examples/
-    A: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "bar",
-      encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
-        color: {field: "MPAA_Rating", type: "nominal"}
-      }
-    },
-    B: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "point",
-      encoding: {
-        x: {field: "US_Gross", type: "quantitative"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
-        // color: {field: "MPAA_Rating", type: "nominal"}
-      }
-    },
-    C: {
-      ...DEFAULT_COMP_SPEC,
-      layout: "superimposition",
-      // direction: "vertical",
-      unit: "element",
-      // mirrored: false,
-      consistency: {
-        x_axis: false, y_axis: true, color: false,
-        x_arrangement: true, y_arrangement: true
-      }
-    }
-  }
-}
 
 // svg attributes
 export const _width = 'width', _height = 'height',

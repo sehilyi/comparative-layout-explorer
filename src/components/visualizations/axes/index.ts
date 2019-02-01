@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
-import {CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle, _start} from "../design-settings";
+import {CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle, _start, _fill} from "../design-settings";
 import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isBarChart} from "..";
 import {ChartStyle} from "../chart-styles";
@@ -39,11 +39,11 @@ export function renderAxes(
       d3.axisBottom(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   let yAxis = stl.rightY ?
     isYCategorical ?
-      d3.axisRight(cY).ticks(Math.ceil(stl.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
-      d3.axisRight(nY).ticks(Math.ceil(stl.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
+      d3.axisRight(cY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisRight(nY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
     isYCategorical ?
-      d3.axisLeft(cY).ticks(Math.ceil(stl.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
-      d3.axisLeft(nY).ticks(Math.ceil(stl.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+      d3.axisLeft(cY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisLeft(nY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   let xGrid = isXCategorical ?
     d3.axisBottom(cX).ticks(Math.ceil(stl.width / 40)).tickFormat(null).tickSize(-stl.height) :
     d3.axisBottom(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(null).tickSize(-stl.height)
@@ -103,40 +103,46 @@ export function renderAxes(
 
     if (!stl.noY) {
       let yaxis = g.append('g')
+        .attr(_transform, translate(stl.rightY ? stl.width : 0, 0))
         .classed('axis y-axis', true)
         .attr('stroke', '#888888')
         .attr('stroke-width', 0.5)
         .call(yAxis)
 
-      yaxis
-        .attr(_transform, translate(stl.rightY ? stl.width : 0, 0))
-        .append('text')
-        .classed('label', true)
-        .attr('transform', rotate(-90))
-        .attr('x', -stl.height / 2)
-        .attr('y', stl.rightY ? 50 : -50)
-        .attr('dy', '.71em')
-        .style('font-weight', 'bold')
-        .style('fill', 'black')
-        .style('stroke', 'none')
-        .style('text-anchor', 'middle')
-        .text(yFunc + ' ' + spec.encoding.y.field)
+      if (!stl.noYTitle) {
+        yaxis
+          .append('text')
+          .classed('label', true)
+          .attr('transform', rotate(-90))
+          .attr('x', -stl.height / 2)
+          .attr('y', stl.rightY ? 50 : -50)
+          .attr('dy', '.71em')
+          .style('font-weight', 'bold')
+          .style('fill', 'black')
+          .style('stroke', 'none')
+          .style('text-anchor', 'middle')
+          .text(yFunc + ' ' + spec.encoding.y.field)
+      }
     }
 
     g.selectAll('.axis path')
       .attr('stroke-width', '1px')
       .attr('stroke', 'black')
 
-    if (isYCategorical || stl.topX) {
+    if (isYCategorical) {
       g.selectAll('.x-axis path')
         .attr('stroke-width', '0px')
         .attr('stroke', 'black')
     }
 
-    if (isXCategorical || stl.rightY) {
+    if (isXCategorical) {
       g.selectAll('.y-axis path')
         .attr('stroke-width', '0px')
         .attr('stroke', 'black')
+    }
+
+    if (stl.simpleY) {
+      g.selectAll('.y-axis path').attr('stroke', 'white')
     }
 
     // small tick
@@ -150,6 +156,10 @@ export function renderAxes(
       .attr('fill', 'black')
       .style('font-size', '12px')
       .attr('font-family', DEFAULT_FONT)
+
+    if (stl.simpleY) {
+      // g.selectAll('.axis text').attr(_fill, 'gray')
+    }
 
     // axis name
     g.selectAll('.axis .label')

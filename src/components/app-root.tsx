@@ -9,8 +9,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {renderCompChart} from './visualizations/comp-charts';
-import {getExampleSpecs} from './visualizations/design-settings';
-import {renderSimpleChart} from './visualizations';
+import {renderSimpleChart, getExampleSpecs} from './visualizations';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {

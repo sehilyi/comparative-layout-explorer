@@ -49,12 +49,15 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         if (!consistency.y_axis) S.B.rightY = true
       }
       else if (C.unit === "element") {
-        // TODO: only consider bar x bar now
+        // TODO: only consider a.charttype === bar now
+        // S.B.noYTitle = true
+        // S.B.rightY = true
+        // S.B.simpleY = true
         S.B.noY = true
         S.B.noX = true
         S.B.noGrid = true
         S.B.barGap = 0
-        S.B.pointSize = 1
+        S.B.pointSize = 1.5
       }
       break
     default:

@@ -5,16 +5,23 @@ import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 export type ChartStyle = BarchartStyle | CommonChartStyle
 
 export interface CommonChartStyle {
+  // axes
   noAxes: boolean
-  noX: boolean
-  noY: boolean
-  topX: boolean
-  rightY: boolean
-  revX: boolean
-  revY: boolean
   noGrid: boolean
-  noYLine: boolean
+
   xName: string
+  noX: boolean
+  topX: boolean
+  revX: boolean
+
+  simpleY: boolean
+  rightY: boolean
+  noYTitle: boolean
+  revY: boolean
+  noY: boolean
+  noYLine: boolean
+
+  //
   xSlant: boolean
   width: number
   height: number
@@ -40,9 +47,11 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   noX: false,
   noY: false,
   topX: false,
+  simpleY: false,
   rightY: false,
   revX: false,
   revY: false,
+  noYTitle: false,
   noGrid: false,
   noYLine: true,
   xName: undefined,

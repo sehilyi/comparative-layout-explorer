@@ -3,7 +3,47 @@ import {renderSimpleBarChart, renderBarChart} from "./barcharts";
 import {ChartTypes} from "src/models/chart-types";
 import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
 import {ChartStyle} from "./chart-styles";
-import {CompSpec} from "src/models/comp-spec";
+import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
+import {DATASET_MOVIES} from "src/datasets/movies";
+
+// test
+export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
+  return {
+    // https://vega.github.io/vega-lite/examples/
+    A: {
+      data: {
+        values: DATASET_MOVIES.rawData
+      },
+      mark: "bar",
+      encoding: {
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+        color: {field: "MPAA_Rating", type: "nominal"}
+      }
+    },
+    B: {
+      data: {
+        values: DATASET_MOVIES.rawData
+      },
+      mark: "point",
+      encoding: {
+        x: {field: "US_Gross", type: "quantitative"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"},
+        // color: {field: "MPAA_Rating", type: "nominal"}
+      }
+    },
+    C: {
+      ...DEFAULT_COMP_SPEC,
+      layout: "superimposition",
+      // direction: "vertical",
+      unit: "element",
+      // mirrored: false,
+      consistency: {
+        x_axis: false, y_axis: true, color: false
+      }
+    }
+  }
+}
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   switch (getChartType(spec)) {
