@@ -77,7 +77,6 @@ export function renderChart(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec, // contains actual values to draw bar chart
   domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
-  c: {color: d3.ScaleOrdinal<string, {}>, cKey: string},
   s: ChartStyle) {
 
   switch (getChartType(spec)) {

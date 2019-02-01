@@ -4,7 +4,7 @@ import {CompSpec} from "src/models/comp-spec";
 import {translate} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
-  getColor, getConstantColor, getBarColor, _width, _height, _g, _transform, _opacity
+  getBarColor, _width, _height, _g, _transform, _opacity
 } from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
@@ -57,10 +57,10 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// A
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.cKey}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, styles.A)
   /// B
   if (!Array.isArray(domains.B)) {
-    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.cKey}, styles.B)
+    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, styles.B)
   }
   else {
     // TODO:
@@ -78,18 +78,16 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// legend
-  const colorA = getConstantColor()
-  const colorB = getConstantColor(2);
   renderLegend(gB.append(_g).attr(_transform, translate(CHART_SIZE.width + GAP_BETWEEN_CHARTS, 0)),
     [A.encoding.y.field, B.encoding.y.field],
-    colorA.range().concat(colorB.range()) as string[])
+    styles.A.color.range().concat(styles.B.color.range()) as string[])
   //
 
   /// A
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: colorA, cKey: "key"}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, styles.A)
   /// B
   if (!Array.isArray(domains.B))
-    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styles.B)
+    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, styles.B)
 }
 
 // TODO: this should be combined with renderJuxChart
@@ -104,10 +102,10 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// A
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.cKey}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, styles.A)
   /// B
   if (!Array.isArray(domains.B))
-    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.cKey}, styles.B)
+    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, styles.B)
 
   /// TODO: options for this?
   gB.attr(_opacity, 0.3)
@@ -129,7 +127,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
 
   /// A
   // TODO: color should be handled for visual clutter
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.cKey}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, styles.A)
 
   /// B
   const g = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
@@ -142,7 +140,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
 
     // TODO: width and height is not included in styles => any way to make this more clear?
     if (Array.isArray(domains.B))
-      renderChart(gB, filteredSpec, {x: domains.B[i].x, y: domains.B[i].y}, {color: getColor(domains.B[i].c), cKey: domains.B[i].cKey}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
+      renderChart(gB, filteredSpec, {x: domains.B[i].x, y: domains.B[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
   }
 }
 
