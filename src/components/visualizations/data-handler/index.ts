@@ -3,32 +3,35 @@ import {Aggregate, Spec} from "src/models/simple-vega-spec";
 import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
 
-export function getAggValues(values: object[], keyField: string, valueField: string[], aggregate: Aggregate) {
+/**
+ * return type: { key: [...categories by keyField], value: {valueFields[0]: aggregated value, valueFields[1]: aggregated value, ..., valueField[valueFields.length - 1]: aggregated value} }
+ */
+export function getAggValues(values: object[], keyField: string, valueFields: string[], aggregate: Aggregate) {
   return d3.nest()
     .key(d => d[keyField])
     .rollup(function (d) {
       let value = {}
       switch (aggregate) {
         case 'sum':
-          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.sum(d, _d => _d[valueField[i]])
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.sum(d, _d => _d[valueFields[i]])
           break
         case 'mean':
-          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.mean(d, _d => _d[valueField[i]])
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.mean(d, _d => _d[valueFields[i]])
           break
         case 'median':
-          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.median(d, _d => _d[valueField[i]])
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.median(d, _d => _d[valueFields[i]])
           break
         case 'min':
-          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.min(d, _d => _d[valueField[i]])
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.min(d, _d => _d[valueFields[i]])
           break
         case 'max':
-          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.max(d, _d => _d[valueField[i]])
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.max(d, _d => _d[valueFields[i]])
           break
         case 'count':
-          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d.length
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d.length
           break
         default:
-          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.sum(d, _d => _d[valueField[i]])
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.sum(d, _d => _d[valueFields[i]])
           break
       }
       return value as undefined

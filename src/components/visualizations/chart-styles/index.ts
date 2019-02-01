@@ -7,6 +7,7 @@ export type ChartStyle = BarchartStyle | CommonChartStyle
 export interface CommonChartStyle {
   // globar style
   opacity: number
+  aggregated: boolean   // TODO: do we really need this?
   // chart common
   color: d3.ScaleOrdinal<string, {}>
   colorKey: string
@@ -47,6 +48,7 @@ export interface CommonChartStyle {
 
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   opacity: 1,
+  aggregated: false,
 
   color: getConstantColor(),
   colorKey: "",

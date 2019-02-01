@@ -46,9 +46,8 @@ export function renderBarChart(
   const {aggregate} = spec.encoding.y;
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, spec.encoding.x.field, [spec.encoding.y.field], aggregate));
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
-  const {...designs} = renderBars(g, aggValues, spec.encoding.y.field/*"value"*/, "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles, colorKey: "key"})
+  renderBars(g, aggValues, spec.encoding.y.field/*"value"*/, "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles, colorKey: "key"})
   if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
-  return {designs}
 }
 
 export function renderBars(
@@ -78,6 +77,4 @@ export function renderBars(
     .attr(_fill, d => styles.color(d[styles.colorKey === "" ? vKey : styles.colorKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
-
-  return {barWidth, x, y, bandUnitSize}
 }

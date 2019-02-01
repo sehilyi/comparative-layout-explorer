@@ -39,8 +39,8 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "point",
       encoding: {
-        x: {field: "US_Gross", type: "quantitative", aggregate: "sum"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "sum"},
+        x: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
@@ -51,7 +51,7 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       unit: "chart",
       // mirrored: false,
       consistency: {
-        x_axis: true, y_axis: false, color: false
+        x_axis: false, y_axis: false, color: false
       }
     }
   }

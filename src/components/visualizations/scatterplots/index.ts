@@ -1,17 +1,17 @@
 import * as d3 from 'd3';
-
 import {translate, uniqueValues} from 'src/useful-factory/utils';
-import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getColor, getConstantColor, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle} from '../design-settings';
+import {CHART_SIZE, _width, _height, _g, _transform, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle, getChartSize, getColor, getConstantColor} from '../design-settings';
 import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_OPACITY} from './default-design';
 import {renderAxes} from '../axes';
 import {renderLegend} from '../legends';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {ScatterplotStyle} from './styles';
+import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE} from '../chart-styles';
-import {getAggValuesByTwoKeys} from '../data-handler';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
+  // if (true) return
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
 
@@ -40,14 +40,12 @@ export function renderScatterplot(
   styles: ScatterplotStyle) {
 
   const {values} = spec.data;
-  const {aggregate: yAggregate} = spec.encoding.y//, {aggregate: yAggregate} = spec.encoding.y // TODO: do not consider now for the simplicity
-  const aggValues = typeof yAggregate != "undefined" && false ? getAggValuesByTwoKeys(values, spec.encoding.x.field, spec.encoding.color.field, spec.encoding.y.field, yAggregate) : values
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
-  const aggXField = typeof yAggregate != "undefined" && false ? "key" : xField
-  const aggYField = typeof yAggregate != "undefined" && false ? "value" : yField
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
-
-  renderPoints(g, aggValues, aggXField, aggYField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, styles)
+  const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions now for the simplicity
+  const aggValues = typeof aggregate != "undefined" ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
+  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {...styles});
+  renderPoints(g, aggValues, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles, aggregated: typeof aggregate != "undefined"})
+  // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
 }
 
@@ -64,11 +62,11 @@ export function renderPoints(
     .data(data)
     .enter().append(_circle)
     .classed('point', true)
-    .attr(_cx, d => x(d[xKey]))
-    .attr(_cy, d => y(d[yKey]))
+    .attr(_cx, d => x(styles.aggregated ? d["value"][xKey] : d[xKey]))  // TODO: any way to make two level to one level?
+    .attr(_cy, d => y(styles.aggregated ? d["value"][yKey] : d[yKey]))
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, styles.stroke)
     .attr(_stroke_width, styles.stroke_width)
-    .attr(_fill, d => styles.color(d[styles.colorKey]) as string)
+    .attr(_fill, d => styles.color(styles.aggregated ? d["key"] : d[styles.colorKey]) as string)
     .attr(_r, styles.pointSize)
 }

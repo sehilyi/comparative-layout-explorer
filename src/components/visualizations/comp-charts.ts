@@ -51,7 +51,7 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
-  const {...layouts} = getLayouts(A, B, C, consistency, styles)
+  const {...layouts} = getLayouts(A, B, C, consistency, {...styles})
 
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
   const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top)).attr(_opacity, styles.A.opacity)

@@ -18,6 +18,7 @@ export type AxisDomainData = {
   y: string[] | number[]
 }
 
+// TODO: this function should be much more efficiently implemented!!!
 /**
  * Generate domains of X, Y, and Color
  * * This does not returns unique values in domains.
@@ -94,11 +95,10 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         const aggD = getAggregatedDatas(A, B)
         ay = isBarChart(A) ? aggD.A.values : A.data.values.map(d => d[A.encoding.y.field])
         by = isBarChart(B) ? aggD.B.values :
-          // isUndefined(B.encoding.y.aggregate) ?
-          B.data.values.map(d => d[B.encoding.y.field])
-        // :
-        // // TODO: now, only consider when color is used
-        // console.log(getAggValues(B.data.values, B.encoding.color.field, [B.encoding.y.field], "sum")) //B.encoding.y.aggregate))//.map(d => d.value))
+          typeof B.encoding.y.aggregate === "undefined" ?
+            B.data.values.map(d => d[B.encoding.y.field]) :
+            // TODO: now, only consider when color is used
+            getAggValues(B.data.values, B.encoding.color.field, [B.encoding.y.field], B.encoding.y.aggregate).map(d => d.value)
 
       }
       if (consistency.color) {
