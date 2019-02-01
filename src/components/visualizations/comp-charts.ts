@@ -199,7 +199,8 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         A, {
           x: aggD.B.categories,
           y: aggD.AbyB.values
-        }, {color: getConstantColor(i + 1), cKey: "key"},
+        },
+        // {color: getConstantColor(i + 1), cKey: "key"},
         {...DEFAULT_CHART_STYLE, noY: i != 0 ? true : false, xName: aggD.A.categories[i], barGap: 1, width: GroupW, altVals: aggD.AbyB.data[i].values})
     }
     renderLegend(

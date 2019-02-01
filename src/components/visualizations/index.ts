@@ -85,7 +85,7 @@ export function renderChart(
       renderScatterplot(g, spec, domain, s)
       break;
     case "barchart":
-      renderBarChart(g, spec, domain, c, s)
+      renderBarChart(g, spec, domain, s)
       break;
     case "linechart":
       //
