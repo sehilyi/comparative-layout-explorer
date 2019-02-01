@@ -12,7 +12,7 @@ export type DomainData = {
   x: string[] | number[]
   y: string[] | number[]
   c: string[] | number[]
-  ck: string
+  cKey: string
 }
 
 /**
@@ -24,7 +24,7 @@ export type DomainData = {
 export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
   let ack: string, bck: string
-  let Bs: DomainData[] = []
+  let Bs: DomainData | DomainData[]
 
   if (C.layout === "juxtaposition" && C.unit === "element") {
     // consistency.x_axis and y_axis are always true
@@ -134,6 +134,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
       }
     }
+    Bs = {x: bx, y: by, c: bc, cKey: bck}
   }
   else if ((C.layout === "superimposition" && C.unit === "element")) {
     // nesting
@@ -149,9 +150,10 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       bc = aggD.B.categories  // color by x-axis as a default
       bck = B.encoding.x.field
 
+      Bs = []
       for (let i = 0; i < aggD.A.categories.length; i++) {
         let by = aggD.AbyB.data[i].values.map((d: object) => d["value"])
-        Bs.push({x: bx, y: by, c: bc, ck: bck})
+        Bs.push({x: bx, y: by, c: bc, cKey: bck})
       }
     }
     else if (isBarChart(A) && isScatterplot(B)) {
@@ -164,11 +166,12 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
       bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
 
+      Bs = []
       for (let i = 0; i < aggD.A.categories.length; i++) {
         let filteredData = getFilteredData(B.data.values, A.encoding.x.field, aggD.A.categories[i])
         let bx = filteredData.map(d => d[B.encoding.x.field])
         let by = filteredData.map(d => d[B.encoding.y.field])
-        Bs.push({x: bx, y: by, c: bc, ck: bck})
+        Bs.push({x: bx, y: by, c: bc, cKey: bck})
       }
     }
     else {
@@ -176,5 +179,5 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     }
   }
 
-  return {A: {x: ax, y: ay, c: ac, ck: ack}, B: {x: bx, y: by, c: bc, ck: bck}, Bs}
+  return {A: {x: ax, y: ay, c: ac, cKey: ack}, B: Bs}
 }

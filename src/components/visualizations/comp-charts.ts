@@ -48,24 +48,25 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 
 function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
-  const {...styles} = getStyles(A, B, C, consistency)
-  const {...layouts} = getLayouts(A, B, C, consistency, styles)
   const {...domains} = getDomains(A, B, C, consistency)
+  const {...styles} = getStyles(A, B, C, consistency, domains)
+  const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
   const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top))
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// A
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.ck}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.cKey}, styles.A)
   /// B
-  renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.ck}, styles.B)
+  if (!Array.isArray(domains.B))
+    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.cKey}, styles.B)
 }
 
 function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
-  const {...styles} = getStyles(A, B, C, consistency)
   const {...domains} = getDomains(A, B, C, consistency)
+  const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
@@ -83,14 +84,15 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   /// A
   renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: colorA, cKey: "key"}, styles.A)
   /// B
-  renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styles.B)
+  if (!Array.isArray(domains.B))
+    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: colorB, cKey: "key"}, styles.B)
 }
 
 // TODO: this should be combined with renderJuxChart
 export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
-  const {...styles} = getStyles(A, B, C, consistency)
+  const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
   const svg = d3.select(ref).attr(_height, layouts.height).attr(_width, layouts.width)
@@ -98,9 +100,10 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// A
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.ck}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.cKey}, styles.A)
   /// B
-  renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.ck}, styles.B)
+  if (!Array.isArray(domains.B))
+    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, {color: getColor(domains.B.c), cKey: domains.B.cKey}, styles.B)
 
   /// TODO: options for this?
   gB.attr(_opacity, 0.3)
@@ -114,7 +117,7 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
 export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
-  const {...styles} = getStyles(A, B, C, consistency) // TODO: this should get domains parameter!
+  const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
   const svg = d3.select(ref).attr(_height, layouts.height).attr(_width, layouts.width)
@@ -122,7 +125,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
 
   /// A
   // TODO: color should be handled for visual clutter
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.ck}, styles.A)
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: domains.A.cKey}, styles.A)
 
   /// B
   const g = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
@@ -134,7 +137,8 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     let filteredSpec = {...B, data: {...B.data, values: filteredData}}
 
     // TODO: width and height is not included in styles => any way to make this more clear?
-    renderChart(gB, filteredSpec, {x: domains.Bs[i].x, y: domains.Bs[i].y}, {color: getColor(domains.Bs[i].c), cKey: domains.Bs[i].ck}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
+    if (Array.isArray(domains.B))
+      renderChart(gB, filteredSpec, {x: domains.B[i].x, y: domains.B[i].y}, {color: getColor(domains.B[i].c), cKey: domains.B[i].cKey}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
   }
 }
 
