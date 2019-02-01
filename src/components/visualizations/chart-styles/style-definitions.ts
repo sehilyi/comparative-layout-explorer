@@ -4,11 +4,11 @@ import {CompSpec, Consistency} from "src/models/comp-spec";
 import {DEFAULT_CHART_STYLE} from ".";
 import {getAggregatedDatas} from "../data-handler";
 import {isUndefined} from "util";
-import {DomainData} from "../data-handler/domain-calculator";
+import {ChartDomainData} from "../data-handler/domain-calculator";
 import {getColor, getConstantColor} from "../design-settings";
 
 // TOOD: any better way to define domains' type?
-export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, d: {A: DomainData, B: DomainData | DomainData[]}) {
+export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, d: {A: ChartDomainData, B: ChartDomainData}) {
   let S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}}
   switch (C.layout) {
     case "juxtaposition":
@@ -26,8 +26,8 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
 
         S.A.color = getColor(d.A.c)
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor((d.B as DomainData).c)
-        S.B.colorKey = (d.B as DomainData).cKey
+        S.B.color = getColor(d.B.c)
+        S.B.colorKey = d.B.cKey
       }
       else if (C.unit === "element") {
         if (C.direction === "vertical") { // stacked bar
@@ -45,7 +45,7 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.A.color = getConstantColor() // getColor(d.A.c)
         S.A.colorKey = d.A.cKey
         S.B.color = getConstantColor(2) // getColor((d.B as DomainData).c)
-        S.B.colorKey = (d.B as DomainData).cKey
+        S.B.colorKey = d.B.cKey
       }
       break
     case "superimposition":
@@ -63,8 +63,8 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
 
         S.A.color = getColor(d.A.c)
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor((d.B as DomainData).c)
-        S.B.colorKey = (d.B as DomainData).cKey
+        S.B.color = getColor(d.B.c)
+        S.B.colorKey = d.B.cKey
       }
       else if (C.unit === "element") {
         // TODO: only consider a.charttype === bar now
@@ -79,8 +79,8 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
 
         S.A.color = getColor(d.A.c)
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor((d.B as DomainData).c)
-        S.B.colorKey = (d.B as DomainData).cKey
+        S.B.color = getColor(d.B.c)
+        S.B.colorKey = d.B.cKey
       }
       break
     default:

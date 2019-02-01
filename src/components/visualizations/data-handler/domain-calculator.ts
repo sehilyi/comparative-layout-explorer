@@ -8,11 +8,14 @@ import {getAggregatedDatas, getAggValues, getFilteredData} from ".";
 
 import {uniqueValues} from "src/useful-factory/utils";
 
-export type DomainData = {
-  x: string[] | number[]
-  y: string[] | number[]
+export type ChartDomainData = {
+  axis: AxisDomainData | AxisDomainData[]
   c: string[] | number[]
   cKey: string
+}
+export type AxisDomainData = {
+  x: string[] | number[]
+  y: string[] | number[]
 }
 
 /**
@@ -24,7 +27,7 @@ export type DomainData = {
 export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
   let ack: string, bck: string
-  let Bs: DomainData | DomainData[]
+  let Bs: ChartDomainData
 
   if (C.layout === "juxtaposition" && C.unit === "element") {
     // consistency.x_axis and y_axis are always true
@@ -41,7 +44,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     else if (isScatterplot(A) && isScatterplot(B)) {
       // TODO:
     }
-    Bs = {x: bx, y: by, c: bc, cKey: bck}
+    Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
   }
   else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart")) {
     if (isBarChart(A) && isBarChart(B)) {
@@ -135,7 +138,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
       }
     }
-    Bs = {x: bx, y: by, c: bc, cKey: bck}
+    Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
   }
   else if ((C.layout === "superimposition" && C.unit === "element")) {
     // nesting
@@ -151,11 +154,13 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       bc = aggD.B.categories  // color by x-axis as a default
       bck = B.encoding.x.field
 
-      Bs = []
+      let axes: AxisDomainData[] = []
+      Bs = {...Bs, c: bc, cKey: bck}
       for (let i = 0; i < aggD.A.categories.length; i++) {
         let by = aggD.AbyB.data[i].values.map((d: object) => d["value"])
-        Bs.push({x: bx, y: by, c: bc, cKey: bck})
+        axes.push({x: bx, y: by})
       }
+      Bs = {...Bs, axis: axes}
     }
     else if (isBarChart(A) && isScatterplot(B)) {
       const aggD = getAggregatedDatas(A, B)
@@ -167,18 +172,20 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
       bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
 
-      Bs = []
+      let axes: AxisDomainData[] = []
+      Bs = {...Bs, c: bc, cKey: bck}
       for (let i = 0; i < aggD.A.categories.length; i++) {
         let filteredData = getFilteredData(B.data.values, A.encoding.x.field, aggD.A.categories[i])
         let bx = filteredData.map(d => d[B.encoding.x.field])
         let by = filteredData.map(d => d[B.encoding.y.field])
-        Bs.push({x: bx, y: by, c: bc, cKey: bck})
+        axes.push({x: bx, y: by})
       }
+      Bs = {...Bs, axis: axes}
     }
     else {
       // TODO:
     }
   }
 
-  return {A: {x: ax, y: ay, c: ac, cKey: ack}, B: Bs}
+  return {A: {axis: {x: ax, y: ay}, c: ac, cKey: ack}, B: Bs}
 }

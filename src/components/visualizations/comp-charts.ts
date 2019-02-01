@@ -57,10 +57,10 @@ function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// A
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, styles.A)
+  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
   /// B
-  if (!Array.isArray(domains.B)) {
-    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, styles.B)
+  if (!Array.isArray(domains.B.axis)) {
+    renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
   }
   else {
     // TODO:
@@ -84,10 +84,10 @@ function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) 
   //
 
   /// A
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, styles.A)
+  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
   /// B
-  if (!Array.isArray(domains.B))
-    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, styles.B)
+  if (!Array.isArray(domains.B.axis))
+    renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
 }
 
 // TODO: this should be combined with renderJuxChart
@@ -102,10 +102,10 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
   /// A
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, styles.A)
+  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
   /// B
-  if (!Array.isArray(domains.B))
-    renderChart(gB, B, {x: domains.B.x, y: domains.B.y}, styles.B)
+  if (!Array.isArray(domains.B.axis))
+    renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
 
   /// TODO: options for this?
   gB.attr(_opacity, 0.3)
@@ -127,7 +127,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
 
   /// A
   // TODO: color should be handled for visual clutter
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, styles.A)
+  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
 
   /// B
   const g = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
@@ -135,11 +135,11 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
   for (let i = 0; i < layouts.subBs.length; i++) {
     const gB = g.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
-    let filteredData = getFilteredData(B.data.values, A.encoding.x.field, domains.A.x[i] as string)
+    let filteredData = getFilteredData(B.data.values, A.encoding.x.field, domains.A.axis.x[i] as string)
     let filteredSpec = {...B, data: {...B.data, values: filteredData}}
 
     // TODO: width and height is not included in styles => any way to make this more clear?
-    if (Array.isArray(domains.B))
+    if (Array.isArray(domains.B.axis))
       renderChart(gB, filteredSpec, {x: domains.B[i].x, y: domains.B[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
   }
 }
