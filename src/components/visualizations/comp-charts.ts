@@ -120,18 +120,21 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
   const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top))
 
   /// A
-  // TODO: this should be changed to general chart renderer
-  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getColor(domains.A.c), cKey: "key"}, styles.A)
+  // TODO: color should be handled for visual clutter
+  renderChart(gA, A, {x: domains.A.x, y: domains.A.y}, {color: getConstantColor(9), cKey: "key"}, styles.A)
 
   /// B
   const g = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top))
 
-  for (let i = 0; i < domains.A.x.length; i++) {
+  for (let i = 0; i < layouts.subBs.length; i++) {
     const gB = g.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
     /// TODO: filter data => make a class
-    let filteredSpec = {...B, data: {...B.data, values: B.data.values.filter(d => d[A.encoding.x.field] == domains.A.x[i])}}
+    // TODO: "null" should be compared with null
+    let filteredSpec = {...B, data: {...B.data, values: B.data.values.filter(d => domains.A.x[i] === "null" ? d[A.encoding.x.field] == null : d[A.encoding.x.field] == domains.A.x[i])}}
     //
+
+    // TODO: width and height is not included in styles => any way to make this more clear?
     renderChart(gB, filteredSpec, {x: domains.Bs[i].x, y: domains.Bs[i].y}, {color: getColor(domains.Bs[i].c), cKey: "key"}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
   }
 }

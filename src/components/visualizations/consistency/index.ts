@@ -33,9 +33,10 @@ export type DomainData = {
 }
 
 /**
- * this function does not returns unique values in domains.
- * do not consider horizontal bar charts.
- * scatterplots and bar charts are handled.
+ * Generate domains of X, Y, and Color
+ * * This does not returns unique values in domains.
+ * * This does not consider horizontal bar charts.
+ * * Only scatterplots and bar charts are handled.
  */
 export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
