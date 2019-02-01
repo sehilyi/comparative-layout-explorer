@@ -15,7 +15,7 @@ import {ScaleBand, ScaleLinear} from "d3";
 import {correctConsistency} from "./consistency";
 import {renderChart, canRenderCompChart} from ".";
 import {DEFAULT_CHART_STYLE} from "./chart-styles";
-import {getAggregatedDatas, getFilteredData} from "./data-handler";
+import {getAggregatedDatas, oneOfFilter} from "./data-handler";
 import {getStyles} from "./chart-styles/style-definitions";
 import {getLayouts} from "./chart-styles/layouts";
 import {getDomains} from "./data-handler/domain-calculator";
@@ -25,6 +25,7 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 
   d3.select(ref).selectAll('*').remove();
 
+  // TODO: all chart renderers will be combined eventually
   switch (C.layout) {
     case "juxtaposition":
       if (C.unit === 'chart') renderJuxPerChart(ref, A, B, C)
@@ -111,7 +112,7 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
   if (styles.A.onTop) gA.raise()
   if (styles.B.onTop) gB.raise()
 
-  svg.selectAll("." + AXIS_ROOT_ID).lower()
+  svg.select("." + AXIS_ROOT_ID).lower()  // TODO: this does not work because gA, gB, and axis are on different level in the hierarchy
 }
 
 export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
@@ -134,11 +135,10 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     for (let i = 0; i < layouts.subBs.length; i++) {
       const gB = g.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
-      let filteredData = getFilteredData(B.data.values, A.encoding.x.field, domains.A.axis.x[i] as string)
+      let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, domains.A.axis.x[i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
 
       // TODO: width and height is not included in styles => any way to make this more clear?
-
       renderChart(gB, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
     }
   }

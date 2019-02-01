@@ -3,29 +3,39 @@ import {Aggregate, Spec} from "src/models/simple-vega-spec";
 import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
 
-export function getAggValues(values: object[], keyField: string, valueField: string, aggregate: Aggregate) {
+export function getAggValues(values: object[], keyField: string, valueField: string[], aggregate: Aggregate) {
   return d3.nest()
     .key(d => d[keyField])
     .rollup(function (d) {
+      let value = {}
       switch (aggregate) {
         case 'sum':
-          return d3.sum(d, _d => _d[valueField]) as undefined; // what's wrong when undefined removed?
+          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.sum(d, _d => _d[valueField[i]])
+          break
         case 'mean':
-          return d3.mean(d, _d => _d[valueField]) as undefined;
+          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.mean(d, _d => _d[valueField[i]])
+          break
         case 'median':
-          return d3.median(d, _d => _d[valueField]) as undefined;
+          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.median(d, _d => _d[valueField[i]])
+          break
         case 'min':
-          return d3.min(d, _d => _d[valueField]) as undefined;
+          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.min(d, _d => _d[valueField[i]])
+          break
         case 'max':
-          return d3.max(d, _d => _d[valueField]) as undefined;
+          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.max(d, _d => _d[valueField[i]])
+          break
         case 'count':
-          return d.length as undefined;
+          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d.length
+          break
         default:
-          return d3.sum(d, _d => _d[valueField]) as undefined;
+          for (let i = 0; i < valueField.length; i++) value[valueField[i]] = d3.sum(d, _d => _d[valueField[i]])
+          break
       }
+      return value as undefined
     })
     .entries(values);
 }
+
 export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyField2: string, valueField: string, aggregate: Aggregate) {
   return d3.nest()
     .key(d => d[keyField1])
@@ -52,9 +62,9 @@ export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyFi
 }
 
 export function getAggregatedData(s: Spec) {
-  const data = getAggValues(s.data.values, s.encoding.x.field, s.encoding.y.field, s.encoding.y.aggregate)
+  const data = getAggValues(s.data.values, s.encoding.x.field, [s.encoding.y.field], s.encoding.y.aggregate)
   const categories = uniqueValues(data, "key")
-  const values = data.map(d => d.value)
+  const values = data.map(d => d.value).map((d: object) => d[s.encoding.y.field])
   return {values, categories, data}
 }
 
@@ -81,6 +91,6 @@ export function getAggregatedDatas(a: Spec, b: Spec) {
   }
 }
 
-export function getFilteredData(d: object[], k: string, v: string | number) {
+export function oneOfFilter(d: object[], k: string, v: string | number) {
   return d.filter(d => v === "null" ? d[k] == null : d[k] == v)
 }

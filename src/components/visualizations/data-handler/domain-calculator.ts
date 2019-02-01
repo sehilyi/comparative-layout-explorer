@@ -4,7 +4,7 @@ import {CompSpec, Consistency} from "src/models/comp-spec";
 
 import {isBarChart, isScatterplot} from "..";
 
-import {getAggregatedDatas, getAggValues, getFilteredData} from ".";
+import {getAggregatedDatas, getAggValues, oneOfFilter} from ".";
 
 import {uniqueValues} from "src/useful-factory/utils";
 
@@ -34,7 +34,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     if (isBarChart(A) && isBarChart(B)) {
       const aggD = getAggregatedDatas(A, B)
       ax = bx = aggD.Union.categories
-      ay = by = C.direction === "horizontal" ? aggD.Union.values : getAggValues(aggD.Union.data, "key", "value", 'sum').map(d => d.value) // stacked bar chart
+      ay = by = C.direction === "horizontal" ? aggD.Union.values : getAggValues(aggD.Union.data, "key", ["value"], 'sum').map(d => d.value) // stacked bar chart
       ac = bc = [""]
       ack = bck = ""
     }
@@ -68,10 +68,10 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         ack = bck = A.encoding.x.field
       }
       else {
-        ac = aggD.A.categories
-        ack = A.encoding.x.field
-        bc = aggD.B.categories
-        bck = B.encoding.x.field
+        ac = typeof A.encoding.color !== "undefined" ? uniqueValues(A.data.values, A.encoding.color.field) : [""]
+        bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
+        ack = typeof A.encoding.color !== "undefined" ? A.encoding.color.field : A.encoding.x.field
+        bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
       }
     }
     else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
@@ -93,7 +93,13 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       else {
         const aggD = getAggregatedDatas(A, B)
         ay = isBarChart(A) ? aggD.A.values : A.data.values.map(d => d[A.encoding.y.field])
-        by = isBarChart(B) ? aggD.B.values : B.data.values.map(d => d[B.encoding.y.field])
+        by = isBarChart(B) ? aggD.B.values :
+          // isUndefined(B.encoding.y.aggregate) ?
+          B.data.values.map(d => d[B.encoding.y.field])
+        // :
+        // // TODO: now, only consider when color is used
+        // console.log(getAggValues(B.data.values, B.encoding.color.field, [B.encoding.y.field], "sum")) //B.encoding.y.aggregate))//.map(d => d.value))
+
       }
       if (consistency.color) {
         // encode color by category used in a bar chart
@@ -175,7 +181,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       let axes: AxisDomainData[] = []
       Bs = {...Bs, c: bc, cKey: bck}
       for (let i = 0; i < aggD.A.categories.length; i++) {
-        let filteredData = getFilteredData(B.data.values, A.encoding.x.field, aggD.A.categories[i])
+        let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, aggD.A.categories[i])
         let bx = filteredData.map(d => d[B.encoding.x.field])
         let by = filteredData.map(d => d[B.encoding.y.field])
         axes.push({x: bx, y: by})

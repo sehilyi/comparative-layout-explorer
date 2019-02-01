@@ -1,12 +1,12 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
-import {CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle, _start, _fill, AXIS_ROOT_ID} from "../design-settings";
+import {CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle, _start, _fill, AXIS_ROOT_ID, _g} from "../design-settings";
 import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isBarChart} from "..";
 import {ChartStyle} from "../chart-styles";
 
 export function renderAxes(
-  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  root: d3.Selection<SVGGElement, {}, null, undefined>,
   xval: string[] | number[],
   yval: string[] | number[],
   spec: Spec,
@@ -52,7 +52,7 @@ export function renderAxes(
     d3.axisLeft(nY).ticks(Math.ceil(stl.height / 40)).tickFormat(null).tickSize(-stl.width)
 
   if (!stl.noAxes) {
-    g.classed('g', true).classed(AXIS_ROOT_ID, true);
+    let g = root.append(_g).classed('g', true).classed(AXIS_ROOT_ID, true)
 
     if (!isBarChart(spec) && !stl.noGrid) {
       g.append('g')

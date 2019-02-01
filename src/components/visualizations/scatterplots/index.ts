@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {translate, ifUndefinedGetDefault, uniqueValues} from 'src/useful-factory/utils';
+import {translate, uniqueValues} from 'src/useful-factory/utils';
 import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getColor, getConstantColor, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle} from '../design-settings';
 import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_OPACITY} from './default-design';
@@ -9,6 +9,7 @@ import {renderLegend} from '../legends';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {ScatterplotStyle} from './styles';
 import {DEFAULT_CHART_STYLE} from '../chart-styles';
+import {getAggValuesByTwoKeys} from '../data-handler';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
   const {values} = spec.data;
@@ -38,13 +39,16 @@ export function renderScatterplot(
   domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
   styles: ScatterplotStyle) {
 
-  const legend = ifUndefinedGetDefault(styles["legend"], false) as boolean
   const {values} = spec.data;
+  const {aggregate: yAggregate} = spec.encoding.y//, {aggregate: yAggregate} = spec.encoding.y // TODO: do not consider now for the simplicity
+  const aggValues = typeof yAggregate != "undefined" && false ? getAggValuesByTwoKeys(values, spec.encoding.x.field, spec.encoding.color.field, spec.encoding.y.field, yAggregate) : values
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
+  const aggXField = typeof yAggregate != "undefined" && false ? "key" : xField
+  const aggYField = typeof yAggregate != "undefined" && false ? "value" : yField
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
 
-  renderPoints(g, values, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, styles)
-  if (legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
+  renderPoints(g, aggValues, aggXField, aggYField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, styles)
+  if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
 }
 
 export function renderPoints(

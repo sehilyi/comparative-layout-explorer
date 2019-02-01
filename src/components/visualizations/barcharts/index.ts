@@ -16,7 +16,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
   const {field: xField} = spec.encoding.x, {field: yField, aggregate} = spec.encoding.y;
 
-  const aggValsByKey = getAggValues(values, xField, yField, aggregate);
+  const aggValsByKey = getAggValues(values, xField, [yField], aggregate);
 
   d3.select(ref).selectAll('*').remove();
 
@@ -32,7 +32,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
     .domain(aggValsByKey.map(d => d.key))
     .range(getBarColor(isUndefined(color) ? 1 : aggValsByKey.map(d => d.key).length));
 
-  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value)}, {...DEFAULT_CHART_STYLE, color: c, colorKey: "key", legend: !isUndefined(color)})
+  renderBarChart(g, spec, {x: aggValsByKey.map(d => d.key), y: aggValsByKey.map(d => d.value).map((d: object) => d[yField])}, {...DEFAULT_CHART_STYLE, color: c, colorKey: "key", legend: !isUndefined(color)})
 }
 
 // TODO: only vertical bar charts are handled
@@ -44,9 +44,9 @@ export function renderBarChart(
 
   const {values} = spec.data;
   const {aggregate} = spec.encoding.y;
-  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, spec.encoding.x.field, spec.encoding.y.field, aggregate));
+  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, spec.encoding.x.field, [spec.encoding.y.field], aggregate));
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
-  const {...designs} = renderBars(g, aggValues, "value", "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles, colorKey: "key"})
+  const {...designs} = renderBars(g, aggValues, spec.encoding.y.field/*"value"*/, "key", uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles, colorKey: "key"})
   if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
   return {designs}
 }
@@ -69,12 +69,12 @@ export function renderBars(
     .data(data)
     .enter().append(_rect)
     .classed('bar', true)
-    .attr(_y, d => styles.revY ? 0 : y(d[vKey]) + // TOOD: clean up more?
+    .attr(_y, d => styles.revY ? 0 : y(d["value"][vKey]) + // TOOD: clean up more?
       (!isUndefined(yOffsetData) && !isUndefined(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0]) ?
-        (- height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0][vKey])) : 0))
+        (- height + y(yOffsetData.filter(_d => _d[gKey] === d[gKey])[0]["value"][vKey])) : 0))
     .attr(_x, d => x(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
     .attr(_width, barWidth)
-    .attr(_height, d => (styles.revY ? y(d[vKey]) : height - y(d[vKey])))
+    .attr(_height, d => (styles.revY ? y(d["value"][vKey]) : height - y(d["value"][vKey])))
     .attr(_fill, d => styles.color(d[styles.colorKey === "" ? vKey : styles.colorKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
