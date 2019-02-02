@@ -190,7 +190,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
 }
 
 /**
- * Get x,y,c domains without considering consistency
+ * Get single or union domains for x, y, and color
  */
 export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain} {
   let xDomain: Domain, yDomain: Domain
