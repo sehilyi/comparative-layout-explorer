@@ -13,7 +13,7 @@ import {renderAxes} from "./axes";
 import {LEGEND_PADDING, LEGEND_WIDTH} from "./legends/default-design";
 import {ScaleBand, ScaleLinear} from "d3";
 import {correctConsistency} from "./consistency";
-import {renderChart, canRenderCompChart} from ".";
+import {renderChart, canRenderCompChart, canRenderChart} from ".";
 import {DEFAULT_CHART_STYLE} from "./chart-styles";
 import {getAggregatedDatas, oneOfFilter} from "./data-handler";
 import {getStyles} from "./chart-styles/style-definitions";
@@ -21,7 +21,7 @@ import {getLayouts} from "./chart-styles/layouts";
 import {getDomains} from "./data-handler/domain-calculator";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  if (!canRenderCompChart(A, B, C)) return;
+  if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, C)) return;
 
   d3.select(ref).selectAll('*').remove();
 

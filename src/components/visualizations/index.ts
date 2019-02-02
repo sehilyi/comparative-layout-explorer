@@ -6,33 +6,12 @@ import {ChartStyle} from "./chart-styles";
 import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import {_opacity} from "./design-settings";
+import {isUndefined} from "util";
 
 // test
 export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
     // https://vega.github.io/vega-lite/examples/
-    B: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "bar",
-      encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
-        color: {field: "MPAA_Rating", type: "nominal"}
-      }
-    },
-    // B: {
-    //   data: {
-    //     values: DATASET_MOVIES.rawData
-    //   },
-    //   mark: "bar",
-    //   encoding: {
-    //     x: {field: "Source", type: "nominal"},
-    //     y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
-    //     // color: {field: "MPAA_Rating", type: "nominal"}
-    //   }
-    // },
     A: {
       data: {
         values: DATASET_MOVIES.rawData
@@ -40,6 +19,17 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       mark: "point",
       encoding: {
         x: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+        color: {field: "MPAA_Rating", type: "nominal"}
+      }
+    },
+    B: {
+      data: {
+        values: DATASET_MOVIES.rawData
+      },
+      mark: "bar",
+      encoding: {
+        x: {field: "MPAA_Rating", type: "nominal"},
         y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
@@ -79,7 +69,6 @@ export function renderChart(
   spec: Spec, // contains actual values to draw bar chart
   domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
   s: ChartStyle) {
-
   switch (getChartType(spec)) {
     case "scatterplot":
       renderScatterplot(g, spec, domain, s)
@@ -93,6 +82,21 @@ export function renderChart(
     default:
       break;
   }
+}
+
+export function canRenderChart(spec: Spec) {
+  let can = true;
+
+  // exceptions
+  if (isScatterplot(spec) &&
+    (isUndefined(spec.encoding.x.aggregate) && !isUndefined(spec.encoding.y.aggregate) ||
+      !isUndefined(spec.encoding.x.aggregate) && isUndefined(spec.encoding.y.aggregate) ||
+      (!isUndefined(spec.encoding.x.aggregate) && !isUndefined(spec.encoding.y.aggregate) && isUndefined(spec.encoding.color)))) {
+    // in scatterplot, x- and y-aggregation functions should be always used together, and when both of them are used, color should be used
+    can = false
+  }
+
+  return can
 }
 
 export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
