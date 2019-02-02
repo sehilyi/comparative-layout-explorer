@@ -5,6 +5,8 @@ import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful
 import {isBarChart} from "..";
 import {ChartStyle} from "../chart-styles";
 
+export type Domain = string[] | number[]
+
 export function renderAxes(
   root: d3.Selection<SVGGElement, {}, null, undefined>,
   xval: string[] | number[],

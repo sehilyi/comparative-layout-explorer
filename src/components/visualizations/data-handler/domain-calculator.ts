@@ -7,15 +7,16 @@ import {isBarChart, isScatterplot} from "..";
 import {getAggregatedDatas, getAggValues, oneOfFilter} from ".";
 
 import {uniqueValues} from "src/useful-factory/utils";
+import {Domain} from "../axes";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[]
-  c: string[] | number[]
-  cKey: string
+  c: Domain
+  cKey: string  // TODO: this should be removed eventually!
 }
 export type AxisDomainData = {
-  x: string[] | number[]
-  y: string[] | number[]
+  x: Domain
+  y: Domain
 }
 
 // TODO: this function should be much more efficiently implemented!!!
@@ -40,10 +41,10 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       ack = bck = ""
     }
     else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
-      // TODO:
+      // this should not be reachable by canRenderCompChart
     }
     else if (isScatterplot(A) && isScatterplot(B)) {
-      // TODO:
+      // this should not be reachable by canRenderCompChart
     }
     Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
   }
@@ -51,18 +52,18 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     if (isBarChart(A) && isBarChart(B)) {
       const aggD = getAggregatedDatas(A, B)
       if (consistency.x_axis) {
-        ax = bx = aggD.Union.categories
+        ax = bx = getDomain(A, B).x
       }
       else {
-        ax = aggD.A.categories
-        bx = aggD.B.categories
+        ax = getDomain(A).x
+        bx = getDomain(B).x
       }
       if (consistency.y_axis) {
-        ay = by = aggD.Union.values
+        ay = by = getDomain(A, B).y
       }
       else {
-        ay = aggD.A.values
-        by = aggD.B.values
+        ay = getDomain(A).y
+        by = getDomain(B).y
       }
       if (consistency.color) {
         ac = bc = aggD.Union.categories
@@ -79,27 +80,19 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       if (consistency.x_axis) {
         // TODO: do not consider this for now
         // TODO: spec.data.values and aggregated.values are misleading!!
-        ax = A.data.values.map(d => d[A.encoding.x.field])
-        bx = B.data.values.map(d => d[B.encoding.x.field])
+        ax = getDomain(A).x
+        bx = getDomain(B).x
       }
       else {
-        ax = A.data.values.map(d => d[A.encoding.x.field])
-        bx = B.data.values.map(d => d[B.encoding.x.field])
+        ax = getDomain(A).x
+        bx = getDomain(B).x
       }
       if (consistency.y_axis) {
-        const aggD = getAggregatedDatas(A, B)
-        ay = by = isBarChart(A) ? aggD.A.values.concat(B.data.values.map(d => d[B.encoding.y.field])) :
-          aggD.B.values.concat(A.data.values.map(d => d[A.encoding.y.field]))
+        ay = by = getDomain(A, B).y
       }
       else {
-        const aggD = getAggregatedDatas(A, B)
-        ay = isBarChart(A) ? aggD.A.values : A.data.values.map(d => d[A.encoding.y.field])
-        by = isBarChart(B) ? aggD.B.values :
-          typeof B.encoding.y.aggregate === "undefined" ?
-            B.data.values.map(d => d[B.encoding.y.field]) :
-            // TODO: now, only consider when color is used
-            getAggValues(B.data.values, B.encoding.color.field, [B.encoding.y.field], B.encoding.y.aggregate).map(d => d.value)
-
+        ay = getDomain(A).y
+        by = getDomain(B).y
       }
       if (consistency.color) {
         // encode color by category used in a bar chart
@@ -116,18 +109,18 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     }
     else if (isScatterplot(A) && isScatterplot(B)) {
       if (consistency.x_axis) {
-        ax = bx = A.data.values.map(d => d[A.encoding.x.field]).concat(B.data.values.map(d => d[B.encoding.x.field]))
+        ax = bx = getDomain(A, B).x
       }
       else {
-        ax = A.data.values.map(d => d[A.encoding.x.field])
-        bx = B.data.values.map(d => d[B.encoding.x.field])
+        ax = getDomain(A).x
+        bx = getDomain(B).x
       }
       if (consistency.y_axis) {
-        ay = by = A.data.values.map(d => d[A.encoding.y.field]).concat(B.data.values.map(d => d[B.encoding.y.field]))
+        ay = by = getDomain(A, B).y
       }
       else {
-        ay = A.data.values.map(d => d[A.encoding.y.field])
-        by = B.data.values.map(d => d[B.encoding.y.field])
+        ay = getDomain(A).y
+        by = getDomain(B).y
       }
       if (consistency.color) {
         // use A color if two of them use it
@@ -194,4 +187,82 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
   }
 
   return {A: {axis: {x: ax, y: ay}, c: ac, cKey: ack}, B: Bs}
+}
+
+/**
+ * Get x,y,c domains without considering consistency
+ */
+export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain} {
+  let xDomain: Domain, yDomain: Domain
+  const {values} = spec.data
+  const {x, y, color} = spec.encoding
+
+  const union = typeof sForUnion !== "undefined"
+
+  { // x domain
+    if (x.type === "nominal") {
+      xDomain = uniqueValues(values, x.field)
+    }
+    else if (x.type === "quantitative" && typeof x.aggregate === "undefined") {
+      if (y.type === "quantitative") {
+        xDomain = values.map(d => d[x.field]) as number[]
+      }
+      else {
+        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
+        console.log(spec)
+      }
+    }
+    else if (x.type === "quantitative" && typeof x.aggregate !== "undefined") {
+      if (y.type === "quantitative") {
+        // aggregated scatterplot
+        xDomain = getAggValues(values, color.field, [x.field], x.aggregate).map(d => d.value).map((d: object) => d[x.field])
+      }
+      else if (y.type === "nominal") {
+        // bar chart
+        xDomain = getAggValues(values, y.field, [x.field], x.aggregate).map(d => d.value).map((d: object) => d[x.field])
+      }
+      else {
+        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
+        console.log(spec)
+      }
+    }
+  }
+  // TODO: all same except x => y
+  { // y domain
+    if (y.type === "nominal") {
+      yDomain = uniqueValues(values, y.field)
+    }
+    else if (y.type === "quantitative" && typeof y.aggregate === "undefined") {
+      if (x.type === "quantitative") {
+        yDomain = values.map(d => d[y.field])
+      }
+      else {
+        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
+        console.log(spec)
+      }
+    }
+    else if (y.type === "quantitative" && typeof y.aggregate !== "undefined") {
+      if (x.type === "quantitative") {
+        // aggregated scatterplot
+        yDomain = getAggValues(values, color.field, [y.field], y.aggregate).map(d => d.value).map((d: object) => d[y.field])
+      }
+      else if (x.type === "nominal") {
+        // bar chart
+        yDomain = getAggValues(values, x.field, [y.field], y.aggregate).map(d => d.value).map((d: object) => d[y.field])
+      }
+      else {
+        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
+        console.log(spec)
+      }
+    }
+  }
+
+  if (union) {
+    let {...uDomain} = getDomain(sForUnion)
+    xDomain = x.type === "nominal" ? (xDomain as string[]).concat(uDomain.x as string[]) :
+      (xDomain as number[]).concat(uDomain.x as number[])
+    yDomain = y.type === "nominal" ? (yDomain as string[]).concat(uDomain.y as string[]) :
+      (yDomain as number[]).concat(uDomain.y as number[])
+  }
+  return {x: xDomain, y: yDomain}
 }
