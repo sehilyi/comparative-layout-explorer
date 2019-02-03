@@ -7,7 +7,7 @@ import {uniqueValues} from "src/useful-factory/utils";
  * return type: { key: [...categories by keyField], value: {valueFields[0]: aggregated value, valueFields[1]: aggregated value, ..., valueField[valueFields.length - 1]: aggregated value} }
  */
 export function getAggValues(values: object[], keyField: string, valueFields: string[], aggregate: Aggregate) {
-  return d3.nest()
+  return changeKeys(d3.nest()
     .key(d => d[keyField])
     .rollup(function (d) {
       let value = {}
@@ -36,7 +36,29 @@ export function getAggValues(values: object[], keyField: string, valueFields: st
       }
       return value as undefined
     })
-    .entries(values);
+    .entries(values), keyField, valueFields)
+}
+// TODO: more efficient way for this???
+/**
+ * This is a very naive function to rename keys reflecting field names and reduce object level by removing "value" object produced by d3.nest()
+ * @param aggValues
+ * @param keyField
+ * @param valueFields
+ */
+export function changeKeys(aggValues: object[], keyField: string, valueFields: string[]) {
+  let newVal: object[] = new Array(aggValues.length)
+
+  for (let i = 0; i < aggValues.length; i++) {
+    newVal[i] = {}
+    newVal[i][keyField] = aggValues[i]["key"]
+
+    for (let j = 0; j < valueFields.length; j++) {
+      newVal[i][valueFields[j]] = aggValues[i]["value"][valueFields[j]]
+    }
+  }
+  // console.log(aggValues)
+  // console.log(newVal)
+  return newVal
 }
 
 export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyField2: string, valueField: string, aggregate: Aggregate) {
@@ -66,8 +88,8 @@ export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyFi
 
 export function getAggregatedData(s: Spec) {
   const data = getAggValues(s.data.values, s.encoding.x.field, [s.encoding.y.field], s.encoding.y.aggregate)
-  const categories = uniqueValues(data, "key")
-  const values = data.map(d => d.value).map((d: object) => d[s.encoding.y.field])
+  const categories = uniqueValues(data, s.encoding.x.field)
+  const values = data.map((d: object) => d[s.encoding.y.field])
   return {values, categories, data}
 }
 
@@ -77,11 +99,11 @@ export function getAggregatedDatas(a: Spec, b: Spec) {
   const bbyaval = getAggValuesByTwoKeys(a.data.values, b.encoding.x.field, a.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)
   const unionval = dataA.data.concat(dataB.data)
 
-  const unioncat = uniqueValues(dataA.data.concat(dataB.data), "key")
+  const unioncat = uniqueValues(dataA.data.concat(dataB.data), "key") // TODO: should use consistent key for union!
   return {
     A: {values: dataA.values, categories: dataA.categories, data: dataA.data},
     B: {values: dataB.values, categories: dataB.categories, data: dataB.data},
-    Union: {values: unionval.map(d => d.value), categories: unioncat, data: unionval},
+    Union: {values: unionval.map(d => d["value"]), categories: unioncat, data: unionval},
     AbyB: {
       values: [].concat(...abybval.map(d => d.values.map((_d: object) => _d["value"]))),
       data: abybval,

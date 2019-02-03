@@ -38,7 +38,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       ax = bx = getDomain(A, B).x
       // TODO: how to make the result of nest() to use field names for their key?
       // console.log(aggD.Union.data)
-      ay = by = C.direction === "horizontal" ? getDomain(A, B).y : getAggValues(aggD.Union.data, "key", ["value"], 'sum').map(d => d.value) // stacked bar chart
+      ay = by = C.direction === "horizontal" ? getDomain(A, B).y : getAggValues(aggD.Union.data, "key", ["value"], 'sum').map(d => d["value"]) // stacked bar chart
       ac = bc = [""]
       ack = bck = ""
     }
@@ -215,11 +215,11 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     else if (x.type === "quantitative" && typeof x.aggregate !== "undefined") {
       if (y.type === "quantitative") {
         // aggregated scatterplot
-        xDomain = getAggValues(values, color.field, [x.field], x.aggregate).map(d => d.value).map((d: object) => d[x.field])
+        xDomain = getAggValues(values, color.field, [x.field], x.aggregate).map((d: object) => d[x.field])
       }
       else if (y.type === "nominal") {
         // bar chart
-        xDomain = getAggValues(values, y.field, [x.field], x.aggregate).map(d => d.value).map((d: object) => d[x.field])
+        xDomain = getAggValues(values, y.field, [x.field], x.aggregate).map((d: object) => d[x.field])
       }
       else {
         console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
@@ -244,11 +244,11 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     else if (y.type === "quantitative" && typeof y.aggregate !== "undefined") {
       if (x.type === "quantitative") {
         // aggregated scatterplot
-        yDomain = getAggValues(values, color.field, [y.field], y.aggregate).map(d => d.value).map((d: object) => d[y.field])
+        yDomain = getAggValues(values, color.field, [y.field], y.aggregate).map((d: object) => d[y.field])
       }
       else if (x.type === "nominal") {
         // bar chart
-        yDomain = getAggValues(values, x.field, [y.field], y.aggregate).map(d => d.value).map((d: object) => d[y.field])
+        yDomain = getAggValues(values, x.field, [y.field], y.aggregate).map((d: object) => d[y.field])
       }
       else {
         console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
