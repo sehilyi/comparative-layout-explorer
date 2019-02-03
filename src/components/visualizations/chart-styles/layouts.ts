@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 
 import {CompSpec, Consistency} from "src/models/comp-spec";
-import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getBarWidth, NESTING_PADDING} from "../design-settings";
+import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getBarSize, NESTING_PADDING} from "../design-settings";
 import {ChartStyle} from ".";
 import {getAggregatedDatas} from "../data-handler";
 import d3 = require("d3");
@@ -37,7 +37,7 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         const numOfX = aggD.A.categories.length
         /// TODO: should be consistent with that of /barcharts/index.ts
         const bandUnitSize = S.A.width / numOfX
-        const barWidth = getBarWidth(S.A.width, numOfX, S.A.barGap) * S.A.mulSize
+        const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.mulSize
         /// TODO: should be consistent with that of /axes/index.ts
         const nY = d3.scaleLinear()
           .domain([d3.min([d3.min(aggD.A.values as number[]), 0]), d3.max(aggD.A.values as number[])]).nice()
@@ -55,7 +55,6 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     default:
       break;
   }
-
   return {
     width: chartsp.size.width,
     height: chartsp.size.height,

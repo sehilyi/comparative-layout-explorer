@@ -56,19 +56,15 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
     ack = DomainA.cKey
     bck = DomainB.cKey
   }
+  Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
 
   // exceptions
-  if (C.layout === "juxtaposition" && C.unit === "element" && isBarChart(A) && isBarChart(B)) {
+  if (C.layout === "juxtaposition" && C.unit === "element" && C.direction === "vertical" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
-    ax = bx = DomainAB.x
-    ay = by = C.direction === "horizontal" ? DomainAB.y : getDomainSumByKeys(  // stacked bar chart
+    ay = by = getDomainSumByKeys(  // stacked bar chart
       getAggValues(A.data.values, A.encoding.x.field, [A.encoding.y.field], A.encoding.y.aggregate).concat(
         getAggValues(B.data.values, B.encoding.x.field, [B.encoding.y.field], B.encoding.y.aggregate)),
-      A.encoding.x.field, B.encoding.x.field,
-      A.encoding.y.field, B.encoding.y.field)
-    ac = bc = [""]
-    ack = bck = ""
-    Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
+      A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, B.encoding.y.field)
   }
   else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart") &&
     isScatterplot(A) && isScatterplot(B) && consistency.color) {
@@ -78,23 +74,12 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       typeof B.encoding.color !== "undefined" ? DomainB.color : [""]
     ack = bck = typeof A.encoding.color !== "undefined" ? DomainA.cKey :
       typeof B.encoding.color !== "undefined" ? DomainB.cKey : A.encoding.x.field
-    Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
   }
   else if ((C.layout === "superimposition" && C.unit === "element")) {
     // nesting
     if (isBarChart(A) && isBarChart(B)) {
-      ax = DomainA.x
-      ay = DomainA.y
-
-      ac = [""]
-      ack = A.encoding.x.field  // default, not meaningful
-
-      bx = bc = DomainB.x  // color by x-axis as a default
-      bck = B.encoding.x.field
-
       let axes: AxisDomainData[] = []
       let nested = getAggValuesByTwoKeys(A.data.values, A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, A.encoding.y.aggregate)
-      Bs = {...Bs, c: bc, cKey: bck}
       for (let i = 0; i < ax.length; i++) {
         let by = nested[i].values.map((d: object) => d["value"])
         axes.push({x: bx, y: by})
@@ -102,16 +87,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       Bs = {...Bs, axis: axes}
     }
     else if (isBarChart(A) && isScatterplot(B)) {
-      ax = DomainA.x
-      ay = DomainA.y
-
-      ac = DomainA.color
-      bc = DomainB.color
-      ack = DomainA.cKey
-      bck = DomainB.cKey
-
       let axes: AxisDomainData[] = []
-      Bs = {...Bs, c: bc, cKey: bck}
       for (let i = 0; i < ax.length; i++) {
         let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, ax[i])
         let bx = filteredData.map(d => d[B.encoding.x.field])

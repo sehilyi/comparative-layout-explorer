@@ -29,16 +29,16 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+        x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+        y: {field: "MPAA_Rating", type: "nominal"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
       ...DEFAULT_COMP_SPEC,
-      layout: "superimposition",
+      layout: "juxtaposition",
       // direction: "vertical",
-      unit: "element",
+      unit: "chart",
       // mirrored: false,
       consistency: {
         x_axis: true, y_axis: false, color: false
@@ -105,6 +105,8 @@ export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
   // exceptions
   if ((isScatterplot(A) || isScatterplot(B)) && C.layout === "juxtaposition" && C.unit === "element") can = false
   if (isScatterplot(A) && C.layout === "superimposition" && C.unit === "element") can = false
+  if (C.layout === "juxtaposition" && C.unit === "element" &&
+    (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
 
   if (!can) console.log("error: such comparison is not supported.")
   return can
@@ -117,14 +119,15 @@ export function getChartType(spec: Spec): ChartTypes {
   else return "scatterplot"
 }
 export function isBarChart(spec: Spec) {
-  return spec.mark === "bar" &&
-    spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative';
+  return spec.mark === "bar" && (
+    (spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative') ||
+    (spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'nominal'))
 }
 export function isScatterplot(spec: Spec) {
   return spec.mark === "point" &&
-    spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'quantitative';
+    spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'quantitative'
 }
 export function isLineChart(spec: Spec) {
   return spec.mark === "line" &&
-    spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative';  // TODO: should add ordinal?
+    spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative'  // TODO: should add ordinal?
 }

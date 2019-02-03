@@ -215,7 +215,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
         aggD.A.categories.length,
         x as ScaleBand<string>, y as ScaleLinear<number, number>,
         // {color: getConstantColor(i + 1), cKey: "key"},
-        {...DEFAULT_CHART_STYLE, yOffsetData})
+        {...DEFAULT_CHART_STYLE, barOffsetData: yOffsetData})
     }
     renderLegend(
       g.append(_g).attr(_transform, translate(CHART_SIZE.width + LEGEND_PADDING, 0)),

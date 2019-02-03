@@ -35,13 +35,14 @@ export interface CommonChartStyle {
   stroke: string
   stroke_width: number
   legend: boolean
-  yOffsetData: object[]
+  barOffsetData: object[]
   xPreStr: string
   // bar chart
   barGap: number
-  barWidth: string
+  barSize: string
   mulSize: number
   shiftBy: number
+  verticalBar: boolean
   // scatterplot
   pointSize: number
 }
@@ -78,9 +79,11 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   // mulSize is applied first, and then shift bars
   mulSize: 1,
   shiftBy: 0,
-  yOffsetData: undefined,
+  barOffsetData: undefined,
   xPreStr: "",
-  barWidth: undefined,
-
+  barSize: undefined,
+  // bar
+  verticalBar: true,
+  // scatterplot
   pointSize: SCATTER_POINT_SIZE
 }

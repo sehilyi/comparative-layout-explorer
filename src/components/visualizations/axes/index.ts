@@ -2,7 +2,6 @@ import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle, _start, _fill, AXIS_ROOT_ID, _g} from "../design-settings";
 import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
-import {isBarChart} from "..";
 import {ChartStyle} from "../chart-styles";
 
 export type Domain = string[] | number[]
@@ -19,51 +18,57 @@ export function renderAxes(
   const xFunc = ifUndefinedGetDefault(spec.encoding.x.aggregate, "") as string
   const yFunc = ifUndefinedGetDefault(spec.encoding.y.aggregate, "") as string
 
-  const cX = d3.scaleBand()
+  const nX = d3.scaleBand()
     .domain(uniqueValues(xval, "") as string[])
     .range(stl.revX ? [stl.width, 0] : [0, stl.width]);
-  const nX = d3.scaleLinear()
+  const qX = d3.scaleLinear()
     .domain([d3.min([d3.min(xval as number[]), 0]), d3.max(xval as number[])]).nice()
     .rangeRound(stl.revX ? [stl.width, 0] : [0, stl.width]);
-  const cY = d3.scaleBand()
+  const nY = d3.scaleBand()
     .domain(uniqueValues(yval, "") as string[])
-    .range(stl.revY ? [0, stl.height] : [stl.height, 0]);
-  const nY = d3.scaleLinear()
+  // when Y is nominal, first thing should be appear on top rather on the bottom
+  if (!isYCategorical) {
+    nY.range(stl.revY ? [0, stl.height] : [stl.height, 0]);
+  }
+  else {
+    nY.range(stl.revY ? [stl.height, 0] : [0, stl.height]);
+  }
+  const qY = d3.scaleLinear()
     .domain([d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]).nice()
     .rangeRound(stl.revY ? [0, stl.height] : [stl.height, 0]);
 
   let xAxis = stl.topX ? // TODO: any clearer way??
     isXCategorical ?
-      d3.axisTop(cX).ticks(Math.ceil(stl.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
-      d3.axisTop(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+      d3.axisTop(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisTop(qX).ticks(Math.ceil(stl.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
     : isXCategorical ?
-      d3.axisBottom(cX).ticks(Math.ceil(stl.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
-      d3.axisBottom(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+      d3.axisBottom(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisBottom(qX).ticks(Math.ceil(stl.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   let yAxis = stl.rightY ?
     isYCategorical ?
-      d3.axisRight(cY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
-      d3.axisRight(nY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
+      d3.axisRight(nY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisRight(qY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
     isYCategorical ?
-      d3.axisLeft(cY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
-      d3.axisLeft(nY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+      d3.axisLeft(nY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisLeft(qY).ticks(stl.simpleY ? 1 : Math.ceil(stl.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   let xGrid = isXCategorical ?
-    d3.axisBottom(cX).ticks(Math.ceil(stl.width / 40)).tickFormat(null).tickSize(-stl.height) :
-    d3.axisBottom(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(null).tickSize(-stl.height)
+    d3.axisBottom(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(null).tickSize(-stl.height) :
+    d3.axisBottom(qX).ticks(Math.ceil(stl.width / 40)).tickFormat(null).tickSize(-stl.height)
   let yGrid = isYCategorical ?
-    d3.axisLeft(cY).ticks(Math.ceil(stl.height / 40)).tickFormat(null).tickSize(-stl.width) :
-    d3.axisLeft(nY).ticks(Math.ceil(stl.height / 40)).tickFormat(null).tickSize(-stl.width)
+    d3.axisLeft(nY).ticks(Math.ceil(stl.height / 40)).tickFormat(null).tickSize(-stl.width) :
+    d3.axisLeft(qY).ticks(Math.ceil(stl.height / 40)).tickFormat(null).tickSize(-stl.width)
 
   if (!stl.noAxes) {
     let g = root.append(_g).classed('g', true).classed(AXIS_ROOT_ID, true)
 
-    if (!isBarChart(spec) && !stl.noGrid) {
+    if (!isXCategorical && !stl.noGrid) {
       g.append('g')
         .classed('grid', true)
         .attr('transform', translate(0, stl.height))
         .call(xGrid)
     }
 
-    if (!stl.noGrid) {
+    if (!isYCategorical && !stl.noGrid) {
       g.append('g')
         .classed('grid', true)
         .call(yGrid)
@@ -132,15 +137,11 @@ export function renderAxes(
       .attr('stroke', 'black')
 
     if (isYCategorical) {
-      g.selectAll('.x-axis path')
-        .attr('stroke-width', '0px')
-        .attr('stroke', 'black')
+      g.selectAll('.x-axis path').attr('stroke-width', '0px')
     }
 
     if (isXCategorical) {
-      g.selectAll('.y-axis path')
-        .attr('stroke-width', '0px')
-        .attr('stroke', 'black')
+      g.selectAll('.y-axis path').attr('stroke-width', '0px')
     }
 
     if (stl.simpleY) {
@@ -179,5 +180,5 @@ export function renderAxes(
       .attr('stroke', 'rgb(221, 221, 221)')
       .attr('stroke-width', '0px')
   }
-  return {x: isXCategorical ? cX : nX, y: isYCategorical ? cY : nY};
+  return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY};
 }

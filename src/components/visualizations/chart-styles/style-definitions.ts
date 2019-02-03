@@ -6,10 +6,17 @@ import {getAggregatedDatas} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-calculator";
 import {getColor, getConstantColor} from "../design-settings";
+import {isBarChart} from "..";
 
 // TOOD: any better way to define domains' type?
 export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, d: {A: ChartDomainData, B: ChartDomainData}) {
   let S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}}
+
+  // common
+  S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal")
+  S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal")
+
+  // by layout
   switch (C.layout) {
     case "juxtaposition":
       if (C.unit === "chart") {
@@ -32,7 +39,7 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
       else if (C.unit === "element") {
         if (C.direction === "vertical") { // stacked bar
           S.B.noAxes = true
-          S.B.yOffsetData = getAggregatedDatas(A, B).A.data
+          S.B.barOffsetData = getAggregatedDatas(A, B).A.data
         }
         else if (C.direction === "horizontal") { // grouped bar
           S.A.shiftBy = -0.5

@@ -48,13 +48,13 @@ export const DEFAULT_FONT = "Roboto Condensed"
 // bar
 export const BAR_GAP = 10
 export const GAP_BETWEEN_CHARTS = 20
-export const MAX_BAR_WIDTH = 100
+export const MAX_BAR_SIZE = 100
 
 export const BAR_COLOR = '#4E79A7'
 export const BAR_COLOR2 = '#F28E2B'
 
-export function getBarWidth(cw: number, n: number, g: number) {
-  return d3.min([cw / n - g as number, MAX_BAR_WIDTH])
+export function getBarSize(cw: number, n: number, g: number) {
+  return d3.min([cw / n - g as number, MAX_BAR_SIZE])
 }
 export function getBarColor(n: number) {
   const pallete = CATEGORICAL_COLORS.concat(CATEGORICAL_COLORS_DARKER)
