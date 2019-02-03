@@ -18,7 +18,7 @@ import {DEFAULT_CHART_STYLE} from "./chart-styles";
 import {getAggregatedDatas, oneOfFilter} from "./data-handler";
 import {getStyles} from "./chart-styles/style-definitions";
 import {getLayouts} from "./chart-styles/layouts";
-import {getDomains} from "./data-handler/domain-calculator";
+import {getDomainByLayout} from "./data-handler/domain-calculator";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, C)) return;
@@ -52,7 +52,7 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
-  const {...domains} = getDomains(A, B, C, consistency)
+  const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, {...styles})
 
@@ -92,7 +92,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
 // deprecated
 export function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
-  const {...domains} = getDomains(A, B, C, consistency)
+  const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, {...styles})
 
@@ -110,7 +110,7 @@ export function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompS
 // deprecated
 export function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
-  const {...domains} = getDomains(A, B, C, consistency)
+  const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
@@ -134,7 +134,7 @@ export function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: Com
 // deprecated
 export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
-  const {...domains} = getDomains(A, B, C, consistency)
+  const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles)
 
@@ -157,7 +157,7 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
 // deprecated
 export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
-  const {...domains} = getDomains(A, B, C, consistency)
+  const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles)
 

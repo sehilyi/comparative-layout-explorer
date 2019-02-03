@@ -26,130 +26,70 @@ export type AxisDomainData = {
  * * This does not consider horizontal bar charts.
  * * Only scatterplots and bar charts are handled.
  */
-export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
+export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
   let ack: string, bck: string
   let Bs: ChartDomainData
+  const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainAB} = getDomain(A, B)
 
-  if (C.layout === "juxtaposition" && C.unit === "element") {
+  if (consistency.x_axis) {
+    ax = bx = DomainA.x
+  }
+  else {
+    ax = DomainA.x
+    bx = DomainB.x
+  }
+  if (consistency.y_axis) {
+    ay = by = DomainAB.y
+  }
+  else {
+    ay = DomainA.y
+    by = DomainB.y
+  }
+  if (consistency.color) {
+    ac = bc = DomainAB.color
+    ack = bck = DomainAB.cKey
+  }
+  else {
+    ac = DomainA.color
+    bc = DomainB.color
+    ack = DomainA.cKey
+    bck = DomainB.cKey
+  }
+
+  // exceptions
+  if (C.layout === "juxtaposition" && C.unit === "element" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
-    if (isBarChart(A) && isBarChart(B)) {
-      ax = bx = getDomain(A, B).x
-      ay = by = C.direction === "horizontal" ? getDomain(A, B).y : getDomainSumByKeys(  // stacked bar chart
-        getAggValues(A.data.values, A.encoding.x.field, [A.encoding.y.field], A.encoding.y.aggregate).concat(
-          getAggValues(B.data.values, B.encoding.x.field, [B.encoding.y.field], B.encoding.y.aggregate)),
-        A.encoding.x.field, B.encoding.x.field,
-        A.encoding.y.field, B.encoding.y.field)
-      ac = bc = [""]
-      ack = bck = ""
-
-    }
-    else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
-      // this should not be reachable by canRenderCompChart
-    }
-    else if (isScatterplot(A) && isScatterplot(B)) {
-      // this should not be reachable by canRenderCompChart
-    }
+    ax = bx = DomainAB.x
+    ay = by = C.direction === "horizontal" ? DomainAB.y : getDomainSumByKeys(  // stacked bar chart
+      getAggValues(A.data.values, A.encoding.x.field, [A.encoding.y.field], A.encoding.y.aggregate).concat(
+        getAggValues(B.data.values, B.encoding.x.field, [B.encoding.y.field], B.encoding.y.aggregate)),
+      A.encoding.x.field, B.encoding.x.field,
+      A.encoding.y.field, B.encoding.y.field)
+    ac = bc = [""]
+    ack = bck = ""
     Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
   }
-  else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart")) {
-    if (isBarChart(A) && isBarChart(B)) {
-      if (consistency.x_axis) {
-        ax = bx = getDomain(A, B).x
-      }
-      else {
-        ax = getDomain(A).x
-        bx = getDomain(B).x
-      }
-      if (consistency.y_axis) {
-        ay = by = getDomain(A, B).y
-      }
-      else {
-        ay = getDomain(A).y
-        by = getDomain(B).y
-      }
-      if (consistency.color) {
-        ac = bc = getDomain(A, B).color
-        ack = bck = getDomain(A, B).cKey
-      }
-      else {
-        ac = getDomain(A).color
-        bc = getDomain(B).color
-        ack = getDomain(A).cKey
-        bck = getDomain(B).cKey
-      }
-    }
-    else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
-      if (consistency.x_axis) {
-        // TODO: do not consider this for now
-        ax = getDomain(A).x
-        bx = getDomain(B).x
-      }
-      else {
-        ax = getDomain(A).x
-        bx = getDomain(B).x
-      }
-      if (consistency.y_axis) {
-        ay = by = getDomain(A, B).y
-      }
-      else {
-        ay = getDomain(A).y
-        by = getDomain(B).y
-      }
-      if (consistency.color) {
-        // encode color by category used in a bar chart
-        ac = bc = getDomain(A, B).color
-        ack = bck = getDomain(A, B).cKey
-      }
-      else {
-        ac = getDomain(A).color
-        bc = getDomain(B).color
-        ack = getDomain(A).cKey
-        bck = getDomain(B).cKey
-      }
-    }
-    else if (isScatterplot(A) && isScatterplot(B)) {
-      if (consistency.x_axis) {
-        ax = bx = getDomain(A, B).x
-      }
-      else {
-        ax = getDomain(A).x
-        bx = getDomain(B).x
-      }
-      if (consistency.y_axis) {
-        ay = by = getDomain(A, B).y
-      }
-      else {
-        ay = getDomain(A).y
-        by = getDomain(B).y
-      }
-      if (consistency.color) {
-        // use A color if two of them use it
-        // if only B use color, then use the B's
-        ac = bc = typeof A.encoding.color !== "undefined" ? getDomain(A).color :
-          typeof B.encoding.color !== "undefined" ? getDomain(B).color : [""]
-        ack = bck = typeof A.encoding.color !== "undefined" ? getDomain(A).cKey :
-          typeof B.encoding.color !== "undefined" ? getDomain(B).cKey : A.encoding.x.field
-      }
-      else {
-        ac = getDomain(A).color
-        bc = getDomain(B).color
-        ack = getDomain(A).cKey
-        bck = getDomain(B).cKey
-      }
-    }
+  else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart") &&
+    isScatterplot(A) && isScatterplot(B) && consistency.color) {
+    // use A color if two of them use it
+    // if only B use color, then use the B's
+    ac = bc = typeof A.encoding.color !== "undefined" ? DomainA.color :
+      typeof B.encoding.color !== "undefined" ? DomainB.color : [""]
+    ack = bck = typeof A.encoding.color !== "undefined" ? DomainA.cKey :
+      typeof B.encoding.color !== "undefined" ? DomainB.cKey : A.encoding.x.field
     Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
   }
   else if ((C.layout === "superimposition" && C.unit === "element")) {
     // nesting
     if (isBarChart(A) && isBarChart(B)) {
-      ax = getDomain(A).x
-      ay = getDomain(A).y
+      ax = DomainA.x
+      ay = DomainA.y
 
       ac = [""]
       ack = A.encoding.x.field  // default, not meaningful
 
-      bx = bc = getDomain(B).x  // color by x-axis as a default
+      bx = bc = DomainB.x  // color by x-axis as a default
       bck = B.encoding.x.field
 
       let axes: AxisDomainData[] = []
@@ -162,13 +102,13 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       Bs = {...Bs, axis: axes}
     }
     else if (isBarChart(A) && isScatterplot(B)) {
-      ax = getDomain(A).x
-      ay = getDomain(A).y
+      ax = DomainA.x
+      ay = DomainA.y
 
-      ac = getDomain(A).color
-      bc = getDomain(B).color
-      ack = getDomain(A).cKey
-      bck = getDomain(B).cKey
+      ac = DomainA.color
+      bc = DomainB.color
+      ack = DomainA.cKey
+      bck = DomainB.cKey
 
       let axes: AxisDomainData[] = []
       Bs = {...Bs, c: bc, cKey: bck}
@@ -180,11 +120,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       }
       Bs = {...Bs, axis: axes}
     }
-    else {
-      // TODO:
-    }
   }
-
   return {A: {axis: {x: ax, y: ay}, c: ac, cKey: ack}, B: Bs}
 }
 
