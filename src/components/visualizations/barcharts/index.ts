@@ -11,6 +11,7 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {ScaleBand, ScaleLinear} from 'd3';
 import {DEFAULT_CHART_STYLE} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-calculator';
+import {manageZIndex} from '..';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -49,6 +50,8 @@ export function renderBarChart(
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
   renderBars(g, aggValues, qField, nField, uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
   if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
+
+  manageZIndex(g, spec)
 }
 
 export function renderBars(

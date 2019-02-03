@@ -83,7 +83,12 @@ export function renderChart(
       break;
   }
 }
-
+export function manageZIndex(
+  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  spec: Spec) {
+  if (isBarChart(spec))
+    g.selectAll('.axis').raise()
+}
 export function canRenderChart(spec: Spec) {
   let can = true;
 

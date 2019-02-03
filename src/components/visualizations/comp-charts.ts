@@ -86,7 +86,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   }
   // apply visual properties after rendering charts
   if (styles.A.onTop) gA.raise(); if (styles.B.onTop) gB.raise()
-  svg.select("." + AXIS_ROOT_ID).lower()  // TODO: this does not work because gA, gB, and axis are on different level in the hierarchy
+  // svg.select("." + AXIS_ROOT_ID).lower()  // TODO: this does not work because gA, gB, and axis are on different level in the hierarchy
 }
 
 // deprecated
