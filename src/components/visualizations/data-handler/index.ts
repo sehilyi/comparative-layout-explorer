@@ -57,6 +57,7 @@ export function changeKeys(aggValues: object[], keyField: string, valueFields: s
     }
   }
   // console.log(aggValues)
+  // console.log("changed to")
   // console.log(newVal)
   return newVal
 }
@@ -93,13 +94,14 @@ export function getAggregatedData(s: Spec) {
   return {values, categories, data}
 }
 
+// TODO: this should be re-designed
 export function getAggregatedDatas(a: Spec, b: Spec) {
   const {...dataA} = getAggregatedData(a), {...dataB} = getAggregatedData(b)
   const abybval = getAggValuesByTwoKeys(a.data.values, a.encoding.x.field, b.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)  // TODO: what aggregation functions to use?
   const bbyaval = getAggValuesByTwoKeys(a.data.values, b.encoding.x.field, a.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)
   const unionval = dataA.data.concat(dataB.data)
 
-  const unioncat = uniqueValues(dataA.data.concat(dataB.data), "key") // TODO: should use consistent key for union!
+  const unioncat = uniqueValues(dataA.data.concat(dataB.data), "key")
   return {
     A: {values: dataA.values, categories: dataA.categories, data: dataA.data},
     B: {values: dataB.values, categories: dataB.categories, data: dataB.data},

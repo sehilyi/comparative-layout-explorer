@@ -80,7 +80,6 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
       if (consistency.x_axis) {
         // TODO: do not consider this for now
-        // TODO: spec.data.values and aggregated.values are misleading!!
         ax = getDomain(A).x
         bx = getDomain(B).x
       }

@@ -62,11 +62,11 @@ export function renderPoints(
     .data(data)
     .enter().append(_circle)
     .classed('point', true)
-    .attr(_cx, d => x(styles.aggregated ? d["value"][xKey] : d[xKey]))  // TODO: any way to make two level to one level?
-    .attr(_cy, d => y(styles.aggregated ? d["value"][yKey] : d[yKey]))
+    .attr(_cx, d => x(d[xKey]))
+    .attr(_cy, d => y(d[yKey]))
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, styles.stroke)
     .attr(_stroke_width, styles.stroke_width)
-    .attr(_fill, d => styles.color(styles.aggregated ? d["key"] : d[styles.colorKey]) as string)
+    .attr(_fill, d => styles.color(d[styles.colorKey]) as string)
     .attr(_r, styles.pointSize)
 }
