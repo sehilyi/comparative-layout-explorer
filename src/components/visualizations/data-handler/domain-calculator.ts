@@ -4,7 +4,7 @@ import {CompSpec, Consistency} from "src/models/comp-spec";
 
 import {isBarChart, isScatterplot} from "..";
 
-import {getAggregatedDatas, getAggValues, oneOfFilter, getDomainSumByKeys} from ".";
+import {getAggValues, oneOfFilter, getDomainSumByKeys, getAggValuesByTwoKeys} from ".";
 
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
@@ -143,29 +143,27 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
   else if ((C.layout === "superimposition" && C.unit === "element")) {
     // nesting
     if (isBarChart(A) && isBarChart(B)) {
-      const aggD = getAggregatedDatas(A, B)
-      ax = aggD.A.categories
-      ay = aggD.A.values
+      ax = getDomain(A).x
+      ay = getDomain(A).y
 
       ac = [""]
       ack = A.encoding.x.field  // default, not meaningful
 
-      bx = aggD.B.categories
-      bc = aggD.B.categories  // color by x-axis as a default
+      bx = bc = getDomain(B).x  // color by x-axis as a default
       bck = B.encoding.x.field
 
       let axes: AxisDomainData[] = []
+      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, A.encoding.y.aggregate)
       Bs = {...Bs, c: bc, cKey: bck}
-      for (let i = 0; i < aggD.A.categories.length; i++) {
-        let by = aggD.AbyB.data[i].values.map((d: object) => d["value"])
+      for (let i = 0; i < ax.length; i++) {
+        let by = nested[i].values.map((d: object) => d["value"])
         axes.push({x: bx, y: by})
       }
       Bs = {...Bs, axis: axes}
     }
     else if (isBarChart(A) && isScatterplot(B)) {
-      const aggD = getAggregatedDatas(A, B)
-      ax = aggD.A.categories
-      ay = aggD.A.values
+      ax = getDomain(A).x
+      ay = getDomain(A).y
 
       ac = getDomain(A).color
       bc = getDomain(B).color
@@ -174,8 +172,8 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
 
       let axes: AxisDomainData[] = []
       Bs = {...Bs, c: bc, cKey: bck}
-      for (let i = 0; i < aggD.A.categories.length; i++) {
-        let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, aggD.A.categories[i])
+      for (let i = 0; i < ax.length; i++) {
+        let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, ax[i])
         let bx = filteredData.map(d => d[B.encoding.x.field])
         let by = filteredData.map(d => d[B.encoding.y.field])
         axes.push({x: bx, y: by})

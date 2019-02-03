@@ -62,6 +62,7 @@ export function changeKeys(aggValues: object[], keyField: string, valueFields: s
   return newVal
 }
 
+// TODO: generalize this function with getAggValues?
 export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyField2: string, valueField: string, aggregate: Aggregate) {
   return d3.nest()
     .key(d => d[keyField1])

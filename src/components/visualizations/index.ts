@@ -12,6 +12,17 @@ import {isUndefined} from "util";
 export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
   return {
     // https://vega.github.io/vega-lite/examples/
+    B: {
+      data: {
+        values: DATASET_MOVIES.rawData
+      },
+      mark: "point",
+      encoding: {
+        x: {field: "US_Gross", type: "quantitative"},
+        y: {field: "Worldwide_Gross", type: "quantitative"},
+        // color: {field: "MPAA_Rating", type: "nominal"}
+      }
+    },
     A: {
       data: {
         values: DATASET_MOVIES.rawData
@@ -20,23 +31,13 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       encoding: {
         x: {field: "MPAA_Rating", type: "nominal"},
         y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-        // color: {field: "Director", type: "nominal"}
-      }
-    },
-    B: {
-      data: {
-        values: DATASET_MOVIES.rawData
-      },
-      mark: "bar",
-      encoding: {
-        x: {field: "MPAA_Rating", type: "nominal"},
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"}
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     C: {
       ...DEFAULT_COMP_SPEC,
-      layout: "juxtaposition",
-      direction: "vertical",
+      layout: "superimposition",
+      // direction: "vertical",
       unit: "element",
       // mirrored: false,
       consistency: {
