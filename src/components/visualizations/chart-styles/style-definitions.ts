@@ -39,7 +39,7 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
       else if (C.unit === "element") {
         if (C.direction === "vertical") { // stacked bar
           S.B.noAxes = true
-          S.B.barOffsetData = getAggregatedDatas(A, B).A.data
+          S.B.barOffset = {data: getAggregatedDatas(A, B).A.data, valueField: A.encoding.y.field, keyField: A.encoding.x.field}
         }
         else if (C.direction === "horizontal") { // grouped bar
           S.A.shiftBy = -0.5

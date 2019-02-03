@@ -73,7 +73,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   if (!Array.isArray(domains.B.axis)) {
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
   }
-  else {  // when Chart B is separated to multiple charts (e.g., nesting)
+  else {  // This reaches when Chart B is separated to multiple charts (e.g., nesting)
     const subGB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
     for (let i = 0; i < layouts.subBs.length; i++) {
       const gB = subGB.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))

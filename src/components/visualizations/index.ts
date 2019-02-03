@@ -16,11 +16,11 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "point",
+      mark: "bar",
       encoding: {
-        x: {field: "US_Gross", type: "quantitative"},
-        y: {field: "Worldwide_Gross", type: "quantitative"},
-        // color: {field: "MPAA_Rating", type: "nominal"}
+        y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+        x: {field: "MPAA_Rating", type: "nominal"},
+        color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
     A: {
@@ -29,19 +29,19 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-        y: {field: "MPAA_Rating", type: "nominal"},
-        color: {field: "MPAA_Rating", type: "nominal"}
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+        x: {field: "Source", type: "nominal"},
+        color: {field: "Source", type: "nominal"}
       }
     },
     C: {
       ...DEFAULT_COMP_SPEC,
       layout: "juxtaposition",
-      // direction: "vertical",
-      unit: "chart",
+      direction: "vertical",
+      unit: "element",
       // mirrored: false,
       consistency: {
-        x_axis: true, y_axis: false, color: false
+        x_axis: true, y_axis: true, color: false
       }
     }
   }
@@ -112,6 +112,8 @@ export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
   if (isScatterplot(A) && C.layout === "superimposition" && C.unit === "element") can = false
   if (C.layout === "juxtaposition" && C.unit === "element" &&
     (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
+  // horizontal bar chart + vertical bar chart
+  if (isBarChart(A) && isBarChart(B) && A.encoding.x.type !== B.encoding.x.type) can = false
 
   if (!can) console.log("error: such comparison is not supported.")
   return can
