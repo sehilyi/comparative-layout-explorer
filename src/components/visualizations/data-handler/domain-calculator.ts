@@ -35,8 +35,10 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     // consistency.x_axis and y_axis are always true
     if (isBarChart(A) && isBarChart(B)) {
       const aggD = getAggregatedDatas(A, B)
-      ax = bx = aggD.Union.categories
-      ay = by = C.direction === "horizontal" ? aggD.Union.values : getAggValues(aggD.Union.data, "key", ["value"], 'sum').map(d => d.value) // stacked bar chart
+      ax = bx = getDomain(A, B).x
+      // TODO: how to make the result of nest() to use field names for their key?
+      // console.log(aggD.Union.data)
+      ay = by = C.direction === "horizontal" ? getDomain(A, B).y : getAggValues(aggD.Union.data, "key", ["value"], 'sum').map(d => d.value) // stacked bar chart
       ac = bc = [""]
       ack = bck = ""
     }
@@ -50,7 +52,6 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
   }
   else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart")) {
     if (isBarChart(A) && isBarChart(B)) {
-      const aggD = getAggregatedDatas(A, B)
       if (consistency.x_axis) {
         ax = bx = getDomain(A, B).x
       }
@@ -66,14 +67,14 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         by = getDomain(B).y
       }
       if (consistency.color) {
-        ac = bc = aggD.Union.categories
-        ack = bck = A.encoding.x.field
+        ac = bc = getDomain(A, B).color
+        ack = bck = getDomain(A, B).cKey
       }
       else {
-        ac = typeof A.encoding.color !== "undefined" ? uniqueValues(A.data.values, A.encoding.color.field) : [""]
-        bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
-        ack = typeof A.encoding.color !== "undefined" ? A.encoding.color.field : A.encoding.x.field
-        bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
+        ac = getDomain(A).color
+        bc = getDomain(B).color
+        ack = getDomain(A).cKey
+        bck = getDomain(B).cKey
       }
     }
     else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
@@ -96,15 +97,14 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       }
       if (consistency.color) {
         // encode color by category used in a bar chart
-        const aggD = getAggregatedDatas(A, B)
-        ac = bc = isBarChart(A) ? aggD.A.categories : aggD.B.categories
-        ack = bck = isBarChart(A) ? A.encoding.x.field : B.encoding.x.field
+        ac = bc = getDomain(A, B).color
+        ack = bck = getDomain(A, B).cKey
       }
       else {
-        ac = typeof A.encoding.color !== "undefined" ? uniqueValues(A.data.values, A.encoding.color.field) : [""]
-        bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
-        ack = typeof A.encoding.color !== "undefined" ? A.encoding.color.field : A.encoding.x.field
-        bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
+        ac = getDomain(A).color
+        bc = getDomain(B).color
+        ack = getDomain(A).cKey
+        bck = getDomain(B).cKey
       }
     }
     else if (isScatterplot(A) && isScatterplot(B)) {
@@ -125,16 +125,16 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       if (consistency.color) {
         // use A color if two of them use it
         // if only B use color, then use the B's
-        ac = bc = typeof A.encoding.color !== "undefined" ? uniqueValues(A.data.values, A.encoding.color.field) :
-          typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
-        ack = bck = typeof A.encoding.color !== "undefined" ? A.encoding.color.field :
-          typeof B.encoding.color !== "undefined" ? B.encoding.color.field : A.encoding.x.field
+        ac = bc = typeof A.encoding.color !== "undefined" ? getDomain(A).color :
+          typeof B.encoding.color !== "undefined" ? getDomain(B).color : [""]
+        ack = bck = typeof A.encoding.color !== "undefined" ? getDomain(A).cKey :
+          typeof B.encoding.color !== "undefined" ? getDomain(B).cKey : A.encoding.x.field
       }
       else {
-        ac = typeof A.encoding.color !== "undefined" ? uniqueValues(A.data.values, A.encoding.color.field) : [""]
-        bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
-        ack = typeof A.encoding.color !== "undefined" ? A.encoding.color.field : A.encoding.x.field
-        bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
+        ac = getDomain(A).color
+        bc = getDomain(B).color
+        ack = getDomain(A).cKey
+        bck = getDomain(B).cKey
       }
     }
     Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
@@ -166,10 +166,10 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
       ax = aggD.A.categories
       ay = aggD.A.values
 
-      ac = typeof A.encoding.color !== "undefined" ? uniqueValues(A.data.values, A.encoding.color.field) : [""]
-      ack = typeof A.encoding.color !== "undefined" ? A.encoding.color.field : A.encoding.x.field
-      bc = typeof B.encoding.color !== "undefined" ? uniqueValues(B.data.values, B.encoding.color.field) : [""]
-      bck = typeof B.encoding.color !== "undefined" ? B.encoding.color.field : B.encoding.x.field
+      ac = getDomain(A).color
+      bc = getDomain(B).color
+      ack = getDomain(A).cKey
+      bck = getDomain(B).cKey
 
       let axes: AxisDomainData[] = []
       Bs = {...Bs, c: bc, cKey: bck}
@@ -192,8 +192,8 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
 /**
  * Get single or union domains for x, y, and color
  */
-export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain} {
-  let xDomain: Domain, yDomain: Domain
+export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, color: Domain, cKey: string} {
+  let xDomain: Domain, yDomain: Domain, cDomain: Domain, cKey: string
   const {values} = spec.data
   const {x, y, color} = spec.encoding
 
@@ -256,6 +256,10 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain} 
       }
     }
   }
+  { // color domain
+    cDomain = typeof color === "undefined" ? [""] : uniqueValues(values, color.field)
+    cKey = typeof color === "undefined" ? x.field : color.field
+  }
 
   if (union) {
     let {...uDomain} = getDomain(sForUnion)
@@ -263,6 +267,8 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain} 
       (xDomain as number[]).concat(uDomain.x as number[])
     yDomain = y.type === "nominal" ? (yDomain as string[]).concat(uDomain.y as string[]) :
       (yDomain as number[]).concat(uDomain.y as number[])
+    // TODO: when [""]?
+    cDomain = (cDomain as string[]).concat(uDomain.color as string[]) // TODO: should consider numerical color encoding
   }
-  return {x: xDomain, y: yDomain}
+  return {x: xDomain, y: yDomain, color: cDomain, cKey}
 }

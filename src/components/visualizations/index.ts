@@ -16,10 +16,10 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "point",
+      mark: "bar",
       encoding: {
-        x: {field: "US_Gross", type: "quantitative"},
-        y: {field: "Worldwide_Gross", type: "quantitative"},
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
@@ -27,17 +27,17 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "point",
+      mark: "bar",
       encoding: {
-        x: {field: "US_Gross", type: "quantitative"},
-        y: {field: "Worldwide_Gross", type: "quantitative"}
+        x: {field: "MPAA_Rating", type: "nominal"},
+        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"}
       }
     },
     C: {
       ...DEFAULT_COMP_SPEC,
       layout: "juxtaposition",
-      // direction: "vertical",
-      unit: "chart",
+      direction: "horizontal",
+      unit: "element",
       // mirrored: false,
       consistency: {
         x_axis: false, y_axis: false, color: false
