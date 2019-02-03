@@ -16,11 +16,11 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       data: {
         values: DATASET_MOVIES.rawData
       },
-      mark: "point",
+      mark: "bar",
       encoding: {
-        x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+        x: {field: "MPAA_Rating", type: "nominal"},
         y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-        color: {field: "Director", type: "nominal"}
+        // color: {field: "Director", type: "nominal"}
       }
     },
     B: {
@@ -29,15 +29,15 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        x: {field: "Source", type: "nominal"},
+        x: {field: "MPAA_Rating", type: "nominal"},
         y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"}
       }
     },
     C: {
       ...DEFAULT_COMP_SPEC,
       layout: "juxtaposition",
-      direction: "horizontal",
-      unit: "chart",
+      direction: "vertical",
+      unit: "element",
       // mirrored: false,
       consistency: {
         x_axis: true, y_axis: false, color: false

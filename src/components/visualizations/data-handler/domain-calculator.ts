@@ -4,7 +4,7 @@ import {CompSpec, Consistency} from "src/models/comp-spec";
 
 import {isBarChart, isScatterplot} from "..";
 
-import {getAggregatedDatas, getAggValues, oneOfFilter} from ".";
+import {getAggregatedDatas, getAggValues, oneOfFilter, getDomainSumByKeys} from ".";
 
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
@@ -34,13 +34,15 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
   if (C.layout === "juxtaposition" && C.unit === "element") {
     // consistency.x_axis and y_axis are always true
     if (isBarChart(A) && isBarChart(B)) {
-      const aggD = getAggregatedDatas(A, B)
       ax = bx = getDomain(A, B).x
-      // TODO: how to make the result of nest() to use field names for their key?
-      // console.log(aggD.Union.data)
-      ay = by = C.direction === "horizontal" ? getDomain(A, B).y : getAggValues(aggD.Union.data, "key", ["value"], 'sum').map(d => d["value"]) // stacked bar chart
+      ay = by = C.direction === "horizontal" ? getDomain(A, B).y : getDomainSumByKeys(
+        getAggValues(A.data.values, A.encoding.x.field, [A.encoding.y.field], A.encoding.y.aggregate).concat(
+          getAggValues(B.data.values, B.encoding.x.field, [B.encoding.y.field], B.encoding.y.aggregate)),
+        A.encoding.x.field, B.encoding.x.field,
+        A.encoding.y.field, B.encoding.y.field)
       ac = bc = [""]
       ack = bck = ""
+
     }
     else if (isBarChart(A) && isScatterplot(B) || isBarChart(B) && isScatterplot(A)) {
       // this should not be reachable by canRenderCompChart

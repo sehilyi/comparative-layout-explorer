@@ -118,6 +118,29 @@ export function getAggregatedDatas(a: Spec, b: Spec) {
   }
 }
 
+/**
+ * By k1 and k2, get sum of v1 and v2
+ * Naive implementation
+ * TODO: make this more efficient
+ * @param o
+ * @param k1
+ * @param k2
+ * @param v1
+ * @param v2
+ */
+export function getDomainSumByKeys(o: object[], k1: string, k2: string, v1: string, v2: string) {
+  let uniqueKeysOf1 = uniqueValues(o, k1)
+  let result = []
+  for (let i = 0; i < uniqueKeysOf1.length; i++) {
+    let newObject = {}
+    newObject[k1 + " or " + k2] = uniqueKeysOf1[i]
+    newObject[v1 + " + " + v2] = d3.sum(o.filter(d => d[k1] === uniqueKeysOf1[i]).map(d => d[v1])) +
+      d3.sum(o.filter(d => d[k2] === uniqueKeysOf1[i]).map(d => d[v2]))
+    result.push(newObject)
+  }
+  return result.map(d => d[v1 + " + " + v2])
+}
+
 export function oneOfFilter(d: object[], k: string, v: string | number) {
   return d.filter(d => v === "null" ? d[k] == null : d[k] == v)
 }
