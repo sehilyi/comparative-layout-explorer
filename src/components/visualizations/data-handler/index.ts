@@ -5,6 +5,10 @@ import {uniqueValues} from "src/useful-factory/utils";
 
 /**
  * return type: { key: [...categories by keyField], value: {valueFields[0]: aggregated value, valueFields[1]: aggregated value, ..., valueField[valueFields.length - 1]: aggregated value} }
+ * @param values
+ * @param keyField
+ * @param valueFields
+ * @param aggregate
  */
 export function getAggValues(values: object[], keyField: string, valueFields: string[], aggregate: Aggregate) {
   return changeKeys(d3.nest()

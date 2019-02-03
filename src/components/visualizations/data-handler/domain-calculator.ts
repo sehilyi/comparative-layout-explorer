@@ -35,7 +35,7 @@ export function getDomains(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     // consistency.x_axis and y_axis are always true
     if (isBarChart(A) && isBarChart(B)) {
       ax = bx = getDomain(A, B).x
-      ay = by = C.direction === "horizontal" ? getDomain(A, B).y : getDomainSumByKeys(
+      ay = by = C.direction === "horizontal" ? getDomain(A, B).y : getDomainSumByKeys(  // stacked bar chart
         getAggValues(A.data.values, A.encoding.x.field, [A.encoding.y.field], A.encoding.y.aggregate).concat(
           getAggValues(B.data.values, B.encoding.x.field, [B.encoding.y.field], B.encoding.y.aggregate)),
         A.encoding.x.field, B.encoding.x.field,

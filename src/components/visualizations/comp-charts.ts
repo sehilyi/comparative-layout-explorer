@@ -25,6 +25,9 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 
   d3.select(ref).selectAll('*').remove();
 
+  renderCompChartGeneralized(ref, A, B, C)
+  if (true) return
+
   // TODO: all chart renderers will be combined eventually
   switch (C.layout) {
     case "juxtaposition":
@@ -57,18 +60,20 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top)).attr(_opacity, styles.A.opacity)
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
 
-  /// legend TODO: what to do this?
+  /// legend TODO: what to do with this?
   if (C.layout === "juxtaposition" && C.unit === 'element') {
     renderLegend(gB.append(_g).attr(_transform, translate(CHART_SIZE.width + GAP_BETWEEN_CHARTS, 0)),
       [A.encoding.y.field, B.encoding.y.field],
       styles.A.color.range().concat(styles.B.color.range()) as string[])
   }
 
-  /// A
+  // A
   renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
-  /// B
-  if (!Array.isArray(domains.B.axis)) renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
-  else {
+  // B
+  if (!Array.isArray(domains.B.axis)) {
+    renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
+  }
+  else {  // when Chart B is separated to multiple charts (e.g., nesting)
     const subGB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
     for (let i = 0; i < layouts.subBs.length; i++) {
       const gB = subGB.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
@@ -79,12 +84,12 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       renderChart(gB, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
     }
   }
-  // apply other attributes after chart rendering
-  if (styles.A.onTop) gA.raise()
-  if (styles.B.onTop) gB.raise()
+  // apply visual properties after rendering charts
+  if (styles.A.onTop) gA.raise(); if (styles.B.onTop) gB.raise()
   svg.select("." + AXIS_ROOT_ID).lower()  // TODO: this does not work because gA, gB, and axis are on different level in the hierarchy
 }
 
+// deprecated
 export function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
@@ -102,7 +107,7 @@ export function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompS
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
   }
 }
-
+// deprecated
 export function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
@@ -126,7 +131,7 @@ export function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: Com
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
 }
 
-// TODO: this should be combined with renderJuxChart
+// deprecated
 export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
@@ -149,7 +154,7 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
 
   svg.select("." + AXIS_ROOT_ID).lower()  // TODO: this does not work because gA, gB, and axis are on different level in the hierarchy
 }
-
+// deprecated
 export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomains(A, B, C, consistency)
@@ -178,7 +183,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     }
   }
 }
-
+// deprecated
 export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
   if (C.direction === "vertical") {
