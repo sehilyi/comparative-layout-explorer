@@ -84,13 +84,11 @@ export function renderBars(
     .attr(_stroke_width, stroke_width)
 
   if (verticalBar) {
-    console.log(barOffset)
-    console.log(data)
     const bandUnitSize = width / numOfC
     const barWidth = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
 
     bars
-      .attr(_y, d => styles.revY ? 0 : qY(d[vKey]) + // TOOD: clean up more?
+      .attr(_y, d => (styles.revY ? 0 : qY(d[vKey])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0]) ?
           (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0][barOffset.valueField])) : 0))
       .attr(_x, d => nX(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
@@ -102,10 +100,10 @@ export function renderBars(
     const barHeight = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * mulSize) as number;
 
     bars
-      .attr(_y, d => nY(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barHeight / 2.0 + barHeight * shiftBy)
-      .attr(_x, d => !styles.revX ? 0 : qX(d[vKey]) + // TOOD: clean up more?
+      .attr(_x, d => (!styles.revX ? 0 : qX(d[vKey])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0]) ?
-          (- width + qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0][barOffset.valueField])) : 0))
+          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0][barOffset.valueField])) : 0))
+      .attr(_y, d => nY(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barHeight / 2.0 + barHeight * shiftBy)
       .attr(_height, barHeight)
       .attr(_width, d => (!styles.revX ? qX(d[vKey]) : width - qX(d[vKey])))
   }

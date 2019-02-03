@@ -2,7 +2,7 @@ import {Spec} from "src/models/simple-vega-spec";
 
 import {CompSpec, Consistency} from "src/models/comp-spec";
 import {DEFAULT_CHART_STYLE} from ".";
-import {getAggregatedDatas} from "../data-handler";
+import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-calculator";
 import {getColor, getConstantColor} from "../design-settings";
@@ -39,7 +39,9 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
       else if (C.unit === "element") {
         if (C.direction === "vertical") { // stacked bar
           S.B.noAxes = true
-          S.B.barOffset = {data: getAggregatedDatas(A, B).A.data, valueField: A.encoding.y.field, keyField: A.encoding.x.field}
+          const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
+            {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y
+          S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField}
         }
         else if (C.direction === "horizontal") { // grouped bar
           S.A.shiftBy = -0.5

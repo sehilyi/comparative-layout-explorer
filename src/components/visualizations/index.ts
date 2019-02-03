@@ -18,8 +18,8 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-        x: {field: "MPAA_Rating", type: "nominal"},
+        x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+        y: {field: "MPAA_Rating", type: "nominal"},
         color: {field: "MPAA_Rating", type: "nominal"}
       }
     },
@@ -29,8 +29,8 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
       },
       mark: "bar",
       encoding: {
-        y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-        x: {field: "Source", type: "nominal"},
+        x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+        y: {field: "Source", type: "nominal"},
         color: {field: "Source", type: "nominal"}
       }
     },

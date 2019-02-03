@@ -2,6 +2,7 @@ import {Aggregate, Spec} from "src/models/simple-vega-spec";
 
 import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
+import {_x, _y} from "../design-settings";
 
 /**
  * return type: { key: [...categories by keyField], value: {valueFields[0]: aggregated value, valueFields[1]: aggregated value, ..., valueField[valueFields.length - 1]: aggregated value} }
@@ -93,8 +94,9 @@ export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyFi
 }
 
 export function getAggregatedData(s: Spec) {
-  const data = getAggValues(s.data.values, s.encoding.x.field, [s.encoding.y.field], s.encoding.y.aggregate)
-  const categories = uniqueValues(data, s.encoding.x.field)
+  const n = s.encoding.x.type === "nominal" ? _x : _y, q = s.encoding.x.type === "quantitative" ? _x : _y
+  const data = getAggValues(s.data.values, s.encoding[n].field, [s.encoding[q].field], s.encoding[q].aggregate)
+  const categories = uniqueValues(data, s.encoding[n].field)
   const values = data.map((d: object) => d[s.encoding.y.field])
   return {values, categories, data}
 }

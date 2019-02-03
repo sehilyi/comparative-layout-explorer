@@ -56,6 +56,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
     ack = DomainA.cKey
     bck = DomainB.cKey
   }
+  Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
 
   // exceptions
   if (C.layout === "juxtaposition" && C.unit === "element" && C.direction === "vertical" && isBarChart(A) && isBarChart(B)) {
