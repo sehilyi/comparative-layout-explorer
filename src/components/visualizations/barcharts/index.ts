@@ -37,18 +37,19 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 // TODO: only vertical bar charts are handled
 export function renderBarChart(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
-  spec: Spec, // contains actual values to draw bar chart
+  spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
   styles: BarchartStyle) {
 
+  const {values} = spec.data
   const {verticalBar} = styles
   const {aggregate} = verticalBar ? spec.encoding.y : spec.encoding.x
-  const {field: nField} = verticalBar ? spec.encoding.x : spec.encoding.y,
-    {field: qField} = verticalBar ? spec.encoding.y : spec.encoding.x
+  const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y"
+  const {field: nField} = spec.encoding[n], {field: qField} = spec.encoding[q]
 
-  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(spec.data.values, nField, [qField], aggregate));
+  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nField, [qField], aggregate));
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
-  renderBars(g, aggValues, qField, nField, uniqueValues(domain.x, "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
+  renderBars(g, aggValues, qField, nField, uniqueValues(domain[n], "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
   if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
 
   manageZIndex(g, spec)

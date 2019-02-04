@@ -17,9 +17,11 @@
   }
 
   .control-pane {
-    height: 300px;
-    background: #f1f1f1;
-    border-radius: 7px;
+    // height: 300px;
+    height: 100%;
+    min-width: 300px;
+    background: #f0f0f0;
+    border-radius: 3px;
 
     textarea {
       padding: 10px;
@@ -48,6 +50,7 @@
 
     .example-element {
       padding: 10px;
+      overflow-x: auto;
 
       .position-diff {
         color: #2d5699;
@@ -64,7 +67,7 @@
 
       .result-group {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(8, 1fr);
         // grid-template-columns: repeat(3, 1fr);
 
         .chart {
@@ -85,6 +88,7 @@
           text-align: center;
           font-size: 2rem;
           color: #adadad;
+          width: 200px;
         }
 
         button {

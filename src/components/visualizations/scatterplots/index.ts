@@ -35,13 +35,13 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
 export function renderScatterplot(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
-  spec: Spec, // contains actual values to draw bar chart
+  spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
   styles: ScatterplotStyle) {
 
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
-  const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions now for the simplicity
+  const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
   const aggValues = typeof aggregate != "undefined" ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, {...styles});
   renderPoints(g, aggValues, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles, aggregated: typeof aggregate != "undefined"})

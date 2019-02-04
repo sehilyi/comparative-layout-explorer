@@ -2,6 +2,7 @@
 // https://paper.dropbox.com/doc/Operations--AWlp37~UtWSS83hWWg25wGgxAg-dr2UHiPbc3qvqqS1rQHn1
 
 export type CompSpec = {
+  title: string
   layout: CompType
   unit?: CompUnit
   mirrored?: boolean  // TODO: move to layout??
@@ -27,6 +28,7 @@ export type Consistency = { // TODO: this should also consider differnce for sup
 
 // TODO: separate default by layout
 export const DEFAULT_COMP_SPEC: CompSpec = {
+  title: "",
   layout: "juxtaposition",
   unit: "chart",
   mirrored: false,
