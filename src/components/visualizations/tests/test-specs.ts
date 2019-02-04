@@ -2,6 +2,10 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 
+export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
+  return A.mark + " " + C.layout + "(" + C.unit + "," + C.direction + ") " + B.mark
+}
+
 export function getExamples() {
   return getExampleSpec()
 }
@@ -10,7 +14,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        title: "bar jux bar",
+        name: "bar jux bar",
         layout: "juxtaposition",
         direction: "horizontal",
         unit: "element",
@@ -46,7 +50,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        title: "bar jux bar (chart)",
+        name: "bar jux bar (chart)",
         layout: "juxtaposition",
         direction: "horizontal",
         unit: "chart",
@@ -82,7 +86,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        title: "sca sup sca",
+        name: "sca sup sca",
         layout: "superimposition",
         unit: "chart",
         consistency: {
@@ -152,7 +156,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        title: "bar sup sca",
+        name: "bar sup sca",
         layout: "superimposition",
         unit: "chart",
         consistency: {

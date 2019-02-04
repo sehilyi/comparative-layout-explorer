@@ -10,7 +10,7 @@ import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {renderCompChart} from './visualizations/comp-charts';
 import {renderSimpleChart} from './visualizations';
-import {getExamples} from './visualizations/tests/test-specs';
+import {getExamples, getCompTitle} from './visualizations/tests/test-specs';
 import {Spec} from 'src/models/simple-vega-spec';
 import {CompSpec} from 'src/models/comp-spec';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
@@ -69,8 +69,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     _B.data.values = "..."
     let _C = JSON.parse(JSON.stringify(specs.C))
     return (
-      <div key={specs.C.title}>
-        <h1>{specs.C.title}</h1>
+      <div key={specs.C.name}>
+        <h1>{getCompTitle(specs.A, specs.B, specs.C)}</h1>
         <div className='example-element'>
           <div className='result-group'>
             <div className='chart'><svg ref={onBarChartAPlusB}></svg></div>
