@@ -18,7 +18,10 @@ export type AxisDomainData = {
   x: Domain
   y: Domain
 }
-
+export const DEFAULT_AXIS_DOMAIN = {
+  x: [] as string[] | number[],
+  y: [] as string[] | number[]
+}
 // TODO: this function should be much more efficiently implemented!!!
 /**
  * Generate domains of X, Y, and Color
@@ -27,89 +30,82 @@ export type AxisDomainData = {
  * * Only scatterplots and bar charts are handled.
  */
 export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
-  let ax: string[] | number[], ay: string[] | number[], ac: string[] | number[], bx: string[] | number[], by: string[] | number[], bc: string[] | number[]
-  let ack: string, bck: string
-  let Bs: ChartDomainData
+  let resA: ChartDomainData, resB: ChartDomainData
+  let axisA: AxisDomainData = DEFAULT_AXIS_DOMAIN, axisB: AxisDomainData = DEFAULT_AXIS_DOMAIN
+  let colorA = {c: [] as string[] | number[], cKey: "" as string}, colorB = {c: [] as string[] | number[], cKey: "" as string}
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainAB} = getDomain(A, B)
 
   if (consistency.x_axis) {
-    ax = bx = DomainAB.x
+    axisA.x = axisB.x = DomainAB.x
   }
   else {
-    ax = DomainA.x
-    bx = DomainB.x
+    axisA.x = DomainA.x
+    axisB.x = DomainB.x
   }
   if (consistency.y_axis) {
-    ay = by = DomainAB.y
+    axisA.y = axisB.y = DomainAB.y
   }
   else {
-    ay = DomainA.y
-    by = DomainB.y
+    axisA.y = DomainA.y
+    axisB.y = DomainB.y
   }
   if (consistency.color) {
-    ac = bc = DomainAB.color
-    ack = bck = DomainAB.cKey
+    colorA.c = colorB.c = DomainAB.color
+    colorA.cKey = colorB.cKey = DomainAB.cKey
   }
   else {
-    ac = DomainA.color
-    bc = DomainB.color
-    ack = DomainA.cKey
-    bck = DomainB.cKey
+    colorA.c = DomainA.color
+    colorB.c = DomainB.color
+    colorA.cKey = DomainA.cKey
+    colorB.cKey = DomainB.cKey
   }
-  Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
+  resA = {axis: axisA, c: colorA.c, cKey: colorA.cKey}
+  resB = {axis: axisB, c: colorB.c, cKey: colorB.cKey}
 
   // exceptions
+  // modify results
   if (C.layout === "juxtaposition" && C.unit === "element" && C.direction === "vertical" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
-    // TODO: clear this part using like encoding[nValue].field
-    if (A.encoding.x.type === "nominal") {
-      ay = by = getDomainSumByKeys(  // stacked bar chart
-        getAggValues(A.data.values, A.encoding.x.field, [A.encoding.y.field], A.encoding.y.aggregate).concat(
-          getAggValues(B.data.values, B.encoding.x.field, [B.encoding.y.field], B.encoding.y.aggregate)),
-        A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, B.encoding.y.field)
-    }
-    else {
-      ax = bx = getDomainSumByKeys(  // stacked bar chart
-        getAggValues(A.data.values, A.encoding.y.field, [A.encoding.x.field], A.encoding.x.aggregate).concat(
-          getAggValues(B.data.values, B.encoding.y.field, [B.encoding.x.field], B.encoding.x.aggregate)),
-        A.encoding.y.field, B.encoding.y.field, A.encoding.x.field, B.encoding.x.field)
-    }
-    Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
+    const n = A.encoding.x.type === "nominal" ? "x" : "y",
+      q = A.encoding.x.type === "quantitative" ? "x" : "y"
+
+    resA.axis[q] = resB.axis[q] = getDomainSumByKeys(  // stacked bar chart
+      getAggValues(A.data.values, A.encoding[n].field, [A.encoding[q].field], A.encoding[q].aggregate).concat(
+        getAggValues(B.data.values, B.encoding[n].field, [B.encoding[q].field], B.encoding[q].aggregate)),
+      A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
   }
   else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart") &&
     isScatterplot(A) && isScatterplot(B) && consistency.color) {
     // use A color if two of them use it
     // if only B use color, then use the B's
-    ac = bc = typeof A.encoding.color !== "undefined" ? DomainA.color :
+    resA.c = resB.c = typeof A.encoding.color !== "undefined" ? DomainA.color :
       typeof B.encoding.color !== "undefined" ? DomainB.color : [""]
-    ack = bck = typeof A.encoding.color !== "undefined" ? DomainA.cKey :
+    resA.cKey = resB.cKey = typeof A.encoding.color !== "undefined" ? DomainA.cKey :
       typeof B.encoding.color !== "undefined" ? DomainB.cKey : A.encoding.x.field
-    Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
   }
   else if ((C.layout === "superimposition" && C.unit === "element")) {
-    Bs = {axis: {x: bx, y: by}, c: bc, cKey: bck}
     // nesting
     if (isBarChart(A) && isBarChart(B)) {
       let axes: AxisDomainData[] = []
       let nested = getAggValuesByTwoKeys(A.data.values, A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, A.encoding.y.aggregate)
-      for (let i = 0; i < ax.length; i++) {
-        let by = nested[i].values.map((d: object) => d["value"])
-        axes.push({x: bx, y: by})
+      for (let i = 0; i < axisA.x.length; i++) {
+        axisB.y = nested[i].values.map((d: object) => d["value"])
+        axes.push(axisB)
       }
-      Bs = {...Bs, axis: axes}
+      resB = {...resB, axis: axes}
     }
     else if (isBarChart(A) && isScatterplot(B)) {
       let axes: AxisDomainData[] = []
-      for (let i = 0; i < ax.length; i++) {
-        let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, ax[i])
-        let bx = filteredData.map(d => d[B.encoding.x.field])
-        let by = filteredData.map(d => d[B.encoding.y.field])
-        axes.push({x: bx, y: by})
+      for (let i = 0; i < axisA.x.length; i++) {
+        let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, axisA.x[i])
+        axisB.x = filteredData.map(d => d[B.encoding.x.field])
+        axisB.y = filteredData.map(d => d[B.encoding.y.field])
+        axes.push(axisB)
       }
-      Bs = {...Bs, axis: axes}
+      resB = {...resB, axis: axes}
     }
   }
-  return {A: {axis: {x: ax, y: ay}, c: ac, cKey: ack}, B: Bs}
+  return {A: resA, B: resB}
 }
 
 /**

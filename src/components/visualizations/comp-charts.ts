@@ -68,7 +68,9 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   }
 
   // A
-  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  if (!Array.isArray(domains.A.axis)) {
+    renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  }
   // B
   if (!Array.isArray(domains.B.axis)) {
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
@@ -78,7 +80,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     for (let i = 0; i < layouts.subBs.length; i++) {
       const gB = subGB.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
-      let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, domains.A.axis.x[i] as string)
+      let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, domains.A.axis["x"][i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
       // TODO: width and height is not included in styles => any way to make this more clear?
       renderChart(gB, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
@@ -101,7 +103,9 @@ export function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompS
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
 
   /// A
-  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  if (!Array.isArray(domains.A.axis)) {
+    renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  }
   /// B
   if (!Array.isArray(domains.B.axis)) {
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
@@ -125,7 +129,9 @@ export function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: Com
   //
 
   /// A
-  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  if (!Array.isArray(domains.A.axis)) {
+    renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  }
   /// B
   if (!Array.isArray(domains.B.axis))
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
@@ -143,7 +149,9 @@ export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: C
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
 
   /// A
-  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  if (!Array.isArray(domains.A.axis)) {
+    renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  }
   /// B
   if (!Array.isArray(domains.B.axis)) {
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
@@ -166,7 +174,9 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
 
   /// A
   // TODO: color should be handled for visual clutter
-  renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  if (!Array.isArray(domains.A.axis)) {
+    renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+  }
 
   /// B
   if (Array.isArray(domains.B.axis)) {
@@ -175,7 +185,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     for (let i = 0; i < layouts.subBs.length; i++) {
       const gB = g.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
-      let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, domains.A.axis.x[i] as string)
+      let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, domains.A.axis["x"][i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
 
       // TODO: width and height is not included in styles => any way to make this more clear?
