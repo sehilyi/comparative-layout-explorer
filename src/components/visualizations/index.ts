@@ -37,11 +37,11 @@ export function getExampleSpecs(): {A: Spec, B: Spec, C: CompSpec} {
     C: {
       ...DEFAULT_COMP_SPEC,
       layout: "juxtaposition",
-      direction: "vertical",
-      unit: "element",
-      // mirrored: false,
+      direction: "horizontal",
+      unit: "chart",
+      mirrored: true,
       consistency: {
-        x_axis: true, y_axis: true, color: false
+        x_axis: true, y_axis: true, color: true
       }
     }
   }

@@ -27,7 +27,7 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.A.legend = isALegendUse
         S.B.legend = isBLegendUse
         S.B.revY = C.direction === "vertical" && C.mirrored
-        S.B.revX = C.direction === "horizontal" && C.mirrored
+        S.A.revX = C.direction === "horizontal" && C.mirrored
         S.A.noX = consistency.x_axis && !S.B.revX && C.direction === 'vertical'
         S.B.noY = consistency.y_axis && !S.B.revY && C.direction === 'horizontal'
 
