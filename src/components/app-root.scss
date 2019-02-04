@@ -21,7 +21,7 @@
     height: 100%;
     min-width: 300px;
     background: #f0f0f0;
-    border-radius: 3px;
+    // border-radius: 3px;
 
     textarea {
       padding: 10px;
@@ -73,6 +73,11 @@
         .chart {
           text-align: center;
           align-self: center;
+
+          /* for test */
+          svg {
+            border: 1px dotted lightgray;
+          }
 
           rect.hbar {
             mask: url(#mask-stripe);
