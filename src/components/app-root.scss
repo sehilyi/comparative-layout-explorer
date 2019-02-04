@@ -40,9 +40,9 @@
   }
 
   .main-pane {
-    padding: 10px;
+    // padding: 10px;
     overflow-y: auto;
-    height: calc(100% - 70px);
+    height: calc(100% - 50px);
 
     // .example-element:nth-child(odd) {
     //   background: #f8f8f8;
@@ -94,27 +94,6 @@
         button {
           background: red;
         }
-
-        // d3-chart-related
-        // removed for directly styling with style(,)
-        // .grid line,
-        // .grid path {
-        //   stroke: rgb(221, 221, 221);
-        //   stroke-width: 1px;
-        // }
-        // .grid text {
-        //   display: none;
-        // }
-        // .axis path,
-        // .axis line {
-        //   stroke-width: 1px;
-        // }
-        // .axis text {
-        //   stroke-width: 0px;
-        // }
-        // .axis .label {
-        //   font-size: 11px;
-        // }
       }
     }
   }

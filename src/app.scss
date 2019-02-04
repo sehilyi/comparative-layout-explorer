@@ -17,3 +17,23 @@ h3 {
 #root {
   height: 100%;
 }
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  // border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  // border-radius: 5px;
+  background: #ccc;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
