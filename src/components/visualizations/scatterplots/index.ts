@@ -11,7 +11,7 @@ import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE} from '../chart-styles';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
-  // if (true) return
+
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
 

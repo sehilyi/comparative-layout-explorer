@@ -8,6 +8,7 @@ import {_opacity} from "./design-settings";
 import {isUndefined} from "util";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
+  if (!canRenderChart(spec)) return
   switch (getChartType(spec)) {
     case "scatterplot":
       renderSimpleScatterplot(ref, spec)
@@ -60,7 +61,7 @@ export function canRenderChart(spec: Spec) {
     // in scatterplot, x- and y-aggregation functions should be always used together, and when both of them are used, color should be used
     can = false
   }
-
+  if (!can) console.log("cannot render this chart.")
   return can
 }
 

@@ -36,7 +36,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   }
 
   render() {
-    const Examples = getExamples().map(this.renderExamples, this);
+    const Examples = getExamples().splice(0, 5).map(this.renderExamples, this);
     return (
       <div className='app-root'>
         <div className='header'>
@@ -60,7 +60,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     let onBarChartB = (ref: SVGSVGElement) => {
       renderSimpleChart(ref, specs.B);
     }
-    let onBarChartAPlusB = (ref: SVGSVGElement) => {
+    let onBarChartC = (ref: SVGSVGElement) => {
       renderCompChart(ref, specs.A, specs.B, specs.C)
     }
     let _A = JSON.parse(JSON.stringify(specs.A))
@@ -68,12 +68,13 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     let _B = JSON.parse(JSON.stringify(specs.B))
     _B.data.values = "..."
     let _C = JSON.parse(JSON.stringify(specs.C))
+    console.log("# Now Rendering: " + getCompTitle(specs.A, specs.B, specs.C))
     return (
-      <div key={specs.C.name}>
+      <div key={getCompTitle(specs.A, specs.B, specs.C)}>
         <h1>{getCompTitle(specs.A, specs.B, specs.C)}</h1>
         <div className='example-element'>
           <div className='result-group'>
-            <div className='chart'><svg ref={onBarChartAPlusB}></svg></div>
+            <div className='chart'><svg ref={onBarChartC}></svg></div>
             <div className='control-pane'><textarea value={JSON.stringify(_C, null, 2)} readOnly /></div>
             <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' />{""}</div>
             <div className='chart'><svg ref={onBarChartA}></svg></div>

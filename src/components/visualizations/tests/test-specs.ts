@@ -14,7 +14,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        name: "bar jux bar",
         layout: "juxtaposition",
         direction: "horizontal",
         unit: "element",
@@ -47,44 +46,43 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    // {
-    //   C: {
-    //     ...DEFAULT_COMP_SPEC,
-    //     layout: "juxtaposition",
-    //     direction: "horizontal",
-    //     unit: "chart",
-    //     mirrored: true,
-    //     consistency: {
-    //       x_axis: false, y_axis: true, color: true
-    //     }
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {
-    //       values: DATASET_MOVIES.rawData
-    //     },
-    //     mark: "point",
-    //     encoding: {
-    //       x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-    //       y: {field: "IMDB_Rating", type: "quantitative"},
-    //       color: {field: "Source", type: "nominal"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {
-    //       values: DATASET_MOVIES.rawData
-    //     },
-    //     mark: "point",
-    //     encoding: {
-    //       x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-    //       y: {field: "IMDB_Rating", type: "quantitative", aggregate: "max"}
-    //     }
-    //   }
-    // },
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        name: "bar jux bar (chart)",
+        layout: "juxtaposition",
+        direction: "horizontal",
+        unit: "chart",
+        mirrored: false,
+        consistency: {
+          x_axis: false, y_axis: true, color: true
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "IMDB_Rating", type: "quantitative"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative"},
+          y: {field: "IMDB_Rating", type: "quantitative"}
+        }
+      }
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
         layout: "juxtaposition",
         direction: "horizontal",
         unit: "chart",
@@ -120,7 +118,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        name: "sca sup sca",
         layout: "superimposition",
         unit: "chart",
         consistency: {
@@ -189,7 +186,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        name: "bar sup sca",
         layout: "superimposition",
         unit: "chart",
         consistency: {
