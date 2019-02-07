@@ -38,8 +38,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top)).attr(_opacity, styles.A.opacity)
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
 
-  /// legend TODO: what to do with this?
-  if (C.layout === "juxtaposition" && C.unit === 'element') {
+  if (C.layout === "juxtaposition" && C.unit === 'element') { /// TODO:
     renderLegend(gB.append(_g).attr(_transform, translate(CHART_SIZE.width + GAP_BETWEEN_CHARTS, 0)),
       [A.encoding.y.field, B.encoding.y.field],
       styles.A.color.range().concat(styles.B.color.range()) as string[])
@@ -54,13 +53,15 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
   }
   else {  // This reaches when Chart B is separated to multiple charts (e.g., nesting)
+    // TODO: only considering bar charts
     const subGB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
+    const n = A.encoding.x.type === "nominal" ? "x" : "y"
     for (let i = 0; i < layouts.subBs.length; i++) {
       const gB = subGB.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
-      let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, domains.A.axis["x"][i] as string)
+      let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
-      // TODO: width and height is not included in styles => any way to make this more clear?
+      // TODO: width and height is not included in styles => any ways to make this more clear?
       renderChart(gB, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
     }
   }

@@ -86,26 +86,26 @@ export function renderBars(
 
   if (verticalBar) {
     const bandUnitSize = width / numOfC
-    const barWidth = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
+    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
 
     bars
       .attr(_y, d => (styles.revY ? 0 : qY(d[vKey])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0]) ?
           (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0][barOffset.valueField])) : 0))
-      .attr(_x, d => nX(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barWidth / 2.0 + barWidth * shiftBy)
-      .attr(_width, barWidth)
+      .attr(_x, d => nX(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_width, barSize)
       .attr(_height, d => (styles.revY ? qY(d[vKey]) : height - qY(d[vKey])))
   }
   else {
     const bandUnitSize = height / numOfC
-    const barHeight = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * mulSize) as number;
+    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * mulSize) as number;
 
     bars
       .attr(_x, d => (!styles.revX ? 0 : qX(d[vKey])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0]) ?
           (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0][barOffset.valueField])) : 0))
-      .attr(_y, d => nY(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barHeight / 2.0 + barHeight * shiftBy)
-      .attr(_height, barHeight)
+      .attr(_y, d => nY(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_height, barSize)
       .attr(_width, d => (!styles.revX ? qX(d[vKey]) : width - qX(d[vKey])))
   }
 }

@@ -94,9 +94,10 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       resB = {...resB, axis: axes}
     }
     else if (isBarChart(A) && isScatterplot(B)) {
+      const n = A.encoding.x.type === "nominal" ? "x" : "y"
       let axes: AxisDomainData[] = []
-      for (let i = 0; i < axisA.x.length; i++) {
-        let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, axisA.x[i])
+      for (let i = 0; i < axisA[n].length; i++) {
+        let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, axisA[n][i])
         axisB.x = filteredData.map(d => d[B.encoding.x.field])
         axisB.y = filteredData.map(d => d[B.encoding.y.field])
         axes.push({...axisB})
@@ -104,7 +105,6 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       resB = {...resB, axis: axes}
     }
   }
-  // debugger
   return {A: resA, B: resB}
 }
 

@@ -3,8 +3,10 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, Consistency} from "src/models/comp-spec";
 import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getBarSize, NESTING_PADDING} from "../design-settings";
 import {ChartStyle} from ".";
-import {getAggregatedDatas} from "../data-handler";
+import {getAggregatedDatas, getAggValues} from "../data-handler";
 import d3 = require("d3");
+import {isBarChart} from "..";
+import {uniqueValues} from "src/useful-factory/utils";
 
 export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
   const w = CHART_SIZE.width, h = CHART_SIZE.height
@@ -33,23 +35,46 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         chartsp = getChartSize(1, 1, {legend: [0]})
 
         // divide layouts
-        const aggD = getAggregatedDatas(A, B)
-        const numOfX = aggD.A.categories.length
-        /// TODO: should be consistent with that of /barcharts/index.ts
-        const bandUnitSize = S.A.width / numOfX
-        const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.mulSize
-        /// TODO: should be consistent with that of /axes/index.ts
-        const nY = d3.scaleLinear()
-          .domain([d3.min([d3.min(aggD.A.values as number[]), 0]), d3.max(aggD.A.values as number[])]).nice()
-          .rangeRound([S.A.height, 0]);
-        //
-        for (let i = 0; i < numOfX; i++) {
-          subBs.push({
-            left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + NESTING_PADDING,
-            top: nY(aggD.A.values[i]) + NESTING_PADDING,
-            width: barWidth - NESTING_PADDING * 2,
-            height: S.A.height - nY(aggD.A.values[i]) - NESTING_PADDING // no top padding
-          })
+        // TODO: I think sub elements' layout should be shared here
+        if (isBarChart(A) && A.encoding.x.type === "nominal") { // vertical bar chart
+          const aggD = getAggregatedDatas(A, B)
+          const numOfX = aggD.A.categories.length
+          /// TODO: should be consistent with that of /barcharts/index.ts
+          const bandUnitSize = S.A.width / numOfX
+          const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.mulSize
+          /// TODO: should be consistent with that of /axes/index.ts
+          const qY = d3.scaleLinear()
+            .domain([d3.min([d3.min(aggD.A.values as number[]), 0]), d3.max(aggD.A.values as number[])]).nice()
+            .rangeRound([S.A.height, 0]);
+          //
+          for (let i = 0; i < numOfX; i++) {
+            subBs.push({
+              left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + NESTING_PADDING,
+              top: qY(aggD.A.values[i]) + NESTING_PADDING,
+              width: barWidth - NESTING_PADDING * 2,
+              height: S.A.height - qY(aggD.A.values[i]) - NESTING_PADDING // no top padding
+            })
+          }
+        }
+        else if (isBarChart(A) && A.encoding.y.type === "nominal") { // horizontal bar chart
+          const numOfCategories = uniqueValues(A.data.values, A.encoding.y.field).length
+          const values = getAggValues(A.data.values, A.encoding.y.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
+          /// TODO: should be consistent with that of /barcharts/index.ts
+          const bandUnitSize = S.A.height / numOfCategories
+          const barSize = getBarSize(S.A.height, numOfCategories, S.A.barGap) * S.A.mulSize
+          /// TODO: should be consistent with that of /axes/index.ts
+          const qX = d3.scaleLinear()
+            .domain([d3.min([d3.min(values as number[]), 0]), d3.max(values as number[])]).nice()
+            .rangeRound([0, S.A.width]);
+          //
+          for (let i = 0; i < numOfCategories; i++) {
+            subBs.push({
+              left: 0,
+              top: i * bandUnitSize + (bandUnitSize - barSize) / 2.0 + NESTING_PADDING,
+              width: qX(values[i]) - NESTING_PADDING, // no right padding
+              height: barSize - NESTING_PADDING * 2
+            })
+          }
         }
       }
     default:
