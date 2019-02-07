@@ -53,14 +53,15 @@ export function manageZIndex(
 export function canRenderChart(spec: Spec) {
   let can = true;
 
-  // exceptions
+  /* exceptions */
+  // in scatterplot, x- and y-aggregation functions should be always used together, and when both of them are used, color should be used
   if (isScatterplot(spec) &&
     (isUndefined(spec.encoding.x.aggregate) && !isUndefined(spec.encoding.y.aggregate) ||
       !isUndefined(spec.encoding.x.aggregate) && isUndefined(spec.encoding.y.aggregate) ||
-      (!isUndefined(spec.encoding.x.aggregate) && !isUndefined(spec.encoding.y.aggregate) && isUndefined(spec.encoding.color)))) {
-    // in scatterplot, x- and y-aggregation functions should be always used together, and when both of them are used, color should be used
-    can = false
-  }
+      (!isUndefined(spec.encoding.x.aggregate) && !isUndefined(spec.encoding.y.aggregate) && isUndefined(spec.encoding.color)))) can = false
+  // in bar chart, only one nominal type field should be included
+  if (isBarChart(spec) && spec.encoding.y.type === spec.encoding.x.type) can = false
+
   if (!can) console.log("cannot render this chart.")
   return can
 }

@@ -36,7 +36,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   }
 
   render() {
-    const Examples = getExamples().splice(0, 5).map(this.renderExamples, this);
+    const Examples = getExamples().map(this.renderExamples, this);
     return (
       <div className='app-root'>
         <div className='header'>
