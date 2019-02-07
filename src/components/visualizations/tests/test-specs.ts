@@ -4,7 +4,9 @@ import {DATASET_MOVIES} from "src/datasets/movies";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
   return (A.mark === "point" ? "scatterplot" : A.mark + "chart") + " x " + (B.mark === "point" ? "scatterplot" : B.mark + "chart") + " " +
-    "(" + C.layout.toString().slice(0, 3).toUpperCase() + "|" + C.unit.slice(0, 3).toUpperCase() + "|" + C.direction.slice(0, 1).toUpperCase() + "|" + (C.mirrored ? "M" : "not M") + ")"
+    "(" + C.layout.toString().slice(0, 3).toUpperCase() + "|" + C.unit.slice(0, 3).toUpperCase() + "|" + C.direction.slice(0, 1).toUpperCase() + "|" + (C.mirrored ? "M" : "not M") +
+    "|Consistency{x:" + C.consistency.x_axis + ",y:" + C.consistency.y_axis + ",c:" + C.consistency.color +
+    "})"
 }
 
 export function getExamples() {
@@ -90,6 +92,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         layout: "juxtaposition",
         unit: "chart",
         mirrored: false,
+        direction: "vertical",
         consistency: {
           x_axis: true, y_axis: true, color: true
         }

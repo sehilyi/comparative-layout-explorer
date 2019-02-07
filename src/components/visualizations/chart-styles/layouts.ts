@@ -18,7 +18,7 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         if (S.B.legend) legend.push(1)
         const numOfC = C.direction === 'horizontal' ? 2 : 1
         const numOfR = C.direction === 'vertical' ? 2 : 1
-        chartsp = getChartSize(numOfC, numOfR, {noX: S.A.noX, noY: S.B.noY, legend})
+        chartsp = getChartSize(numOfC, numOfR, {noX: S.A.noX, noY: S.B.noY, legend, noGap: C.mirrored})
       }
       else if (C.unit === "element") {
         chartsp = getChartSize(1, 1, {w, h, legend: [0]})

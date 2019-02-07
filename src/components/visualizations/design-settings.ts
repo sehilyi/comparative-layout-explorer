@@ -89,6 +89,7 @@ export function getChartSize(x: number, y: number, styles: object) {
   const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
   const w = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
   const h = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
+  // const noGap = ifUndefinedGetDefault(styles["noGap"], false) as boolean;
   // specify **column** indexes that legend exists
   // TODO: this should be revised!!! not natural to specify only the column
   const legend = ifUndefinedGetDefault(styles["legend"], []) as number[];
@@ -104,11 +105,11 @@ export function getChartSize(x: number, y: number, styles: object) {
   for (let i = 0; i < x; i++) {
     for (let j = 0; j < y; j++) {
       positions.push({
-        left: (noY ? CHART_MARGIN.left + (w + GAP_BETWEEN_CHARTS) * i :
+        left: (noY ? CHART_MARGIN.left + (w + (GAP_BETWEEN_CHARTS)) * i :
           CHART_MARGIN.left + (CHART_MARGIN.left + w + CHART_MARGIN.right) * i) +
           // TODO: clear this up!
           (legend.filter(d => d < i).length != 0 ? legend.filter(d => d < i).length * LEGEND_WIDTH : 0),
-        top: noX ? CHART_MARGIN.top + (h + GAP_BETWEEN_CHARTS) * j :
+        top: noX ? CHART_MARGIN.top + (h + (GAP_BETWEEN_CHARTS)) * j :
           CHART_MARGIN.top + (CHART_MARGIN.top + h + CHART_MARGIN.bottom) * j
       })
     }
