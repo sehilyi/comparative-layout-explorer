@@ -70,7 +70,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     let _C = JSON.parse(JSON.stringify(specs.C))
     console.log("# Now Rendering: " + getCompTitle(specs.A, specs.B, specs.C))
     return (
-      <div key={getCompTitle(specs.A, specs.B, specs.C)}>
+      <div key={getCompTitle(specs.A, specs.B, specs.C)} className="example-element-root">
         <h1>{getCompTitle(specs.A, specs.B, specs.C)}</h1>
         <div className='example-element'>
           <div className='result-group'>

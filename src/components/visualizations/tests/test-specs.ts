@@ -3,11 +3,12 @@ import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
-  return A.mark + " " + C.layout + "(" + C.unit + "," + C.direction + ") " + B.mark
+  return (A.mark === "point" ? "scatterplot" : A.mark + "chart") + " x " + (B.mark === "point" ? "scatterplot" : B.mark + "chart") + " " +
+    C.layout + "(" + C.unit + "," + C.direction + ") "
 }
 
 export function getExamples() {
-  return getExampleSpec()
+  return getExampleSpec().sort((a, b) => a.C.layout < b.C.layout ? -1 : 1)
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   return [

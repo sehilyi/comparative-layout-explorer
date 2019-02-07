@@ -17,11 +17,9 @@
   }
 
   .control-pane {
-    // height: 300px;
     height: 100%;
     min-width: 300px;
     background: #f0f0f0;
-    // border-radius: 3px;
 
     textarea {
       padding: 10px;
@@ -32,7 +30,6 @@
       border: none;
       outline: none;
       font-family: "Consolas", "Courier New", "monospace";
-      // font-size: 1em;
       font-weight: bold;
       resize: none;
       overflow-y: auto;
@@ -40,14 +37,16 @@
   }
 
   .main-pane {
-    // padding: 10px;
     overflow-y: auto;
     height: calc(100% - 50px);
 
-    // .example-element:nth-child(odd) {
-    //   background: #f8f8f8;
-    // }
-
+    h1 {
+      margin-left: 12px;
+      margin-top: 12px;
+    }
+    .example-element-root {
+      margin-top: 12px;
+    }
     .example-element {
       padding: 10px;
       overflow-x: auto;
@@ -68,16 +67,13 @@
       .result-group {
         display: grid;
         grid-template-columns: repeat(8, 1fr);
-        // grid-template-columns: repeat(3, 1fr);
 
         .chart {
           text-align: center;
           align-self: center;
 
           /* for test */
-          svg {
-            border: 1px dotted lightgray;
-          }
+          border: 1px solid lightgray;
 
           rect.hbar {
             mask: url(#mask-stripe);
