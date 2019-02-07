@@ -31,10 +31,9 @@ export const DEFAULT_AXIS_DOMAIN = {
  */
 export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let resA: ChartDomainData, resB: ChartDomainData
-  let axisA: AxisDomainData = DEFAULT_AXIS_DOMAIN, axisB: AxisDomainData = DEFAULT_AXIS_DOMAIN
+  let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
   let colorA = {c: [] as string[] | number[], cKey: "" as string}, colorB = {c: [] as string[] | number[], cKey: "" as string}
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainAB} = getDomain(A, B)
-
   if (consistency.x_axis) {
     axisA.x = axisB.x = DomainAB.x
   }
@@ -74,10 +73,10 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
         getAggValues(B.data.values, B.encoding[n].field, [B.encoding[q].field], B.encoding[q].aggregate)),
       A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
   }
-  else if ((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart") &&
+  else if (((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart")) &&
     isScatterplot(A) && isScatterplot(B) && consistency.color) {
-    // use A color if two of them use it
-    // if only B use color, then use the B's
+    // use A color if two of them use color
+    // When only B use color, then use the B's
     resA.c = resB.c = typeof A.encoding.color !== "undefined" ? DomainA.color :
       typeof B.encoding.color !== "undefined" ? DomainB.color : [""]
     resA.cKey = resB.cKey = typeof A.encoding.color !== "undefined" ? DomainA.cKey :
@@ -105,6 +104,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       resB = {...resB, axis: axes}
     }
   }
+  // debugger
   return {A: resA, B: resB}
 }
 
