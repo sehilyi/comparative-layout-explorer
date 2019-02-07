@@ -54,6 +54,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   }
 
   renderExamples(specs: {A: Spec, B: Spec, C: CompSpec}) {
+    const PRESENTATION = true
     let onBarChartA = (ref: SVGSVGElement) => {
       renderSimpleChart(ref, specs.A);
     }
@@ -69,7 +70,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     _B.data.values = "..."
     let _C = JSON.parse(JSON.stringify(specs.C))
     console.log("# Now Rendering: " + getCompTitle(specs.A, specs.B, specs.C))
-    return (
+    return !PRESENTATION ? (
       <div key={getCompTitle(specs.A, specs.B, specs.C)} className="example-element-root">
         <h1>{getCompTitle(specs.A, specs.B, specs.C)}</h1>
         <div className='example-element'>
@@ -85,7 +86,24 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
           </div>
         </div>
       </div>
-    );
+    ) :
+      (
+        <div key={getCompTitle(specs.A, specs.B, specs.C)} className="example-element-root">
+          <h1>{getCompTitle(specs.A, specs.B, specs.C)}</h1>
+          <div className='example-element'>
+            <div className='result-group'>
+              <div className='control-pane'><textarea value={JSON.stringify(_A, null, 2)} readOnly /></div>
+              <div className='chart'><svg ref={onBarChartA}></svg></div>
+              <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {specs.C.layout}</div>
+              <div className='control-pane'><textarea value={JSON.stringify(_B, null, 2)} readOnly /></div>
+              <div className='chart'><svg ref={onBarChartB}></svg></div>
+              <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' />{""}</div>
+              <div className='control-pane'><textarea value={JSON.stringify(_C, null, 2)} readOnly /></div>
+              <div className='chart'><svg ref={onBarChartC}></svg></div>
+            </div>
+          </div>
+        </div>
+      )
   }
 }
 
