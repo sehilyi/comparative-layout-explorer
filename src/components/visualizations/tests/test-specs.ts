@@ -6,7 +6,7 @@ export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
   return (A.mark === "point" ? "scatterplot" : A.mark + "chart") + " x " + (B.mark === "point" ? "scatterplot" : B.mark + "chart") + " " +
     "(" + C.layout.toString().slice(0, 3).toUpperCase() + "|" + C.unit.slice(0, 3).toUpperCase() + "|" + C.direction.slice(0, 1).toUpperCase() + "|" + (C.mirrored ? "M" : "not M") +
     "|Consistency{x:" + C.consistency.x_axis + ",y:" + C.consistency.y_axis + ",c:" + C.consistency.color +
-    "})"
+    "}) " + C.name
 }
 
 export function getExamples() {
@@ -224,6 +224,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
+        name: "horizontal bar chart",
         layout: "superimposition",
         unit: "element",
         consistency: {
@@ -249,6 +250,39 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "US_Gross", type: "quantitative"},
           y: {field: "IMDB_Rating", type: "quantitative"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
+        layout: "superimposition",
+        direction: "horizontal",
+        unit: "element",
+        consistency: {
+          x_axis: false, y_axis: false, color: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          y: {field: "Source", type: "nominal"},
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          y: {field: "MPAA_Rating", type: "nominal"},
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           color: {field: "MPAA_Rating", type: "nominal"}
         }
       }
@@ -288,6 +322,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
+        name: "2",
         layout: "superimposition",
         unit: "element",
         consistency: {

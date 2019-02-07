@@ -85,8 +85,9 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
   else if ((C.layout === "superimposition" && C.unit === "element")) {
     // nesting
     if (isBarChart(A) && isBarChart(B)) {
+      const n = A.encoding.x.type === "nominal" ? "x" : "y", q = A.encoding.x.type === "quantitative" ? "x" : "y"
       let axes: AxisDomainData[] = []
-      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, A.encoding.y.aggregate)
+      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, A.encoding[q].aggregate)
       for (let i = 0; i < axisA.x.length; i++) {
         axisB.y = nested[i].values.map((d: object) => d["value"])
         axes.push({...axisB})
