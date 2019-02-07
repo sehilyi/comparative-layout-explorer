@@ -85,6 +85,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
   else if ((C.layout === "superimposition" && C.unit === "element")) {
     // nesting
     if (isBarChart(A) && isBarChart(B)) {
+      // TODO: horizontal bar chart vs. vertical bar chart should be considered
       const n = A.encoding.x.type === "nominal" ? "x" : "y", q = A.encoding.x.type === "quantitative" ? "x" : "y"
       let axes: AxisDomainData[] = []
       let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, A.encoding[q].aggregate)
