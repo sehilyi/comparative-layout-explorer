@@ -4,7 +4,7 @@ import {CompSpec} from "src/models/comp-spec";
 import {translate} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
-  getBarColor, _width, _height, _g, _transform, _opacity, AXIS_ROOT_ID
+  getBarColor, _width, _height, _g, _transform, _opacity
 } from "./design-settings";
 import {isUndefined} from "util";
 import {renderBarChart, renderBars} from "./barcharts";
@@ -26,28 +26,6 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
   d3.select(ref).selectAll('*').remove();
 
   renderCompChartGeneralized(ref, A, B, C)
-  if (true) return
-
-  // TODO: all chart renderers will be combined eventually
-  switch (C.layout) {
-    case "juxtaposition":
-      if (C.unit === 'chart') renderJuxPerChart(ref, A, B, C)
-      else if (C.unit === 'element') renderJuxPerElement(ref, A, B, C)
-      break
-    case "superimposition":
-      if (C.unit === "chart") renderSuperimposition(ref, A, B, C)
-      else if (C.unit === "element") renderNesting(ref, A, B, C)
-      break
-    // case "blend":
-    //   renderBlend(ref, A, B, C)
-    //   break;
-    // case "nest":
-    //   renderNest(ref, A, B, C)
-    // break;
-    default:
-      renderJuxPerChart(ref, A, B, C)
-      break
-  }
 }
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
@@ -91,78 +69,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   // svg.select("." + AXIS_ROOT_ID).lower()  // TODO: this does not work because gA, gB, and axis are on different level in the hierarchy
 }
 
-// deprecated
-export function renderJuxPerChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const {...consistency} = correctConsistency(A, B, C)
-  const {...domains} = getDomainByLayout(A, B, C, consistency)
-  const {...styles} = getStyles(A, B, C, consistency, domains)
-  const {...layouts} = getLayouts(A, B, C, consistency, {...styles})
-
-  const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
-  const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top)).attr(_opacity, styles.A.opacity)
-  const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
-
-  /// A
-  if (!Array.isArray(domains.A.axis)) {
-    renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
-  }
-  /// B
-  if (!Array.isArray(domains.B.axis)) {
-    renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
-  }
-}
-// deprecated
-export function renderJuxPerElement(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const {...consistency} = correctConsistency(A, B, C)
-  const {...domains} = getDomainByLayout(A, B, C, consistency)
-  const {...styles} = getStyles(A, B, C, consistency, domains)
-  const {...layouts} = getLayouts(A, B, C, consistency, styles)
-
-  const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
-  const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top)).attr(_opacity, styles.A.opacity)
-  const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
-
-  /// legend
-  renderLegend(gB.append(_g).attr(_transform, translate(CHART_SIZE.width + GAP_BETWEEN_CHARTS, 0)),
-    [A.encoding.y.field, B.encoding.y.field],
-    styles.A.color.range().concat(styles.B.color.range()) as string[])
-  //
-
-  /// A
-  if (!Array.isArray(domains.A.axis)) {
-    renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
-  }
-  /// B
-  if (!Array.isArray(domains.B.axis))
-    renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
-}
-
-// deprecated
-export function renderSuperimposition(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const {...consistency} = correctConsistency(A, B, C)
-  const {...domains} = getDomainByLayout(A, B, C, consistency)
-  const {...styles} = getStyles(A, B, C, consistency, domains)
-  const {...layouts} = getLayouts(A, B, C, consistency, styles)
-
-  const svg = d3.select(ref).attr(_height, layouts.height).attr(_width, layouts.width)
-  const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top)).attr(_opacity, styles.A.opacity)
-  const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
-
-  /// A
-  if (!Array.isArray(domains.A.axis)) {
-    renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
-  }
-  /// B
-  if (!Array.isArray(domains.B.axis)) {
-    renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
-  }
-
-  if (styles.A.onTop) gA.raise()
-  if (styles.B.onTop) gB.raise()
-
-  svg.select("." + AXIS_ROOT_ID).lower()  // TODO: this does not work because gA, gB, and axis are on different level in the hierarchy
-}
-// deprecated
+/* deprecated */
 export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomainByLayout(A, B, C, consistency)
@@ -193,7 +100,7 @@ export function renderNesting(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec)
     }
   }
 }
-// deprecated
+/* deprecated */
 export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
 
   if (C.direction === "vertical") {
