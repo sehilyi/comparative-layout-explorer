@@ -50,7 +50,7 @@ export function renderBarChart(
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nField, [qField], aggregate));
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, styles);
   renderBars(g, aggValues, qField, nField, uniqueValues(domain[n], "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
-  if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
+  if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
 
   manageZIndex(g, spec)
 }

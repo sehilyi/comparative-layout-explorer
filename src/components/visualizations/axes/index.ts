@@ -20,24 +20,26 @@ export function renderAxes(
 
   const nX = d3.scaleBand()
     .domain(uniqueValues(xval, "") as string[])
-    .range(stl.revX ? [stl.width, 0] : [0, stl.width]);
+    .range(stl.revX ? [stl.width, 0] : [0, stl.width])
   const qX = d3.scaleLinear()
     .domain([d3.min([d3.min(xval as number[]), 0]), d3.max(xval as number[])]).nice()
-    .rangeRound(stl.revX ? [stl.width, 0] : [0, stl.width]);
+    .rangeRound(stl.revX ? [stl.width, 0] : [0, stl.width])
   const nY = d3.scaleBand()
     .domain(uniqueValues(yval, "") as string[])
   // when Y is nominal, first thing should be appear on top rather on the bottom
   if (!isYCategorical) {
-    nY.range(stl.revY ? [0, stl.height] : [stl.height, 0]);
+    nY.range(stl.revY ? [0, stl.height] : [stl.height, 0])
   }
   else {
-    nY.range(stl.revY ? [stl.height, 0] : [0, stl.height]);
+    nY.range(stl.revY ? [stl.height, 0] : [0, stl.height])
   }
   const qY = d3.scaleLinear()
     .domain([d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]).nice()
-    .rangeRound(stl.revY ? [0, stl.height] : [stl.height, 0]);
+    .rangeRound(stl.revY ? [0, stl.height] : [stl.height, 0])
 
-  let xAxis = stl.topX ? // TODO: any clearer way??
+  // get axis and grid by field types
+  // TODO: any clearer way??
+  let xAxis = stl.topX ?
     isXCategorical ?
       d3.axisTop(nX).ticks(Math.ceil(stl.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
       d3.axisTop(qX).ticks(Math.ceil(stl.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
@@ -59,7 +61,7 @@ export function renderAxes(
     d3.axisLeft(qY).ticks(Math.ceil(stl.height / 40)).tickFormat(null).tickSize(-stl.width)
 
   if (!stl.noAxes) {
-    let g = root//.append(_g).classed('g', true).classed(AXIS_ROOT_ID, true)
+    let g = root //.append(_g).classed('g', true).classed(AXIS_ROOT_ID, true) // TODO:
 
     if (!isXCategorical && !stl.noGrid) {
       g.append('g')
@@ -122,7 +124,7 @@ export function renderAxes(
           .classed('label', true)
           .attr('transform', rotate(-90))
           .attr('x', -stl.height / 2)
-          .attr('y', stl.rightY ? 50 : -50)
+          .attr('y', stl.rightY ? 50 : isYCategorical ? -90 : -55)  // TODO: is this right decision?
           .attr('dy', '.71em')
           .style('font-weight', 'bold')
           .style('fill', 'black')
@@ -150,7 +152,7 @@ export function renderAxes(
 
     // small tick
     g.selectAll('.axis line')
-      .attr('stroke-width', '0px')  // removed
+      .attr('stroke-width', '0px')
       .attr('stroke', 'black')
 
     g.selectAll('.axis text')
@@ -180,5 +182,5 @@ export function renderAxes(
       .attr('stroke', 'rgb(221, 221, 221)')
       .attr('stroke-width', '0px')
   }
-  return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY};
+  return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY}
 }

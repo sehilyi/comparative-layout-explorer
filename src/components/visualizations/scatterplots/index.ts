@@ -46,7 +46,7 @@ export function renderScatterplot(
   const {x, y} = renderAxes(g, domain.x, domain.y, spec, {...styles});
   renderPoints(g, aggValues, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles, aggregated: typeof aggregate != "undefined"})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
-  if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + CHART_MARGIN.right + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
+  if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
 }
 
 export function renderPoints(
