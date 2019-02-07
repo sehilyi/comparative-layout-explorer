@@ -89,7 +89,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       let nested = getAggValuesByTwoKeys(A.data.values, A.encoding.x.field, B.encoding.x.field, A.encoding.y.field, A.encoding.y.aggregate)
       for (let i = 0; i < axisA.x.length; i++) {
         axisB.y = nested[i].values.map((d: object) => d["value"])
-        axes.push(axisB)
+        axes.push({...axisB})
       }
       resB = {...resB, axis: axes}
     }
@@ -99,7 +99,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
         let filteredData = oneOfFilter(B.data.values, A.encoding.x.field, axisA.x[i])
         axisB.x = filteredData.map(d => d[B.encoding.x.field])
         axisB.y = filteredData.map(d => d[B.encoding.y.field])
-        axes.push(axisB)
+        axes.push({...axisB})
       }
       resB = {...resB, axis: axes}
     }

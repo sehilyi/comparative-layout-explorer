@@ -148,15 +148,13 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    /*
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        title: "bar nes sca",
         layout: "superimposition",
         unit: "element",
         consistency: {
-          x_axis: true, y_axis: true, color: true
+          x_axis: false, y_axis: false, color: false
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -166,9 +164,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "bar",
         encoding: {
-          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           x: {field: "Source", type: "nominal"},
-          color: {field: "Source", type: "nominal"}
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"}
         }
       },
       B: {
@@ -183,7 +180,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    */
     {
       C: {
         ...DEFAULT_COMP_SPEC,
