@@ -44,16 +44,15 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       styles.A.color.range().concat(styles.B.color.range()) as string[])
   }
 
-  // A
+  // render A
   if (!Array.isArray(domains.A.axis)) {
     renderChart(gA, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
   }
-  // B
+  // render B
   if (!Array.isArray(domains.B.axis)) {
     renderChart(gB, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
   }
-  else {  // This reaches when Chart B is separated to multiple charts (e.g., nesting)
-    // TODO: only considering bar charts
+  else {  // when B is separated to multiple charts by nesting
     const subGB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
     const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y"
 
@@ -62,7 +61,6 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
 
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, isScatterplot(A) ? domains.A.c[i] as string : domains.A.axis[n][i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
-      // if (isScatterplot(A)) debugger
       // TODO: width and height is not included in styles => any ways to make this more clear?
       renderChart(gB, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
     }

@@ -111,7 +111,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       let axes: AxisDomainData[] = []
       let nested = getAggValuesByTwoKeys(A.data.values, A.encoding.color.field, B.encoding[bn].field, B.encoding[bq].field, B.encoding[bq].aggregate)
       for (let i = 0; i < colorA.c.length; i++) {
-        axisB.y = nested[i].values.map((d: object) => d["value"])
+        axisB[bq] = nested[i].values.map((d: object) => d["value"])
         axes.push({...axisB})
       }
       resB = {...resB, axis: axes}

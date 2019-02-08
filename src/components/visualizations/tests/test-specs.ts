@@ -457,6 +457,40 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
+        name: "V vs H bar charts",
+        layout: "superimposition",
+        direction: "horizontal",
+        unit: "element",
+        consistency: {
+          x_axis: false, y_axis: false, color: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
         layout: "superimposition",
         unit: "element",
         consistency: {
@@ -580,6 +614,40 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "MPAA_Rating", type: "nominal"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
+        name: "scatter + horizontal bar",
+        layout: "superimposition",
+        unit: "element",
+        consistency: {
+          x_axis: false, y_axis: false, color: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          y: {field: "MPAA_Rating", type: "nominal"},
+          x: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
           color: {field: "MPAA_Rating", type: "nominal"}
         }
       }
