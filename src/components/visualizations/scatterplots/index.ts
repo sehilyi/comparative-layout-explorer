@@ -8,7 +8,7 @@ import {renderLegend} from '../legends';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {ScatterplotStyle} from './styles';
 import {getAggValues} from '../data-handler';
-import {DEFAULT_CHART_STYLE} from '../chart-styles';
+import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
@@ -17,20 +17,17 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
   d3.select(svg).selectAll('*').remove();
 
-  const chartsp = getChartSize(1, 1, {legend: [0]})
-  d3.select(svg)
-    .attr(_width, chartsp.size.width)
-    .attr(_height, chartsp.size.height)
-
-  const g = d3.select(svg).append(_g)
-    .attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
-
   const isColorUsed = typeof spec.encoding.color !== "undefined"
   const cKey = isColorUsed ? spec.encoding.color.field : spec.encoding.x.field
   const color = isColorUsed ? getColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
   const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
+  const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, colorKey: cKey, legend: isColorUsed}
+  const chartsp = getChartSize(1, 1, {legend: [0]})
 
-  renderScatterplot(g, spec, {x: domain.x, y: domain.y}, {...DEFAULT_CHART_STYLE, color, colorKey: cKey, legend: isColorUsed})
+  d3.select(svg).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
+  const g = d3.select(svg).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
+
+  renderScatterplot(g, spec, {x: domain.x, y: domain.y}, styles)
 }
 
 export function renderScatterplot(
@@ -43,7 +40,7 @@ export function renderScatterplot(
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
   const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
   const aggValues = typeof aggregate != "undefined" ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {...styles});
+  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {...styles})
   renderPoints(g, aggValues, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles, aggregated: typeof aggregate != "undefined"})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])

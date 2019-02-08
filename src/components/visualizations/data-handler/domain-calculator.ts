@@ -93,7 +93,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[an].field, B.encoding[bn].field, B.encoding[bq].field, B.encoding[bq].aggregate)
       const yValues = [].concat(...nested.map(d => d.values)).map((d: object) => d["value"])
       for (let i = 0; i < axisA[an].length; i++) {
-        // axisB[bq] = nested[i].values.map((d: object) => d["value"]) // => globally defining domains to fix issues #31
+        // axisB[bq] = nested[i].values.map((d: object) => d["value"]) // => global domain (Fixes #31)
         axisB[bq] = yValues
         axes.push({...axisB})
       }
@@ -103,7 +103,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[n].length; i++) {
-        let filteredData = B.data.values // oneOfFilter(B.data.values, A.encoding[n].field, axisA[n][i]) // => globally defining domains to fix issues #31
+        let filteredData = B.data.values // oneOfFilter(B.data.values, A.encoding[n].field, axisA[n][i]) // => global domain (Fixes #31)
         axisB.x = filteredData.map(d => d[B.encoding.x.field])
         axisB.y = filteredData.map(d => d[B.encoding.y.field])
         axes.push({...axisB})

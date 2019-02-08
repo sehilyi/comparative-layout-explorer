@@ -22,6 +22,7 @@ export const AXIS_ROOT_ID = "axis-root--"
 // general
 export const CHART_SIZE = {width: 280, height: 200}
 export const CHART_MARGIN = {top: 80, right: 50, bottom: 80, left: 100}
+export const CHART_MARGIN_NO_AXIS = {top: 20, right: 20, bottom: 20, left: 20}
 export const CHART_PADDING = {right: 20}
 export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,
@@ -84,6 +85,12 @@ export function getConstantColor(index?: number) {
     .range(getBarColor(i).slice(i - 1, i))
 }
 
+/**
+ * Do not consider when x and y are both not 1 (i.e., no table layout).
+ * @param x
+ * @param y
+ * @param styles
+ */
 export function getChartSize(x: number, y: number, styles: object) {
   const noX = ifUndefinedGetDefault(styles["noX"], false) as boolean;
   const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
