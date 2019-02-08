@@ -32,9 +32,9 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.A.noX = consistency.x_axis && !S.B.revX && C.direction === 'vertical'
         S.B.noY = consistency.y_axis && !S.B.revY && C.direction === 'horizontal'
 
-        S.A.color = getColor(d.A.c)
+        S.A.color = getColor(d.A.axis["color"])
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor(d.B.c)
+        S.B.color = getColor(Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color)
         S.B.colorKey = d.B.cKey
       }
       else if (C.unit === "element") {
@@ -71,9 +71,9 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         if (!consistency.x_axis) S.B.topX = true
         if (!consistency.y_axis) S.B.rightY = true
 
-        S.A.color = getColor(d.A.c)
+        S.A.color = getColor(d.A.axis["color"])
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor(d.B.c)
+        S.B.color = getColor(Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color)
         S.B.colorKey = d.B.cKey
 
         S.B.opacity = 0.4
@@ -86,9 +86,9 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.B.barGap = 0
         S.B.pointSize = 1.5
 
-        S.A.color = getColor(d.A.c)
+        S.A.color = getColor(d.A.axis["color"])
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor(d.B.c)
+        S.B.color = getColor(Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color)
         S.B.colorKey = d.B.cKey
 
         if (isScatterplot(A)) {

@@ -2,7 +2,7 @@ import {Spec} from "src/models/simple-vega-spec";
 
 import {CompSpec, Consistency} from "src/models/comp-spec";
 
-import {isBarChart, isScatterplot} from "..";
+import {isBarChart, isScatterplot, isChartDataAggregated} from "..";
 
 import {getAggValues, oneOfFilter, getDomainSumByKeys, getAggValuesByTwoKeys} from ".";
 
@@ -11,16 +11,17 @@ import {Domain} from "../axes";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[]
-  c: Domain
   cKey: string  // TODO: this should be removed eventually!
 }
 export type AxisDomainData = {
   x: Domain
   y: Domain
+  color: Domain
 }
 export const DEFAULT_AXIS_DOMAIN = {
   x: [] as string[] | number[],
-  y: [] as string[] | number[]
+  y: [] as string[] | number[],
+  color: [] as string[] | number[]
 }
 // TODO: this function should be much more efficiently implemented!!!
 /**
@@ -32,7 +33,7 @@ export const DEFAULT_AXIS_DOMAIN = {
 export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
   let resA: ChartDomainData, resB: ChartDomainData
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
-  let colorA = {c: [] as string[] | number[], cKey: "" as string}, colorB = {c: [] as string[] | number[], cKey: "" as string}
+  let cKeyA = "" as string, cKeyB = "" as string
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainAB} = getDomain(A, B)
   if (consistency.x_axis) {
     axisA.x = axisB.x = DomainAB.x
@@ -49,17 +50,17 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
     axisB.y = DomainB.y
   }
   if (consistency.color) {
-    colorA.c = colorB.c = DomainAB.color
-    colorA.cKey = colorB.cKey = DomainAB.cKey
+    axisA.color = axisB.color = DomainAB.color
+    cKeyA = cKeyB = DomainAB.cKey
   }
   else {
-    colorA.c = DomainA.color
-    colorB.c = DomainB.color
-    colorA.cKey = DomainA.cKey
-    colorB.cKey = DomainB.cKey
+    axisA.color = DomainA.color
+    axisB.color = DomainB.color
+    cKeyA = DomainA.cKey
+    cKeyB = DomainB.cKey
   }
-  resA = {axis: axisA, c: colorA.c, cKey: colorA.cKey}
-  resB = {axis: axisB, c: colorB.c, cKey: colorB.cKey}
+  resA = {axis: axisA, cKey: cKeyA}
+  resB = {axis: axisB, cKey: cKeyB}
 
   // exceptions: modify domains considering designs
   if (C.layout === "juxtaposition" && C.unit === "element" && C.direction === "vertical" && isBarChart(A) && isBarChart(B)) {
@@ -76,51 +77,30 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
     isScatterplot(A) && isScatterplot(B) && consistency.color) {
     // use A color if two of them use color
     // When only B use color, then use the B's
-    resA.c = resB.c = typeof A.encoding.color !== "undefined" ? DomainA.color :
+    resA.axis["color"] = resB.axis["color"] = typeof A.encoding.color !== "undefined" ? DomainA.color :
       typeof B.encoding.color !== "undefined" ? DomainB.color : [""]
     resA.cKey = resB.cKey = typeof A.encoding.color !== "undefined" ? DomainA.cKey :
       typeof B.encoding.color !== "undefined" ? DomainB.cKey : A.encoding.x.field
   }
+  // nesting
   else if ((C.layout === "superimposition" && C.unit === "element")) {
-    // nesting
-    if (isBarChart(A) && isBarChart(B)) {
-      const an = A.encoding.x.type === "nominal" ? "x" : "y"
+    if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
+    if (isChartDataAggregated(B)) {
+      const an = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
       const bn = B.encoding.x.type === "nominal" ? "x" : "y", bq = B.encoding.x.type === "quantitative" ? "x" : "y"
       let axes: AxisDomainData[] = []
       let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[an].field, B.encoding[bn].field, B.encoding[bq].field, B.encoding[bq].aggregate)
-      for (let i = 0; i < axisA.x.length; i++) {
+      for (let i = 0; i < axisA[an].length; i++) {
         axisB[bq] = nested[i].values.map((d: object) => d["value"])
         axes.push({...axisB})
       }
       resB = {...resB, axis: axes}
     }
-    else if (isBarChart(A) && isScatterplot(B)) {
-      const n = A.encoding.x.type === "nominal" ? "x" : "y"
+    else if (!isChartDataAggregated(B)) {
+      const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[n].length; i++) {
         let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, axisA[n][i])
-        axisB.x = filteredData.map(d => d[B.encoding.x.field])
-        axisB.y = filteredData.map(d => d[B.encoding.y.field])
-        axes.push({...axisB})
-      }
-      resB = {...resB, axis: axes}
-    }
-    else if (isScatterplot(A) && isBarChart(B)) {
-      // scatterplot should be aggregated by a nominal field used for color
-      const bn = B.encoding.x.type === "nominal" ? "x" : "y", bq = B.encoding.x.type === "quantitative" ? "x" : "y"
-      let axes: AxisDomainData[] = []
-      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding.color.field, B.encoding[bn].field, B.encoding[bq].field, B.encoding[bq].aggregate)
-      for (let i = 0; i < colorA.c.length; i++) {
-        axisB[bq] = nested[i].values.map((d: object) => d["value"])
-        axes.push({...axisB})
-      }
-      resB = {...resB, axis: axes}
-    }
-    else if (isScatterplot(A) && isScatterplot(B)) {
-      // scatterplot should be aggregated by a nominal field used for color
-      let axes: AxisDomainData[] = []
-      for (let i = 0; i < colorA.c.length; i++) {
-        let filteredData = oneOfFilter(B.data.values, A.encoding.color.field, colorA.c[i])
         axisB.x = filteredData.map(d => d[B.encoding.x.field])
         axisB.y = filteredData.map(d => d[B.encoding.y.field])
         axes.push({...axisB})

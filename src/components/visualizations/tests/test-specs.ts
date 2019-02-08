@@ -12,7 +12,7 @@ export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
 export function getExamples() {
   return getExampleSpec().sort((a, b) =>
     // sort by chart types, layout, and then unit
-    (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? -1 : (a.A.mark + a.B.mark) > (b.A.mark + b.A.mark) ? 1 : a.C.layout < b.C.layout ? -1 : a.C.layout > b.C.layout ? 1 : a.C.unit < b.C.unit ? -1 : 1
+    (a.A.mark + a.B.mark) < (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) > (b.A.mark + b.A.mark) ? 1 : a.C.layout < b.C.layout ? -1 : a.C.layout > b.C.layout ? 1 : a.C.unit < b.C.unit ? -1 : 1
   )
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
@@ -273,8 +273,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "point",
         encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative"},
-          y: {field: "US_Gross", type: "quantitative"},
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
           color: {field: "MPAA_Rating", type: "nominal"}
         }
       },
@@ -284,8 +284,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "point",
         encoding: {
-          x: {field: "Production_Budget", type: "quantitative"},
-          y: {field: "US_Gross", type: "quantitative"}
+          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
         }
       }
     },

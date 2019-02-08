@@ -5,7 +5,7 @@ import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
 import {ChartStyle} from "./chart-styles";
 import {CompSpec} from "src/models/comp-spec";
 import {_opacity} from "./design-settings";
-import {isUndefined} from "util";
+import {isUndefined, isNullOrUndefined} from "util";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   if (!canRenderChart(spec)) return
@@ -86,6 +86,14 @@ export function getChartType(spec: Spec): ChartTypes {
   else if (isBarChart(spec)) return "barchart"
   else if (isLineChart(spec)) return "linechart"
   else return "scatterplot"
+}
+/**
+ * This function checks if this chart contains aggregated visual elements
+ * such as bar charts or scatterplots with aggregated points
+ * @param spec
+ */
+export function isChartDataAggregated(spec: Spec) {
+  return isBarChart(spec) || (isScatterplot(spec) && !isNullOrUndefined(spec.encoding.color))
 }
 export function isBarChart(spec: Spec) {
   return spec.mark === "bar" && (
