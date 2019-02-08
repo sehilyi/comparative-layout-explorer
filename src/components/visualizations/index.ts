@@ -12,15 +12,21 @@ export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   switch (getChartType(spec)) {
     case "scatterplot":
       renderSimpleScatterplot(ref, spec)
-      break;
+      break
     case "barchart":
       renderSimpleBarChart(ref, spec)
-      break;
+      break
     case "linechart":
       //
-      break;
+      break
+    case "heatmap":
+      //
+      break
+    case "NULL":
+      console.log("Chart type is not defined well (NULL type).")
+      break
     default:
-      break;
+      break
   }
 }
 
@@ -33,15 +39,21 @@ export function renderChart(
   switch (getChartType(spec)) {
     case "scatterplot":
       renderScatterplot(g, spec, domain, s)
-      break;
+      break
     case "barchart":
       renderBarChart(g, spec, domain, s)
-      break;
+      break
     case "linechart":
       //
-      break;
+      break
+    case "heatmap":
+      //
+      break
+    case "NULL":
+      console.log("Chart type is not defined well (NULL type).")
+      break
     default:
-      break;
+      break
   }
 }
 export function manageZIndex(
@@ -85,7 +97,8 @@ export function getChartType(spec: Spec): ChartTypes {
   if (isScatterplot(spec)) return "scatterplot"
   else if (isBarChart(spec)) return "barchart"
   else if (isLineChart(spec)) return "linechart"
-  else return "scatterplot"
+  else if (isHeatmap(spec)) return "linechart"
+  else return "NULL"
 }
 /**
  * This function checks if this chart contains aggregated visual elements
@@ -107,4 +120,7 @@ export function isScatterplot(spec: Spec) {
 export function isLineChart(spec: Spec) {
   return spec.mark === "line" &&
     spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative'  // TODO: should add ordinal?
+}
+export function isHeatmap(spec: Spec) {
+  return spec.mark === "rect"
 }

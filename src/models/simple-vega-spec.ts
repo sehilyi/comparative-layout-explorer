@@ -6,7 +6,7 @@ export type Spec = {
 export type Data = {
   values: object[]
 }
-export type Mark = "bar" | "point" | "line";
+export type Mark = "bar" | "point" | "line" | "rect"
 export type Encoding = {
   x: Field
   y: Field
@@ -21,5 +21,5 @@ export type Color = {
   field: string
   type: DataType
 }
-export type DataType = 'nominal' | 'quantitative';
-export type Aggregate = 'sum' | 'mean' | 'median' | 'max' | 'min' | 'count';
+export type DataType = 'nominal' | 'quantitative'
+export type Aggregate = 'sum' | 'mean' | 'median' | 'max' | 'min' | 'count'

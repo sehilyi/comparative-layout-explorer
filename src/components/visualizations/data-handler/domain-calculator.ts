@@ -4,7 +4,7 @@ import {CompSpec, Consistency} from "src/models/comp-spec";
 
 import {isBarChart, isScatterplot, isChartDataAggregated} from "..";
 
-import {getAggValues, oneOfFilter, getDomainSumByKeys, getAggValuesByTwoKeys} from ".";
+import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys} from ".";
 
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
@@ -82,16 +82,19 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
     resA.cKey = resB.cKey = typeof A.encoding.color !== "undefined" ? DomainA.cKey :
       typeof B.encoding.color !== "undefined" ? DomainB.cKey : A.encoding.x.field
   }
-  // nesting
-  else if ((C.layout === "superimposition" && C.unit === "element")) {
+  /* nesting */
+  // separate domain B by aggregation keys used in Chart A
+  else if (C.layout === "superimposition" && C.unit === "element") {
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
     if (isChartDataAggregated(B)) {
       const an = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
       const bn = B.encoding.x.type === "nominal" ? "x" : "y", bq = B.encoding.x.type === "quantitative" ? "x" : "y"
       let axes: AxisDomainData[] = []
       let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[an].field, B.encoding[bn].field, B.encoding[bq].field, B.encoding[bq].aggregate)
+      const yValues = [].concat(...nested.map(d => d.values)).map((d: object) => d["value"])
       for (let i = 0; i < axisA[an].length; i++) {
-        axisB[bq] = nested[i].values.map((d: object) => d["value"])
+        // axisB[bq] = nested[i].values.map((d: object) => d["value"]) // => globally defining domains to fix issues #31
+        axisB[bq] = yValues
         axes.push({...axisB})
       }
       resB = {...resB, axis: axes}
@@ -100,7 +103,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[n].length; i++) {
-        let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, axisA[n][i])
+        let filteredData = B.data.values // oneOfFilter(B.data.values, A.encoding[n].field, axisA[n][i]) // => globally defining domains to fix issues #31
         axisB.x = filteredData.map(d => d[B.encoding.x.field])
         axisB.y = filteredData.map(d => d[B.encoding.y.field])
         axes.push({...axisB})

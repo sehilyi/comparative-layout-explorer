@@ -1,1 +1,1 @@
-export type ChartTypes = "scatterplot" | "barchart" | "linechart"
+export type ChartTypes = "scatterplot" | "barchart" | "linechart" | "heatmap" | "NULL"
