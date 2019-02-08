@@ -13,7 +13,7 @@ import {renderAxes} from "./axes";
 import {LEGEND_PADDING, LEGEND_WIDTH} from "./legends/default-design";
 import {ScaleBand, ScaleLinear} from "d3";
 import {correctConsistency} from "./consistency";
-import {renderChart, canRenderCompChart, canRenderChart} from ".";
+import {renderChart, canRenderCompChart, canRenderChart, isScatterplot} from ".";
 import {DEFAULT_CHART_STYLE} from "./chart-styles";
 import {getAggregatedDatas, oneOfFilter} from "./data-handler";
 import {getStyles} from "./chart-styles/style-definitions";
@@ -55,12 +55,14 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   else {  // This reaches when Chart B is separated to multiple charts (e.g., nesting)
     // TODO: only considering bar charts
     const subGB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
-    const n = A.encoding.x.type === "nominal" ? "x" : "y"
+    const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y"
+
     for (let i = 0; i < layouts.subBs.length; i++) {
       const gB = subGB.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
 
-      let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string)
+      let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, isScatterplot(A) ? domains.A.c[i] as string : domains.A.axis[n][i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
+      // if (isScatterplot(A)) debugger
       // TODO: width and height is not included in styles => any ways to make this more clear?
       renderChart(gB, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
     }

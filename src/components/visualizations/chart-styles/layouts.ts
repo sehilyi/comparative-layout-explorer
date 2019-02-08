@@ -5,8 +5,10 @@ import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getBarSize, N
 import {ChartStyle} from ".";
 import {getAggregatedDatas, getAggValues} from "../data-handler";
 import d3 = require("d3");
-import {isBarChart} from "..";
+import {isBarChart, isScatterplot} from "..";
 import {uniqueValues} from "src/useful-factory/utils";
+import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
+import {renderAxes} from "../axes";
 
 export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
   const w = CHART_SIZE.width, h = CHART_SIZE.height
@@ -73,6 +75,21 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
               top: i * bandUnitSize + (bandUnitSize - barSize) / 2.0 + NESTING_PADDING,
               width: qX(values[i]) - NESTING_PADDING, // no right padding
               height: barSize - NESTING_PADDING * 2
+            })
+          }
+        }
+        else if (isScatterplot(A)) {
+          const numOfCategories = uniqueValues(A.data.values, A.encoding.color.field).length
+          const xValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
+          const yValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.y.field], A.encoding.y.aggregate).map(d => d[A.encoding.y.field])
+          const pointSize = SCATTER_POINT_SIZE_FOR_NESTING
+          const {x, y} = renderAxes(null, xValues, yValues, A, S.A) // TODO: check styles
+          for (let i = 0; i < numOfCategories; i++) {
+            subBs.push({
+              left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + NESTING_PADDING,
+              top: (y as d3.ScaleLinear<number, number>)(yValues[i]) - pointSize / 2.0 + NESTING_PADDING,
+              width: pointSize - NESTING_PADDING * 2,
+              height: pointSize - NESTING_PADDING * 2
             })
           }
         }

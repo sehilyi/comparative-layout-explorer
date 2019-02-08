@@ -84,11 +84,10 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
   else if ((C.layout === "superimposition" && C.unit === "element")) {
     // nesting
     if (isBarChart(A) && isBarChart(B)) {
-      // TODO: horizontal bar chart vs. vertical bar chart should be considered
-      const an = A.encoding.x.type === "nominal" ? "x" : "y", aq = A.encoding.x.type === "quantitative" ? "x" : "y"
+      const an = A.encoding.x.type === "nominal" ? "x" : "y"
       const bn = B.encoding.x.type === "nominal" ? "x" : "y", bq = B.encoding.x.type === "quantitative" ? "x" : "y"
       let axes: AxisDomainData[] = []
-      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[an].field, B.encoding[bn].field, A.encoding[aq].field, A.encoding[aq].aggregate)
+      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[an].field, B.encoding[bn].field, B.encoding[bq].field, B.encoding[bq].aggregate)
       for (let i = 0; i < axisA.x.length; i++) {
         axisB[bq] = nested[i].values.map((d: object) => d["value"])
         axes.push({...axisB})
@@ -100,6 +99,28 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[n].length; i++) {
         let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, axisA[n][i])
+        axisB.x = filteredData.map(d => d[B.encoding.x.field])
+        axisB.y = filteredData.map(d => d[B.encoding.y.field])
+        axes.push({...axisB})
+      }
+      resB = {...resB, axis: axes}
+    }
+    else if (isScatterplot(A) && isBarChart(B)) {
+      // scatterplot should be aggregated by a nominal field used for color
+      const bn = B.encoding.x.type === "nominal" ? "x" : "y", bq = B.encoding.x.type === "quantitative" ? "x" : "y"
+      let axes: AxisDomainData[] = []
+      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding.color.field, B.encoding[bn].field, B.encoding[bq].field, B.encoding[bq].aggregate)
+      for (let i = 0; i < colorA.c.length; i++) {
+        axisB.y = nested[i].values.map((d: object) => d["value"])
+        axes.push({...axisB})
+      }
+      resB = {...resB, axis: axes}
+    }
+    else if (isScatterplot(A) && isScatterplot(B)) {
+      // scatterplot should be aggregated by a nominal field used for color
+      let axes: AxisDomainData[] = []
+      for (let i = 0; i < colorA.c.length; i++) {
+        let filteredData = oneOfFilter(B.data.values, A.encoding.color.field, colorA.c[i])
         axisB.x = filteredData.map(d => d[B.encoding.x.field])
         axisB.y = filteredData.map(d => d[B.encoding.y.field])
         axes.push({...axisB})

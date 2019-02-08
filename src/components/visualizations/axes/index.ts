@@ -3,6 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle, _start, _fill, _g} from "../design-settings";
 import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
+import {isNullOrUndefined} from "util";
 
 export type Domain = string[] | number[]
 
@@ -60,7 +61,7 @@ export function renderAxes(
     d3.axisLeft(nY).ticks(Math.ceil(stl.height / 40)).tickFormat(null).tickSize(-stl.width) :
     d3.axisLeft(qY).ticks(Math.ceil(stl.height / 40)).tickFormat(null).tickSize(-stl.width)
 
-  if (!stl.noAxes) {
+  if (!isNullOrUndefined(root) && !stl.noAxes) {
     let g = root //.append(_g).classed('g', true).classed(AXIS_ROOT_ID, true) // TODO:
 
     if (!isXCategorical && !stl.noGrid) {

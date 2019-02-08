@@ -46,6 +46,7 @@ export interface CommonChartStyle {
   barOffsetData: object[] // deprecated
   // scatterplot
   pointSize: number
+  rectPoint: boolean
 }
 
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {
@@ -87,5 +88,6 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   barOffset: undefined,
   barOffsetData: undefined,
   // scatterplot
-  pointSize: SCATTER_POINT_SIZE
+  pointSize: SCATTER_POINT_SIZE,
+  rectPoint: false
 }

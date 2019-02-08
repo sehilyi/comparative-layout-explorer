@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {translate, uniqueValues} from 'src/useful-factory/utils';
-import {CHART_SIZE, _width, _height, _g, _transform, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle, getChartSize, getColor, getConstantColor} from '../design-settings';
+import {CHART_SIZE, _width, _height, _g, _transform, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle, getChartSize, getColor, getConstantColor, _rect, _x, _y} from '../design-settings';
 import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_OPACITY} from './default-design';
 import {renderAxes} from '../axes';
@@ -60,13 +60,20 @@ export function renderPoints(
 
   g.append(_g).selectAll('.point')
     .data(data)
-    .enter().append(_circle)
+    .enter().append(styles.rectPoint ? _rect : _circle)
     .classed('point', true)
+    // circle mark
     .attr(_cx, d => x(d[xKey]))
     .attr(_cy, d => y(d[yKey]))
+    .attr(_r, styles.pointSize)
+    // rect mark
+    .attr(_x, d => x(d[xKey]) - styles.pointSize / 2.0)
+    .attr(_y, d => y(d[yKey]) - styles.pointSize / 2.0)
+    .attr(_width, styles.pointSize)
+    .attr(_height, styles.pointSize)
+    //
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, styles.stroke)
     .attr(_stroke_width, styles.stroke_width)
     .attr(_fill, d => styles.color(d[styles.colorKey]) as string)
-    .attr(_r, styles.pointSize)
 }

@@ -6,7 +6,8 @@ import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-calculator";
 import {getColor, getConstantColor} from "../design-settings";
-import {isBarChart} from "..";
+import {isBarChart, isScatterplot} from "..";
+import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 
 // TOOD: any better way to define domains' type?
 export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, d: {A: ChartDomainData, B: ChartDomainData}) {
@@ -93,6 +94,11 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.A.colorKey = d.A.cKey
         S.B.color = getColor(d.B.c)
         S.B.colorKey = d.B.cKey
+
+        if (isScatterplot(A)) {
+          S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING
+          S.A.rectPoint = true
+        }
       }
       break
     default:

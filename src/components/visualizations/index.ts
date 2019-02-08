@@ -71,7 +71,6 @@ export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
 
   // exceptions
   if ((isScatterplot(A) || isScatterplot(B)) && C.layout === "juxtaposition" && C.unit === "element") can = false
-  if (isScatterplot(A) && C.layout === "superimposition" && C.unit === "element") can = false
   if (C.layout === "juxtaposition" && C.unit === "element" &&
     (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
 
