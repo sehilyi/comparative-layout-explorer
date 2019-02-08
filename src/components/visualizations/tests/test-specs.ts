@@ -322,7 +322,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    /* // error
     {
       C: {
         ...DEFAULT_COMP_SPEC,
@@ -340,7 +339,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "bar",
         encoding: {
-          y: {field: "Source", type: "nominal"},
+          y: {field: "MPAA_Rating", type: "nominal"},
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"}
         }
       },
@@ -350,13 +349,46 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "bar",
         encoding: {
-          y: {field: "MPAA_Rating", type: "nominal"},
+          y: {field: "Source", type: "nominal"},
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
+          color: {field: "Source", type: "nominal"}
         }
       }
     },
-    */
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
+        name: "H vs V bar charts",
+        layout: "superimposition",
+        direction: "horizontal",
+        unit: "element",
+        consistency: {
+          x_axis: false, y_axis: false, color: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "MPAA_Rating", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
     {
       C: {
         ...DEFAULT_COMP_SPEC,

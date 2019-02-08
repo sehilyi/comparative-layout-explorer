@@ -54,7 +54,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   }
 
   renderExamples(specs: {A: Spec, B: Spec, C: CompSpec}) {
-    const PRESENTATION = true
+    const PRESENTATION = false  // change chart order: chart for comparison is firstly placed for false
     let onBarChartA = (ref: SVGSVGElement) => {
       renderSimpleChart(ref, specs.A);
     }

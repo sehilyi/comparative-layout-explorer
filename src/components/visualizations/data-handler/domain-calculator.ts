@@ -61,8 +61,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
   resA = {axis: axisA, c: colorA.c, cKey: colorA.cKey}
   resB = {axis: axisB, c: colorB.c, cKey: colorB.cKey}
 
-  // exceptions
-  // modify results
+  // exceptions: modify domains considering designs
   if (C.layout === "juxtaposition" && C.unit === "element" && C.direction === "vertical" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
     const n = A.encoding.x.type === "nominal" ? "x" : "y",
@@ -86,11 +85,12 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
     // nesting
     if (isBarChart(A) && isBarChart(B)) {
       // TODO: horizontal bar chart vs. vertical bar chart should be considered
-      const n = A.encoding.x.type === "nominal" ? "x" : "y", q = A.encoding.x.type === "quantitative" ? "x" : "y"
+      const an = A.encoding.x.type === "nominal" ? "x" : "y", aq = A.encoding.x.type === "quantitative" ? "x" : "y"
+      const bn = B.encoding.x.type === "nominal" ? "x" : "y", bq = B.encoding.x.type === "quantitative" ? "x" : "y"
       let axes: AxisDomainData[] = []
-      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, A.encoding[q].aggregate)
+      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[an].field, B.encoding[bn].field, A.encoding[aq].field, A.encoding[aq].aggregate)
       for (let i = 0; i < axisA.x.length; i++) {
-        axisB.y = nested[i].values.map((d: object) => d["value"])
+        axisB[bq] = nested[i].values.map((d: object) => d["value"])
         axes.push({...axisB})
       }
       resB = {...resB, axis: axes}
