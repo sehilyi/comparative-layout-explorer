@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault, uniqueValues} from 'src/useful-factory/utils';
-import {CHART_MARGIN, CHART_SIZE, getBarSize, getChartSize, _width, _height, _g, _transform, _rect, _y, _x, _fill, _stroke, _stroke_width, getColor} from '../design-settings';
+import {CHART_MARGIN, CHART_SIZE, getBarSize, _width, _height, _g, _transform, _rect, _y, _x, _fill, _stroke, _stroke_width, getColor} from '../design-settings';
 import {isUndefined} from 'util';
 import {BarchartStyle} from 'src/models/barchart-style';
 import {renderLegend} from '../legends';
@@ -12,19 +12,16 @@ import {ScaleBand, ScaleLinear} from 'd3';
 import {DEFAULT_CHART_STYLE} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-calculator';
 import {manageZIndex} from '..';
+import {getChartSizeWithStyles} from '../chart-styles/layouts';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
 
   d3.select(ref).selectAll('*').remove();
 
-  const chartsp = getChartSize(1, 1, {legend: [0]})
-  d3.select(ref)
-    .attr(_width, chartsp.size.width)
-    .attr(_height, chartsp.size.height)
-
-  const g = d3.select(ref).append(_g)
-    .attr(_transform, translate(CHART_MARGIN.left, CHART_MARGIN.top));
+  const chartsp = getChartSizeWithStyles(1, 1, [{...DEFAULT_CHART_STYLE, legend: typeof color !== "undefined"}])
+  d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
+  const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
   const {...domains} = getDomain(spec)
 

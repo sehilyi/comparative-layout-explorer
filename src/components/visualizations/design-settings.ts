@@ -1,7 +1,6 @@
 import * as d3 from "d3";
 import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined} from "util";
-import {LEGEND_WIDTH} from "./legends/default-design";
 
 // svg attributes
 export const _width = 'width', _height = 'height',
@@ -83,43 +82,4 @@ export function getConstantColor(index?: number) {
   return d3.scaleOrdinal()
     // no domain
     .range(getBarColor(i).slice(i - 1, i))
-}
-
-/**
- * Do not consider when x and y are both not 1 (i.e., no table layout).
- * @param x
- * @param y
- * @param styles
- */
-export function getChartSize(x: number, y: number, styles: object) {
-  const noX = ifUndefinedGetDefault(styles["noX"], false) as boolean;
-  const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
-  const w = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
-  const h = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
-  // const noGap = ifUndefinedGetDefault(styles["noGap"], false) as boolean;
-  // specify **column** indexes that legend exists
-  // TODO: this should be revised!!! not natural to specify only the column
-  const legend = ifUndefinedGetDefault(styles["legend"], []) as number[];
-
-  const lgdWidth = legend.length * LEGEND_WIDTH
-
-  const width = (noY ? (w + GAP_BETWEEN_CHARTS) * x + CHART_MARGIN.left + CHART_MARGIN.right :
-    (w + CHART_MARGIN.left + CHART_MARGIN.right) * x) + lgdWidth
-  const height = noX ? (h + GAP_BETWEEN_CHARTS) * y + CHART_MARGIN.top + CHART_MARGIN.bottom :
-    (h + CHART_MARGIN.top + CHART_MARGIN.bottom) * y
-
-  let positions: {left: number, top: number}[] = [];
-  for (let i = 0; i < x; i++) {
-    for (let j = 0; j < y; j++) {
-      positions.push({
-        left: (noY ? CHART_MARGIN.left + (w + (GAP_BETWEEN_CHARTS)) * i :
-          CHART_MARGIN.left + (CHART_MARGIN.left + w + CHART_MARGIN.right) * i) +
-          // TODO: clear this up!
-          (legend.filter(d => d < i).length != 0 ? legend.filter(d => d < i).length * LEGEND_WIDTH : 0),
-        top: noX ? CHART_MARGIN.top + (h + (GAP_BETWEEN_CHARTS)) * j :
-          CHART_MARGIN.top + (CHART_MARGIN.top + h + CHART_MARGIN.bottom) * j
-      })
-    }
-  }
-  return {size: {width, height}, positions}
 }

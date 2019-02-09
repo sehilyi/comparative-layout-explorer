@@ -10,7 +10,9 @@ export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
 }
 
 export function getExamples() {
-  return getExampleSpec().sort((a, b) =>
+  let examples = getExampleSpec()
+  // .filter(d => d.C.name === "ele")  // debugging
+  return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
     (a.A.mark + a.B.mark) < (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) > (b.A.mark + b.A.mark) ? 1 : a.C.layout < b.C.layout ? -1 : a.C.layout > b.C.layout ? 1 : a.C.unit < b.C.unit ? -1 : 1
   )
@@ -20,6 +22,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
+        name: "ele",
         layout: "juxtaposition",
         direction: "horizontal",
         unit: "element",
@@ -89,6 +92,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
+        name: "jc",
         layout: "juxtaposition",
         unit: "chart",
         mirrored: false,

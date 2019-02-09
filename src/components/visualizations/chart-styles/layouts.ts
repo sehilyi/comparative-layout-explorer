@@ -1,17 +1,25 @@
 import {Spec} from "src/models/simple-vega-spec";
 
 import {CompSpec, Consistency} from "src/models/comp-spec";
-import {CHART_SIZE, getChartSize, _width, _height, _g, _transform, getBarSize, NESTING_PADDING} from "../design-settings";
+import {CHART_SIZE, _width, _height, _g, _transform, getBarSize, NESTING_PADDING, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../design-settings";
 import {ChartStyle} from ".";
 import {getAggregatedDatas, getAggValues} from "../data-handler";
 import d3 = require("d3");
 import {isBarChart, isScatterplot} from "..";
-import {uniqueValues} from "src/useful-factory/utils";
+import {uniqueValues, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
+import {LEGEND_WIDTH} from "../legends/default-design";
 
+export type Position = {
+  width: number
+  height: number
+  left: number
+  top: number
+}
+
+// TODO: this should also make the legends' positions
 export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
-  const w = CHART_SIZE.width, h = CHART_SIZE.height
   let subBs: Position[] = []
   let chartsp
   switch (C.layout) {
@@ -22,19 +30,19 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         if (S.B.legend) legend.push(1)
         const numOfC = C.direction === 'horizontal' ? 2 : 1
         const numOfR = C.direction === 'vertical' ? 2 : 1
-        chartsp = getChartSize(numOfC, numOfR, {noX: S.A.noX, noY: S.B.noY, legend, noGap: C.mirrored})
+        chartsp = getChartSizeWithStyles(numOfC, numOfR, [S.A, S.B])
       }
       else if (C.unit === "element") {
-        chartsp = getChartSize(1, 1, {w, h, legend: [0]})
+        chartsp = getChartSizeWithStyles(1, 1, [S.A])
       }
-      break;
+      break
     case "superimposition":
       if (C.unit === "chart") {
-        chartsp = getChartSize(1, 1, {legend: [0]})
+        chartsp = getChartSizeWithStyles(1, 1, [S.A])
       }
       else if (C.unit === "element") {  // nesting
         // TODO: only consider a.charttype === bar now
-        chartsp = getChartSize(1, 1, {legend: [0]})
+        chartsp = getChartSizeWithStyles(1, 1, [S.A])
 
         // divide layouts
         // TODO: I think sub elements' layout should be shared here
@@ -95,7 +103,7 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         }
       }
     default:
-      break;
+      break
   }
   return {
     width: chartsp.size.width,
@@ -107,9 +115,103 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
   }
 }
 
-export type Position = {
-  width: number
-  height: number
-  left: number
-  top: number
+/**
+ * Either x or y must be 1 (i.e., no table layout).
+ * @param x
+ * @param y
+ * @param styles
+ */
+export function getChartSizeWithStyles(x: number, y: number, styles: ChartStyle[]) {
+  // styles that affects top or left margins of all charts
+  const ifAllNoY = styles.filter(d => !d.noY).length === 0 // if all noY
+  const ifThereTopX = styles.filter(d => d.topX).length !== 0 // if all topX
+
+  // margin of left and top
+  const ML = ifAllNoY ? GAP_BETWEEN_CHARTS : CHART_MARGIN.left
+  const MT = ifThereTopX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top
+
+  // width and height includes margins
+  let positions: {left: number, top: number, width: number, height: number}[] = []
+  let lastRight = 0, lastBottom = 0
+
+  // Either x or y must be 1 (i.e., no table layout).
+  if (x === 1) {  // vertical layout
+    styles.forEach(s => {
+      const position = {
+        width: s.width,
+        height: s.height,
+        left: ML,
+        right:
+          (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + // right margin
+          (s.legend ? LEGEND_WIDTH : 0), // legend on the right
+        top: (s.topX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top),
+        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
+      }
+      const left = ML
+      const top = lastBottom + position.top
+      positions.push({left, top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
+      lastBottom = top + position.height + position.bottom
+    })
+  }
+  else if (y === 1) {  // horizontal layout
+    styles.forEach(s => {
+      const position = {
+        width: s.width,
+        height: s.height,
+        left: (s.noY ? CHART_MARGIN_NO_AXIS.left : CHART_MARGIN.left),
+        right:
+          (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + // right margin
+          (s.legend ? LEGEND_WIDTH : 0), // legend on the right
+        top: MT,
+        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
+      }
+      const top = MT
+      const left = lastRight + (s.noY ? CHART_MARGIN_NO_AXIS.left : CHART_MARGIN.left)
+      lastRight = left + s.width + (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + (s.legend ? LEGEND_WIDTH : 0)
+
+      positions.push({left, top, width: position.width, height: position.height})
+    })
+  }
+  else console.log("Something went wrong. Refer to functions related to chart size calculation.")
+  return {
+    size: {
+      width: d3.sum(positions.map(d => d.width)),
+      height: d3.sum(positions.map(d => d.height))
+    },
+    positions
+  }
+}
+
+/* will be deprecated */
+export function getChartSize(x: number, y: number, styles: object) {
+  const noX = ifUndefinedGetDefault(styles["noX"], false) as boolean;
+  const noY = ifUndefinedGetDefault(styles["noY"], false) as boolean;
+  const w = ifUndefinedGetDefault(styles["width"], CHART_SIZE.width) as number;
+  const h = ifUndefinedGetDefault(styles["height"], CHART_SIZE.height) as number;
+  // const noGap = ifUndefinedGetDefault(styles["noGap"], false) as boolean;
+  // specify **column** indexes that legend exists
+  // TODO: this should be revised!!! not natural to specify only the column
+  const legend = ifUndefinedGetDefault(styles["legend"], []) as number[];
+
+  const lgdWidth = legend.length * LEGEND_WIDTH
+
+  const width = (noY ? (w + GAP_BETWEEN_CHARTS) * x + CHART_MARGIN.left + CHART_MARGIN.right :
+    (w + CHART_MARGIN.left + CHART_MARGIN.right) * x) + lgdWidth
+  const height = noX ? (h + GAP_BETWEEN_CHARTS) * y + CHART_MARGIN.top + CHART_MARGIN.bottom :
+    (h + CHART_MARGIN.top + CHART_MARGIN.bottom) * y
+
+  let positions: {left: number, top: number}[] = [];
+  for (let i = 0; i < x; i++) {
+    for (let j = 0; j < y; j++) {
+      positions.push({
+        left: (noY ? CHART_MARGIN.left + (w + (GAP_BETWEEN_CHARTS)) * i :
+          CHART_MARGIN.left + (CHART_MARGIN.left + w + CHART_MARGIN.right) * i) +
+          // TODO: clear this up!
+          (legend.filter(d => d < i).length != 0 ? legend.filter(d => d < i).length * LEGEND_WIDTH : 0),
+        top: noX ? CHART_MARGIN.top + (h + (GAP_BETWEEN_CHARTS)) * j :
+          CHART_MARGIN.top + (CHART_MARGIN.top + h + CHART_MARGIN.bottom) * j
+      })
+    }
+  }
+  return {size: {width, height}, positions}
 }

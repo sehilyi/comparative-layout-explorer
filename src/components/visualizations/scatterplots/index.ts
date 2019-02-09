@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {translate, uniqueValues} from 'src/useful-factory/utils';
-import {CHART_SIZE, _width, _height, _g, _transform, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle, getChartSize, getColor, getConstantColor, _rect, _x, _y} from '../design-settings';
+import {CHART_SIZE, _width, _height, _g, _transform, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle, getColor, getConstantColor, _rect, _x, _y} from '../design-settings';
 import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_OPACITY} from './default-design';
 import {renderAxes} from '../axes';
@@ -9,6 +9,7 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {ScatterplotStyle} from './styles';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
+import {getChartSizeWithStyles} from '../chart-styles/layouts';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
@@ -22,7 +23,7 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
   const color = isColorUsed ? getColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
   const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
   const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, colorKey: cKey, legend: isColorUsed}
-  const chartsp = getChartSize(1, 1, {legend: [0]})
+  const chartsp = getChartSizeWithStyles(1, 1, [{...DEFAULT_CHART_STYLE, legend: isColorUsed}])
 
   d3.select(svg).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(svg).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))

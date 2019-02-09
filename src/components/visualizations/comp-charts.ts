@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {translate} from "src/useful-factory/utils";
 import {
-  GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN, getChartSize,
+  GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN,
   getBarColor, _width, _height, _g, _transform, _opacity
 } from "./design-settings";
 import {isUndefined} from "util";
@@ -17,7 +17,7 @@ import {renderChart, canRenderCompChart, canRenderChart, isScatterplot} from "."
 import {DEFAULT_CHART_STYLE} from "./chart-styles";
 import {getAggregatedDatas, oneOfFilter} from "./data-handler";
 import {getStyles} from "./chart-styles/style-definitions";
-import {getLayouts} from "./chart-styles/layouts";
+import {getLayouts, getChartSize} from "./chart-styles/layouts";
 import {getDomainByLayout} from "./data-handler/domain-calculator";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
