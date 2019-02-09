@@ -123,18 +123,38 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
  */
 export function getChartSizeWithStyles(x: number, y: number, styles: ChartStyle[]) {
   // styles that affects top or left margins of all charts
-  const ifAllNoY = styles.filter(d => !d.noY).length === 0 // if all noY
-  const ifThereTopX = styles.filter(d => d.topX).length !== 0 // if all topX
+  const ifAllNoY = styles.filter(d => !d.noY).length === 0
+  const ifThereTopX = styles.filter(d => d.topX).length !== 0
+  // styles that affects max width and height
+  const ifAllNoX = styles.filter(d => !d.noX).length === 0
+  const isThereRightY = styles.filter(d => d.rightY).length !== 0
+  const isThereLegend = styles.filter(d => d.legend).length !== 0
 
   // margin of left and top
   const ML = ifAllNoY ? GAP_BETWEEN_CHARTS : CHART_MARGIN.left
   const MT = ifThereTopX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top
 
+  // max width and height
+  // this is not a tight calculation
+  // e.g., legend and rightY is used but with different index
+  const maxW =
+    ML +
+    d3.max(styles.map(d => d.width)) +
+    (isThereRightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) +
+    (isThereLegend ? LEGEND_WIDTH : 0)
+
+  const maxH =
+    MT +
+    d3.max(styles.map(d => d.height)) +
+    (ifAllNoX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
+
   // width and height includes margins
   let positions: {left: number, top: number, width: number, height: number}[] = []
+  let totalSize = {width: 0, height: 0}
   let lastRight = 0, lastBottom = 0
 
   // Either x or y must be 1 (i.e., no table layout).
+  // TODO: width or height should be used identically (e.g., same width for vertical layout)
   if (x === 1) {  // vertical layout
     styles.forEach(s => {
       const position = {
@@ -149,9 +169,13 @@ export function getChartSizeWithStyles(x: number, y: number, styles: ChartStyle[
       }
       const left = ML
       const top = lastBottom + position.top
+
       positions.push({left, top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
+
       lastBottom = top + position.height + position.bottom
     })
+    totalSize.width = maxW
+    totalSize.height = d3.sum(positions.map(d => d.height))
   }
   else if (y === 1) {  // horizontal layout
     styles.forEach(s => {
@@ -167,19 +191,16 @@ export function getChartSizeWithStyles(x: number, y: number, styles: ChartStyle[
       }
       const top = MT
       const left = lastRight + (s.noY ? CHART_MARGIN_NO_AXIS.left : CHART_MARGIN.left)
-      lastRight = left + s.width + (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + (s.legend ? LEGEND_WIDTH : 0)
 
-      positions.push({left, top, width: position.width, height: position.height})
+      positions.push({left, top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
+
+      lastRight = left + s.width + position.right
     })
+    totalSize.width = d3.sum(positions.map(d => d.width))
+    totalSize.height = maxH
   }
   else console.log("Something went wrong. Refer to functions related to chart size calculation.")
-  return {
-    size: {
-      width: d3.sum(positions.map(d => d.width)),
-      height: d3.sum(positions.map(d => d.height))
-    },
-    positions
-  }
+  return {size: totalSize, positions}
 }
 
 /* will be deprecated */
