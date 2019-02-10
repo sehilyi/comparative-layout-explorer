@@ -12,14 +12,14 @@ import {ScaleBand, ScaleLinear} from 'd3';
 import {DEFAULT_CHART_STYLE} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-calculator';
 import {manageZIndex} from '..';
-import {getChartSizeWithStyles} from '../chart-styles/layouts';
+import {getChartSize} from '../chart-styles/layouts';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
 
   d3.select(ref).selectAll('*').remove();
 
-  const chartsp = getChartSizeWithStyles(1, 1, [{...DEFAULT_CHART_STYLE, legend: typeof color !== "undefined"}])
+  const chartsp = getChartSize(1, 1, [{...DEFAULT_CHART_STYLE, legend: typeof color !== "undefined"}])
   d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 

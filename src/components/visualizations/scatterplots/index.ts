@@ -9,7 +9,7 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {ScatterplotStyle} from './styles';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
-import {getChartSizeWithStyles} from '../chart-styles/layouts';
+import {getChartSize} from '../chart-styles/layouts';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
@@ -23,7 +23,7 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
   const color = isColorUsed ? getColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
   const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
   const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, colorKey: cKey, legend: isColorUsed}
-  const chartsp = getChartSizeWithStyles(1, 1, [{...DEFAULT_CHART_STYLE, legend: isColorUsed}])
+  const chartsp = getChartSize(1, 1, [{...DEFAULT_CHART_STYLE, legend: isColorUsed}])
 
   d3.select(svg).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(svg).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
