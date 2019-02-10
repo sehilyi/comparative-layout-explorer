@@ -11,7 +11,6 @@ export type _CompSpecSolid = {
   unit?: CompUnit
   consistency: Consistency
 }
-
 export type CompSpec = {
   name: string
   layout: Layout
@@ -24,13 +23,6 @@ export type LayoutTypeAndStyle = {
   type: Layout
   mirrored?: boolean
   direction?: CompDirection
-}
-export const DEFAULT_LAYOUT: LayoutTypeAndStyle = {
-  type: "juxtaposition",
-
-  // juxtaposition
-  mirrored: false,
-  direction: "horizontal"
 }
 
 export type CompDirection = "horizontal" | "vertical" // TODO: when horizontal bar, improper words
@@ -48,6 +40,13 @@ export type Consistency = { // TODO: this should also consider differnce for sup
   color?: boolean
 }
 
+export const DEFAULT_LAYOUT: LayoutTypeAndStyle = {
+  type: "juxtaposition",
+  // juxtaposition
+  mirrored: false,
+  direction: "horizontal"
+  //
+}
 export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",
   layout: DEFAULT_LAYOUT,
