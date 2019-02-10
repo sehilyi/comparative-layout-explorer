@@ -56,13 +56,13 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     const subGB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
     const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y"
 
-    for (let i = 0; i < layouts.subBs.length; i++) {
-      const gB = subGB.append(_g).attr(_transform, translate(layouts.subBs[i].left, layouts.subBs[i].top))
+    for (let i = 0; i < layouts.nestedBs.length; i++) {
+      const gB = subGB.append(_g).attr(_transform, translate(layouts.nestedBs[i].left, layouts.nestedBs[i].top))
 
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
       // TODO: width and height is not included in styles => any ways to make this more clear?
-      renderChart(gB, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {...styles.B, width: layouts.subBs[i].width, height: layouts.subBs[i].height})
+      renderChart(gB, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {...styles.B, width: layouts.nestedBs[i].width, height: layouts.nestedBs[i].height})
     }
   }
   // apply visual properties after rendering charts

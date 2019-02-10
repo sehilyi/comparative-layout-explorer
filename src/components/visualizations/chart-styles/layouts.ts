@@ -10,7 +10,6 @@ import {uniqueValues, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
-import {styleMergeForChartSize} from "./style-definitions";
 
 export type Position = {
   width: number
@@ -21,7 +20,7 @@ export type Position = {
 
 // TODO: this should also make the legends' positions
 export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
-  let subBs: Position[] = []
+  let nestedBs: Position[] = []
   let chartsp
   switch (C.layout) {
     case "juxtaposition":
@@ -34,16 +33,16 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         chartsp = getChartSizeWithStyles(numOfC, numOfR, [S.A, S.B])
       }
       else if (C.unit === "element") {
-        chartsp = getChartSizeWithStyles(1, 1, [styleMergeForChartSize([S.A, S.B])])
+        chartsp = getChartSizeWithStyles(1, 1, [S.A, S.B])
       }
       break
     case "superimposition":
       if (C.unit === "chart") {
-        chartsp = getChartSizeWithStyles(1, 1, [styleMergeForChartSize([S.A, S.B])])
+        chartsp = getChartSizeWithStyles(1, 1, [S.A, S.B])
       }
       else if (C.unit === "element") {  // nesting
         // TODO: only consider a.charttype === bar now
-        chartsp = getChartSizeWithStyles(1, 1, [styleMergeForChartSize([S.A, S.B])])
+        chartsp = getChartSizeWithStyles(1, 1, [S.A, S.B])
 
         // divide layouts
         // TODO: I think sub elements' layout should be shared here
@@ -59,7 +58,7 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
             .rangeRound([S.A.height, 0]);
           //
           for (let i = 0; i < numOfX; i++) {
-            subBs.push({
+            nestedBs.push({
               left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + NESTING_PADDING,
               top: qY(aggD.A.values[i]) + NESTING_PADDING,
               width: barWidth - NESTING_PADDING * 2,
@@ -79,7 +78,7 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
             .rangeRound([0, S.A.width]);
           //
           for (let i = 0; i < numOfCategories; i++) {
-            subBs.push({
+            nestedBs.push({
               left: 0,
               top: i * bandUnitSize + (bandUnitSize - barSize) / 2.0 + NESTING_PADDING,
               width: qX(values[i]) - NESTING_PADDING, // no right padding
@@ -94,7 +93,7 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
           const pointSize = SCATTER_POINT_SIZE_FOR_NESTING
           const {x, y} = renderAxes(null, xValues, yValues, A, S.A) // TODO: check styles
           for (let i = 0; i < numOfCategories; i++) {
-            subBs.push({
+            nestedBs.push({
               left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + NESTING_PADDING,
               top: (y as d3.ScaleLinear<number, number>)(yValues[i]) - pointSize / 2.0 + NESTING_PADDING,
               width: pointSize - NESTING_PADDING * 2,
@@ -110,9 +109,9 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
     width: chartsp.size.width,
     height: chartsp.size.height,
     A: {...chartsp.positions[0]},
-    B: chartsp.positions.length <= 1 ? {...chartsp.positions[0]} : {...chartsp.positions[1]},
+    B: {...chartsp.positions[1]},
     // TODO: more organized way?
-    subBs
+    nestedBs
   }
 }
 
@@ -154,9 +153,26 @@ export function getChartSizeWithStyles(x: number, y: number, styles: ChartStyle[
   let totalSize = {width: 0, height: 0}
   let lastRight = 0, lastBottom = 0
 
+  // TODO: width or height should be used identically? (e.g., same width for vertical layout)
   // Either x or y must be 1 (i.e., no table layout).
-  // TODO: width or height should be used identically (e.g., same width for vertical layout)
-  if (x === 1) {  // vertical layout
+  if (x === 1 && y === 1) { // superimposition, the length of styles can be larger than x * y
+    styles.forEach(s => {
+      const position = {
+        width: s.width,
+        height: s.height,
+        left: ML,
+        right:
+          (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + // right margin
+          (s.legend ? LEGEND_WIDTH : 0), // legend on the right
+        top: MT,
+        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
+      }
+      positions.push({left: position.left, top: position.top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
+    })
+    totalSize.width = maxW
+    totalSize.height = maxH
+  }
+  else if (x === 1) {  // vertical layout
     styles.forEach(s => {
       const position = {
         width: s.width,
