@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 
 import {CompSpec, Consistency} from "src/models/comp-spec";
-import {DEFAULT_CHART_STYLE} from ".";
+import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-calculator";
@@ -101,4 +101,19 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
       break
   }
   return S
+}
+
+/**
+ * This is for superimposition layout
+ * @param styles
+ */
+export function styleMergeForChartSize(styles: CommonChartStyle[]) {
+  return {
+    ...DEFAULT_CHART_STYLE,
+    noX: styles.filter(d => !d.noX).length === 0,
+    noY: styles.filter(d => !d.noY).length === 0,
+    rightY: styles.filter(d => d.rightY).length !== 0,
+    topX: styles.filter(d => d.topX).length !== 0,
+    legend: styles.filter(d => d.legend).length !== 0
+  }
 }

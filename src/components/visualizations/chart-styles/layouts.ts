@@ -10,6 +10,7 @@ import {uniqueValues, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
+import {styleMergeForChartSize} from "./style-definitions";
 
 export type Position = {
   width: number
@@ -33,16 +34,16 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
         chartsp = getChartSizeWithStyles(numOfC, numOfR, [S.A, S.B])
       }
       else if (C.unit === "element") {
-        chartsp = getChartSizeWithStyles(1, 1, [S.A])
+        chartsp = getChartSizeWithStyles(1, 1, [styleMergeForChartSize([S.A, S.B])])
       }
       break
     case "superimposition":
       if (C.unit === "chart") {
-        chartsp = getChartSizeWithStyles(1, 1, [S.A])
+        chartsp = getChartSizeWithStyles(1, 1, [styleMergeForChartSize([S.A, S.B])])
       }
       else if (C.unit === "element") {  // nesting
         // TODO: only consider a.charttype === bar now
-        chartsp = getChartSizeWithStyles(1, 1, [S.A])
+        chartsp = getChartSizeWithStyles(1, 1, [styleMergeForChartSize([S.A, S.B])])
 
         // divide layouts
         // TODO: I think sub elements' layout should be shared here
