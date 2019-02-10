@@ -25,9 +25,6 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
   switch (C.layout) {
     case "juxtaposition":
       if (C.unit === "chart") {
-        let legend: number[] = []
-        if (S.A.legend) legend.push(0)
-        if (S.B.legend) legend.push(1)
         const numOfC = C.direction === 'horizontal' ? 2 : 1
         const numOfR = C.direction === 'vertical' ? 2 : 1
         chartsp = getChartSizeWithStyles(numOfC, numOfR, [S.A, S.B])
@@ -150,11 +147,10 @@ export function getChartSizeWithStyles(x: number, y: number, styles: ChartStyle[
 
   // width and height includes margins
   let positions: {left: number, top: number, width: number, height: number}[] = []
+  let lgdPositions: {left: number, top: number, width: number, height: number}[] = []
   let totalSize = {width: 0, height: 0}
-  let lastRight = 0, lastBottom = 0
+  let lastRight = 0, lastBottom = 0, lastLegendLeft = 0 // lastLegendLeft is only for superimposition
 
-  // TODO: width or height should be used identically? (e.g., same width for vertical layout)
-  // Either x or y must be 1 (i.e., no table layout).
   if (x === 1 && y === 1) { // superimposition, the length of styles can be larger than x * y
     styles.forEach(s => {
       const position = {
@@ -168,10 +164,16 @@ export function getChartSizeWithStyles(x: number, y: number, styles: ChartStyle[
         bottom: (s.noX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
       }
       positions.push({left: position.left, top: position.top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
+      // in this case, legend should be placed in the same area
+      // I simply render legend horizontally when multiple
+      lgdPositions.push({left: lastLegendLeft + position.left + position.width + position.right, top: position.top, width: LEGEND_WIDTH, height: position.height + position.bottom})
+      lastLegendLeft += LEGEND_WIDTH
     })
     totalSize.width = maxW
     totalSize.height = maxH
   }
+  // TODO: width or height should be used identically? (e.g., same width for vertical layout)
+  // Either x or y must be 1 (i.e., no table layout).
   else if (x === 1) {  // vertical layout
     styles.forEach(s => {
       const position = {
@@ -217,7 +219,7 @@ export function getChartSizeWithStyles(x: number, y: number, styles: ChartStyle[
     totalSize.height = maxH
   }
   else console.log("Something went wrong. Refer to functions related to chart size calculation.")
-  return {size: totalSize, positions}
+  return {size: totalSize, positions, lgdPositions}
 }
 
 /* will be deprecated */
