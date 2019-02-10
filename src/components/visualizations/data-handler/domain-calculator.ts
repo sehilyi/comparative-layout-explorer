@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 
-import {CompSpec, Consistency} from "src/models/comp-spec";
+import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
 
 import {isBarChart, isScatterplot, isChartDataAggregated} from "..";
 
@@ -8,6 +8,7 @@ import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys} from ".";
 
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
+import {deepValue} from "src/models/comp-spec-manager";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[]
@@ -30,7 +31,7 @@ export const DEFAULT_AXIS_DOMAIN = {
  * * This does not consider horizontal bar charts.
  * * Only scatterplots and bar charts are handled.
  */
-export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Consistency) {
+export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency) {
   let resA: ChartDomainData, resB: ChartDomainData
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
   let cKeyA = "" as string, cKeyB = "" as string
@@ -63,7 +64,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
   resB = {axis: axisB, cKey: cKeyB}
 
   // exceptions: modify domains considering designs
-  if (C.layout === "juxtaposition" && C.unit === "element" && C.direction === "vertical" && isBarChart(A) && isBarChart(B)) {
+  if (deepValue(C.layout) === "juxtaposition" && C.unit === "element" && C.layout.direction === "vertical" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
     const n = A.encoding.x.type === "nominal" ? "x" : "y",
       q = A.encoding.x.type === "quantitative" ? "x" : "y"
@@ -73,7 +74,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
         getAggValues(B.data.values, B.encoding[n].field, [B.encoding[q].field], B.encoding[q].aggregate)),
       A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
   }
-  else if (((C.layout === "juxtaposition" && C.unit === "chart") || (C.layout === "superimposition" && C.unit === "chart")) &&
+  else if (((deepValue(C.layout) === "juxtaposition" && C.unit === "chart") || (deepValue(C.layout) === "superimposition" && C.unit === "chart")) &&
     isScatterplot(A) && isScatterplot(B) && consistency.color) {
     // use A color if two of them use color
     // When only B use color, then use the B's
@@ -84,7 +85,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: CompSpec, consistency: Co
   }
   /* nesting */
   // separate domain B by aggregation keys used in Chart A
-  else if (C.layout === "superimposition" && C.unit === "element") {
+  else if (deepValue(C.layout) === "superimposition" && C.unit === "element") {
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
     if (isChartDataAggregated(B)) {
       const an = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field

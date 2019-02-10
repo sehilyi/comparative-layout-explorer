@@ -13,6 +13,7 @@ import {renderSimpleChart} from './visualizations';
 import {getExamples, getCompTitle} from './visualizations/tests/test-specs';
 import {Spec} from 'src/models/simple-vega-spec';
 import {CompSpec} from 'src/models/comp-spec';
+import {deepValue} from 'src/models/comp-spec-manager';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -69,10 +70,11 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     let _B = JSON.parse(JSON.stringify(specs.B))
     _B.data.values = "..."
     let _C = JSON.parse(JSON.stringify(specs.C))
-    console.log("# Now Rendering: " + getCompTitle(specs.A, specs.B, specs.C))
+    const key = getCompTitle(specs.A, specs.B, specs.C)
+    console.log("# Now Rendering: " + key)
     return !PRESENTATION ? (
-      <div key={getCompTitle(specs.A, specs.B, specs.C)} className="example-element-root">
-        <h1>{getCompTitle(specs.A, specs.B, specs.C)}</h1>
+      <div key={key} className="example-element-root">
+        <h1>{key}</h1>
         <div className='example-element'>
           <div className='result-group'>
             <div className='chart'><svg ref={onBarChartC}></svg></div>
@@ -80,7 +82,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' />{""}</div>
             <div className='chart'><svg ref={onBarChartA}></svg></div>
             <div className='control-pane'><textarea value={JSON.stringify(_A, null, 2)} readOnly /></div>
-            <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {specs.C.layout}</div>
+            <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {deepValue(specs.C.layout)}</div>
             <div className='chart'><svg ref={onBarChartB}></svg></div>
             <div className='control-pane'><textarea value={JSON.stringify(_B, null, 2)} readOnly /></div>
           </div>
@@ -94,7 +96,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             <div className='result-group'>
               <div className='control-pane'><textarea value={JSON.stringify(_A, null, 2)} readOnly /></div>
               <div className='chart'><svg ref={onBarChartA}></svg></div>
-              <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {specs.C.layout}</div>
+              <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {deepValue(specs.C.layout)}</div>
               <div className='control-pane'><textarea value={JSON.stringify(_B, null, 2)} readOnly /></div>
               <div className='chart'><svg ref={onBarChartB}></svg></div>
               <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' />{""}</div>

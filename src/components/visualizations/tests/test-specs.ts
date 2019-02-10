@@ -1,12 +1,15 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
+import {deepValue, correctSpec} from "src/models/comp-spec-manager";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
+  const mC = correctSpec({...C})
   return (A.mark === "point" ? "scatterplot" : A.mark + "chart") + " x " + (B.mark === "point" ? "scatterplot" : B.mark + "chart") + " " +
-    "(" + C.layout.toString().slice(0, 3).toUpperCase() + "|" + C.unit.slice(0, 3).toUpperCase() + "|" + C.direction.slice(0, 1).toUpperCase() + "|" + (C.mirrored ? "M" : "not M") +
-    "|Consistency{x:" + C.consistency.x_axis + ",y:" + C.consistency.y_axis + ",c:" + C.consistency.color +
-    "}) " + C.name
+    "(" + deepValue(mC.layout).toString().slice(0, 3).toUpperCase() + "|" + mC.unit.slice(0, 3).toUpperCase() + "|" +
+    mC.layout.direction.toString().slice(0, 1).toUpperCase() + "|" + (mC.layout.mirrored ? "M|" : "F|") +
+    "|Consistency{x:" + mC.consistency.x_axis + ",y:" + mC.consistency.y_axis + ",c:" + mC.consistency.color +
+    "}) " + mC.name
 }
 
 export function getExamples() {
@@ -14,7 +17,7 @@ export function getExamples() {
   // .filter(d => d.C.name === "ele")  // debugging
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
-    (a.A.mark + a.B.mark) < (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) > (b.A.mark + b.A.mark) ? 1 : a.C.layout < b.C.layout ? -1 : a.C.layout > b.C.layout ? 1 : a.C.unit < b.C.unit ? -1 : 1
+    (a.A.mark + a.B.mark) < (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) > (b.A.mark + b.A.mark) ? 1 : deepValue(a.C.layout) < deepValue(b.C.layout) ? -1 : deepValue(a.C.layout) > deepValue(b.C.layout) ? 1 : a.C.unit < b.C.unit ? -1 : 1
   )
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
@@ -23,10 +26,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         ...DEFAULT_COMP_SPEC,
         name: "ele",
-        layout: "juxtaposition",
-        direction: "horizontal",
+        layout: {type: "juxtaposition", direction: "horizontal", mirrored: true},
         unit: "element",
-        mirrored: true,
         consistency: {
           x_axis: true, y_axis: true, color: true
         }
@@ -58,8 +59,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        layout: "juxtaposition",
-        direction: "vertical",
+        layout: {type: "juxtaposition", direction: "vertical", mirrored: false},
         unit: "element",
         consistency: {
           x_axis: true, y_axis: true, color: true
@@ -93,10 +93,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         ...DEFAULT_COMP_SPEC,
         name: "jc",
-        layout: "juxtaposition",
+        layout: {type: "juxtaposition", mirrored: false, direction: "vertical"},
         unit: "chart",
-        mirrored: false,
-        direction: "vertical",
         consistency: {
           x_axis: false, y_axis: true, color: false
         }
@@ -127,10 +125,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        layout: "juxtaposition",
+        layout: {type: "juxtaposition", mirrored: false, direction: "vertical"},
         unit: "chart",
-        mirrored: false,
-        direction: "vertical",
         consistency: {
           x_axis: true, y_axis: true, color: true
         }
@@ -162,9 +158,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        layout: "juxtaposition",
+        layout: {type: "juxtaposition", mirrored: false, direction: "horizontal"},
         unit: "chart",
-        mirrored: false,
         consistency: {
           x_axis: true, y_axis: true, color: true
         }
@@ -196,9 +191,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        layout: "juxtaposition",
+        layout: {type: "juxtaposition", mirrored: true, direction: "horizontal"},
         unit: "chart",
-        mirrored: true,
         consistency: {
           x_axis: true, y_axis: true, color: true
         }
@@ -230,10 +224,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        layout: "juxtaposition",
-        direction: "horizontal",
+        layout: {type: "juxtaposition", direction: "horizontal", mirrored: false},
         unit: "chart",
-        mirrored: false,
         consistency: {
           x_axis: false, y_axis: true, color: true
         }
@@ -395,8 +387,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
-        layout: "superimposition",
-        direction: "horizontal",
+        layout: {type: "superimposition", direction: "horizontal", mirrored: false},
         unit: "element",
         consistency: {
           x_axis: false, y_axis: false, color: false
@@ -429,8 +420,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         ...DEFAULT_COMP_SPEC,
         name: "H vs V bar charts",
-        layout: "superimposition",
-        direction: "horizontal",
+        layout: {type: "superimposition", direction: "horizontal", mirrored: false},
         unit: "element",
         consistency: {
           x_axis: false, y_axis: false, color: false
@@ -463,8 +453,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         ...DEFAULT_COMP_SPEC,
         name: "V vs H bar charts",
-        layout: "superimposition",
-        direction: "horizontal",
+        layout: {type: "superimposition", direction: "horizontal", mirrored: false},
         unit: "element",
         consistency: {
           x_axis: false, y_axis: false, color: false

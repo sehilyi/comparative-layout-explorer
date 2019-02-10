@@ -3,9 +3,10 @@ import {renderSimpleBarChart, renderBarChart} from "./barcharts";
 import {ChartTypes} from "src/models/chart-types";
 import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
 import {ChartStyle} from "./chart-styles";
-import {CompSpec} from "src/models/comp-spec";
+import {_CompSpecSolid} from "src/models/comp-spec";
 import {_opacity} from "./design-settings";
 import {isUndefined, isNullOrUndefined} from "util";
+import {deepValue} from "src/models/comp-spec-manager";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   if (!canRenderChart(spec)) return
@@ -59,8 +60,7 @@ export function renderChart(
 export function manageZIndex(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec) {
-  if (isBarChart(spec))
-    g.selectAll('.axis').raise()
+  if (isBarChart(spec)) g.selectAll('.axis').raise()
 }
 export function canRenderChart(spec: Spec) {
   let can = true;
@@ -78,16 +78,16 @@ export function canRenderChart(spec: Spec) {
   return can
 }
 
-export function canRenderCompChart(A: Spec, B: Spec, C: CompSpec) {
+export function canRenderCompChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   let can = true;
 
   // exceptions
-  if ((isScatterplot(A) || isScatterplot(B)) && C.layout === "juxtaposition" && C.unit === "element") can = false
-  if (C.layout === "juxtaposition" && C.unit === "element" &&
+  if ((isScatterplot(A) || isScatterplot(B)) && deepValue(C.layout) === "juxtaposition" && C.unit === "element") can = false
+  if (deepValue(C.layout) === "juxtaposition" && C.unit === "element" &&
     (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
   // nesting
   // visual elements (e.g., bars or points) of A should be aggregated
-  if (C.layout === "superimposition" && C.unit === "element" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false
+  if (deepValue(C.layout) === "superimposition" && C.unit === "element" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false
 
   if (!can) console.log("error: such comparison is not supported.")
   return can

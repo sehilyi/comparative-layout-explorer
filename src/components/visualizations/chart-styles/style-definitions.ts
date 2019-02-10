@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 
-import {CompSpec, Consistency} from "src/models/comp-spec";
+import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
 import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
@@ -8,9 +8,10 @@ import {ChartDomainData} from "../data-handler/domain-calculator";
 import {getColor, getConstantColor} from "../design-settings";
 import {isBarChart, isScatterplot} from "..";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
+import {deepValue} from "src/models/comp-spec-manager";
 
 // TOOD: any better way to define domains' type?
-export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, d: {A: ChartDomainData, B: ChartDomainData}) {
+export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, d: {A: ChartDomainData, B: ChartDomainData}) {
   let S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}}
 
   // common
@@ -18,19 +19,19 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal")
 
   // by layout
-  switch (C.layout) {
+  switch (deepValue(C.layout)) {
     case "juxtaposition":
       if (C.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
-        const isALegendUse = consistency.color && C.direction == "vertical" || !consistency.color && isAColorUsed
-        const isBLegendUse = consistency.color && C.direction == "horizontal" || !consistency.color && isBColorUsed
+        const isALegendUse = consistency.color && C.layout.direction == "vertical" || !consistency.color && isAColorUsed
+        const isBLegendUse = consistency.color && C.layout.direction == "horizontal" || !consistency.color && isBColorUsed
         S.A.legend = isALegendUse
         S.B.legend = isBLegendUse
-        S.B.revY = C.direction === "vertical" && C.mirrored
-        S.A.revX = C.direction === "horizontal" && C.mirrored
-        S.A.noX = consistency.x_axis && !S.B.revX && C.direction === 'vertical'
-        S.B.noY = consistency.y_axis && !S.B.revY && C.direction === 'horizontal'
+        S.B.revY = C.layout.direction === "vertical" && C.layout.mirrored
+        S.A.revX = C.layout.direction === "horizontal" && C.layout.mirrored
+        S.A.noX = consistency.x_axis && !S.B.revX && C.layout.direction === 'vertical'
+        S.B.noY = consistency.y_axis && !S.B.revY && C.layout.direction === 'horizontal'
 
         S.A.color = getColor(d.A.axis["color"])
         S.A.colorKey = d.A.cKey
@@ -38,13 +39,13 @@ export function getStyles(A: Spec, B: Spec, C: CompSpec, consistency: Consistenc
         S.B.colorKey = d.B.cKey
       }
       else if (C.unit === "element") {
-        if (C.direction === "vertical") { // stacked bar
+        if (C.layout.direction === "vertical") { // stacked bar
           S.B.noAxes = true
           const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
             {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y
           S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField}
         }
-        else if (C.direction === "horizontal") { // grouped bar
+        else if (C.layout.direction === "horizontal") { // grouped bar
           S.A.shiftBy = -0.5
           S.A.mulSize = 0.5
           S.B.shiftBy = 0.5

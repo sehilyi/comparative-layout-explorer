@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 
-import {CompSpec, Consistency} from "src/models/comp-spec";
+import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
 import {_width, _height, _g, _transform, getBarSize, NESTING_PADDING, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../design-settings";
 import {ChartStyle} from ".";
 import {getAggregatedDatas, getAggValues} from "../data-handler";
@@ -10,6 +10,7 @@ import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
+import {deepValue} from "src/models/comp-spec-manager";
 
 export type Position = {
   width: number
@@ -19,27 +20,27 @@ export type Position = {
 }
 
 // TODO: this should also make the legends' positions
-export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
+export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
   let nestedBs: Position[] = []
   let chartsp
-  switch (C.layout) {
+  switch (deepValue(C.layout)) {
     case "juxtaposition":
       if (C.unit === "chart") {
-        const numOfC = C.direction === 'horizontal' ? 2 : 1
-        const numOfR = C.direction === 'vertical' ? 2 : 1
-        chartsp = getChartSize(numOfC, numOfR, [S.A, S.B])
+        const numOfC = C.layout.direction === 'horizontal' ? 2 : 1
+        const numOfR = C.layout.direction === 'vertical' ? 2 : 1
+        chartsp = getChartPositions(numOfC, numOfR, [S.A, S.B])
       }
       else if (C.unit === "element") {
-        chartsp = getChartSize(1, 1, [S.A, S.B])
+        chartsp = getChartPositions(1, 1, [S.A, S.B])
       }
       break
     case "superimposition":
       if (C.unit === "chart") {
-        chartsp = getChartSize(1, 1, [S.A, S.B])
+        chartsp = getChartPositions(1, 1, [S.A, S.B])
       }
       else if (C.unit === "element") {  // nesting
         // TODO: only consider a.charttype === bar now
-        chartsp = getChartSize(1, 1, [S.A, S.B])
+        chartsp = getChartPositions(1, 1, [S.A, S.B])
 
         // divide layouts
         // TODO: I think sub elements' layout should be shared here
@@ -118,7 +119,7 @@ export function getLayouts(A: Spec, B: Spec, C: CompSpec, consistency: Consisten
  * @param y
  * @param styles
  */
-export function getChartSize(x: number, y: number, styles: ChartStyle[]) {
+export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
   // styles that affects top or left margins of all charts
   const ifAllNoY = styles.filter(d => !d.noY).length === 0
   const ifThereTopX = styles.filter(d => d.topX).length !== 0

@@ -18,6 +18,7 @@ export function uniqueValues(o: Object[], k: string) {
   return d3.set(k === "" ? o : o.map(d => d[k])).values()
 }
 
+/* deprecated */
 export function isDeepTrue(o: boolean | object) {
   return o === true || o['value'] === true
 }

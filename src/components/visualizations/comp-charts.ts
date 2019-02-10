@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
-import {CompSpec} from "src/models/comp-spec";
+import {CompSpec, _CompSpecSolid} from "src/models/comp-spec";
 import {translate} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, CHART_MARGIN,
@@ -17,18 +17,21 @@ import {renderChart, canRenderCompChart, canRenderChart, isScatterplot} from "."
 import {DEFAULT_CHART_STYLE} from "./chart-styles";
 import {getAggregatedDatas, oneOfFilter} from "./data-handler";
 import {getStyles} from "./chart-styles/style-definitions";
-import {getLayouts, getChartSize} from "./chart-styles/layouts";
+import {getLayouts, getChartPositions} from "./chart-styles/layouts";
 import {getDomainByLayout} from "./data-handler/domain-calculator";
+import {deepValue, correctSpec} from "src/models/comp-spec-manager";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, C)) return;
+  const mC = correctSpec({...C}) // minor issues in spec should be corrected (e.g., CompSpec => _CompSpecSolid)
+
+  if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, mC)) return;
 
   d3.select(ref).selectAll('*').remove();
 
-  renderCompChartGeneralized(ref, A, B, C)
+  renderCompChartGeneralized(ref, A, B, mC)
 }
 
-export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
   const {...consistency} = correctConsistency(A, B, C)
   const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
@@ -38,7 +41,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const gA = svg.append(_g).attr(_transform, translate(layouts.A.left, layouts.A.top)).attr(_opacity, styles.A.opacity)
   const gB = svg.append(_g).attr(_transform, translate(layouts.B.left, layouts.B.top)).attr(_opacity, styles.B.opacity)
 
-  if (C.layout === "juxtaposition" && C.unit === 'element') { // TODO:
+  if (deepValue(C.layout) === "juxtaposition" && C.unit === 'element') { // TODO:
     renderLegend(gB.append(_g).attr(_transform, translate(CHART_SIZE.width + GAP_BETWEEN_CHARTS, 0)),
       [A.encoding.y.field, B.encoding.y.field],
       styles.A.color.range().concat(styles.B.color.range()) as string[])
@@ -71,10 +74,10 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
 }
 
 /* deprecated */
-export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
 
-  if (C.direction === "vertical") {
-    const chartsp = getChartSize(1, 1, {legend: [0]})
+  if (C.layout.direction === "vertical") {
+    const chartsp = getChartPositions(1, 1, [])//{legend: [0]})
     const svg = d3.select(ref)
       .attr(_width, chartsp.size.width)
       .attr(_height, chartsp.size.height)
@@ -109,10 +112,10 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
       aggD.B.categories,
       getBarColor(aggD.B.categories.length))
   }
-  else if (C.direction === "horizontal") {
+  else if (C.layout.direction === "horizontal") {
     const GroupW = 90
     const aggD = getAggregatedDatas(A, B)
-    const chartsp = getChartSize(aggD.A.categories.length, 1, {width: GroupW, noY: true, legend: [aggD.A.categories.length - 1]})
+    const chartsp = getChartPositions(aggD.A.categories.length, 1, [])//{...S width: GroupW, noY: true, legend: false}])//[aggD.A.categories.length - 1]}])
     const svg = d3.select(ref)
       .attr(_width, chartsp.size.width)
       .attr(_height, chartsp.size.height)
