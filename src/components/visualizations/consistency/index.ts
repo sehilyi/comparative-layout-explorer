@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {isDeepTrue, isUndefinedOrFalse} from "src/useful-factory/utils";
+import {isDeepTrue, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {deepValue} from "src/models/comp-spec-manager";
 
 export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): Consistency {
@@ -11,7 +11,7 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): Consist
     y_axis: (isDeepTrue(C.consistency.y_axis) &&
       A.encoding.y.type === B.encoding.y.type) ||
       (deepValue(C.layout) === "juxtaposition" && C.unit === "element"), // always true for element-wise jux
-    color: !isUndefinedOrFalse(C.consistency.color)
+    color: ifUndefinedGetDefault(C.consistency.color, false)
   };
   // warnings
   if (cons.y_axis != isDeepTrue(C.consistency.y_axis)) console.log('consistency.y has been changed to ' + cons.y_axis)

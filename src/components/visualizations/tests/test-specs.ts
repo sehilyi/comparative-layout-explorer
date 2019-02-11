@@ -125,6 +125,38 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         ...DEFAULT_COMP_SPEC,
+        name: "jc diff color",
+        layout: {type: "juxtaposition", mirrored: false, direction: "vertical"},
+        unit: "chart",
+        consistency: {
+          x_axis: false, y_axis: true, color: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
         layout: {type: "juxtaposition", mirrored: false, direction: "vertical"},
         unit: "chart",
         consistency: {
@@ -272,6 +304,40 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
           color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
+        name: "false color test",
+        layout: "juxtaposition",
+        unit: "chart",
+        consistency: {
+          x_axis: false, y_axis: true, color: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "Major_Genre", type: "nominal"}
         }
       },
       B: {

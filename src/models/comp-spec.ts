@@ -32,12 +32,13 @@ export type commonCompUnit = "chart" | "element"
 export type JuxCompUnit = commonCompUnit | "time"
 export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to constraint this?
 
+export type ConsistencyConstraint = true | false | null // TODO: change to "same" | "different" | "null" ?
 export type Consistency = { // TODO: this should also consider differnce for superimposition
   x_axis?: boolean
   y_axis?: boolean
   x_arrangement?: boolean // divide this to x_positions?
   y_arrangement?: boolean
-  color?: boolean
+  color?: ConsistencyConstraint
 }
 
 export const DEFAULT_LAYOUT: LayoutTypeAndStyle = {

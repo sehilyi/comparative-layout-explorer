@@ -5,7 +5,7 @@ import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-calculator";
-import {getColor, getConstantColor} from "../design-settings";
+import {getColor, getConstantColor, getConsistentColor} from "../design-settings";
 import {isBarChart, isScatterplot} from "..";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
@@ -33,9 +33,18 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.A.noX = consistency.x_axis && !S.B.revX && C.layout.direction === 'vertical'
         S.B.noY = consistency.y_axis && !S.B.revY && C.layout.direction === 'horizontal'
 
-        S.A.color = getColor(d.A.axis["color"])
+        if (consistency.color === false) {
+          S.A.color = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, false).ca
+          S.B.color = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, false).cb
+          // S.A.color = getColor(d.A.axis["color"])
+          // S.B.color = getColor()
+        }
+        else if (consistency.color === true) {
+          S.A.color = getColor(d.A.axis["color"])
+          S.B.color = getColor(Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color)
+        }
+        // TODO: when null?
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor(Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color)
         S.B.colorKey = d.B.cKey
       }
       else if (C.unit === "element") {

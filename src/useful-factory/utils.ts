@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import {isUndefined} from 'util';
+import {isNullOrUndefined} from 'util';
 
 export function translate(x: number, y: number) {
   return `translate(${x}, ${y})`
@@ -28,7 +28,7 @@ export function isUndefinedOrFalse(o: boolean) {
 }
 
 export function ifUndefinedGetDefault(o: any, d: any) {
-  return isUndefined(o) ? d : o
+  return isNullOrUndefined(o) ? d : o
 }
 /**
  * Return random integers from low (inclusive) to high (exclusive).

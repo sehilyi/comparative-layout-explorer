@@ -56,9 +56,14 @@ export const BAR_COLOR2 = '#F28E2B'
 export function getBarSize(cw: number, n: number, g: number) {
   return d3.min([cw / n - g as number, MAX_BAR_SIZE])
 }
-export function getBarColor(n: number) {
+export function getBarColor(n: number, n2?: number) {
   const pallete = CATEGORICAL_COLORS.concat(CATEGORICAL_COLORS_DARKER)
-  return pallete.slice(0, n > pallete.length ? pallete.length - 1 : n)
+  if (typeof n2 === "undefined") {
+    return pallete.slice(0, n > pallete.length ? pallete.length - 1 : n)
+  }
+  else {
+    return pallete.slice(n, (n + n2) > pallete.length ? pallete.length - 1 : n + n2)
+  }
 }
 export function getBarColorDarker(n: number) {
   return CATEGORICAL_COLORS_DARKER.slice(0, n > CATEGORICAL_COLORS_DARKER.length ? CATEGORICAL_COLORS_DARKER.length - 1 : n)
@@ -67,6 +72,14 @@ export function getBarColorDarkest(n: number) {
   return CATEGORICAL_COLORS_DARKEST.slice(0, n > CATEGORICAL_COLORS_DARKEST.length ? CATEGORICAL_COLORS_DARKEST.length - 1 : n)
 }
 
+export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: boolean) {
+  let ca, cb
+  if (!consistency) {
+    ca = d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length))
+    cb = d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length, b.length))
+  }
+  return {ca, cb}
+}
 export function getColor(d: string[] | number[], styles?: {darker: boolean}) {
   const stl = ifUndefinedGetDefault(styles, {})
   const darker = ifUndefinedGetDefault(stl["darker"], false)
