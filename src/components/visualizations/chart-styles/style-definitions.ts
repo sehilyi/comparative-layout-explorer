@@ -5,7 +5,7 @@ import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-calculator";
-import {getColor, getConstantColor, getConsistentColor} from "../design-settings";
+import {getConstantColor, getConsistentColor} from "../design-settings";
 import {isBarChart, isScatterplot} from "..";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
@@ -33,17 +33,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.A.noX = consistency.x_axis && !S.B.revX && C.layout.arrangement === 'stacked'
         S.B.noY = consistency.y_axis && !S.B.revY && C.layout.arrangement === 'adjacent'
 
-        if (consistency.color === false) {
-          S.A.color = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, false).ca
-          S.B.color = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, false).cb
-          // S.A.color = getColor(d.A.axis["color"])
-          // S.B.color = getColor()
-        }
-        else if (consistency.color === true) {
-          S.A.color = getColor(d.A.axis["color"])
-          S.B.color = getColor(Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color)
-        }
-        // TODO: when null?
+        const {ca, cb} = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, consistency.color)
+        S.A.color = ca
+        S.B.color = cb
+
         S.A.colorKey = d.A.cKey
         S.B.colorKey = d.B.cKey
       }
@@ -81,9 +74,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         if (!consistency.x_axis) S.B.topX = true
         if (!consistency.y_axis) S.B.rightY = true
 
-        S.A.color = getColor(d.A.axis["color"])
+        const {ca, cb} = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, consistency.color)
+        S.A.color = ca
+        S.B.color = cb
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor(Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color)
         S.B.colorKey = d.B.cKey
 
         S.B.opacity = 0.4
@@ -96,9 +90,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.B.barGap = 0
         S.B.pointSize = 1.5
 
-        S.A.color = getColor(d.A.axis["color"])
+        const {ca, cb} = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, consistency.color)
+        S.A.color = ca
+        S.B.color = cb
         S.A.colorKey = d.A.cKey
-        S.B.color = getColor(Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color)
         S.B.colorKey = d.B.cKey
 
         if (isScatterplot(A)) {
