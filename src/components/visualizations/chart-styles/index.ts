@@ -12,6 +12,8 @@ export interface CommonChartStyle {
   color: d3.ScaleOrdinal<string, {}>
   colorKey: string
   onTop: boolean
+  translateX: number
+  translateY: number
   // axes common
   noAxes: boolean
   noGrid: boolean
@@ -56,6 +58,8 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   color: getConstantColor(),
   colorKey: "",
   onTop: false,
+  translateX: 0,
+  translateY: 0,
 
   noAxes: false,
   noX: false,

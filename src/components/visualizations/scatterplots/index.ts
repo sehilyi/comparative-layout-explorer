@@ -32,7 +32,7 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 }
 
 export function renderScatterplot(
-  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]}, // determine the axis range
   styles: ScatterplotStyle) {
@@ -41,10 +41,14 @@ export function renderScatterplot(
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
   const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
   const aggValues = typeof aggregate != "undefined" ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
-  const {x, y} = renderAxes(g, domain.x, domain.y, spec, {...styles})
+  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
+  const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed("A", true)
   renderPoints(g, aggValues, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles, aggregated: typeof aggregate != "undefined"})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
-  if (styles.legend) renderLegend(g.append(_g).attr(_transform, translate(CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, 0)), styles.color.domain() as string[], styles.color.range() as string[])
+  if (styles.legend) {
+    const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
+    renderLegend(legendG, styles.color.domain() as string[], styles.color.range() as string[])
+  }
 }
 
 export function renderPoints(

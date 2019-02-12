@@ -103,6 +103,11 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
     default:
       break
   }
+
+  // set translate in styles
+  S.A = {...S.A, translateX: chartsp.positions[0].left, translateY: chartsp.positions[0].top}
+  S.B = {...S.B, translateX: chartsp.positions[1].left, translateY: chartsp.positions[1].top}
+
   return {
     width: chartsp.size.width,
     height: chartsp.size.height,
