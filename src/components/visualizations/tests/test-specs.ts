@@ -1,10 +1,10 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
-import {deepValue, correctSpec} from "src/models/comp-spec-manager";
+import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
-  const mC = correctSpec({...C})
+  const mC = correctCompSpec({...C})
   return (A.mark === "point" ? "scatterplot" : A.mark + "chart") + " x " + (B.mark === "point" ? "scatterplot" : B.mark + "chart") + " " +
     "(" + deepValue(mC.layout).toString().slice(0, 3).toUpperCase() + "|" + mC.unit.slice(0, 3).toUpperCase() + "|" +
     mC.layout.arrangement.toString().slice(0, 1).toUpperCase() + "|" + (mC.layout.mirrored ? "M|" : "F|") +
@@ -486,7 +486,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         ...DEFAULT_COMP_SPEC,
         name: "H vs V bar charts",
-        layout: {type: "superimposition", arrangement: "adjacent", mirrored: false},
+        layout: {type: "superimposition"},
         unit: "element",
         consistency: {
           x_axis: false, y_axis: false, color: false

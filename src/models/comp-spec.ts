@@ -5,7 +5,7 @@
  * CompSpec with less flexability
  * This is used in the system and not for users
  */
-export type _CompSpecSolid = {
+export type _CompSpecSolid = {  // TODO: change this to interface
   name: string
   layout: LayoutTypeAndStyle  // TODO: how to set default values when only parts are not assigned?
   unit?: CompUnit
@@ -20,7 +20,7 @@ export type CompSpec = {
 export type Layout = LayoutType | LayoutTypeAndStyle
 export type LayoutType = "juxtaposition" | "superimposition" | "blending" | "explicit-encoding"
 export type LayoutTypeAndStyle = {
-  type: Layout
+  type: LayoutType
   mirrored?: boolean
   arrangement?: CompArrangement
 }
@@ -41,18 +41,37 @@ export type Consistency = { // TODO: this should also consider differnce for sup
   color?: ConsistencyConstraint
 }
 
-export const DEFAULT_LAYOUT: LayoutTypeAndStyle = {
+export const DEFAULT_LAYOUT_JUX: LayoutTypeAndStyle = {
   type: "juxtaposition",
-  // juxtaposition
   mirrored: false,
   arrangement: "adjacent"
-  //
+}
+export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
+  type: "superimposition",
+  mirrored: false,
+  arrangement: "null"
 }
 export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",
-  layout: DEFAULT_LAYOUT,
+  layout: DEFAULT_LAYOUT_JUX,
   unit: "chart",
   consistency: {x_axis: false, y_axis: false, color: false, x_arrangement: false, y_arrangement: false},
+}
+export const DEFAULT_COMP_SPECS = {
+  "juxtaposition": {
+    ...DEFAULT_COMP_SPEC,
+    layout: DEFAULT_LAYOUT_JUX,
+  },
+  "superimposition": {
+    ...DEFAULT_COMP_SPEC,
+    layout: DEFAULT_LAYOUT_SUP,
+  },
+  "blending": {
+    ...DEFAULT_COMP_SPEC  // TODO:
+  },
+  "explicit-encoding": {
+    ...DEFAULT_COMP_SPEC  // TODO:
+  }
 }
 
 /**

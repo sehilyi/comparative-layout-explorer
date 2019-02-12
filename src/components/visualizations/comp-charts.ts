@@ -19,10 +19,10 @@ import {getAggregatedDatas, oneOfFilter} from "./data-handler";
 import {getStyles} from "./chart-styles/style-definitions";
 import {getLayouts, getChartPositions} from "./chart-styles/layouts";
 import {getDomainByLayout} from "./data-handler/domain-calculator";
-import {deepValue, correctSpec} from "src/models/comp-spec-manager";
+import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const mC = correctSpec({...C}) // minor issues in spec should be corrected (e.g., CompSpec => _CompSpecSolid)
+  const mC = correctCompSpec({...C}) // minor issues in spec should be corrected (e.g., CompSpec => _CompSpecSolid)
 
   if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, mC)) return;
 
