@@ -44,6 +44,8 @@ export const CATEGORICAL_COLORS_DARKEST = [
   "#2a1d26", "#3d2527", "#251b16", "#2c2a29"]
 
 export const DEFAULT_FONT = "Roboto Condensed"
+export const DEFAULT_STROKE_WIDTH = 1
+export const DEFAULT_STROKE = "black"
 
 // bar
 export const BAR_GAP = 10

@@ -41,6 +41,7 @@ export type Consistency = { // TODO: this should also consider differnce for sup
   x_arrangement?: boolean // divide this to x_positions?
   y_arrangement?: boolean
   color?: ConsistencyConstraint
+  stroke?: boolean
 }
 
 export type CompReference = "A" | "B"
@@ -56,16 +57,24 @@ export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
   mirrored: false,
   arrangement: "null"
 }
+export const DEFAULT_CONSISTENCY: Consistency = {
+  x_axis: false,
+  y_axis: false,
+  color: false,
+  x_arrangement: false,
+  y_arrangement: false,
+  stroke: false
+}
 export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",
   layout: DEFAULT_LAYOUT_JUX,
   unit: "chart",
-  consistency: {x_axis: false, y_axis: false, color: false, x_arrangement: false, y_arrangement: false},
+  consistency: DEFAULT_CONSISTENCY,
   reference: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {
-  "juxtaposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX, },
-  "superimposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP, },
+  "juxtaposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX},
+  "superimposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP},
   "blending": {...DEFAULT_COMP_SPEC},  // TODO:
   "explicit-encoding": {...DEFAULT_COMP_SPEC} // TODO:
 }

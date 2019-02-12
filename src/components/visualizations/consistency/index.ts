@@ -11,7 +11,8 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): Consist
     y_axis: (isDeepTrue(C.consistency.y_axis) &&
       A.encoding.y.type === B.encoding.y.type) ||
       (deepValue(C.layout) === "juxtaposition" && C.unit === "element"), // always true for element-wise jux
-    color: ifUndefinedGetDefault(C.consistency.color, false)
+    color: ifUndefinedGetDefault(C.consistency.color, false),
+    stroke: ifUndefinedGetDefault(C.consistency.stroke, false)
   };
   // warnings
   if (cons.y_axis != isDeepTrue(C.consistency.y_axis)) console.log('consistency.y has been changed to ' + cons.y_axis)

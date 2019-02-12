@@ -5,7 +5,7 @@ import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-calculator";
-import {getConstantColor, getConsistentColor} from "../design-settings";
+import {getConstantColor, getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../design-settings";
 import {isBarChart, isScatterplot} from "..";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
@@ -73,6 +73,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         if (consistency.y_axis) S.B.noY = true
         if (!consistency.x_axis) S.B.topX = true
         if (!consistency.y_axis) S.B.rightY = true
+        if (!consistency.stroke) {
+          S.A.stroke = DEFAULT_STROKE
+          S.A.stroke_width = DEFAULT_STROKE_WIDTH
+        }
 
         const {ca, cb} = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, consistency.color)
         S.A.color = ca
@@ -80,7 +84,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.A.colorKey = d.A.cKey
         S.B.colorKey = d.B.cKey
 
-        S.B.opacity = 0.4
+        // S.B.opacity = 0.4
         S.A.onTop = true
       }
       else if (C.unit === "element") {

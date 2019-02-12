@@ -29,7 +29,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         ...DEFAULT_COMP_SPEC,
         name: "ele",
-        layout: {type: "juxtaposition", arrangement: "adjacent", mirrored: true},
+        layout: {type: "juxtaposition", arrangement: "adjacent"},
         unit: "element",
         consistency: {
           x_axis: true, y_axis: true, color: true
@@ -294,7 +294,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         layout: "superimposition",
         unit: "chart",
         consistency: {
-          x_axis: false, y_axis: true, color: false
+          x_axis: true, y_axis: true, color: true, stroke: false
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -623,7 +623,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         layout: "superimposition",
         unit: "chart",
         consistency: {
-          x_axis: false, y_axis: false, color: false
+          x_axis: false, y_axis: false, color: false, stroke: true
         }
       },
       // https://vega.github.io/vega-lite/examples/
