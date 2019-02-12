@@ -27,7 +27,7 @@ export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,
   height: CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom
 }
-export const NESTING_PADDING = 3
+export const NESTING_PADDING = 1
 
 // TOOD: add more pallete
 export const CATEGORICAL_COLORS = [
