@@ -24,14 +24,14 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
       if (C.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
-        const isALegendUse = consistency.color && C.layout.direction == "vertical" || !consistency.color && isAColorUsed
-        const isBLegendUse = consistency.color && C.layout.direction == "horizontal" || !consistency.color && isBColorUsed
+        const isALegendUse = consistency.color && C.layout.arrangement == "stacked" || !consistency.color && isAColorUsed
+        const isBLegendUse = consistency.color && C.layout.arrangement == "adjacent" || !consistency.color && isBColorUsed
         S.A.legend = isALegendUse
         S.B.legend = isBLegendUse
-        S.B.revY = C.layout.direction === "vertical" && C.layout.mirrored
-        S.A.revX = C.layout.direction === "horizontal" && C.layout.mirrored
-        S.A.noX = consistency.x_axis && !S.B.revX && C.layout.direction === 'vertical'
-        S.B.noY = consistency.y_axis && !S.B.revY && C.layout.direction === 'horizontal'
+        S.B.revY = C.layout.arrangement === "stacked" && C.layout.mirrored
+        S.A.revX = C.layout.arrangement === "adjacent" && C.layout.mirrored
+        S.A.noX = consistency.x_axis && !S.B.revX && C.layout.arrangement === 'stacked'
+        S.B.noY = consistency.y_axis && !S.B.revY && C.layout.arrangement === 'adjacent'
 
         if (consistency.color === false) {
           S.A.color = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, false).ca
@@ -48,13 +48,13 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.B.colorKey = d.B.cKey
       }
       else if (C.unit === "element") {
-        if (C.layout.direction === "vertical") { // stacked bar
+        if (C.layout.arrangement === "stacked") { // stacked bar
           S.B.noAxes = true
           const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
             {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y
           S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField}
         }
-        else if (C.layout.direction === "horizontal") { // grouped bar
+        else if (C.layout.arrangement === "adjacent") { // grouped bar
           S.A.shiftBy = -0.5
           S.A.mulSize = 0.5
           S.B.shiftBy = 0.5

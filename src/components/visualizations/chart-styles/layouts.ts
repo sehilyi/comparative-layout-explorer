@@ -26,8 +26,8 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
   switch (deepValue(C.layout)) {
     case "juxtaposition":
       if (C.unit === "chart") {
-        const numOfC = C.layout.direction === 'horizontal' ? 2 : 1
-        const numOfR = C.layout.direction === 'vertical' ? 2 : 1
+        const numOfC = C.layout.arrangement === 'adjacent' ? 2 : 1
+        const numOfR = C.layout.arrangement === 'stacked' ? 2 : 1
         chartsp = getChartPositions(numOfC, numOfR, [S.A, S.B])
       }
       else if (C.unit === "element") {

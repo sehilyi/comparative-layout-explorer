@@ -64,7 +64,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   resB = {axis: axisB, cKey: cKeyB}
 
   // exceptions: modify domains considering designs
-  if (deepValue(C.layout) === "juxtaposition" && C.unit === "element" && C.layout.direction === "vertical" && isBarChart(A) && isBarChart(B)) {
+  if (deepValue(C.layout) === "juxtaposition" && C.unit === "element" && C.layout.arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
     const n = A.encoding.x.type === "nominal" ? "x" : "y",
       q = A.encoding.x.type === "quantitative" ? "x" : "y"

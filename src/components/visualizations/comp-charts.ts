@@ -76,7 +76,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
 /* deprecated */
 export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
 
-  if (C.layout.direction === "vertical") {
+  if (C.layout.arrangement === "stacked") {
     const chartsp = getChartPositions(1, 1, [])//{legend: [0]})
     const svg = d3.select(ref)
       .attr(_width, chartsp.size.width)
@@ -112,7 +112,7 @@ export function renderBlend(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSo
       aggD.B.categories,
       getBarColor(aggD.B.categories.length))
   }
-  else if (C.layout.direction === "horizontal") {
+  else if (C.layout.arrangement === "adjacent") {
     const GroupW = 90
     const aggD = getAggregatedDatas(A, B)
     const chartsp = getChartPositions(aggD.A.categories.length, 1, [])//{...S width: GroupW, noY: true, legend: false}])//[aggD.A.categories.length - 1]}])

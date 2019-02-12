@@ -22,10 +22,10 @@ export type LayoutType = "juxtaposition" | "superimposition" | "blending" | "exp
 export type LayoutTypeAndStyle = {
   type: Layout
   mirrored?: boolean
-  direction?: CompDirection
+  arrangement?: CompArrangement
 }
 
-export type CompDirection = "horizontal" | "vertical" // TODO: when horizontal bar, improper words
+export type CompArrangement = "stacked" | "adjacent" | "animated" | "null"
 
 export type CompUnit = JuxCompUnit | SupCompUnit
 export type commonCompUnit = "chart" | "element"
@@ -45,7 +45,7 @@ export const DEFAULT_LAYOUT: LayoutTypeAndStyle = {
   type: "juxtaposition",
   // juxtaposition
   mirrored: false,
-  direction: "horizontal"
+  arrangement: "adjacent"
   //
 }
 export const DEFAULT_COMP_SPEC: CompSpec = {
