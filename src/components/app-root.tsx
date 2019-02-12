@@ -10,7 +10,7 @@ import {library} from '@fortawesome/fontawesome-svg-core';
 import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight} from '@fortawesome/free-solid-svg-icons';
 import {renderCompChart} from './visualizations/comp-charts';
 import {renderSimpleChart} from './visualizations';
-import {getExamples, getCompTitle} from './visualizations/tests/test-specs';
+import {getExamples, getCompTitle, getSimpleCompTitle} from './visualizations/tests/test-specs';
 import {Spec} from 'src/models/simple-vega-spec';
 import {CompSpec} from 'src/models/comp-spec';
 import {deepValue} from 'src/models/comp-spec-manager';
@@ -37,7 +37,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   }
 
   render() {
-    const Examples = getExamples().map(this.renderExamples, this);
+    const Examples = getExamples().map(this.renderExamples, this)
     return (
       <div className='app-root'>
         <div className='header'>
@@ -74,7 +74,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     console.log("# Now Rendering: " + key)
     return !PRESENTATION ? (
       <div key={key} className="example-element-root">
-        <h1>{key}</h1>
+        <h1>{getSimpleCompTitle(specs.A, specs.B, specs.C) + (specs.C.name !== "" ? " (name: " + specs.C.name + ")" : "")}</h1>
         <div className='example-element'>
           <div className='result-group'>
             <div className='chart'><svg ref={onBarChartC}></svg></div>

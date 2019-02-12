@@ -67,7 +67,7 @@ export const DEFAULT_COMP_SPECS = {
   "juxtaposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX, },
   "superimposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP, },
   "blending": {...DEFAULT_COMP_SPEC},  // TODO:
-  "explicit-encoding": {...DEFAULT_COMP_SPEC}// TODO:
+  "explicit-encoding": {...DEFAULT_COMP_SPEC} // TODO:
 }
 
 /**

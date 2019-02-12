@@ -5,11 +5,14 @@ import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C})
-  return (A.mark === "point" ? "scatterplot" : A.mark + "chart") + " x " + (B.mark === "point" ? "scatterplot" : B.mark + "chart") + " " +
+  return getSimpleCompTitle(A, B, C) + " " +
     "(" + deepValue(mC.layout).toString().slice(0, 3).toUpperCase() + "|" + mC.unit.slice(0, 3).toUpperCase() + "|" +
     mC.layout.arrangement.toString().slice(0, 1).toUpperCase() + "|" + (mC.layout.mirrored ? "M|" : "F|") +
     "|Consistency{x:" + mC.consistency.x_axis + ",y:" + mC.consistency.y_axis + ",c:" + mC.consistency.color +
     "}) " + mC.name
+}
+export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
+  return (A.mark === "point" ? "scatterplot" : A.mark + "chart") + " x " + (B.mark === "point" ? "scatterplot" : B.mark + "chart")
 }
 
 export function getExamples() {
