@@ -10,12 +10,14 @@ export type _CompSpecSolid = {  // TODO: change this to interface
   layout: LayoutTypeAndStyle  // TODO: how to set default values when only parts are not assigned?
   unit?: CompUnit
   consistency: Consistency
+  reference: CompReference
 }
 export type CompSpec = {
   name: string
   layout: Layout
   unit?: CompUnit
   consistency: Consistency
+  reference: CompReference
 }
 export type Layout = LayoutType | LayoutTypeAndStyle
 export type LayoutType = "juxtaposition" | "superimposition" | "blending" | "explicit-encoding"
@@ -41,6 +43,9 @@ export type Consistency = { // TODO: this should also consider differnce for sup
   color?: ConsistencyConstraint
 }
 
+export type CompReference = "A" | "B"
+export const DEFAULT_COMP_REFERENCE = "A"
+
 export const DEFAULT_LAYOUT_JUX: LayoutTypeAndStyle = {
   type: "juxtaposition",
   mirrored: false,
@@ -56,6 +61,7 @@ export const DEFAULT_COMP_SPEC: CompSpec = {
   layout: DEFAULT_LAYOUT_JUX,
   unit: "chart",
   consistency: {x_axis: false, y_axis: false, color: false, x_arrangement: false, y_arrangement: false},
+  reference: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {
   "juxtaposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX, },
