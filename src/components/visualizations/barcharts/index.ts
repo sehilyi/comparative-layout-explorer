@@ -10,9 +10,9 @@ import {getAggValues} from '../data-handler';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {ScaleBand, ScaleLinear} from 'd3';
 import {DEFAULT_CHART_STYLE} from '../chart-styles';
-import {getDomain} from '../data-handler/domain-calculator';
+import {getDomain} from '../data-handler/domain-manager';
 import {manageZIndex} from '..';
-import {getChartPositions} from '../chart-styles/layouts';
+import {getChartPositions} from '../chart-styles/layout-manager';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;

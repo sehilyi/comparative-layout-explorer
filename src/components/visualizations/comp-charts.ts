@@ -9,9 +9,9 @@ import {renderLegend} from "./legends";
 import {correctConsistency} from "./consistency";
 import {renderChart, canRenderCompChart, canRenderChart, isScatterplot} from ".";
 import {oneOfFilter} from "./data-handler";
-import {getStyles} from "./chart-styles/style-definitions";
-import {getLayouts} from "./chart-styles/layouts";
-import {getDomainByLayout} from "./data-handler/domain-calculator";
+import {getStyles} from "./chart-styles/style-manager";
+import {getLayouts} from "./chart-styles/layout-manager";
+import {getDomainByLayout} from "./data-handler/domain-manager";
 import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {

@@ -4,7 +4,7 @@ import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
 import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
-import {ChartDomainData} from "../data-handler/domain-calculator";
+import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConstantColor, getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../design-settings";
 import {isBarChart, isScatterplot} from "..";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";

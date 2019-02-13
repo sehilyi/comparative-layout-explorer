@@ -9,7 +9,7 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {ScatterplotStyle} from './styles';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
-import {getChartPositions} from '../chart-styles/layouts';
+import {getChartPositions} from '../chart-styles/layout-manager';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
