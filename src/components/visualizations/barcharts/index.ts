@@ -52,7 +52,7 @@ export function renderBarChart(
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
     renderLegend(legendG, styles.color.domain() as string[], styles.color.range() as string[])
   }
-  manageZIndex(svg, spec)
+  manageZIndex(svg, spec) // TODO: too much detail this is
 }
 
 export function renderBars(
