@@ -34,6 +34,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
   if (deepValue(C.layout) === "juxtaposition" && C.unit === 'element') { // TODO:
     renderLegend(svg.append(_g).attr(_transform, translate(layouts.B.left + CHART_SIZE.width + GAP_BETWEEN_CHARTS, layouts.B.top)),
+      "no title",
       [A.encoding.y.field, B.encoding.y.field],
       styles.A.color.range().concat(styles.B.color.range()) as string[])
   }

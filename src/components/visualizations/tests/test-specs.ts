@@ -55,7 +55,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         mark: "bar",
         encoding: {
           x: {field: "Source", type: "nominal"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"}
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "Source", type: "nominal"}
         }
       }
     },

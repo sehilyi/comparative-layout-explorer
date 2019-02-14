@@ -28,7 +28,7 @@ export const CATEGORICAL_COLORS_DARKEST = [
   "#1c2b2a", "#152612", "#383011",
   "#2a1d26", "#3d2527", "#251b16", "#2c2a29"]
 
-export const NUMERICAL_COLORS = ['#C6E48B', '#7BC96F', '#239A3B', '#196127']
+export const NUMERICAL_COLORS = ['#C6E48B', /*'#7BC96F',*/ '#239A3B'/*, '#196127'*/]  // git heatmap color scheme
 export const LIGHT_GRAY = "#EBEDF0"
 export const DEFAULT_FONT = "Roboto Condensed"
 export const DEFAULT_STROKE_WIDTH = 1

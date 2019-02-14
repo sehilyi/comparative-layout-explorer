@@ -30,7 +30,7 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
   renderCells(g, linAggValues, xField, yField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: typeof aggregate != "undefined"})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.color.domain() as string[], styles.color.range() as string[], true)
+    renderLegend(legendG, styles.colorKey, styles.color.domain() as string[], styles.color.range() as string[], true)
   }
 }
 // TODO: now only considering two nominal and one quantitative

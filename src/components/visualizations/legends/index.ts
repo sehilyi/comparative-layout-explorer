@@ -1,14 +1,24 @@
 import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH} from "./default-design";
-import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform} from "src/useful-factory/d3-str";
+import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color} from "src/useful-factory/d3-str";
 import {getLinearColor} from "../design-settings";
 import d3 = require("d3");
 import {translate} from "src/useful-factory/utils";
 
 export function renderLegend(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
+  title: string,
   domain: string[] | number[],
   range: string[],
   isNominal?: boolean) {
+
+  // title
+  g.append('text')
+    .classed('legend-title', true)
+    .attr(_y, -7)
+    .style(_font_size, '10px')
+    .style(_text_anchor, 'start')
+    .style(_font_weight, 'bold')
+    .text(title)
 
   if (!isNominal) {
     // Notice: domain.length is always equal or larger than range.length
@@ -48,53 +58,39 @@ export function renderLegend(
     }
   }
   else {
-    // title
-    g.append('text')
-      .classed('legend-title', true)
-      .attr(_y, -5)
-      .style('text-anchor', 'start')
-      .style('font-size', 10 + 'px')
-      .style('font-weight', 'bold')
-      .text("Title")
-
-    const defs = g.append("defs");
+    const defs = g.append("defs")
+    const key = "linear-gradient"
     const linearGradient = defs.append("linearGradient")
-      .attr("id", "linear-gradient")
-      .attr('x1', '0%')
-      .attr('y1', '100%')
-      .attr('x2', '100%')
-      .attr('y2', '100%')
+      .attr(_id, key)
+      .attr(_x1, '0%')
+      .attr(_y1, '100%')
+      .attr(_x2, '100%')
+      .attr(_y2, '100%')
 
-    let colorScale = d3.scaleSequential(d3.interpolate(getLinearColor()[0], getLinearColor()[3])).domain(d3.extent(domain as number[]))
+    let scale = d3.scaleLinear<string>().range(getLinearColor()).domain(d3.extent(domain as number[]))
     linearGradient.selectAll("stop")
       .data([
-        {offset: `${100 * 0 / 2}%`, color: colorScale(d3.extent(domain as number[])[0])},
-        {offset: `${100 * 2 / 2}%`, color: colorScale(d3.extent(domain as number[])[1])}
+        {offset: `${100 * 0 / 2}%`, color: scale(d3.extent(domain as number[])[0])},
+        {offset: `${100 * 2 / 2}%`, color: scale(d3.extent(domain as number[])[1])}
       ])
       .enter().append("stop")
-      .attr("offset", d => d['offset'])
-      .attr("stop-color", d => d['color'])
+      .attr(_offset, d => d[_offset])
+      .attr(_stop_color, d => d[_color])
 
-    g.append('g')
-      .append("rect")
-      .attr("width", LEGEND_WIDTH - LEGEND_GAP * 2)
-      .attr("height", 15)
-      .style("fill", "url(#linear-gradient)")
+    g.append(_g)
+      .append(_rect)
+      .attr(_width, LEGEND_WIDTH - LEGEND_GAP * 2)
+      .attr(_height, 15)
+      .style(_fill, `url(#${key})`)
 
     const q = d3.scaleLinear()
       .domain(d3.extent(domain as number[])).nice()
       .rangeRound([0, LEGEND_WIDTH - LEGEND_GAP * 2])
 
     let yAxis = d3.axisBottom(q).ticks(5)
-
-    g.append("g")
-      .attr("class", "y axis")
+    g.append(_g)
+      .classed("y axis", true)
       .attr(_transform, translate(0, 15))
       .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("axis title");
   }
 }
