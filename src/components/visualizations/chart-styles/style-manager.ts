@@ -55,7 +55,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
           S.B.noAxes = true
         }
 
-        S.A.color = getConstantColor() // getColor(d.A.c)
+        S.A.color = getConstantColor() // getColor(d.A.c) // TODO: this should be eventually removed
         S.A.colorKey = domain.A.cKey
         S.B.color = getConstantColor(2) // getColor((d.B as DomainData).c)
         S.B.colorKey = domain.B.cKey

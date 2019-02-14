@@ -53,7 +53,8 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   }
   if (consistency.color) {
     axisA.color = axisB.color = DomainAB.color
-    cKeyA = cKeyB = DomainAB.cKey
+    cKeyA = DomainA.cKey
+    cKeyB = DomainB.cKey
   }
   else {
     axisA.color = DomainA.color
@@ -224,8 +225,9 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     yDomain = y.type === "nominal" ? (yDomain as string[]).concat(uDomain.y as string[]) :
       (yDomain as number[]).concat(uDomain.y as number[])
     // TODO: when [""]?
-    cDomain = color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) : // TODO: should consider numerical color encoding
-      (cDomain as number[]).concat(uDomain.color as number[])
+    cDomain = color && sForUnion.encoding.color && color.type !== sForUnion.encoding.color.type ? (cDomain as string[]).concat(uDomain.color as string[]) :
+      color && color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) : // TODO: should consider numerical color encoding
+        (cDomain as number[]).concat(uDomain.color as number[])
   }
   return {x: xDomain, y: yDomain, color: cDomain, cKey}
 }
