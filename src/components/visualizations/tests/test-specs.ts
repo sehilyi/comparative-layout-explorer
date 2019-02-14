@@ -18,7 +18,7 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-    .filter(d => d.C.name === "heatmap")  // debugging
+    .filter(d => d.C.name.includes("heatmap"))  // debugging
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
     (a.A.mark + a.B.mark) < (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) > (b.A.mark + b.A.mark) ? 1 : deepValue(a.C.layout) < deepValue(b.C.layout) ? -1 : deepValue(a.C.layout) > deepValue(b.C.layout) ? 1 : a.C.unit < b.C.unit ? -1 : 1
@@ -31,6 +31,40 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         ...DEFAULT_COMP_SPEC,
         name: "heatmap",
         layout: {type: "juxtaposition", arrangement: "adjacent"},
+        unit: "chart",
+        consistency: {
+          x_axis: false, y_axis: true, color: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "count"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
+        name: "heatmap",
+        layout: {type: "juxtaposition", arrangement: "stacked"},
         unit: "chart",
         consistency: {
           x_axis: false, y_axis: false, color: false
@@ -54,9 +88,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "bar",
         encoding: {
-          x: {field: "Source", type: "nominal"},
+          x: {field: "Major_Genre", type: "nominal"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "Source", type: "nominal"}
+          color: {field: "Major_Genre", type: "nominal"}
         }
       }
     },

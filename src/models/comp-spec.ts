@@ -44,7 +44,7 @@ export type Consistency = { // TODO: this should also consider differnce for sup
   stroke?: boolean
 }
 
-export type CompReference = "A" | "B"
+export type CompReference = "A" | "B" // TODO: change to priority
 export const DEFAULT_COMP_REFERENCE = "A"
 
 export const DEFAULT_LAYOUT_JUX: LayoutTypeAndStyle = {

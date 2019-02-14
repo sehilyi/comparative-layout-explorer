@@ -57,7 +57,7 @@ export function getLinearColor() {
 }
 export function getBarColor(n: number, n2?: number) {
   const pallete = CATEGORICAL_COLORS.concat(CATEGORICAL_COLORS_DARKER)
-  if (typeof n2 === "undefined") {
+  if (!n2) {
     return pallete.slice(0, n > pallete.length ? pallete.length - 1 : n)
   }
   else {
@@ -70,11 +70,17 @@ export function getConsistentColor(a: string[] | number[], b: string[] | number[
     ca = typeof a[0] === "string" ?
       d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length)) :
       d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getLinearColor())
-    cb = d3.scaleOrdinal().domain(b as string[]).range(getBarColor(b.length))
+    cb = typeof b[0] === "string" ?
+      d3.scaleOrdinal().domain(b as string[]).range(getBarColor(b.length)) :  // TODO: how to deal with q vs. n?
+      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getLinearColor())
   }
-  else { // TODO:
-    ca = d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length))
-    cb = d3.scaleOrdinal().domain(b as string[]).range(getBarColor(b.length))
+  else {
+    ca = typeof a[0] === "string" ?
+      d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length)) :
+      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getLinearColor())
+    cb = typeof b[0] === "string" ?
+      d3.scaleOrdinal().domain(b as string[]).range(getBarColor(b.length)) :  // TODO: how to deal with q vs. n?
+      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getLinearColor())
   }
   return {ca, cb}
 }

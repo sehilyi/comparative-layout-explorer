@@ -1,5 +1,5 @@
 import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH} from "./default-design";
-import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color} from "src/useful-factory/d3-str";
+import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end} from "src/useful-factory/d3-str";
 import {getLinearColor} from "../design-settings";
 import d3 = require("d3");
 import {translate} from "src/useful-factory/utils";
@@ -87,10 +87,17 @@ export function renderLegend(
       .domain(d3.extent(domain as number[])).nice()
       .rangeRound([0, LEGEND_WIDTH - LEGEND_GAP * 2])
 
-    let yAxis = d3.axisBottom(q).ticks(5)
+    let yAxis = d3.axisBottom(q).ticks(3)
     g.append(_g)
-      .classed("y axis", true)
+      .classed("axis", true)
       .attr(_transform, translate(0, 15))
+      .attr('dy', '.71em')
       .call(yAxis)
+      .selectAll('.axis text')
+      // .attr(_x, -8)
+      // .attr(_y, 0)
+      // .attr(_transform, rotate(310))
+      // .attr(_text_anchor, _end)
+      .text(d => d3.format(".0e")(Number(d)))
   }
 }

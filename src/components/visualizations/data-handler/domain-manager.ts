@@ -192,8 +192,6 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
       if (x.type === "nominal" && y.type === "nominal") {
         const vals = getAggValuesByTwoKeys(values, x.field, y.field, color.field, color.aggregate)
         const tabVals = tabularizeData(vals, xDomain as string[], yDomain as string[], x.field, y.field, color.field)
-        console.log(tabVals)
-        // cDomain = [].concat(...vals.map(d => d.values)).map((d: object) => d["value"])
         cDomain = tabVals.map(d => d[color.field])
         cKey = color.field
       }
@@ -226,7 +224,8 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     yDomain = y.type === "nominal" ? (yDomain as string[]).concat(uDomain.y as string[]) :
       (yDomain as number[]).concat(uDomain.y as number[])
     // TODO: when [""]?
-    cDomain = (cDomain as string[]).concat(uDomain.color as string[]) // TODO: should consider numerical color encoding
+    cDomain = color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) : // TODO: should consider numerical color encoding
+      (cDomain as number[]).concat(uDomain.color as number[])
   }
   return {x: xDomain, y: yDomain, color: cDomain, cKey}
 }
