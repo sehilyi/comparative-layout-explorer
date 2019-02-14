@@ -5,7 +5,9 @@ import {getAggValuesByTwoKeys} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height} from 'src/useful-factory/d3-str';
-import {LIGHT_GRAY} from '../design-settings';
+import {LIGHT_GRAY, CHART_SIZE, CHART_MARGIN} from '../design-settings';
+import {LEGEND_PADDING} from '../legends/default-design';
+import {renderLegend} from '../legends';
 
 export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
   // TODO:
@@ -26,11 +28,10 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
   const aggValues = getAggValuesByTwoKeys(values, xField, yField, cField, aggregate)
   const linAggValues = tabularizeData(aggValues, domain.x as string[], domain.y as string[], xField, yField, cField)
   renderCells(g, linAggValues, xField, yField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: typeof aggregate != "undefined"})
-  // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
-  // if (styles.legend) {
-  //   const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-  //   renderLegend(legendG, styles.color.domain() as string[], styles.color.range() as string[])
-  // }
+  if (styles.legend) {
+    const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
+    renderLegend(legendG, styles.color.domain() as string[], styles.color.range() as string[], true)
+  }
 }
 // TODO: now only considering two nominal and one quantitative
 /**
