@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import {Spec} from "src/models/simple-vega-spec";
-import {ScatterplotStyle} from "../scatterplots/styles";
 import {getAggValuesByTwoKeys} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
@@ -9,7 +8,7 @@ import {LIGHT_GRAY, CHART_SIZE, CHART_MARGIN, getLinearColor} from '../design-se
 import {LEGEND_PADDING} from '../legends/default-design';
 import {renderLegend} from '../legends';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {DEFAULT_CHART_STYLE} from '../chart-styles';
+import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {isUndefined} from 'util';
 
@@ -32,8 +31,8 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
 
 export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
-  domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]}, // determine the axis range
-  styles: ScatterplotStyle) {
+  domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]},
+  styles: ChartStyle) {
 
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity)
@@ -78,7 +77,7 @@ export function renderCells(
   yKey: string,
   x: d3.ScaleBand<string>,
   y: d3.ScaleBand<string>,
-  styles: ScatterplotStyle) {
+  styles: ChartStyle) {
 
   const numOfX = (x.domain() as string[]).length, numOfY = (y.domain() as string[]).length
   const cellWidth = styles.width / numOfX, cellHeight = styles.height / numOfY

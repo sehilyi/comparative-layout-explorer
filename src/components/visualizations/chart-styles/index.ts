@@ -1,8 +1,7 @@
-import {BarchartStyle} from "src/models/barchart-style";
 import {BAR_GAP, CHART_SIZE, getConstantColor} from "../design-settings";
 import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 
-export type ChartStyle = BarchartStyle | CommonChartStyle
+export type ChartStyle = CommonChartStyle
 
 export interface CommonChartStyle {
   // globar style

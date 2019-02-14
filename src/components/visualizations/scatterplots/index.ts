@@ -5,7 +5,6 @@ import {SCATTER_POINT_OPACITY} from './default-design';
 import {renderAxes} from '../axes';
 import {renderLegend} from '../legends';
 import {LEGEND_PADDING} from '../legends/default-design';
-import {ScatterplotStyle} from './styles';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
@@ -36,7 +35,7 @@ export function renderScatterplot(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]}, // determine the axis range
-  styles: ScatterplotStyle) {
+  styles: ChartStyle) {
 
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
@@ -59,7 +58,7 @@ export function renderPoints(
   yKey: string,
   x: d3.ScaleLinear<number, number>,
   y: d3.ScaleLinear<number, number>,
-  styles: ScatterplotStyle) {
+  styles: ChartStyle) {
 
   g.append(_g).selectAll('.point')
     .data(data)

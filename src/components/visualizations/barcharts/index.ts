@@ -2,13 +2,12 @@ import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault, uniqueValues} from 'src/useful-factory/utils';
 import {isUndefined} from 'util';
-import {BarchartStyle} from 'src/models/barchart-style';
 import {renderLegend} from '../legends';
 import {renderAxes} from '../axes';
 import {getAggValues} from '../data-handler';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {ScaleBand, ScaleLinear} from 'd3';
-import {DEFAULT_CHART_STYLE} from '../chart-styles';
+import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {manageZIndex} from '..';
 import {getChartPositions} from '../chart-styles/layout-manager';
@@ -37,7 +36,7 @@ export function renderBarChart(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]}, // determine the axis range
-  styles: BarchartStyle) {
+  styles: ChartStyle) {
 
   const {values} = spec.data
   const {verticalBar} = styles
@@ -64,7 +63,7 @@ export function renderBars(
   numOfC: number, // TODO: remove this?
   x: d3.ScaleBand<string> | d3.ScaleLinear<number, number>,
   y: d3.ScaleLinear<number, number> | d3.ScaleBand<string>,
-  styles: BarchartStyle) {
+  styles: ChartStyle) {
 
   const {mulSize, shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar} = styles
   let nX: d3.ScaleBand<string>, qX: d3.ScaleLinear<number, number>, qY: d3.ScaleLinear<number, number>, nY: d3.ScaleBand<string>
