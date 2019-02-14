@@ -5,12 +5,29 @@ import {getAggValuesByTwoKeys} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height} from 'src/useful-factory/d3-str';
-import {LIGHT_GRAY, CHART_SIZE, CHART_MARGIN} from '../design-settings';
+import {LIGHT_GRAY, CHART_SIZE, CHART_MARGIN, getLinearColor} from '../design-settings';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {renderLegend} from '../legends';
+import {getChartPositions} from '../chart-styles/layout-manager';
+import {DEFAULT_CHART_STYLE} from '../chart-styles';
+import {getDomain} from '../data-handler/domain-manager';
+import {isUndefined} from 'util';
 
 export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
-  // TODO:
+  const {color} = spec.encoding;
+
+  d3.select(ref).selectAll('*').remove();
+
+  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, legend: typeof color !== "undefined"}])
+  d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
+  const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
+
+  const {...domains} = getDomain(spec)
+
+  renderHeatmap(g, spec, {x: domains.x, y: domains.y}, {
+    ...DEFAULT_CHART_STYLE,
+    color: d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getLinearColor()), colorKey: domains.cKey, legend: !isUndefined(color)
+  })
 }
 
 export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined>,
