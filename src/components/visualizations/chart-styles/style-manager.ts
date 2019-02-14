@@ -11,7 +11,7 @@ import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
 
 // TOOD: any better way to define domains' type?
-export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, d: {A: ChartDomainData, B: ChartDomainData}) {
+export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, domain: {A: ChartDomainData, B: ChartDomainData}) {
   let S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}}
 
   // common
@@ -33,12 +33,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.A.noX = consistency.x_axis && !S.B.revX && C.layout.arrangement === 'stacked'
         S.B.noY = consistency.y_axis && !S.B.revY && C.layout.arrangement === 'adjacent'
 
-        const {ca, cb} = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, consistency.color)
+        const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
         S.A.color = ca
         S.B.color = cb
 
-        S.A.colorKey = d.A.cKey
-        S.B.colorKey = d.B.cKey
+        S.A.colorKey = domain.A.cKey
+        S.B.colorKey = domain.B.cKey
       }
       else if (C.unit === "element") {
         if (C.layout.arrangement === "stacked") { // stacked bar
@@ -56,9 +56,9 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         }
 
         S.A.color = getConstantColor() // getColor(d.A.c)
-        S.A.colorKey = d.A.cKey
+        S.A.colorKey = domain.A.cKey
         S.B.color = getConstantColor(2) // getColor((d.B as DomainData).c)
-        S.B.colorKey = d.B.cKey
+        S.B.colorKey = domain.B.cKey
       }
       break
     case "superimposition":
@@ -78,11 +78,11 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
           S.A.stroke_width = DEFAULT_STROKE_WIDTH
         }
 
-        const {ca, cb} = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, consistency.color)
+        const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
         S.A.color = ca
         S.B.color = cb
-        S.A.colorKey = d.A.cKey
-        S.B.colorKey = d.B.cKey
+        S.A.colorKey = domain.A.cKey
+        S.B.colorKey = domain.B.cKey
 
         // S.B.opacity = 0.4
         S.A.onTop = true
@@ -94,11 +94,11 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.B.barGap = 0
         S.B.pointSize = 1.5
 
-        const {ca, cb} = getConsistentColor(d.A.axis["color"], Array.isArray(d.B.axis) ? d.B.axis[0].color : d.B.axis.color, consistency.color)
+        const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
         S.A.color = ca
         S.B.color = cb
-        S.A.colorKey = d.A.cKey
-        S.B.colorKey = d.B.cKey
+        S.A.colorKey = domain.A.cKey
+        S.B.colorKey = domain.B.cKey
 
         if (isScatterplot(A)) {
           S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING

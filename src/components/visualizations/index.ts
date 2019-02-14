@@ -37,19 +37,19 @@ export function renderChart(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec, // contains actual values to draw bar chart
   domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]}, // determine the axis range
-  s: ChartStyle) {
+  styles: ChartStyle) {
   switch (getChartType(spec)) {
     case "scatterplot":
-      renderScatterplot(g, spec, domain, s)
+      renderScatterplot(g, spec, domain, styles)
       break
     case "barchart":
-      renderBarChart(g, spec, domain, s)
+      renderBarChart(g, spec, domain, styles)
       break
     case "linechart":
       //
       break
     case "heatmap":
-      renderHeatmap()
+      renderHeatmap(g, spec, domain, styles)
       break
     case "NULL":
       console.log("Chart type is not defined well (NULL type).")
@@ -67,6 +67,10 @@ export function canRenderChart(spec: Spec) {
   let can = true;
 
   /* exceptions */
+  // quantitative type field can not be aggregated
+  if (spec.encoding.x.type === "nominal" && spec.encoding.x.aggregate) can = false
+  if (spec.encoding.y.type === "nominal" && spec.encoding.y.aggregate) can = false
+  if (spec.encoding.color && spec.encoding.color.type === "nominal" && spec.encoding.color.aggregate) can = false
   // in scatterplot, x- and y-aggregation functions should be always used together, and when both of them are used, color should be used
   if (isScatterplot(spec) &&
     (isUndefined(spec.encoding.x.aggregate) && !isUndefined(spec.encoding.y.aggregate) ||

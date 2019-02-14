@@ -9,7 +9,7 @@ export interface CommonChartStyle {
   opacity: number
   aggregated: boolean   // TODO: do we really need this?
   // chart common
-  color: d3.ScaleOrdinal<string, {}>
+  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>
   colorKey: string
   onTop: boolean
   translateX: number

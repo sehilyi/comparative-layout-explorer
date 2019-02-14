@@ -183,8 +183,36 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     }
   }
   { // color domain
-    cDomain = typeof color === "undefined" ? [""] : uniqueValues(values, color.field)
-    cKey = typeof color === "undefined" ? x.field : color.field
+    if (color && color.type === "nominal") {
+      cDomain = uniqueValues(values, color.field)
+      cKey = color.field
+    }
+    else if (color && color.type === "quantitative") {
+      if (x.type === "nominal" && y.type === "nominal") {
+        const vals = getAggValuesByTwoKeys(values, x.field, y.field, color.field, color.aggregate)
+        cDomain = [].concat(...vals.map(d => d.values)).map((d: object) => d["value"])
+      }
+      else if (x.type === "quantitative" && y.type === "nominal") {
+        // TODO:
+        cDomain = [""]
+        cKey = x.field
+      }
+      else if (x.type === "nominal" && y.type === "quantitative") {
+        // TODO:
+        cDomain = [""]
+        cKey = x.field
+      }
+      else {
+        // TODO:
+        cDomain = [""]
+        cKey = x.field
+      }
+      cKey = color.field
+    }
+    else if (!color) {
+      cDomain = [""]
+      cKey = x.field
+    }
   }
 
   if (union) {

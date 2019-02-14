@@ -67,7 +67,7 @@ export function renderPoints(
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, styles.stroke)
     .attr(_stroke_width, styles.stroke_width)
-    .attr(_fill, d => styles.color(d[styles.colorKey]) as string)
+    .attr(_fill, d => (styles.color as d3.ScaleOrdinal<string, {}>)(d[styles.colorKey]) as string)
     // circle mark
     .attr(_cx, d => x(d[xKey]))
     .attr(_cy, d => y(d[yKey]))

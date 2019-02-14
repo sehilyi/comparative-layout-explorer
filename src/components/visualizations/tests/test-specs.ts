@@ -17,7 +17,7 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-  // .filter(d => d.C.name === "ele")  // debugging
+    .filter(d => d.C.name === "heatmap")  // debugging
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
     (a.A.mark + a.B.mark) < (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) > (b.A.mark + b.A.mark) ? 1 : deepValue(a.C.layout) < deepValue(b.C.layout) ? -1 : deepValue(a.C.layout) > deepValue(b.C.layout) ? 1 : a.C.unit < b.C.unit ? -1 : 1
@@ -25,6 +25,39 @@ export function getExamples() {
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   return [
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
+        name: "heatmap",
+        layout: {type: "juxtaposition", arrangement: "adjacent"},
+        unit: "chart",
+        consistency: {
+          x_axis: false, y_axis: false, color: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "MPAA_Rating", type: "nominal"},
+          y: {field: "Source", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "max"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"}
+        }
+      }
+    },
     {
       C: {
         ...DEFAULT_COMP_SPEC,

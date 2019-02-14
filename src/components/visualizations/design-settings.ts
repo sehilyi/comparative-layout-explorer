@@ -43,6 +43,8 @@ export const CATEGORICAL_COLORS_DARKEST = [
   "#1c2b2a", "#152612", "#383011",
   "#2a1d26", "#3d2527", "#251b16", "#2c2a29"]
 
+export const NUMERICAL_COLORS = ['#C6E48B', '#239A3B']
+export const LIGHT_GRAY = "#EBEDF0"
 export const DEFAULT_FONT = "Roboto Condensed"
 export const DEFAULT_STROKE_WIDTH = 1
 export const DEFAULT_STROKE = "black"
@@ -65,6 +67,9 @@ export function getBarColorDarkest(n: number) {
   return CATEGORICAL_COLORS_DARKEST.slice(0, n > CATEGORICAL_COLORS_DARKEST.length ? CATEGORICAL_COLORS_DARKEST.length - 1 : n)
 }
 
+export function getLinearColor() {
+  return NUMERICAL_COLORS
+}
 export function getBarColor(n: number, n2?: number) {
   const pallete = CATEGORICAL_COLORS.concat(CATEGORICAL_COLORS_DARKER)
   if (typeof n2 === "undefined") {
@@ -77,10 +82,12 @@ export function getBarColor(n: number, n2?: number) {
 export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: boolean) {
   let ca, cb
   if (!consistency) {
-    ca = d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length))
+    ca = typeof a[0] === "string" ?
+      d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length)) :
+      d3.scaleLinear<string>().domain(a as number[]).range(getLinearColor())
     cb = d3.scaleOrdinal().domain(b as string[]).range(getBarColor(a.length, b.length))
   }
-  else {
+  else { // TODO:
     ca = d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length))
     cb = d3.scaleOrdinal().domain(b as string[]).range(getBarColor(b.length))
   }

@@ -10,7 +10,7 @@ export type Mark = "bar" | "point" | "line" | "rect"
 export type Encoding = {
   x: Field
   y: Field
-  color?: Color // TODO: currently, do not consider separation by color (grouped bar chart)
+  color?: Field // TODO: currently, do not consider separation by color (grouped bar chart)
 }
 export type Field = {
   field: string

@@ -80,7 +80,7 @@ export function renderBars(
     .data(data)
     .enter().append(_rect)
     .classed('bar', true)
-    .attr(_fill, d => styles.color(d[styles.colorKey === "" ? vKey : styles.colorKey]) as string)
+    .attr(_fill, d => (styles.color as d3.ScaleOrdinal<string, {}>)(d[styles.colorKey === "" ? vKey : styles.colorKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
 
