@@ -11,6 +11,7 @@ import {getChartPositions} from '../chart-styles/layout-manager';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {isUndefined} from 'util';
+import {DEFAULT_HEATMAP_CELL_PADDING} from './default-design';
 
 export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -80,14 +81,16 @@ export function renderCells(
   styles: ChartStyle) {
 
   const numOfX = (x.domain() as string[]).length, numOfY = (y.domain() as string[]).length
-  const cellWidth = styles.width / numOfX, cellHeight = styles.height / numOfY
+  const cellWidth = (styles.width / numOfX - DEFAULT_HEATMAP_CELL_PADDING * 2) * styles.mulSize,
+    cellHeight = (styles.height / numOfY - DEFAULT_HEATMAP_CELL_PADDING * 2) * styles.mulHeigh
+
   g.append(_g).selectAll('.cell')
     .data(data)
     .enter().append(_rect)
     .classed('cell', true)
     .attr(_fill, d => d[styles.colorKey] === null ? LIGHT_GRAY : (styles.color as d3.ScaleLinear<string, string>)(d[styles.colorKey]) as string)
-    .attr(_x, d => x(d[xKey]) + 1)
-    .attr(_y, d => y(d[yKey]) + 1)
-    .attr(_width, cellWidth - 2)
-    .attr(_height, cellHeight - 2)
+    .attr(_x, d => x(d[xKey]) + DEFAULT_HEATMAP_CELL_PADDING * cellWidth * styles.shiftBy)
+    .attr(_y, d => y(d[yKey]) + DEFAULT_HEATMAP_CELL_PADDING * cellHeight * styles.shiftYBy)
+    .attr(_width, cellWidth)
+    .attr(_height, cellHeight)
 }

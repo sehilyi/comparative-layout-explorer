@@ -5,8 +5,8 @@ import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
-import {getConstantColor, getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../design-settings";
-import {isBarChart, isScatterplot} from "..";
+import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../design-settings";
+import {isBarChart, isScatterplot, isHeatmap} from "..";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
 
@@ -36,16 +36,24 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
         S.A.color = ca
         S.B.color = cb
-
         S.A.colorKey = domain.A.cKey
         S.B.colorKey = domain.B.cKey
       }
       else if (C.unit === "element") {
         if (C.layout.arrangement === "stacked") { // stacked bar
-          S.B.noAxes = true
-          const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
-            {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y
-          S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField}
+          if (isBarChart(A) && isBarChart(B)) {
+            S.B.noAxes = true
+            const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
+              {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y
+            S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField}
+          }
+          else if (isHeatmap(A) && isHeatmap(B)) {
+            S.A.shiftYBy = -0.5
+            S.A.mulHeigh = 0.5
+            S.B.shiftYBy = 0.5
+            S.B.mulHeigh = 0.5
+            S.B.noAxes = true
+          }
         }
         else if (C.layout.arrangement === "adjacent") { // grouped bar
           S.A.shiftBy = -0.5
@@ -55,9 +63,15 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
           S.B.noAxes = true
         }
 
-        S.A.color = getConstantColor() // getColor(d.A.c) // TODO: this should be eventually removed
+        // S.A.color = getConstantColor() // getColor(d.A.c) // TODO: this should be eventually removed
+        // S.A.colorKey = domain.A.cKey
+        // S.B.color = getConstantColor(2) // getColor((d.B as DomainData).c)
+        // S.B.colorKey = domain.B.cKey
+
+        const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
+        S.A.color = ca
+        S.B.color = cb
         S.A.colorKey = domain.A.cKey
-        S.B.color = getConstantColor(2) // getColor((d.B as DomainData).c)
         S.B.colorKey = domain.B.cKey
       }
       break

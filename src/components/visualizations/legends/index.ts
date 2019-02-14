@@ -1,4 +1,4 @@
-import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH} from "./default-design";
+import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING} from "./default-design";
 import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end} from "src/useful-factory/d3-str";
 import {getLinearColor} from "../design-settings";
 import d3 = require("d3");
@@ -15,7 +15,7 @@ export function renderLegend(
   g.append('text')
     .classed('legend-title', true)
     .attr(_y, -7)
-    .style(_font_size, '10px')
+    .style(_font_size, '12px')
     .style(_text_anchor, 'start')
     .style(_font_weight, 'bold')
     .text(title)
@@ -79,15 +79,15 @@ export function renderLegend(
 
     g.append(_g)
       .append(_rect)
-      .attr(_width, LEGEND_WIDTH - LEGEND_GAP * 2)
+      .attr(_width, LEGEND_WIDTH - LEGEND_PADDING)
       .attr(_height, 15)
       .style(_fill, `url(#${key})`)
 
     const q = d3.scaleLinear()
       .domain(d3.extent(domain as number[])).nice()
-      .rangeRound([0, LEGEND_WIDTH - LEGEND_GAP * 2])
+      .rangeRound([0, LEGEND_WIDTH - LEGEND_PADDING])
 
-    let yAxis = d3.axisBottom(q).ticks(3)
+    let yAxis = d3.axisBottom(q).ticks(3).tickSizeOuter(0)
     g.append(_g)
       .classed("axis", true)
       .attr(_transform, translate(0, 15))

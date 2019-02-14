@@ -30,8 +30,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         ...DEFAULT_COMP_SPEC,
         name: "heatmap",
-        layout: {type: "juxtaposition", arrangement: "adjacent"},
-        unit: "chart",
+        layout: {type: "juxtaposition", arrangement: "stacked"},
+        unit: "element",
         consistency: {
           x_axis: false, y_axis: true, color: true
         }
@@ -101,11 +101,22 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         layout: {type: "juxtaposition", arrangement: "stacked"},
         unit: "chart",
         consistency: {
-          x_axis: false, y_axis: false, color: false
+          x_axis: true, y_axis: false, color: false
         }
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
         data: {
           values: DATASET_MOVIES.rawData
         },
@@ -114,17 +125,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x: {field: "Source", type: "nominal"},
           y: {field: "Creative_Type", type: "nominal"},
           color: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
-        }
-      },
-      B: {
-        data: {
-          values: DATASET_MOVIES.rawData
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "Major_Genre", type: "nominal"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "Major_Genre", type: "nominal"}
         }
       }
     },

@@ -167,7 +167,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
           (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + // right margin
           (s.legend ? LEGEND_WIDTH : 0), // legend on the right
         top: MT,
-        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
+        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
       }
       positions.push({left: position.left, top: position.top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
       // in this case, legend should be placed in the same area
@@ -190,7 +190,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
           (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + // right margin
           (s.legend ? LEGEND_WIDTH : 0), // legend on the right
         top: (s.topX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top),
-        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
+        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
       }
       const left = ML
       const top = lastBottom + position.top
@@ -212,7 +212,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
           (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + // right margin
           (s.legend ? LEGEND_WIDTH : 0), // legend on the right
         top: MT,
-        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
+        bottom: (s.noX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
       }
       const top = MT
       const left = lastRight + (s.noY ? CHART_MARGIN_NO_AXIS.left : CHART_MARGIN.left)
