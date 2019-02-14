@@ -2,7 +2,7 @@ import {Aggregate, Spec} from "src/models/simple-vega-spec";
 
 import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
-import {_x, _y} from "../design-settings";
+import {_x, _y} from "src/useful-factory/d3-str";
 
 /**
  * return type: { key: [...categories by keyField], value: {valueFields[0]: aggregated value, valueFields[1]: aggregated value, ..., valueField[valueFields.length - 1]: aggregated value} }

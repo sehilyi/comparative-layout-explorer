@@ -2,21 +2,6 @@ import * as d3 from "d3";
 import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined} from "util";
 
-// svg attributes
-export const _width = 'width', _height = 'height',
-  _fill = 'fill', _color = 'color',
-  _transform = 'transform', _g = 'g', _rect = 'rect',
-  _x = 'x', _y = 'y', _cx = "cx", _cy = "cy",
-  _circle = "circle", _r = "r",
-  _stroke = "stroke", _stroke_width = "stroke-width",
-  _opacity = "opacity",
-  // text-related
-  _text = "text",
-  _text_anchor = "text-anchor", _start = "start", _end = "end",
-  _font_size = "font-size",
-  _alignment_baseline = "alignment-baseline", _middle = "middle",
-  _font_weight = "font-weight", _bold = "bold"
-
 export const AXIS_ROOT_ID = "axis-root--"
 // general
 export const CHART_SIZE = {width: 280, height: 200}
@@ -43,7 +28,7 @@ export const CATEGORICAL_COLORS_DARKEST = [
   "#1c2b2a", "#152612", "#383011",
   "#2a1d26", "#3d2527", "#251b16", "#2c2a29"]
 
-export const NUMERICAL_COLORS = ['#C6E48B', '#239A3B']
+export const NUMERICAL_COLORS = ['#C6E48B', '#7BC96F', '#239A3B', '#196127']
 export const LIGHT_GRAY = "#EBEDF0"
 export const DEFAULT_FONT = "Roboto Condensed"
 export const DEFAULT_STROKE_WIDTH = 1
@@ -84,8 +69,8 @@ export function getConsistentColor(a: string[] | number[], b: string[] | number[
   if (!consistency) {
     ca = typeof a[0] === "string" ?
       d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length)) :
-      d3.scaleLinear<string>().domain(a as number[]).range(getLinearColor())
-    cb = d3.scaleOrdinal().domain(b as string[]).range(getBarColor(a.length, b.length))
+      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getLinearColor())
+    cb = d3.scaleOrdinal().domain(b as string[]).range(getBarColor(b.length))
   }
   else { // TODO:
     ca = d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length))

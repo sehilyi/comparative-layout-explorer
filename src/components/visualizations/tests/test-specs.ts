@@ -2,6 +2,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
+import {getChartType} from "..";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C})
@@ -12,7 +13,7 @@ export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
     "}) " + mC.name
 }
 export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
-  return (A.mark === "point" ? "scatterplot" : A.mark + "chart") + " x " + (B.mark === "point" ? "scatterplot" : B.mark + "chart")
+  return getChartType(A) + " x " + getChartType(B)
 }
 
 export function getExamples() {
@@ -42,9 +43,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "rect",
         encoding: {
-          x: {field: "MPAA_Rating", type: "nominal"},
-          y: {field: "Source", type: "nominal"},
-          color: {field: "US_Gross", type: "quantitative", aggregate: "max"}
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
         }
       },
       B: {
@@ -53,8 +54,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "bar",
         encoding: {
-          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"}
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"}
         }
       }
     },

@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {_width, _height, _g, _transform, getBarSize, NESTING_PADDING, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../design-settings";
+import {getBarSize, NESTING_PADDING, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../design-settings";
 import {ChartStyle} from ".";
 import {getAggregatedDatas, getAggValues} from "../data-handler";
 import d3 = require("d3");
@@ -149,7 +149,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
   const maxH =
     MT +
     d3.max(styles.map(d => d.height)) +
-    (ifAllNoX ? CHART_MARGIN_NO_AXIS.right : CHART_MARGIN.right)
+    (ifAllNoX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
 
   // width and height includes margins
   let positions: {left: number, top: number, width: number, height: number}[] = []

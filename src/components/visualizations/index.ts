@@ -4,10 +4,9 @@ import {ChartTypes} from "src/models/chart-types";
 import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
 import {ChartStyle} from "./chart-styles";
 import {_CompSpecSolid} from "src/models/comp-spec";
-import {_opacity} from "./design-settings";
 import {isUndefined, isNullOrUndefined} from "util";
 import {deepValue} from "src/models/comp-spec-manager";
-import {renderHeatmap} from "./heatmap";
+import {renderHeatmap, renderSimpleHeatmap} from "./heatmap";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   if (!canRenderChart(spec)) return
@@ -22,7 +21,7 @@ export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
       //
       break
     case "heatmap":
-      //
+      renderSimpleHeatmap(ref, spec)
       break
     case "NULL":
       console.log("Chart type is not defined well (NULL type).")

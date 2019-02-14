@@ -1,9 +1,10 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
-import {CHART_MARGIN, DEFAULT_FONT, _x, _y, _transform, _text_anchor, _end, _middle, _start, _fill, _g, AXIS_ROOT_ID} from "../design-settings";
 import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
+import {_g, _transform, _x, _y, _text_anchor, _start, _end} from "src/useful-factory/d3-str";
+import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT} from "../design-settings";
 
 export type Domain = string[] | number[]
 

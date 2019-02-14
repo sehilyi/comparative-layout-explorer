@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, _CompSpecSolid} from "src/models/comp-spec";
 import {translate} from "src/useful-factory/utils";
 import {
-  GAP_BETWEEN_CHARTS, CHART_SIZE, _width, _height, _g, _transform, _opacity, AXIS_ROOT_ID
+  GAP_BETWEEN_CHARTS, CHART_SIZE, AXIS_ROOT_ID,
 } from "./design-settings";
 import {renderLegend} from "./legends";
 import {correctConsistency} from "./consistency";
@@ -13,6 +13,7 @@ import {getStyles} from "./chart-styles/style-manager";
 import {getLayouts} from "./chart-styles/layout-manager";
 import {getDomainByLayout} from "./data-handler/domain-manager";
 import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
+import {_transform, _width, _height, _g} from "src/useful-factory/d3-str";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C}) // minor issues in spec should be corrected (e.g., CompSpec => _CompSpecSolid)

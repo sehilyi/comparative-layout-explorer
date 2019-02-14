@@ -9,6 +9,7 @@ import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {deepValue} from "src/models/comp-spec-manager";
+import {tabularizeData} from "../heatmap";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[]
@@ -190,7 +191,11 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     else if (color && color.type === "quantitative") {
       if (x.type === "nominal" && y.type === "nominal") {
         const vals = getAggValuesByTwoKeys(values, x.field, y.field, color.field, color.aggregate)
-        cDomain = [].concat(...vals.map(d => d.values)).map((d: object) => d["value"])
+        const tabVals = tabularizeData(vals, xDomain as string[], yDomain as string[], x.field, y.field, color.field)
+        console.log(tabVals)
+        // cDomain = [].concat(...vals.map(d => d.values)).map((d: object) => d["value"])
+        cDomain = tabVals.map(d => d[color.field])
+        cKey = color.field
       }
       else if (x.type === "quantitative" && y.type === "nominal") {
         // TODO:
@@ -207,7 +212,6 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
         cDomain = [""]
         cKey = x.field
       }
-      cKey = color.field
     }
     else if (!color) {
       cDomain = [""]

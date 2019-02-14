@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import {translate, uniqueValues} from 'src/useful-factory/utils';
-import {CHART_SIZE, _width, _height, _g, _transform, CHART_MARGIN, _stroke_width, _stroke, _opacity, _fill, _r, _cx, _cy, _circle, getColor, getConstantColor, _rect, _x, _y} from '../design-settings';
 import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_OPACITY} from './default-design';
 import {renderAxes} from '../axes';
@@ -10,6 +9,8 @@ import {ScatterplotStyle} from './styles';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
+import {getColor, getConstantColor, CHART_SIZE, CHART_MARGIN} from '../design-settings';
+import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y} from 'src/useful-factory/d3-str';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 

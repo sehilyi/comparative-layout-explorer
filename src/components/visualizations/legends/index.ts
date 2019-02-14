@@ -1,5 +1,5 @@
-import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold} from "../design-settings";
 import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT} from "./default-design";
+import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold} from "src/useful-factory/d3-str";
 
 export function renderLegend(
   g: d3.Selection<SVGGElement, {}, null, undefined>,

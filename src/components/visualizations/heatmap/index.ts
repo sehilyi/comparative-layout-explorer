@@ -1,10 +1,15 @@
+import * as d3 from 'd3';
 import {Spec} from "src/models/simple-vega-spec";
-
 import {ScatterplotStyle} from "../scatterplots/styles";
 import {getAggValuesByTwoKeys} from "../data-handler";
 import {renderAxes} from "../axes";
-import {_g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, _width, _height, LIGHT_GRAY} from "../design-settings";
 import {translate} from "src/useful-factory/utils";
+import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height} from 'src/useful-factory/d3-str';
+import {LIGHT_GRAY} from '../design-settings';
+
+export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
+  // TODO:
+}
 
 export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
@@ -17,6 +22,7 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y, {field: cField} = spec.encoding.color
   const {aggregate} = spec.encoding.color
+  // TODO: when xField and yField same!
   const aggValues = getAggValuesByTwoKeys(values, xField, yField, cField, aggregate)
   const linAggValues = tabularizeData(aggValues, domain.x as string[], domain.y as string[], xField, yField, cField)
   renderCells(g, linAggValues, xField, yField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: typeof aggregate != "undefined"})
@@ -26,7 +32,6 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
   //   renderLegend(legendG, styles.color.domain() as string[], styles.color.range() as string[])
   // }
 }
-
 // TODO: now only considering two nominal and one quantitative
 /**
  *
@@ -35,7 +40,7 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
  * @param n2
  * @param q1
  */
-function tabularizeData(data: object[], d1: string[], d2: string[], n1: string, n2: string, q1: string) {
+export function tabularizeData(data: object[], d1: string[], d2: string[], n1: string, n2: string, q1: string) {
   let newData: object[] = []
   d1.forEach(d1k => {
     d2.forEach(d2k => {

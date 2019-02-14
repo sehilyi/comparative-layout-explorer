@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault, uniqueValues} from 'src/useful-factory/utils';
-import {CHART_MARGIN, CHART_SIZE, getBarSize, _width, _height, _g, _transform, _rect, _y, _x, _fill, _stroke, _stroke_width, getColor, _opacity} from '../design-settings';
 import {isUndefined} from 'util';
 import {BarchartStyle} from 'src/models/barchart-style';
 import {renderLegend} from '../legends';
@@ -13,6 +12,8 @@ import {DEFAULT_CHART_STYLE} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {manageZIndex} from '..';
 import {getChartPositions} from '../chart-styles/layout-manager';
+import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x} from 'src/useful-factory/d3-str';
+import {getColor, CHART_SIZE, CHART_MARGIN, getBarSize} from '../design-settings';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
