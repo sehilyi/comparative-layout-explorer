@@ -17,6 +17,9 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   // common
   S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal")
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal")
+  S.A.chartId = "A"
+  S.B.chartId = "B"
+  S.B.opacity = C.clutter.opacity ? 0.4 : 1
 
   // by layout
   switch (deepValue(C.layout)) {

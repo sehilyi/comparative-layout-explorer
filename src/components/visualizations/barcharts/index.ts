@@ -46,7 +46,7 @@ export function renderBarChart(
 
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nField, [qField], aggregate))
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
-  const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed("B", true)
+  const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
   renderBars(g, aggValues, qField, nField, uniqueValues(domain[n], "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))

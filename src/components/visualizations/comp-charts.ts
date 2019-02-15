@@ -63,6 +63,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     }
   }
   /* apply visual properties after rendering charts */
-  if (styles.A.onTop) svg.selectAll(".A").raise(); if (styles.B.onTop) svg.selectAll(".B").raise()
+  if (styles.A.onTop) svg.selectAll(".A").raise()
+  if (styles.B.onTop) svg.selectAll(".B").raise()
   svg.select("." + AXIS_ROOT_ID).lower()
 }

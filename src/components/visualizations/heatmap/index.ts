@@ -36,7 +36,7 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
   styles: ChartStyle) {
 
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
-  const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity)
+  const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
 
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y, {field: cField} = spec.encoding.color

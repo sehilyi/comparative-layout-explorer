@@ -4,6 +4,7 @@ import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 export type ChartStyle = CommonChartStyle
 
 export interface CommonChartStyle {
+  chartId: "A" | "B"
   // globar style
   opacity: number
   aggregated: boolean   // TODO: do we really need this?
@@ -53,6 +54,7 @@ export interface CommonChartStyle {
 }
 
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {
+  chartId: "A",
   opacity: 1,
   aggregated: false,
 

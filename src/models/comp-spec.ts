@@ -10,6 +10,7 @@ export type _CompSpecSolid = {  // TODO: change this to interface
   layout: LayoutTypeAndStyle  // TODO: how to set default values when only parts are not assigned?
   unit?: CompUnit
   consistency: Consistency
+  clutter: ClutterReduction
   priority: CompPriority
 }
 export type CompSpec = {
@@ -17,6 +18,7 @@ export type CompSpec = {
   layout: Layout
   unit?: CompUnit
   consistency: Consistency
+  clutter: ClutterReduction
   priority: CompPriority
 }
 export type Layout = LayoutType | LayoutTypeAndStyle
@@ -44,6 +46,10 @@ export type Consistency = { // TODO: this should also consider differnce for sup
   stroke?: boolean
 }
 
+export type ClutterReduction = {
+  opacity?: boolean
+}
+
 export type CompPriority = "A" | "B" // TODO: change to priority
 export const DEFAULT_COMP_REFERENCE = "A"
 
@@ -65,11 +71,16 @@ export const DEFAULT_CONSISTENCY: Consistency = {
   y_arrangement: false,
   stroke: false
 }
+export const DEFAULT_CLUTTER_REDUCTION: ClutterReduction = {
+  opacity: false
+  // TODO: add here
+}
 export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",
   layout: DEFAULT_LAYOUT_JUX,
   unit: "chart",
   consistency: DEFAULT_CONSISTENCY,
+  clutter: DEFAULT_CLUTTER_REDUCTION,
   priority: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {

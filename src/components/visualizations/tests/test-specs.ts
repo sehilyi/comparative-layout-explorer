@@ -727,6 +727,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         unit: "chart",
         consistency: {
           x_axis: false, y_axis: false, color: false, stroke: true
+        },
+        clutter: {
+          opacity: true
         }
       },
       // https://vega.github.io/vega-lite/examples/
