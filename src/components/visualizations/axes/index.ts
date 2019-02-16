@@ -10,8 +10,8 @@ export type Domain = string[] | number[]
 
 export function renderAxes(
   root: d3.Selection<SVGGElement, {}, null, undefined>,
-  xval: string[] | number[],
-  yval: string[] | number[],
+  xVals: string[] | number[],
+  yVals: string[] | number[],
   spec: Spec,
   styles: ChartStyle) {
 
@@ -20,51 +20,50 @@ export function renderAxes(
   const xFunc = ifUndefinedGetDefault(spec.encoding.x.aggregate, "") as string
   const yFunc = ifUndefinedGetDefault(spec.encoding.y.aggregate, "") as string
 
-  const nX = d3.scaleBand()
-    .domain(uniqueValues(xval, "") as string[])
-    .range(styles.revX ? [styles.width, 0] : [0, styles.width])
   const qX = d3.scaleLinear()
-    .domain([d3.min([d3.min(xval as number[]), 0]), d3.max(xval as number[])]).nice()
+    .domain([d3.min([d3.min(xVals as number[]), 0]), d3.max(xVals as number[])]).nice()
     .rangeRound(styles.revX ? [styles.width, 0] : [0, styles.width])
-  const nY = d3.scaleBand()
-    .domain(uniqueValues(yval, "") as string[])
-  // when Y is nominal, first thing should be appear on top rather on the bottom
-  if (!isYCategorical) {
-    nY.range(styles.revY ? [0, styles.height] : [styles.height, 0])
-  }
-  else {
-    nY.range(styles.revY ? [styles.height, 0] : [0, styles.height])
-  }
+  const nX = d3.scaleBand()
+    .domain(uniqueValues(xVals, "") as string[])
+    .range(styles.revX ? [styles.width, 0] : [0, styles.width])
   const qY = d3.scaleLinear()
-    .domain([d3.min([d3.min(yval as number[]), 0]), d3.max(yval as number[])]).nice()
+    .domain([d3.min([d3.min(yVals as number[]), 0]), d3.max(yVals as number[])]).nice()
     .rangeRound(styles.revY ? [0, styles.height] : [styles.height, 0])
+  const nY = d3.scaleBand()
+    .domain(uniqueValues(yVals, "") as string[])
+
+  // when Y is nominal, first category should be appear on the top rather on the bottom
+  if (isYCategorical) nY.range(styles.revY ? [styles.height, 0] : [0, styles.height])
+  else nY.range(styles.revY ? [0, styles.height] : [styles.height, 0])
 
   // get axis and grid by field types
   // TODO: any clearer way??
-  let xAxis = styles.topX ?
+  const xAxis = styles.topX ?
     isXCategorical ?
       d3.axisTop(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
       d3.axisTop(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
     : isXCategorical ?
       d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
       d3.axisBottom(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
-  let yAxis = styles.rightY ?
+  const yAxis = styles.rightY ?
     isYCategorical ?
       d3.axisRight(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
       d3.axisRight(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
     isYCategorical ?
       d3.axisLeft(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
       d3.axisLeft(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
-  let xGrid = isXCategorical ?
+  const xGrid = isXCategorical ?
     d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(null).tickSize(-styles.height) :
     d3.axisBottom(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(null).tickSize(-styles.height)
-  let yGrid = isYCategorical ?
+  const yGrid = isYCategorical ?
     d3.axisLeft(nY).ticks(Math.ceil(styles.height / 40)).tickFormat(null).tickSize(-styles.width) :
     d3.axisLeft(qY).ticks(Math.ceil(styles.height / 40)).tickFormat(null).tickSize(-styles.width)
 
+  /* render axes */
   if (!isNullOrUndefined(root) && !styles.noAxes) {
-    let g = root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).classed(AXIS_ROOT_ID, true)
+    const g = root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).classed(AXIS_ROOT_ID, true)
 
+    /* grid x */
     if (!isXCategorical && !styles.noGrid) {
       g.append('g')
         .classed('grid', true)
@@ -72,20 +71,23 @@ export function renderAxes(
         .call(xGrid)
     }
 
+    /* grid y */
     if (!isYCategorical && !styles.noGrid) {
       g.append('g')
         .classed('grid', true)
         .call(yGrid)
     }
 
+    /* axis x */
     if (!styles.noX) {
-      let xaxis = g.append('g')
+      const xaxis = g.append('g')
         .classed('axis x-axis', true)
         .attr('stroke', '#888888')
         .attr('stroke-width', 0.5)
         .attr('transform', translate(0, styles.topX ? 0 : styles.height))
         .call(xAxis)
 
+      /* ticks' labels */
       if (isXCategorical) {
         g.selectAll('.x-axis text')
           .attr(_x, styles.topX ? 6 : -6)
@@ -94,10 +96,11 @@ export function renderAxes(
           .attr(_text_anchor, styles.topX ? _start : _end)
       }
 
+      /* axis name */
       xaxis
         .attr('transform', translate(0, styles.topX ? 0 : styles.height))
         .append('text')
-        .classed('label', true)
+        .classed('axis-name', true)
         .attr('x', styles.width / 2)
         .attr('y', styles.topX ? -40 : (CHART_MARGIN.bottom - 40))
         .style('fill', 'black')
@@ -107,13 +110,14 @@ export function renderAxes(
         .text(typeof styles.xName !== "undefined" ? styles.xName : xFunc + ' ' + spec.encoding.x.field)
 
       if (isXCategorical) {
-        xaxis.selectAll(".label")
+        xaxis.selectAll(".axis-name")
           .attr('y', styles.topX ? -60 : (CHART_MARGIN.bottom - 5))
       }
     }
 
+    /* axis y */
     if (!styles.noY) {
-      let yaxis = g.append('g')
+      const yaxis = g.append('g')
         .attr(_transform, translate(styles.rightY ? styles.width : 0, 0))
         .classed('axis y-axis', true)
         .attr('stroke', '#888888')
@@ -123,7 +127,7 @@ export function renderAxes(
       if (!styles.noYTitle) {
         yaxis
           .append('text')
-          .classed('label', true)
+          .classed('axis-name', true)
           .attr('transform', rotate(-90))
           .attr('x', -styles.height / 2)
           .attr('y', styles.rightY ? 50 : isYCategorical ? -90 : -55)  // TODO: is this right decision?
@@ -136,27 +140,24 @@ export function renderAxes(
       }
     }
 
+    /* styles */
+    /* grid */
     g.selectAll('.axis path')
       .attr('stroke-width', '1px')
       .attr('stroke', 'black')
 
-    if (isYCategorical) {
-      g.selectAll('.x-axis path').attr('stroke-width', '0px')
-    }
+    /* hide grid */
+    if (isYCategorical) g.selectAll('.x-axis path').attr('stroke-width', '0px')
+    if (isXCategorical) g.selectAll('.y-axis path').attr('stroke-width', '0px')
+    if (styles.simpleY) g.selectAll('.y-axis path').attr('stroke', 'white')
+    // if (styles.simpleY) g.selectAll('.axis text').attr(_fill, 'gray')
 
-    if (isXCategorical) {
-      g.selectAll('.y-axis path').attr('stroke-width', '0px')
-    }
-
-    if (styles.simpleY) {
-      g.selectAll('.y-axis path').attr('stroke', 'white')
-    }
-
-    // small tick
+    // remove ticks in axes
     g.selectAll('.axis line')
       .attr('stroke-width', '0px')
       .attr('stroke', 'black')
 
+    // ticks' labels
     g.selectAll('.axis text')
       .style('stroke-width', '0')
       .style('stroke', 'none')
@@ -164,25 +165,15 @@ export function renderAxes(
       .style('font-size', '12px')
       .attr('font-family', DEFAULT_FONT)
 
-    if (styles.simpleY) {
-      // g.selectAll('.axis text').attr(_fill, 'gray')
-    }
-
-    // axis name
-    g.selectAll('.axis .label')
-      .style('font-size', '12px')
-
-    g.selectAll('.grid text')
-      .style('display', 'none')
-
-    g.selectAll('.grid line')
-      .attr('stroke', 'rgb(221, 221, 221)')
-      .attr('stroke-width', '1px')
-
-    // y-axis line
-    g.selectAll('.grid path')
+    // axis name, line, grid
+    g.selectAll('.axis .axis-name').style('font-size', '12px')
+    g.selectAll('.grid text').style('display', 'none')  // don't need this
+    g.selectAll('.grid path') // don't need this
       .attr('stroke', 'rgb(221, 221, 221)')
       .attr('stroke-width', '0px')
+    g.selectAll('.grid line') // grid
+      .attr('stroke', 'rgb(221, 221, 221)')
+      .attr('stroke-width', '1px')
   }
   return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY}
 }

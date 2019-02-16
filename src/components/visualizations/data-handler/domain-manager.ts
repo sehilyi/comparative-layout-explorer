@@ -127,7 +127,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     if (x.type === "nominal") {
       xDomain = uniqueValues(values, x.field)
     }
-    else if (x.type === "quantitative" && typeof x.aggregate === "undefined") {
+    else if (x.type === "quantitative" && x.aggregate === undefined) {
       if (y.type === "quantitative") {
         xDomain = values.map(d => d[x.field]) as number[]
       }
@@ -136,7 +136,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
         console.log(spec)
       }
     }
-    else if (x.type === "quantitative" && typeof x.aggregate !== "undefined") {
+    else if (x.type === "quantitative" && x.aggregate !== undefined) {
       if (y.type === "quantitative") {
         // aggregated scatterplot
         xDomain = getAggValues(values, color.field, [x.field], x.aggregate).map((d: object) => d[x.field])
@@ -156,7 +156,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     if (y.type === "nominal") {
       yDomain = uniqueValues(values, y.field)
     }
-    else if (y.type === "quantitative" && typeof y.aggregate === "undefined") {
+    else if (y.type === "quantitative" && y.aggregate === undefined) {
       if (x.type === "quantitative") {
         yDomain = values.map(d => d[y.field])
       }
@@ -165,7 +165,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
         console.log(spec)
       }
     }
-    else if (y.type === "quantitative" && typeof y.aggregate !== "undefined") {
+    else if (y.type === "quantitative" && y.aggregate !== undefined) {
       if (x.type === "quantitative") {
         // aggregated scatterplot
         yDomain = getAggValues(values, color.field, [y.field], y.aggregate).map((d: object) => d[y.field])

@@ -24,7 +24,7 @@ export function isDeepTrue(o: boolean | object) {
 }
 
 export function isUndefinedOrFalse(o: boolean) {
-  return typeof o === "undefined" || o === false
+  return o === undefined || o === false
 }
 
 export function ifUndefinedGetDefault(o: any, d: any) {

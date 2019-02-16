@@ -23,7 +23,7 @@ export function renderLegend(
   if (!isNominal) {
     // Notice: domain.length is always equal or larger than range.length
     for (let i = 0; i < domain.length; i++) {
-      if (typeof domain[i] === "undefined") continue // TODO: what is the problem continuously getting undefined??
+      if (domain[i] === undefined) continue // TODO: what is the problem continuously getting undefined??
 
       g.append(_rect)
         .attr(_x, 0)
