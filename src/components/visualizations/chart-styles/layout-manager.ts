@@ -5,12 +5,12 @@ import {getBarSize, NESTING_PADDING, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MAR
 import {ChartStyle} from ".";
 import {getAggregatedDatas, getAggValues} from "../data-handler";
 import d3 = require("d3");
-import {isBarChart, isScatterplot} from "..";
 import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
+import {isBarChart, isScatterplot} from "../constraints";
 
 export type Position = {
   width: number

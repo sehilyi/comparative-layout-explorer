@@ -2,7 +2,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
-import {getChartType} from "..";
+import {getChartType} from "../constraints";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C})

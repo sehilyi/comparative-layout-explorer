@@ -6,9 +6,9 @@ import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../design-settings";
-import {isBarChart, isScatterplot, isHeatmap} from "..";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
+import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
 
 // TOOD: any better way to define domains' type?
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, domain: {A: ChartDomainData, B: ChartDomainData}) {

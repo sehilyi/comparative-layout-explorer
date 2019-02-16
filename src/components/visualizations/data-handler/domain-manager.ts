@@ -1,15 +1,11 @@
 import {Spec} from "src/models/simple-vega-spec";
-
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-
-import {isBarChart, isScatterplot, isChartDataAggregated} from "..";
-
 import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys} from ".";
-
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {deepValue} from "src/models/comp-spec-manager";
 import {tabularizeData} from "../heatmap";
+import {isBarChart, isScatterplot, isChartDataAggregated} from "../constraints";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[]

@@ -7,13 +7,14 @@ import {
 } from "./design-settings";
 import {renderLegend} from "./legends";
 import {correctConsistency} from "./consistency";
-import {renderChart, canRenderCompChart, canRenderChart, isScatterplot} from ".";
+import {renderChart} from ".";
 import {oneOfFilter} from "./data-handler";
 import {getStyles} from "./chart-styles/style-manager";
 import {getLayouts} from "./chart-styles/layout-manager";
 import {getDomainByLayout} from "./data-handler/domain-manager";
 import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
 import {_transform, _width, _height, _g} from "src/useful-factory/d3-str";
+import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C}) // minor issues in spec should be corrected (e.g., CompSpec => _CompSpecSolid)
