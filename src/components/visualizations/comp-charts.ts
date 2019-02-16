@@ -13,8 +13,9 @@ import {getStyles} from "./chart-styles/style-manager";
 import {getLayouts} from "./chart-styles/layout-manager";
 import {getDomainByLayout} from "./data-handler/domain-manager";
 import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
-import {_transform, _width, _height, _g} from "src/useful-factory/d3-str";
+import {_transform, _width, _height, _g, _opacity} from "src/useful-factory/d3-str";
 import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
+import {animateChart} from "./animated";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C}) // minor issues in spec should be corrected (e.g., CompSpec => _CompSpecSolid)
@@ -64,4 +65,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   if (styles.A.onTop) svg.selectAll(".A").raise()
   if (styles.B.onTop) svg.selectAll(".B").raise()
   svg.select("." + AXIS_ROOT_ID).lower()
+  if (C.layout.arrangement === "animated" && C.layout.unit === "chart") {
+    animateChart(svg.selectAll(".A"), svg.selectAll(".B"))
+  }
 }

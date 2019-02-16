@@ -30,6 +30,39 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         ...DEFAULT_COMP_SPEC,
         name: "heatmap",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
+        consistency: {
+          x_axis: false, y_axis: true, color: "same"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "IMDB_Rating", type: "quantitative", aggregate: "max"}
+        }
+      },
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
+        name: "heatmap",
         layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
         consistency: {
           x_axis: false, y_axis: true, color: "same"
@@ -192,6 +225,39 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         ...DEFAULT_COMP_SPEC,
         name: "ele",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "same"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        ...DEFAULT_COMP_SPEC,
+        name: "ele",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "same"
         }

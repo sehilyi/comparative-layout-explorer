@@ -59,7 +59,7 @@ export function renderAxes(
 
   /* render axes */
   if (!isNullOrUndefined(root) && !styles.noAxes) {
-    const g = root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).classed(AXIS_ROOT_ID, true)
+    const g = root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).classed(AXIS_ROOT_ID, true).classed(styles.chartId, true)
 
     /* grid x */
     if (!isXCategorical && !styles.noGrid) {
