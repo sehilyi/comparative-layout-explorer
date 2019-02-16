@@ -74,5 +74,5 @@ export function isHeatmap(spec: Spec) {
 export function isAggregatedScatterplot(spec: Spec) {
   // when x-aggregate is not undefined, y-aggregate and color are also not undefined
   // refer to canRenderChart
-  return typeof spec.encoding.x.aggregate !== "undefined"
+  return spec.encoding.x.aggregate !== undefined
 }

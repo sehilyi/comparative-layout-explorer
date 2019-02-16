@@ -18,7 +18,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 
   d3.select(ref).selectAll('*').remove();
 
-  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, legend: typeof color !== "undefined"}])
+  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, legend: color !== undefined}])
   d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 

@@ -18,7 +18,7 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
   d3.select(svg).selectAll('*').remove();
 
-  const isColorUsed = typeof spec.encoding.color !== "undefined"
+  const isColorUsed = spec.encoding.color !== undefined
   const cKey = isColorUsed ? spec.encoding.color.field : spec.encoding.x.field
   const color = isColorUsed ? getColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
   const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
@@ -40,10 +40,10 @@ export function renderScatterplot(
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
   const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
-  const aggValues = typeof aggregate != "undefined" ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
+  const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-  renderPoints(g, aggValues, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles, aggregated: typeof aggregate != "undefined"})
+  renderPoints(g, aggValues, xField, yField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles, aggregated: aggregate !== undefined})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))

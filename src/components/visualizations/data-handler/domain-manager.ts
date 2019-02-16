@@ -76,10 +76,10 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
     isScatterplot(A) && isScatterplot(B) && consistency.color) {
     // use A color if two of them use color
     // When only B use color, then use the B's
-    resA.axis["color"] = resB.axis["color"] = typeof A.encoding.color !== "undefined" ? DomainA.color :
-      typeof B.encoding.color !== "undefined" ? DomainB.color : [""]
-    resA.cKey = resB.cKey = typeof A.encoding.color !== "undefined" ? DomainA.cKey :
-      typeof B.encoding.color !== "undefined" ? DomainB.cKey : A.encoding.x.field
+    resA.axis["color"] = resB.axis["color"] = A.encoding.color !== undefined ? DomainA.color :
+      B.encoding.color !== undefined ? DomainB.color : [""]
+    resA.cKey = resB.cKey = A.encoding.color !== undefined ? DomainA.cKey :
+      B.encoding.color !== undefined ? DomainB.cKey : A.encoding.x.field
   }
   /* nesting */
   // separate domain B by aggregation keys used in Chart A
@@ -121,7 +121,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
   const {values} = spec.data
   const {x, y, color} = spec.encoding
 
-  const union = typeof sForUnion !== "undefined"
+  const union = sForUnion !== undefined
 
   { // x domain
     if (x.type === "nominal") {
