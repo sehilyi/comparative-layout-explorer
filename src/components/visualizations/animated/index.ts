@@ -10,14 +10,14 @@ export function animateChart(
     selA
       .style(_opacity, 1)
       .transition()
-      .ease(d3.easeLinear)
+      // .ease(d3.easeLinear)
       .delay(delay)
       .duration(duration)
       .style(_opacity, 0)
     selB
       .style(_opacity, 0)
       .transition()
-      .ease(d3.easeLinear)
+      // .ease(d3.easeLinear)
       .delay(delay)
       .duration(duration)
       .style(_opacity, 1)

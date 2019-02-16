@@ -25,11 +25,11 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   S.B.xName = getAxisName(B.encoding.x)
   S.B.yName = getAxisName(B.encoding.y)
   // exceptions
-  if (C.layout.type === "juxtaposition" && C.layout.unit === "chart") {
+  if (C.layout.type === "juxtaposition" && C.layout.unit === "chart" && C.layout.arrangement !== "animated") {
     S.B.xName = (C.layout.arrangement === "adjacent" || !consistency.x_axis) ? S.B.xName : getAxisName(A.encoding.x, B.encoding.x)
     S.A.yName = (C.layout.arrangement === "stacked" || !consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
   }
-  else if ((C.layout.type === "juxtaposition" && C.layout.unit === "element") ||
+  else if ((C.layout.type === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated") ||
     (C.layout.type === "superimposition" && C.layout.unit === "chart")) {
     S.A.xName = (!consistency.x_axis) ? S.A.xName : getAxisName(A.encoding.x, B.encoding.x)
     S.A.yName = (!consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
