@@ -23,6 +23,7 @@ export interface CommonChartStyle {
   topX: boolean
   revX: boolean
   // y-axis
+  yName: string
   simpleY: boolean
   rightY: boolean
   noYTitle: boolean
@@ -76,6 +77,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   noGrid: false,
   noYLine: true,
   xName: undefined,
+  yName: undefined,
   xSlant: true,
   barGap: BAR_GAP,
   width: CHART_SIZE.width,

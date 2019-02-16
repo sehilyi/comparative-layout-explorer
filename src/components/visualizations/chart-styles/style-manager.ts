@@ -7,8 +7,8 @@ import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../design-settings";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
-import {deepValue} from "src/models/comp-spec-manager";
 import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
+import {getAxisName} from "../axes";
 
 // TOOD: any better way to define domains' type?
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, domain: {A: ChartDomainData, B: ChartDomainData}) {
@@ -19,6 +19,23 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal")
   S.A.chartId = "A"
   S.B.chartId = "B"
+  // axis
+  S.A.xName = getAxisName(A.encoding.x)
+  S.A.yName = getAxisName(A.encoding.y)
+  S.B.xName = getAxisName(B.encoding.x)
+  S.B.yName = getAxisName(B.encoding.y)
+  // exceptions
+  if (C.layout.type === "juxtaposition" && C.layout.unit === "chart") {
+    S.B.xName = (C.layout.arrangement === "adjacent" || !consistency.x_axis) ? S.B.xName : getAxisName(A.encoding.x, B.encoding.x)
+    S.A.yName = (C.layout.arrangement === "stacked" || !consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
+  }
+  else if (
+    (C.layout.type === "juxtaposition" && C.layout.unit === "element") ||
+    (C.layout.type === "superimposition" && C.layout.unit === "chart")
+  ) {
+    S.A.xName = (!consistency.x_axis) ? S.A.xName : getAxisName(A.encoding.x, B.encoding.x)
+    S.A.yName = (!consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
+  }
   // clutter reduction
   S.B.opacity = C.clutter.opacity ? 0.4 : 1
   // consistency
@@ -28,7 +45,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   }
 
   // by layout
-  switch (deepValue(C.layout)) {
+  switch (C.layout.type) {
     case "juxtaposition":
       if (C.layout.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)

@@ -1,6 +1,6 @@
 import * as d3 from "d3";
-import {Spec} from "src/models/simple-vega-spec";
-import {translate, rotate, ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
+import {Spec, Field} from "src/models/simple-vega-spec";
+import {translate, rotate, uniqueValues} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
 import {_g, _transform, _x, _y, _text_anchor, _start, _end} from "src/useful-factory/d3-str";
@@ -17,8 +17,6 @@ export function renderAxes(
 
   const isXCategorical = spec.encoding.x.type === "nominal"
   const isYCategorical = spec.encoding.y.type === "nominal"
-  const xFunc = ifUndefinedGetDefault(spec.encoding.x.aggregate, "") as string
-  const yFunc = ifUndefinedGetDefault(spec.encoding.y.aggregate, "") as string
 
   const qX = d3.scaleLinear()
     .domain([d3.min([d3.min(xVals as number[]), 0]), d3.max(xVals as number[])]).nice()
@@ -107,7 +105,7 @@ export function renderAxes(
         .style('stroke', 'none')
         .style('font-weight', 'bold')
         .style('text-anchor', 'middle')
-        .text(styles.xName !== undefined ? styles.xName : xFunc + ' ' + spec.encoding.x.field)
+        .text(styles.xName !== undefined ? styles.xName : getAxisName(spec.encoding.x))
 
       if (isXCategorical) {
         xaxis.selectAll(".axis-name")
@@ -136,7 +134,7 @@ export function renderAxes(
           .style('fill', 'black')
           .style('stroke', 'none')
           .style('text-anchor', 'middle')
-          .text(yFunc + ' ' + spec.encoding.y.field)
+          .text(styles.yName !== undefined ? styles.yName : getAxisName(spec.encoding.y))
       }
     }
 
@@ -176,4 +174,23 @@ export function renderAxes(
       .attr('stroke-width', '1px')
   }
   return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY}
+}
+
+export function getAxisName(f1: Field, f2?: Field): string {
+  if (f2) {
+    if (f1.field === f2.field) {
+      if (!f1.aggregate || !f2.aggregate) {
+        return f1.field
+      }
+      else {
+        return getAxisName(f1)
+      }
+    }
+    else {
+      return getAxisName(f1) + " and " + getAxisName(f2)
+    }
+  }
+  else {
+    return f1.field + (f1.aggregate !== undefined ? "(" + f1.aggregate + ")" : "")
+  }
 }
