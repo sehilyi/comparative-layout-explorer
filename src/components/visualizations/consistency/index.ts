@@ -19,10 +19,10 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): Consist
   const cons = {
     x_axis: (isDeepTrue(C.consistency.x_axis) &&
       A.encoding.x.type === B.encoding.x.type) ||
-      (deepValue(C.layout) === "juxtaposition" && C.unit === "element"), // always true for element-wise jux
+      (deepValue(C.layout) === "juxtaposition" && C.layout.unit === "element"), // always true for element-wise jux
     y_axis: (isDeepTrue(C.consistency.y_axis) &&
       A.encoding.y.type === B.encoding.y.type) ||
-      (deepValue(C.layout) === "juxtaposition" && C.unit === "element"), // always true for element-wise jux
+      (deepValue(C.layout) === "juxtaposition" && C.layout.unit === "element"), // always true for element-wise jux
     color,
     stroke: ifUndefinedGetDefault(C.consistency.stroke, false)
   };

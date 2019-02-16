@@ -66,7 +66,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   resB = {axis: axisB, cKey: cKeyB}
 
   // exceptions: modify domains considering designs
-  if (deepValue(C.layout) === "juxtaposition" && C.unit === "element" && C.layout.arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
+  if (deepValue(C.layout) === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
     const n = A.encoding.x.type === "nominal" ? "x" : "y",
       q = A.encoding.x.type === "quantitative" ? "x" : "y"
@@ -76,7 +76,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
         getAggValues(B.data.values, B.encoding[n].field, [B.encoding[q].field], B.encoding[q].aggregate)),
       A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
   }
-  else if (((deepValue(C.layout) === "juxtaposition" && C.unit === "chart") || (deepValue(C.layout) === "superimposition" && C.unit === "chart")) &&
+  else if (((deepValue(C.layout) === "juxtaposition" && C.layout.unit === "chart") || (deepValue(C.layout) === "superimposition" && C.layout.unit === "chart")) &&
     isScatterplot(A) && isScatterplot(B) && consistency.color) {
     // use A color if two of them use color
     // When only B use color, then use the B's
@@ -87,7 +87,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   }
   /* nesting */
   // separate domain B by aggregation keys used in Chart A
-  else if (deepValue(C.layout) === "superimposition" && C.unit === "element") {
+  else if (deepValue(C.layout) === "superimposition" && C.layout.unit === "element") {
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
     if (isChartDataAggregated(B)) {
       const an = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field

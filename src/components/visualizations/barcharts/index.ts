@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Spec} from 'src/models/simple-vega-spec';
-import {translate, ifUndefinedGetDefault, uniqueValues} from 'src/useful-factory/utils';
+import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {isUndefined} from 'util';
 import {renderLegend} from '../legends';
 import {renderAxes} from '../axes';
@@ -9,7 +9,6 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {ScaleBand, ScaleLinear} from 'd3';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
-import {manageZIndex} from '..';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x} from 'src/useful-factory/d3-str';
 import {getColor, CHART_SIZE, CHART_MARGIN, getBarSize} from '../design-settings';
@@ -31,7 +30,6 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   })
 }
 
-// TODO: only vertical bar charts are handled
 export function renderBarChart(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
@@ -47,12 +45,11 @@ export function renderBarChart(
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nField, [qField], aggregate))
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-  renderBars(g, aggValues, qField, nField, uniqueValues(domain[n], "").length, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
+  renderBars(g, aggValues, qField, nField, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
     renderLegend(legendG, styles.colorKey, styles.color.domain() as string[], styles.color.range() as string[])
   }
-  manageZIndex(svg, spec) // TODO: too much detail this is
 }
 
 export function renderBars(
@@ -60,20 +57,22 @@ export function renderBars(
   data: object[],
   vKey: string,
   gKey: string,
-  numOfC: number, // TODO: remove this?
   x: d3.ScaleBand<string> | d3.ScaleLinear<number, number>,
   y: d3.ScaleLinear<number, number> | d3.ScaleBand<string>,
   styles: ChartStyle) {
 
   const {mulSize, shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar} = styles
+  let numOfC: number
   let nX: d3.ScaleBand<string>, qX: d3.ScaleLinear<number, number>, qY: d3.ScaleLinear<number, number>, nY: d3.ScaleBand<string>
   if (verticalBar) {
     nX = x as d3.ScaleBand<string>
     qY = y as d3.ScaleLinear<number, number>
+    numOfC = nX.domain().length
   }
   else {
     qX = x as d3.ScaleLinear<number, number>
     nY = y as d3.ScaleBand<string>
+    numOfC = nY.domain().length
   }
 
   const bars = g.selectAll('.bar')

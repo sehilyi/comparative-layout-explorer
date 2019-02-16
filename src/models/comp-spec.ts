@@ -1,30 +1,22 @@
-// Specs are defined here
-// https://paper.dropbox.com/doc/Operations--AWlp37~UtWSS83hWWg25wGgxAg-dr2UHiPbc3qvqqS1rQHn1
-
 /**
- * CompSpec with less flexability
- * This is used in the system and not for users
+ * CompSpec with less flexability.
+ * This is used in the system and not for users.
  */
-export type _CompSpecSolid = {  // TODO: change this to interface
-  name: string
-  layout: LayoutTypeAndStyle  // TODO: how to set default values when only parts are not assigned?
-  unit?: CompUnit
-  consistency: Consistency
-  clutter: ClutterReduction
-  priority: CompPriority
+export interface _CompSpecSolid extends CompSpec {
+  layout: LayoutTypeAndStyle
 }
-export type CompSpec = {
+export interface CompSpec {
   name: string
   layout: Layout
-  unit?: CompUnit
   consistency: Consistency
   clutter: ClutterReduction
-  priority: CompPriority
+  reference: CompReference
 }
 export type Layout = LayoutType | LayoutTypeAndStyle
 export type LayoutType = "juxtaposition" | "superimposition" | "blending" | "explicit-encoding"
 export type LayoutTypeAndStyle = {
   type: LayoutType
+  unit?: CompUnit
   mirrored?: boolean
   arrangement?: CompArrangement
 }
@@ -50,11 +42,12 @@ export type ClutterReduction = {
   opacity?: boolean
 }
 
-export type CompPriority = "A" | "B" // TODO: change to priority
+export type CompReference = "A" | "B"
 export const DEFAULT_COMP_REFERENCE = "A"
 
 export const DEFAULT_LAYOUT_JUX: LayoutTypeAndStyle = {
   type: "juxtaposition",
+  unit: "chart",
   mirrored: false,
   arrangement: "adjacent"
 }
@@ -78,22 +71,13 @@ export const DEFAULT_CLUTTER_REDUCTION: ClutterReduction = {
 export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",
   layout: DEFAULT_LAYOUT_JUX,
-  unit: "chart",
   consistency: DEFAULT_CONSISTENCY,
   clutter: DEFAULT_CLUTTER_REDUCTION,
-  priority: DEFAULT_COMP_REFERENCE
+  reference: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {
   "juxtaposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX},
   "superimposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP},
   "blending": {...DEFAULT_COMP_SPEC},  // TODO:
   "explicit-encoding": {...DEFAULT_COMP_SPEC} // TODO:
-}
-
-/**
- * deprecated
- */
-export type AxisConsistency = {
-  value: boolean
-  mirrored: boolean
 }

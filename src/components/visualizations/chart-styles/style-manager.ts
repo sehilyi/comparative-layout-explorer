@@ -25,7 +25,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   // by layout
   switch (deepValue(C.layout)) {
     case "juxtaposition":
-      if (C.unit === "chart") {
+      if (C.layout.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
         const isALegendUse = consistency.color && C.layout.arrangement == "stacked" || !consistency.color && isAColorUsed
@@ -43,7 +43,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.A.colorKey = domain.A.cKey
         S.B.colorKey = domain.B.cKey
       }
-      else if (C.unit === "element") {
+      else if (C.layout.unit === "element") {
         if (C.layout.arrangement === "stacked") { // stacked bar
           if (isBarChart(A) && isBarChart(B)) {
             S.B.noAxes = true
@@ -80,7 +80,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
       }
       break
     case "superimposition":
-      if (C.unit === "chart") {
+      if (C.layout.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
         S.A.legend = isAColorUsed // TODO: should consider false consistency
@@ -105,7 +105,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         // S.B.opacity = 0.4
         S.A.onTop = true
       }
-      else if (C.unit === "element") {
+      else if (C.layout.unit === "element") {
         S.B.noY = true
         S.B.noX = true
         S.B.noGrid = true

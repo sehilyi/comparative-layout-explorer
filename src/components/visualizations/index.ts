@@ -86,12 +86,12 @@ export function canRenderCompChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   let can = true;
 
   // exceptions
-  if ((isScatterplot(A) || isScatterplot(B)) && deepValue(C.layout) === "juxtaposition" && C.unit === "element") can = false
-  if (deepValue(C.layout) === "juxtaposition" && C.unit === "element" &&
+  if ((isScatterplot(A) || isScatterplot(B)) && deepValue(C.layout) === "juxtaposition" && C.layout.unit === "element") can = false
+  if (deepValue(C.layout) === "juxtaposition" && C.layout.unit === "element" &&
     (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
   // nesting
   // visual elements (e.g., bars or points) of A should be aggregated
-  if (deepValue(C.layout) === "superimposition" && C.unit === "element" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false
+  if (deepValue(C.layout) === "superimposition" && C.layout.unit === "element" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false
 
   if (!can) console.log("error: such comparison is not supported.")
   return can

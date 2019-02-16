@@ -70,8 +70,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     let _B = JSON.parse(JSON.stringify(specs.B))
     _B.data.values = "..."
     let _C = JSON.parse(JSON.stringify(specs.C))
-    const key = getCompTitle(specs.A, specs.B, specs.C)
-    console.log("# Now Rendering: " + key)
+    const key = _C //getCompTitle(specs.A, specs.B, specs.C)
+    // console.log("# Now Rendering: " + key)
     return !PRESENTATION ? (
       <div key={key} className="example-element-root">
         <h1>{getSimpleCompTitle(specs.A, specs.B, specs.C) + (specs.C.name !== "" ? " (name: " + specs.C.name + ")" : "")}</h1>

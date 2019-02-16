@@ -25,20 +25,20 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
   let chartsp
   switch (deepValue(C.layout)) {
     case "juxtaposition":
-      if (C.unit === "chart") {
+      if (C.layout.unit === "chart") {
         const numOfC = C.layout.arrangement === 'adjacent' ? 2 : 1
         const numOfR = C.layout.arrangement === 'stacked' ? 2 : 1
         chartsp = getChartPositions(numOfC, numOfR, [S.A, S.B])
       }
-      else if (C.unit === "element") {
+      else if (C.layout.unit === "element") {
         chartsp = getChartPositions(1, 1, [S.A, S.B])
       }
       break
     case "superimposition":
-      if (C.unit === "chart") {
+      if (C.layout.unit === "chart") {
         chartsp = getChartPositions(1, 1, [S.A, S.B])
       }
-      else if (C.unit === "element") {  // nesting
+      else if (C.layout.unit === "element") {  // nesting
         // TODO: only consider a.charttype === bar now
         chartsp = getChartPositions(1, 1, [S.A, S.B])
 
