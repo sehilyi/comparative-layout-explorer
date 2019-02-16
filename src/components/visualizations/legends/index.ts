@@ -1,6 +1,5 @@
 import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING} from "./default-design";
 import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end} from "src/useful-factory/d3-str";
-import {getQuantitativeColor} from "../default-design-manager";
 import d3 = require("d3");
 import {translate} from "src/useful-factory/utils";
 
@@ -9,7 +8,7 @@ export function renderLegend(
   title: string,
   domain: string[] | number[],
   range: string[],
-  isNominal?: boolean) {
+  isQuantitative?: boolean) {
 
   // title
   g.append('text')
@@ -20,7 +19,7 @@ export function renderLegend(
     .style(_font_weight, 'bold')
     .text(title)
 
-  if (!isNominal) {
+  if (!isQuantitative) {
     // Notice: domain.length is always equal or larger than range.length
     for (let i = 0; i < domain.length; i++) {
       if (domain[i] === undefined) continue // TODO: what is the problem continuously getting undefined??
@@ -59,7 +58,7 @@ export function renderLegend(
   }
   else {
     const defs = g.append("defs")
-    const key = "linear-gradient"
+    const key = "linear-gradient" + range.toString()
     const linearGradient = defs.append("linearGradient")
       .attr(_id, key)
       .attr(_x1, '0%')
@@ -67,7 +66,7 @@ export function renderLegend(
       .attr(_x2, '100%')
       .attr(_y2, '100%')
 
-    let scale = d3.scaleLinear<string>().range(getQuantitativeColor()).domain(d3.extent(domain as number[]))
+    let scale = d3.scaleLinear<string>().range(range).domain(d3.extent(domain as number[]))
     linearGradient.selectAll("stop")
       .data([
         {offset: `${100 * 0 / 2}%`, color: scale(d3.extent(domain as number[])[0])},
