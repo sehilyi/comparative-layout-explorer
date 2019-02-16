@@ -28,14 +28,14 @@ export type commonCompUnit = "chart" | "element"
 export type JuxCompUnit = commonCompUnit | "time"
 export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to constraint this?
 
-export type ConsistencyConstraint = true | false | null // TODO: change to "same" | "different" | "null" ?
+export type ConsistencyType = "same" | "different" | "unconnected"  // TODO: terms proper?
 export type Consistency = { // TODO: this should also consider differnce for superimposition
   x_axis?: boolean
   y_axis?: boolean
   x_arrangement?: boolean // divide this to x_positions?
   y_arrangement?: boolean
-  color?: ConsistencyConstraint
-  stroke?: boolean
+  color?: boolean
+  stroke?: ConsistencyType
 }
 
 export type ClutterReduction = {
@@ -62,7 +62,7 @@ export const DEFAULT_CONSISTENCY: Consistency = {
   color: false,
   x_arrangement: false,
   y_arrangement: false,
-  stroke: false
+  stroke: "unconnected"
 }
 export const DEFAULT_CLUTTER_REDUCTION: ClutterReduction = {
   opacity: false

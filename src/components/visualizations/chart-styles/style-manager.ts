@@ -21,6 +21,11 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   S.B.chartId = "B"
   // clutter reduction
   S.B.opacity = C.clutter.opacity ? 0.4 : 1
+  // consistency
+  if (consistency.stroke === "different") {
+    S.A.stroke = DEFAULT_STROKE
+    S.A.stroke_width = DEFAULT_STROKE_WIDTH
+  }
 
   // by layout
   switch (deepValue(C.layout)) {
@@ -91,10 +96,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         if (consistency.y_axis) S.B.noY = true
         if (!consistency.x_axis) S.B.topX = true
         if (!consistency.y_axis) S.B.rightY = true
-        if (!consistency.stroke) {
-          S.A.stroke = DEFAULT_STROKE
-          S.A.stroke_width = DEFAULT_STROKE_WIDTH
-        }
 
         const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
         S.A.color = ca
