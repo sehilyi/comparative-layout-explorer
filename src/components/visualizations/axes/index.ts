@@ -107,7 +107,7 @@ export function renderAxes(
         .style('stroke', 'none')
         .style('font-weight', 'bold')
         .style('text-anchor', 'middle')
-        .text(typeof styles.xName !== "undefined" ? styles.xName : xFunc + ' ' + spec.encoding.x.field)
+        .text(styles.xName !== undefined ? styles.xName : xFunc + ' ' + spec.encoding.x.field)
 
       if (isXCategorical) {
         xaxis.selectAll(".axis-name")
