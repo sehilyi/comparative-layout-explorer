@@ -47,6 +47,9 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   S.B.color = colorB
   S.A.colorKey = domain.A.cKey
   S.B.colorKey = domain.B.cKey
+  // color name
+  S.A.colorName = consistency.color === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
+  S.B.colorName = consistency.color === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
 
   // by layout
   switch (C.layout.type) {

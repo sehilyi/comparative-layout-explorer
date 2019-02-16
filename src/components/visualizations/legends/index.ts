@@ -14,10 +14,10 @@ export function renderLegend(
   g.append('text')
     .classed('legend-title', true)
     .attr(_y, -7)
-    .style(_font_size, '12px')
+    .style(_font_size, '10px')
     .style(_text_anchor, 'start')
     .style(_font_weight, 'bold')
-    .text(title)
+    .text(title.length > 17 ? title.slice(0, 15).concat("...") : title)
 
   if (!isQuantitative) {
     // Notice: domain.length is always equal or larger than range.length

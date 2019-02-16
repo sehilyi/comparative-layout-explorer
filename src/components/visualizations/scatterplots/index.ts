@@ -47,7 +47,7 @@ export function renderScatterplot(
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.colorKey, styles.color.domain() as string[], styles.color.range() as string[])
+    renderLegend(legendG, styles.colorName ? styles.colorName : styles.colorKey, styles.color.domain() as string[], styles.color.range() as string[])
   }
 }
 

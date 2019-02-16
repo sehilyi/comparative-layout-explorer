@@ -177,6 +177,7 @@ export function renderAxes(
 }
 
 export function getAxisName(f1: Field, f2?: Field): string {
+  if (!f1) return ""
   if (f2) {
     if (f1.field === f2.field) {
       if (!f1.aggregate || !f2.aggregate) {
