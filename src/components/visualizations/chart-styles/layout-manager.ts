@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {getBarSize, NESTING_PADDING, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../design-settings";
+import {getBarSize, NESTING_PADDING, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../default-design-manager";
 import {ChartStyle} from ".";
 import {getAggregatedDatas, getAggValues} from "../data-handler";
 import d3 = require("d3");

@@ -4,7 +4,7 @@ import {getAggValuesByTwoKeys} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height} from 'src/useful-factory/d3-str';
-import {LIGHT_GRAY, CHART_SIZE, CHART_MARGIN, getLinearColor} from '../design-settings';
+import {LIGHT_GRAY, CHART_SIZE, CHART_MARGIN, getQuantitativeColor} from '../default-design-manager';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {renderLegend} from '../legends';
 import {getChartPositions} from '../chart-styles/layout-manager';
@@ -26,7 +26,7 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
 
   renderHeatmap(g, spec, {x: domains.x, y: domains.y}, {
     ...DEFAULT_CHART_STYLE,
-    color: d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getLinearColor()), colorKey: domains.cKey, legend: !isUndefined(color)
+    color: d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColor()), colorKey: domains.cKey, legend: !isUndefined(color)
   })
 }
 

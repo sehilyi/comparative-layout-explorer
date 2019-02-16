@@ -4,7 +4,7 @@ import {CompSpec, _CompSpecSolid} from "src/models/comp-spec";
 import {translate} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, AXIS_ROOT_ID,
-} from "./design-settings";
+} from "./default-design-manager";
 import {renderLegend} from "./legends";
 import {correctConsistency} from "./consistency";
 import {renderChart} from ".";
@@ -18,11 +18,8 @@ import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C}) // minor issues in spec should be corrected (e.g., CompSpec => _CompSpecSolid)
-
   if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, mC)) return;
-
   d3.select(ref).selectAll('*').remove();
-
   renderCompChartGeneralized(ref, A, B, mC)
 }
 

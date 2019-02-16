@@ -34,7 +34,7 @@ export type Consistency = { // TODO: this should also consider differnce for sup
   y_axis?: boolean
   x_arrangement?: boolean // divide this to x_positions?
   y_arrangement?: boolean
-  color?: boolean
+  color?: ConsistencyType
   stroke?: ConsistencyType
 }
 
@@ -59,7 +59,7 @@ export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
 export const DEFAULT_CONSISTENCY: Consistency = {
   x_axis: false,
   y_axis: false,
-  color: false,
+  color: "unconnected",
   x_arrangement: false,
   y_arrangement: false,
   stroke: "unconnected"

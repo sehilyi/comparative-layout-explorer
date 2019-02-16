@@ -1,19 +1,16 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {Consistency, _CompSpecSolid, DEFAULT_CONSISTENCY} from "src/models/comp-spec";
+import {Consistency, _CompSpecSolid, DEFAULT_CONSISTENCY, ConsistencyType} from "src/models/comp-spec";
 import {isDeepTrue, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {deepValue} from "src/models/comp-spec-manager";
 
 export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): Consistency {
-  let color: boolean
-  if (!C.consistency.color) {
-    color = false
-  }
-  // nominal color can be consistently used with quantitative color
-  else if (A.encoding.color && B.encoding.color && A.encoding.color.type != B.encoding.color.type) {
-    color = false
-  }
-  else {
-    color = true
+  // fill empty specs
+  C = {...C, consistency: {...C.consistency, color: ifUndefinedGetDefault(C.consistency.color, DEFAULT_CONSISTENCY.color) as ConsistencyType}}
+
+  let color = C.consistency.color
+  if ((C.consistency.color === "same" || C.consistency.color === "different")
+    && (A.encoding.color && B.encoding.color && A.encoding.color.type !== B.encoding.color.type)) {
+    color = "unconnected"
   }
 
   const cons = {

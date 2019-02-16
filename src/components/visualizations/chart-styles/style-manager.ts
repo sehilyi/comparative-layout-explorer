@@ -5,7 +5,7 @@ import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
-import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../design-settings";
+import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
 import {getAxisName} from "../axes";
@@ -29,10 +29,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
     S.B.xName = (C.layout.arrangement === "adjacent" || !consistency.x_axis) ? S.B.xName : getAxisName(A.encoding.x, B.encoding.x)
     S.A.yName = (C.layout.arrangement === "stacked" || !consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
   }
-  else if (
-    (C.layout.type === "juxtaposition" && C.layout.unit === "element") ||
-    (C.layout.type === "superimposition" && C.layout.unit === "chart")
-  ) {
+  else if ((C.layout.type === "juxtaposition" && C.layout.unit === "element") ||
+    (C.layout.type === "superimposition" && C.layout.unit === "chart")) {
     S.A.xName = (!consistency.x_axis) ? S.A.xName : getAxisName(A.encoding.x, B.encoding.x)
     S.A.yName = (!consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
   }
@@ -43,6 +41,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
     S.A.stroke = DEFAULT_STROKE
     S.A.stroke_width = DEFAULT_STROKE_WIDTH
   }
+  // color
+  const {colorA, colorB} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
+  S.A.color = colorA
+  S.B.color = colorB
+  S.A.colorKey = domain.A.cKey
+  S.B.colorKey = domain.B.cKey
 
   // by layout
   switch (C.layout.type) {
@@ -50,20 +54,14 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
       if (C.layout.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
-        const isALegendUse = consistency.color && C.layout.arrangement == "stacked" || !consistency.color && isAColorUsed
-        const isBLegendUse = consistency.color && C.layout.arrangement == "adjacent" || !consistency.color && isBColorUsed
+        const isALegendUse = (consistency.color === "same" && C.layout.arrangement == "stacked") || (consistency.color !== "same" && isAColorUsed)
+        const isBLegendUse = (consistency.color === "same" && C.layout.arrangement == "adjacent") || (consistency.color !== "same" && isBColorUsed)
         S.A.legend = isALegendUse
         S.B.legend = isBLegendUse
         S.B.revY = C.layout.arrangement === "stacked" && C.layout.mirrored
         S.A.revX = C.layout.arrangement === "adjacent" && C.layout.mirrored
         S.A.noX = consistency.x_axis && !S.B.revX && C.layout.arrangement === 'stacked'
         S.B.noY = consistency.y_axis && !S.B.revY && C.layout.arrangement === 'adjacent'
-
-        const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
-        S.A.color = ca
-        S.B.color = cb
-        S.A.colorKey = domain.A.cKey
-        S.B.colorKey = domain.B.cKey
       }
       else if (C.layout.unit === "element") {
         if (C.layout.arrangement === "stacked") { // stacked bar
@@ -88,17 +86,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
           S.B.mulSize = 0.5
           S.B.noAxes = true
         }
-
         // S.A.color = getConstantColor() // getColor(d.A.c) // TODO: this should be eventually removed
         // S.A.colorKey = domain.A.cKey
         // S.B.color = getConstantColor(2) // getColor((d.B as DomainData).c)
         // S.B.colorKey = domain.B.cKey
-
-        const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
-        S.A.color = ca
-        S.B.color = cb
-        S.A.colorKey = domain.A.cKey
-        S.B.colorKey = domain.B.cKey
       }
       break
     case "superimposition":
@@ -114,12 +105,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         if (!consistency.x_axis) S.B.topX = true
         if (!consistency.y_axis) S.B.rightY = true
 
-        const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
-        S.A.color = ca
-        S.B.color = cb
-        S.A.colorKey = domain.A.cKey
-        S.B.colorKey = domain.B.cKey
-
         // S.B.opacity = 0.4
         S.A.onTop = true
       }
@@ -129,12 +114,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.B.noGrid = true
         S.B.barGap = 0
         S.B.pointSize = 1.5
-
-        const {ca, cb} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
-        S.A.color = ca
-        S.B.color = cb
-        S.A.colorKey = domain.A.cKey
-        S.B.colorKey = domain.B.cKey
 
         if (isScatterplot(A)) {
           S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING

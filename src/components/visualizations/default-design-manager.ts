@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined} from "util";
+import {ConsistencyType} from "src/models/comp-spec";
 
 export const AXIS_ROOT_ID = "axis-root--"
 // general
@@ -29,6 +30,7 @@ export const CATEGORICAL_COLORS_DARKEST = [
   "#2a1d26", "#3d2527", "#251b16", "#2c2a29"]
 
 export const NUMERICAL_COLORS = ['#C6E48B', /*'#7BC96F',*/ '#239A3B'/*, '#196127'*/]  // git heatmap color scheme
+export const NUMERICAL_COLORS2 = ['#8bc6e4', /*'#7BC96F',*/ '#3b239a'/*, '#196127'*/]
 export const LIGHT_GRAY = "#EBEDF0"
 export const DEFAULT_FONT = "Roboto Condensed"
 export const DEFAULT_STROKE_WIDTH = 1
@@ -52,11 +54,15 @@ export function getBarColorDarkest(n: number) {
   return CATEGORICAL_COLORS_DARKEST.slice(0, n > CATEGORICAL_COLORS_DARKEST.length ? CATEGORICAL_COLORS_DARKEST.length - 1 : n)
 }
 
-export function getLinearColor() {
-  return NUMERICAL_COLORS
+export function getQuantitativeColor(alt?: boolean) {
+
+  return !alt ? NUMERICAL_COLORS : NUMERICAL_COLORS2
 }
-export function getBarColor(n: number, n2?: number) {
+export function getNominalColor(n: number, n2?: number) {
   const pallete = CATEGORICAL_COLORS.concat(CATEGORICAL_COLORS_DARKER)
+  const maxLen = CATEGORICAL_COLORS.length
+  if (n > maxLen) n = maxLen
+  if (n2 && n2 > maxLen) n2 = maxLen
   if (!n2) {
     return pallete.slice(0, n > pallete.length ? pallete.length - 1 : n)
   }
@@ -64,25 +70,23 @@ export function getBarColor(n: number, n2?: number) {
     return pallete.slice(n, (n + n2) > pallete.length ? pallete.length - 1 : n + n2)
   }
 }
-export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: boolean) {
-  let ca, cb
-  if (!consistency) {
-    ca = typeof a[0] === "string" ?
-      d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length)) :
-      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getLinearColor())
-    cb = typeof b[0] === "string" ?
-      d3.scaleOrdinal().domain(b as string[]).range(getBarColor(b.length)) :  // TODO: how to deal with q vs. n?
-      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getLinearColor())
+export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: ConsistencyType) {
+  const colorA = typeof a[0] === "string" ?
+    d3.scaleOrdinal().domain(a as string[]).range(getNominalColor(a.length)) :
+    d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColor())
+
+  let colorB
+  if (consistency === "unconnected" || consistency === "same") {
+    colorB = typeof b[0] === "string" ?
+      d3.scaleOrdinal().domain(b as string[]).range(getNominalColor(b.length)) :
+      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColor())
   }
   else {
-    ca = typeof a[0] === "string" ?
-      d3.scaleOrdinal().domain(a as string[]).range(getBarColor(a.length)) :
-      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getLinearColor())
-    cb = typeof b[0] === "string" ?
-      d3.scaleOrdinal().domain(b as string[]).range(getBarColor(b.length)) :  // TODO: how to deal with q vs. n?
-      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getLinearColor())
+    colorB = typeof b[0] === "string" ?
+      d3.scaleOrdinal().domain(b as string[]).range(getNominalColor(a.length, b.length)) :
+      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColor(true))
   }
-  return {ca, cb}
+  return {colorA, colorB}
 }
 export function getColor(d: string[] | number[], styles?: {darker: boolean}) {
   const stl = ifUndefinedGetDefault(styles, {})
@@ -91,12 +95,12 @@ export function getColor(d: string[] | number[], styles?: {darker: boolean}) {
 
   return d3.scaleOrdinal()
     .domain(domain as string[])
-    .range(darker ? getBarColorDarker(domain.length) : getBarColor(domain.length))
+    .range(darker ? getBarColorDarker(domain.length) : getNominalColor(domain.length))
 }
 
 export function getConstantColor(index?: number) {
   let i = isUndefined(index) || index <= 0 ? 1 : index > CATEGORICAL_COLORS.length ? index - CATEGORICAL_COLORS.length : index
   return d3.scaleOrdinal()
     // no domain
-    .range(getBarColor(i).slice(i - 1, i))
+    .range(getNominalColor(i).slice(i - 1, i))
 }

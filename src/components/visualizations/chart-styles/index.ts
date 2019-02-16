@@ -1,4 +1,4 @@
-import {BAR_GAP, CHART_SIZE, getConstantColor} from "../design-settings";
+import {BAR_GAP, CHART_SIZE, getConstantColor} from "../default-design-manager";
 import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 
 export type ChartStyle = CommonChartStyle

@@ -11,7 +11,7 @@ import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x} from 'src/useful-factory/d3-str';
-import {getColor, CHART_SIZE, CHART_MARGIN, getBarSize} from '../design-settings';
+import {getColor, CHART_SIZE, CHART_MARGIN, getBarSize} from '../default-design-manager';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;

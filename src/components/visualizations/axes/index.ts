@@ -4,7 +4,7 @@ import {translate, rotate, uniqueValues} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
 import {_g, _transform, _x, _y, _text_anchor, _start, _end} from "src/useful-factory/d3-str";
-import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT} from "../design-settings";
+import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT} from "../default-design-manager";
 
 export type Domain = string[] | number[]
 

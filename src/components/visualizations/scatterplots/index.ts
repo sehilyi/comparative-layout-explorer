@@ -8,7 +8,7 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {getColor, getConstantColor, CHART_SIZE, CHART_MARGIN} from '../design-settings';
+import {getColor, getConstantColor, CHART_SIZE, CHART_MARGIN} from '../default-design-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y} from 'src/useful-factory/d3-str';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {

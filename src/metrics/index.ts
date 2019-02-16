@@ -1,7 +1,7 @@
 import ImageSSIM from './ssim';
 import ImageMSSSIM from './ms-ssim';
 import ImageMSE from './mse';
-import {CHART_TOTAL_SIZE} from 'src/components/visualizations/design-settings';
+import {CHART_TOTAL_SIZE} from 'src/components/visualizations/default-design-manager';
 
 export function getSSIM(a: any[], b: any[]) {
   let imgData1: ImageSSIM.IImage = {data: a, width: CHART_TOTAL_SIZE.width, height: CHART_TOTAL_SIZE.height, channels: 4};
