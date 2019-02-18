@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys, getFieldsByType, getAggValuesByKeys, tabularizeData} from ".";
+import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys, getFieldsByType, getPivotData, tabularizeData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {deepValue} from "src/models/comp-spec-manager";
@@ -102,9 +102,8 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
         allKeys.forEach(d => {
           domains.push(uniqueValues(A.data.values, d.field))
         })
-        let nested = getAggValuesByKeys(A.data.values, allKeys.map(d => d.field), f.field, B.encoding[f.channel].aggregate)
-        let tab = tabularizeData(nested, domains, allKeys.map(d => d.field), f.field)
-        qValuesB[f.field] = tab.map(d => d[f.field])
+        let pivotData = getPivotData(A.data.values, allKeys.map(d => d.field), f.field, B.encoding[f.channel].aggregate)
+        qValuesB[f.field] = pivotData.map(d => d[f.field])
       })
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[aNom].length; i++) {

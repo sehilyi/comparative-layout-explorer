@@ -122,18 +122,19 @@ export function recTabularizeData(data: object[], keyss: string[][], keyFields: 
 
 /**
  * This is a more generalized version of getAggValues.
- * To be more generalized, valueField should be array of fields
+ * To be more generalized, valueField should be array of fields.
+ * Returns tabularized pivot data
  * @param data
  * @param keyFields
  * @param valueField
  * @param aggregate
  */
-export function getAggValuesByKeys(data: object[], keyFields: string[], valueField: string, aggregate: Aggregate) {
+export function getPivotData(data: object[], keyFields: string[], valueField: string, aggregate: Aggregate) {
   let nest = d3.nest()
   keyFields.forEach(k => {
     nest.key(d => d[k]) // nest by keys
   })
-  return nest
+  let nestedData = nest
     .rollup(function (leaves) {
       switch (aggregate) {
         case 'sum': return d3.sum(leaves, _d => _d[valueField]) as undefined
@@ -146,6 +147,12 @@ export function getAggValuesByKeys(data: object[], keyFields: string[], valueFie
       }
     })
     .entries(data)
+
+  let domains: string[][] = []
+  keyFields.forEach(d => {
+    domains.push(uniqueValues(data, d))
+  })
+  return tabularizeData(nestedData, domains, keyFields, valueField)
 }
 
 export function getAggregatedData(s: Spec) {
