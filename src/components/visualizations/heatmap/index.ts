@@ -3,8 +3,8 @@ import {Spec} from "src/models/simple-vega-spec";
 import {getAggValuesByTwoKeys, tabularizeData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
-import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height} from 'src/useful-factory/d3-str';
-import {LIGHT_GRAY, CHART_SIZE, CHART_MARGIN, getQuantitativeColor} from '../default-design-manager';
+import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white} from 'src/useful-factory/d3-str';
+import {CHART_SIZE, CHART_MARGIN, getQuantitativeColor} from '../default-design-manager';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {renderLegend} from '../legends';
 import {getChartPositions} from '../chart-styles/layout-manager';
@@ -66,7 +66,7 @@ export function renderCells(
     .data(data)
     .enter().append(_rect)
     .classed('cell', true)
-    .attr(_fill, d => d[styles.colorKey] === null ? LIGHT_GRAY : (styles.color as d3.ScaleLinear<string, string>)(d[styles.colorKey]) as string)
+    .attr(_fill, d => d[styles.colorKey] === null ? styles.nullCellFill : (styles.color as d3.ScaleLinear<string, string>)(d[styles.colorKey]) as string)
     .attr(_x, d => x(d[xKey]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
     .attr(_y, d => y(d[yKey]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
     .attr(_width, cellWidth)

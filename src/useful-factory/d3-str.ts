@@ -2,7 +2,7 @@
 export const
   _id = "id", _class = "class",
   _width = 'width', _height = 'height',
-  _fill = 'fill', _color = 'color',
+  _fill = 'fill', _color = 'color', _white = "white", _black = "black", _lightgray = "lightgray",
   _transform = 'transform', _g = 'g', _rect = 'rect',
   _x = 'x', _y = 'y', _cx = "cx", _cy = "cy",
   _x1 = "x1", _x2 = "x2", _y1 = "y1", _y2 = "y2",

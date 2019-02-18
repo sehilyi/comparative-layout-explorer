@@ -1,6 +1,7 @@
 import {BAR_GAP, CHART_SIZE, getConstantColor, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
-import {DEFAULT_HEATMAP_CELL_PADDING} from "../heatmap/default-design";
+import {DEFAULT_HEATMAP_CELL_PADDING, CELL_NULL_COLOR} from "../heatmap/default-design";
+import {_lightgray} from "src/useful-factory/d3-str";
 
 export type ChartStyle = CommonChartStyle
 
@@ -60,6 +61,7 @@ export interface CommonChartStyle {
   rectPoint: boolean
   // heatmap
   cellPadding: number
+  nullCellFill: string
 }
 
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {
@@ -116,5 +118,6 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   pointSize: SCATTER_POINT_SIZE,
   rectPoint: false,
   // heatmap
-  cellPadding: DEFAULT_HEATMAP_CELL_PADDING
+  cellPadding: DEFAULT_HEATMAP_CELL_PADDING,
+  nullCellFill: CELL_NULL_COLOR
 }

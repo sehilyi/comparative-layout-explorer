@@ -26,6 +26,7 @@ export function getExamples() {
   )
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
+  const values = DATASET_MOVIES.rawData.splice(0, 100)
   return [
     {
       C: {
@@ -38,7 +39,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -49,7 +50,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -70,7 +71,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -81,7 +82,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -102,23 +103,23 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
           x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
+          color: {field: "Creative_Type", type: "nominal"}
         }
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
-          y: {field: "Major_Genre", type: "nominal"},
+          y: {field: "MPAA_Rating", type: "nominal"},
           color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
         }
       }
@@ -134,7 +135,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -145,7 +146,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -166,7 +167,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -177,7 +178,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -198,7 +199,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -209,7 +210,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -229,7 +230,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -240,7 +241,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -261,7 +262,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -272,7 +273,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -293,7 +294,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -304,7 +305,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -323,7 +324,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -334,7 +335,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -353,7 +354,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -364,7 +365,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -385,7 +386,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -396,7 +397,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "rect",
         encoding: {
@@ -416,7 +417,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -427,7 +428,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -448,7 +449,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -459,7 +460,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -479,7 +480,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -490,7 +491,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -511,7 +512,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -522,7 +523,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -542,7 +543,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -552,7 +553,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -571,7 +572,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -582,7 +583,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -602,7 +603,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -613,7 +614,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -633,7 +634,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -644,7 +645,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -664,7 +665,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -675,7 +676,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -694,7 +695,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -705,7 +706,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -726,7 +727,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -737,7 +738,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -757,7 +758,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -768,7 +769,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -788,7 +789,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -799,7 +800,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -819,7 +820,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -830,7 +831,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -851,7 +852,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -861,7 +862,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -881,7 +882,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -891,7 +892,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -912,7 +913,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -922,7 +923,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -943,7 +944,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -953,7 +954,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -973,7 +974,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -983,7 +984,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -1004,7 +1005,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -1015,7 +1016,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -1036,7 +1037,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -1046,7 +1047,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -1066,7 +1067,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -1076,7 +1077,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
@@ -1097,7 +1098,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "point",
         encoding: {
@@ -1108,7 +1109,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       B: {
         data: {
-          values: DATASET_MOVIES.rawData
+          values
         },
         mark: "bar",
         encoding: {
