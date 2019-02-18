@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Spec} from "src/models/simple-vega-spec";
-import {getAggValuesByTwoKeys, tabularizeData2Keys} from "../data-handler";
+import {getAggValuesByTwoKeys, tabularizeData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height} from 'src/useful-factory/d3-str';
@@ -43,7 +43,7 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
   const {aggregate} = spec.encoding.color
   // TODO: when xField and yField same!
   const aggValues = getAggValuesByTwoKeys(values, xField, yField, cField, aggregate)
-  const linAggValues = tabularizeData2Keys(aggValues, domain.x as string[], domain.y as string[], xField, yField, cField)
+  const linAggValues = tabularizeData(aggValues, [domain.x as string[], domain.y as string[]], [xField, yField], cField)
   renderCells(g, linAggValues, xField, yField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: aggregate != undefined})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))

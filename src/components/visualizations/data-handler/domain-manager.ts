@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys, getFieldsByType, getAggValuesByKeys, tabularizeData2Keys} from ".";
+import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys, getFieldsByType, getAggValuesByKeys, tabularizeData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {deepValue} from "src/models/comp-spec-manager";
@@ -91,21 +91,23 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
       // get all nominal and quantitative fields
       const bQuans = getFieldsByType(B, "quantitative")
       let aNoms = getFieldsByType(A, "nominal"), bNoms = getFieldsByType(B, "nominal")
-      if (isBarChart(A)) aNoms = aNoms.filter(d => d.channel !== "color")  // color is not a unique separation field in bar chart (instead, x or y is)
-      if (isBarChart(B)) bNoms = bNoms.filter(d => d.channel === "color")
-      const an = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
+      if (isBarChart(A)) aNoms = aNoms.filter(d => d.channel !== "color") // color is not a unique separation field in bar chart (instead, x or y is)
+      if (isBarChart(B)) bNoms = bNoms.filter(d => d.channel === "color") // color is not a unique separation field in bar chart (instead, x or y is)
+      const aNom = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
 
       let qValuesB: object = {}
       bQuans.forEach(f => {
         const allKeys = aNoms.map(d => d.field).concat(bNoms.map(d => d.field))
         let nested = getAggValuesByKeys(A.data.values, allKeys, f.field, B.encoding[f.channel].aggregate)
-        qValuesB[f.channel] = allKeys.length === 2 ?
+        qValuesB[f.channel] = allKeys.length === 2 ?  // TODO: this part should be more general to length
           [].concat(...nested.map(d => d.values)).map((d: object) => d["value"]) :
           [].concat(...nested.map(d => d.values).map(d => d.values)).map((d: object) => d["value"])
       })
       let axes: AxisDomainData[] = []
-      for (let i = 0; i < axisA[an].length; i++) {
-        bQuans.forEach(f => {axisB[f.channel] = qValuesB[f.channel]})
+      for (let i = 0; i < axisA[aNom].length; i++) {
+        bQuans.forEach(f => {
+          axisB[f.channel] = qValuesB[f.channel]
+        })
         axes.push({...axisB})
       }
       resB = {...resB, axis: axes}
@@ -200,7 +202,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     else if (color && color.type === "quantitative") {
       if (x.type === "nominal" && y.type === "nominal") {
         const vals = getAggValuesByTwoKeys(values, x.field, y.field, color.field, color.aggregate)
-        const tabVals = tabularizeData2Keys(vals, xDomain as string[], yDomain as string[], x.field, y.field, color.field)
+        const tabVals = tabularizeData(vals, [xDomain as string[], yDomain as string[]], [x.field, y.field], color.field)
         cDomain = tabVals.map(d => d[color.field])
         cKey = color.field
       }

@@ -92,55 +92,32 @@ export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyFi
     .entries(values);
 }
 
-// TODO: now only considering two nominal and one quantitative
 /**
- *
- * @param data {key, values: {key, value}}
- * @param d1
- * @param d2
- * @param n1 name of nominal field
- * @param n2 name of nominal field
- * @param q1 name of quantitative field
+ * get pivot data from d3.nest output.
+ * Generalized Version.
+ * @param data {key, values: {key, values: {key, value}}}
+ * @param keyss nominal values
+ * @param keyFields names of nominal field
+ * @param valueField name of quantitative field
  */
-export function tabularizeData2Keys(data: object[], d1: string[], d2: string[], n1: string, n2: string, q1: string) {
+export function tabularizeData(data: object[], keyss: string[][], keyFields: string[], valueField: string) {
   let newData: object[] = []
-  d1.forEach(d1k => {
-    d2.forEach(d2k => {
-      const isThereD1k = data.find(d => d["key"] === d1k) !== undefined
-      const isThereD2k = isThereD1k && data.find(d => d["key"] === d1k)["values"].find((_d: object) => _d["key"] === d2k) !== undefined
-      const v = isThereD1k && isThereD2k ? data.find(d => d["key"] === d1k)["values"].find((_d: object) => _d["key"] === d2k)["value"] : null
-      newData.push({[n1]: d1k, [n2]: d2k, [q1]: v})
-    })
-  })
+  recTabularizeData(data, keyss, keyFields, valueField, newData, {}, false)
   return newData
 }
-
-// TODO: make this generalizable
-/**
- * @param data {key, values: {key, value}}
- * @param d nominal values
- * @param n names of nominal field
- * @param q name of quantitative field
- */
-export function tabularizeData3Keys(data: object[], d: string[][], n: string[], q: string) {
-  let newData: object[] = []
-  if (d.length === 3) {
-    d[0].forEach(d1k => {
-      d[1].forEach(d2k => {
-        d[2].forEach(d3k => {
-          const isThereD1k = data.find(d => d["key"] === d1k) !== undefined
-          const d1kVals = isThereD1k ? data.find(d => d["key"] === d1k)["values"] : []
-          const isThereD2k = isThereD1k && d1kVals.find((_d: object) => _d["key"] === d2k) !== undefined
-          const d2kVals = isThereD2k ? d1kVals.find((_d: object) => _d["key"] === d2k)["values"] : []
-          const isThereD3k = isThereD2k && d2kVals.find((_d: object) => _d["key"] === d3k) !== undefined
-          const d3kVals = isThereD3k ? d2kVals.find((_d: object) => _d["key"] === d3k)["values"] : []
-          const v = isThereD1k && isThereD2k && isThereD3k ? d3kVals : null // missing data as null
-          newData.push({[n[0]]: d1k, [n[1]]: d2k, [n[2]]: d3k, [q]: v})
-        })
-      })
-    })
-  }
-  return newData
+export function recTabularizeData(data: object[], keyss: string[][], keyFields: string[], valueField: string, resData: object[], curRes: object, isAlreadyNull: boolean) {
+  keyss[0].forEach(k => {
+    const isNull = isAlreadyNull || data.find(d => d["key"] === k) === undefined
+    const val = isNull ? null : data.find(d => d["key"] === k)[keyFields.length === 1 ? "value" : "values"]
+    let newRes = {...curRes, [keyFields[0]]: k}
+    if (keyFields.length == 1) {
+      newRes = {...newRes, [valueField]: val}
+      resData.push(newRes)
+    }
+    else {
+      recTabularizeData(val, keyss.slice(1, keyss.length), keyFields.slice(1, keyFields.length), valueField, resData, newRes, isNull)
+    }
+  })
 }
 
 /**
@@ -153,7 +130,9 @@ export function tabularizeData3Keys(data: object[], d: string[][], n: string[], 
  */
 export function getAggValuesByKeys(data: object[], keyFields: string[], valueField: string, aggregate: Aggregate) {
   let nest = d3.nest()
-  keyFields.forEach(k => {nest.key(d => d[k])}) // nest by keys
+  keyFields.forEach(k => {
+    nest.key(d => d[k]) // nest by keys
+  })
   return nest
     .rollup(function (leaves) {
       switch (aggregate) {
