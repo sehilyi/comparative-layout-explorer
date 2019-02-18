@@ -1,5 +1,5 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {CompSpec, DEFAULT_COMP_SPEC} from "src/models/comp-spec";
+import {CompSpec} from "src/models/comp-spec";
 import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
 import {getChartType} from "../constraints";
 import {DATASET_MOVIES} from "src/datasets/movies";
@@ -28,7 +28,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   return [
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "heatmap",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
         consistency: {
@@ -61,11 +60,10 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "heatmap",
         layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
         consistency: {
-          x_axis: false, y_axis: true, color: "same"
+          x_axis: false, y_axis: true, color: "different"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -94,7 +92,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "heatmap",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
@@ -127,7 +124,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "heatmap",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {x_axis: false, y_axis: true, color: "same"}
@@ -158,7 +154,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "heatmap",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {x_axis: false, y_axis: true, color: "different"}
@@ -189,7 +184,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "heatmap",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "stacked"},
         consistency: {
@@ -222,11 +216,10 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "ele",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
-          x_axis: true, y_axis: true, color: "same"
+          x_axis: true, y_axis: true, color: "different"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -255,7 +248,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "ele",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
         consistency: {
@@ -288,10 +280,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "juxtaposition", unit: "element", arrangement: "stacked", mirrored: false},
         consistency: {
-          x_axis: true, y_axis: true, color: "same"
+          x_axis: true, y_axis: true, color: "different"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -320,7 +311,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "jc",
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "stacked"},
         consistency: {
@@ -352,7 +342,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "jc diff color",
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "stacked"},
         consistency: {
@@ -383,10 +372,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "stacked"},
         consistency: {
-          x_axis: true, y_axis: true, color: "same"
+          x_axis: true, y_axis: true, color: "different"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -415,7 +403,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "same"
@@ -447,7 +434,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "juxtaposition", unit: "chart", mirrored: true, arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "same"
@@ -479,7 +465,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: false},
         consistency: {
           x_axis: false, y_axis: true, color: "same"
@@ -510,7 +495,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "same", stroke: "different"
@@ -542,7 +526,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "false color test",
         layout: {type: "juxtaposition", unit: "chart"},
         consistency: {
@@ -575,7 +558,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: true, color: "different"
@@ -607,7 +589,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: true, color: "different"
@@ -638,7 +619,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "horizontal bar chart",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
@@ -670,7 +650,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "superimposition", unit: "element", arrangement: "adjacent", mirrored: false},
         consistency: {
           x_axis: false, y_axis: false, color: "different"
@@ -701,7 +680,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "H vs V bar charts",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
@@ -733,7 +711,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "V vs H bar charts",
         layout: {type: "superimposition", unit: "element", arrangement: "adjacent", mirrored: false},
         consistency: {
@@ -765,7 +742,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "different"
@@ -796,7 +772,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "2",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
@@ -829,7 +804,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "superimposition", unit: "chart"},
         consistency: {x_axis: false, y_axis: false, color: "different"},
         clutter: {
@@ -861,7 +835,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: false, y_axis: false, color: "different"
@@ -892,7 +865,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        ...DEFAULT_COMP_SPEC,
         name: "scatter + horizontal bar",
         layout: {type: "superimposition", unit: "element"},
         consistency: {

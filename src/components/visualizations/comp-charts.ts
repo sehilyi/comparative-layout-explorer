@@ -18,7 +18,7 @@ import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
 import {animateChart} from "./animated";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const mC = correctCompSpec({...C}) // minor issues in spec should be corrected (e.g., CompSpec => _CompSpecSolid)
+  const mC = correctCompSpec({...C}) // minor issues in spec are corrected here (e.g., CompSpec => _CompSpecSolid)
   if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, mC)) return;
   d3.select(ref).selectAll('*').remove();
   renderCompChartGeneralized(ref, A, B, mC)
@@ -30,14 +30,14 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles) // set translateX and Y here
 
+  // TODO: remove this
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
-  if (deepValue(C.layout) === "juxtaposition" && C.layout.unit === 'element') { // TODO:
+  if (deepValue(C.layout) === "juxtaposition" && C.layout.unit === 'element') {
     renderLegend(svg.append(_g).attr(_transform, translate(layouts.B.left + CHART_SIZE.width + GAP_BETWEEN_CHARTS, layouts.B.top)),
       styles.A.colorName ? styles.A.colorName : styles.A.colorKey,
       [A.encoding.y.field, B.encoding.y.field],
       styles.A.color.range().concat(styles.B.color.range()) as string[])
   }
-
   /* render A */
   if (!Array.isArray(domains.A.axis)) {
     renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
@@ -51,7 +51,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     for (let i = 0; i < layouts.nestedBs.length; i++) {
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
-      // TODO: width and height is not included in styles => any ways to make this more clear?
+      // TODO: width and height is not included in styles => any ways to make this clearer?
       renderChart(svg, filteredSpec, {x: domains.B.axis[i].x, y: domains.B.axis[i].y}, {
         ...styles.B,
         width: layouts.nestedBs[i].width,

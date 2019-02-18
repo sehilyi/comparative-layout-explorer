@@ -1,5 +1,5 @@
 import {ifUndefinedGetDefault} from "src/useful-factory/utils";
-import {CompSpec, DEFAULT_LAYOUT_JUX, _CompSpecSolid, DEFAULT_COMP_SPECS} from "./comp-spec";
+import {CompSpec, DEFAULT_LAYOUT_JUX, _CompSpecSolid, DEFAULT_COMP_SPECS, DEFAULT_COMP_SPEC} from "./comp-spec";
 
 /**
  * This function modify spec to alleviate minor issues.
@@ -8,6 +8,13 @@ import {CompSpec, DEFAULT_LAYOUT_JUX, _CompSpecSolid, DEFAULT_COMP_SPECS} from "
  */
 export function correctCompSpec(spec: CompSpec) {
   let mSpec = {...spec}
+  /* fill empty parts */
+  if (mSpec.name === undefined) mSpec.name = DEFAULT_COMP_SPEC.name
+  if (mSpec.consistency === undefined) mSpec.consistency = DEFAULT_COMP_SPEC.consistency
+  if (mSpec.clutter === undefined) mSpec.clutter = DEFAULT_COMP_SPEC.clutter
+  if (mSpec.reference === undefined) mSpec.reference = DEFAULT_COMP_SPEC.reference
+
+  /* layout */
   if (typeof mSpec.layout !== "object") {
     mSpec = {...mSpec, layout: {...DEFAULT_LAYOUT_JUX, type: mSpec.layout}}
   }

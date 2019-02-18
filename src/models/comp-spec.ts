@@ -6,14 +6,14 @@ export interface _CompSpecSolid extends CompSpec {
   layout: LayoutTypeAndStyle
 }
 export interface CompSpec {
-  name: string
+  name?: string
   layout: Layout
-  consistency: Consistency
-  clutter: ClutterReduction
-  reference: CompReference
+  consistency?: Consistency
+  clutter?: ClutterReduction
+  reference?: CompReference
 }
 export type Layout = LayoutType | LayoutTypeAndStyle
-export type LayoutType = "juxtaposition" | "superimposition" | "blending" | "explicit-encoding"
+export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding" | "blending"
 export type LayoutTypeAndStyle = {
   type: LayoutType
   unit?: CompUnit
@@ -28,7 +28,7 @@ export type commonCompUnit = "chart" | "element"
 export type JuxCompUnit = commonCompUnit | "time"
 export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to constraint this?
 
-export type ConsistencyType = "same" | "different" | "unconnected"  // TODO: terms proper?
+export type ConsistencyType = "same" | "different" | "unconnected"
 export type Consistency = { // TODO: this should also consider differnce for superimposition
   x_axis?: boolean
   y_axis?: boolean
