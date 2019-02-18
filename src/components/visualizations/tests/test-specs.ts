@@ -26,7 +26,7 @@ export function getExamples() {
   )
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
-  const values = DATASET_MOVIES.rawData.splice(0, 100)
+  const values = DATASET_MOVIES.rawData.splice(0, 500)
   return [
     {
       C: {
