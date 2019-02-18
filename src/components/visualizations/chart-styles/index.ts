@@ -1,4 +1,4 @@
-import {BAR_GAP, CHART_SIZE, getConstantColor} from "../default-design-manager";
+import {BAR_GAP, CHART_SIZE, getConstantColor, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 import {DEFAULT_HEATMAP_CELL_PADDING} from "../heatmap/default-design";
 
@@ -11,6 +11,7 @@ export interface CommonChartStyle {
   aggregated: boolean   // TODO: do we really need this?
   // layout
   nestDim: 0 | 1 | 2
+  nestingPadding: number
   // chart common
   color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>
   colorKey: string
@@ -67,6 +68,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   aggregated: false,
   //layout
   nestDim: 0,
+  nestingPadding: NESTING_PADDING,
   //
   color: getConstantColor(),
   colorKey: "",

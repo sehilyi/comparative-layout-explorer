@@ -132,16 +132,34 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
         resB = {...resB, axis: axes}
       }
     }
+    // TODO: combine this with upper part
     else if (!isChartDataAggregated(B)) { // always scatterplot (not heatmap nor bar chart)
-      const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
-      let axes: AxisDomainData[] = []
-      for (let i = 0; i < axisA[n].length; i++) {
-        let filteredData = B.data.values  // globar domain
-        axisB.x = filteredData.map(d => d[B.encoding.x.field])
-        axisB.y = filteredData.map(d => d[B.encoding.y.field])
-        axes.push({...axisB})
+      let aNoms = getFieldsByType(A, "nominal")
+      if (aNoms.length === 1) {
+        let axes: AxisDomainData[] = []
+        for (let i = 0; i < axisA[aNoms[0].channel].length; i++) {
+          let filteredData = B.data.values  // globar domain
+          axisB.x = filteredData.map(d => d[B.encoding.x.field])
+          axisB.y = filteredData.map(d => d[B.encoding.y.field])
+          axes.push({...axisB})
+        }
+        resB = {...resB, axis: axes}
       }
-      resB = {...resB, axis: axes}
+      // nest by two nominal fields
+      else if (aNoms.length === 2) {
+        let axes: AxisDomainData[][] = []
+        for (let i = 0; i < axisA[aNoms[0].channel].length; i++) {
+          let subAxes: AxisDomainData[] = []
+          for (let j = 0; j < axisA[aNoms[1].channel].length; j++) {
+            let filteredData = B.data.values  // globar domain
+            axisB.x = filteredData.map(d => d[B.encoding.x.field])
+            axisB.y = filteredData.map(d => d[B.encoding.y.field])
+            subAxes.push({...axisB})
+          }
+          axes.push(subAxes)
+        }
+        resB = {...resB, axis: axes}
+      }
     }
   }
   return {A: resA, B: resB}

@@ -29,6 +29,166 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   return [
     {
       C: {
+        name: "test",
+        layout: {type: "superimposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "unconnected"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+    },
+    {
+      C: {
+        name: "test",
+        layout: {type: "superimposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "unconnected"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "MPAA_Rating", type: "nominal"},
+          y: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Major_Genre", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      }
+    },
+    {
+      C: {
+        name: "test",
+        layout: {type: "superimposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "unconnected"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Major_Genre", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      }
+    },
+    {
+      C: {
+        name: "test",
+        layout: {type: "superimposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "unconnected"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "bar",
+        encoding: {
+          x: {field: "MPAA_Rating", type: "nominal"},
+          y: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+    },
+    {
+      C: {
+        name: "test",
+        layout: {type: "superimposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "unconnected"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "Production_Budget", type: "quantitative"},
+          y: {field: "US_Gross", type: "quantitative"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+    },
+    {
+      C: {
         name: "heatmap",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
         consistency: {
@@ -61,7 +221,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "unconnected"
@@ -249,7 +408,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "ele",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "different"

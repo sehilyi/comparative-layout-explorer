@@ -5,9 +5,9 @@ import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
 import {getAggregatedData, getFieldsByType} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
-import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../default-design-manager";
+import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
-import {isBarChart, isHeatmap} from "../constraints";
+import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
 import {getAxisName} from "../axes";
 
 // TOOD: any better way to define domains' type?
@@ -127,8 +127,11 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.B.barGap = 0
         S.B.pointSize = 1.5
 
-        // heatmap
         S.B.cellPadding = 0
+        S.B.nestingPadding = 0
+        if (isHeatmap(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
+        if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
+        if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
 
         // scatterplot
         S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING

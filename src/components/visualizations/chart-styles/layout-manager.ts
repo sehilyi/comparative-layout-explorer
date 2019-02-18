@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {getBarSize, NESTING_PADDING, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../default-design-manager";
+import {getBarSize, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../default-design-manager";
 import {ChartStyle} from ".";
 import {getAggregatedDatas, getAggValues} from "../data-handler";
 import d3 = require("d3");
@@ -11,7 +11,6 @@ import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
 import {isBarChart, isScatterplot, isHeatmap} from "../constraints";
-import {DEFAULT_INNER_CELL_PADDING} from "../heatmap/default-design";
 
 export type Position = {
   width: number
@@ -59,10 +58,10 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
           nestedBs = [] as Position[]
           for (let i = 0; i < numOfX; i++) {
             nestedBs.push({
-              left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + NESTING_PADDING,
-              top: qY(aggD.A.values[i]) + NESTING_PADDING,
-              width: barWidth - NESTING_PADDING * 2,
-              height: S.A.height - qY(aggD.A.values[i]) - NESTING_PADDING // no top padding
+              left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + S.B.nestingPadding,
+              top: qY(aggD.A.values[i]) + S.B.nestingPadding,
+              width: barWidth - S.B.nestingPadding * 2,
+              height: S.A.height - qY(aggD.A.values[i]) - S.B.nestingPadding // no top padding
             })
           }
         }
@@ -81,9 +80,9 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
           for (let i = 0; i < numOfCategories; i++) {
             nestedBs.push({
               left: 0,
-              top: i * bandUnitSize + (bandUnitSize - barSize) / 2.0 + NESTING_PADDING,
-              width: qX(values[i]) - NESTING_PADDING, // no right padding
-              height: barSize - NESTING_PADDING * 2
+              top: i * bandUnitSize + (bandUnitSize - barSize) / 2.0 + S.B.nestingPadding,
+              width: qX(values[i]) - S.B.nestingPadding, // no right padding
+              height: barSize - S.B.nestingPadding * 2
             })
           }
         }
@@ -96,10 +95,10 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
           nestedBs = [] as Position[]
           for (let i = 0; i < numOfCategories; i++) {
             nestedBs.push({
-              left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + NESTING_PADDING,
-              top: (y as d3.ScaleLinear<number, number>)(yValues[i]) - pointSize / 2.0 + NESTING_PADDING,
-              width: pointSize - NESTING_PADDING * 2,
-              height: pointSize - NESTING_PADDING * 2
+              left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
+              top: (y as d3.ScaleLinear<number, number>)(yValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
+              width: pointSize - S.B.nestingPadding * 2,
+              height: pointSize - S.B.nestingPadding * 2
             })
           }
         }
@@ -107,15 +106,15 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
           const numOfXCategories = uniqueValues(A.data.values, A.encoding.x.field).length
           const numOfYCategories = uniqueValues(A.data.values, A.encoding.y.field).length
           const width = S.A.width, height = S.A.height
-          const cellWidth = width / numOfXCategories - S.A.cellPadding * 2 - DEFAULT_INNER_CELL_PADDING * 2
-          const cellHeight = height / numOfYCategories - S.A.cellPadding * 2 - DEFAULT_INNER_CELL_PADDING * 2
+          const cellWidth = width / numOfXCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2
+          const cellHeight = height / numOfYCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2
           nestedBs = [] as Position[][]
           for (let i = 0; i < numOfXCategories; i++) {
             let sub: Position[] = []
             for (let j = 0; j < numOfYCategories; j++) {
               sub.push({
-                left: i * (cellWidth + S.A.cellPadding * 2 + DEFAULT_INNER_CELL_PADDING * 2) + S.A.cellPadding + DEFAULT_INNER_CELL_PADDING,
-                top: j * (cellHeight + S.A.cellPadding * 2 + DEFAULT_INNER_CELL_PADDING * 2) + S.A.cellPadding + DEFAULT_INNER_CELL_PADDING,
+                left: i * (cellWidth + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
+                top: j * (cellHeight + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
                 width: cellWidth,
                 height: cellHeight
               })
