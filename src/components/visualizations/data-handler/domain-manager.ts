@@ -97,16 +97,19 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
 
       let qValuesB: object = {}
       bQuans.forEach(f => {
-        const allKeys = aNoms.map(d => d.field).concat(bNoms.map(d => d.field))
-        let nested = getAggValuesByKeys(A.data.values, allKeys, f.field, B.encoding[f.channel].aggregate)
-        qValuesB[f.channel] = allKeys.length === 2 ?  // TODO: this part should be more general to length
-          [].concat(...nested.map(d => d.values)).map((d: object) => d["value"]) :
-          [].concat(...nested.map(d => d.values).map(d => d.values)).map((d: object) => d["value"])
+        const allKeys = aNoms.concat(bNoms)
+        let domains: string[][] = []
+        allKeys.forEach(d => {
+          domains.push(uniqueValues(A.data.values, d.field))
+        })
+        let nested = getAggValuesByKeys(A.data.values, allKeys.map(d => d.field), f.field, B.encoding[f.channel].aggregate)
+        let tab = tabularizeData(nested, domains, allKeys.map(d => d.field), f.field)
+        qValuesB[f.field] = tab.map(d => d[f.field])
       })
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[aNom].length; i++) {
         bQuans.forEach(f => {
-          axisB[f.channel] = qValuesB[f.channel]
+          axisB[f.channel] = qValuesB[f.field]
         })
         axes.push({...axisB})
       }
