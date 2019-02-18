@@ -60,7 +60,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   resA = {axis: axisA, cKey: cKeyA}
   resB = {axis: axisB, cKey: cKeyB}
 
-  /* exceptions: modify domains considering designs */
+  /* exceptions: modify domains considering specs */
   // x or y axis
   if (deepValue(C.layout) === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
@@ -72,7 +72,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
         getAggValues(B.data.values, B.encoding[n].field, [B.encoding[q].field], B.encoding[q].aggregate)),
       A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
   }
-  /* color */
+  /* color consistency */
   else if (((deepValue(C.layout) === "juxtaposition" && C.layout.unit === "chart") || (deepValue(C.layout) === "superimposition" && C.layout.unit === "chart")) &&
     isScatterplot(A) && isScatterplot(B) && consistency.color === "same") {
     // use A color if two of them use color
@@ -95,20 +95,19 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
       if (isBarChart(B)) bNoms = bNoms.filter(d => d.channel === "color") // color is not a unique separation field in bar chart (instead, x or y is)
       const aNom = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
 
-      let qValuesB: object = {}
-      bQuans.forEach(f => {
-        const allKeys = aNoms.concat(bNoms)
-        let domains: string[][] = []
-        allKeys.forEach(d => {
-          domains.push(uniqueValues(A.data.values, d.field))
-        })
-        let pivotData = getPivotData(A.data.values, allKeys.map(d => d.field), f.field, B.encoding[f.channel].aggregate)
-        qValuesB[f.field] = pivotData.map(d => d[f.field])
+      // get domains per each quantitative fields
+      // TODO: shorten by recieving multiple q fields in getPivotData()
+      let bQuanValues: object = {}
+      bQuans.forEach(q => {
+        const abNoms = aNoms.concat(bNoms)
+        let pivotData = getPivotData(A.data.values, abNoms.map(d => d.field), q.field, B.encoding[q.channel].aggregate)
+        bQuanValues[q.field] = pivotData.map(d => d[q.field])
       })
+
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[aNom].length; i++) {
         bQuans.forEach(f => {
-          axisB[f.channel] = qValuesB[f.field]
+          axisB[f.channel] = bQuanValues[f.field]
         })
         axes.push({...axisB})
       }
@@ -118,7 +117,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
       const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[n].length; i++) {
-        let filteredData = B.data.values
+        let filteredData = B.data.values  // globar domain
         axisB.x = filteredData.map(d => d[B.encoding.x.field])
         axisB.y = filteredData.map(d => d[B.encoding.y.field])
         axes.push({...axisB})
