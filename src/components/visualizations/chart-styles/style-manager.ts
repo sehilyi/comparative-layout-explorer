@@ -2,12 +2,12 @@ import {Spec} from "src/models/simple-vega-spec";
 
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
 import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
-import {getAggregatedData} from "../data-handler";
+import {getAggregatedData, getFieldsByType} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
-import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
+import {isBarChart, isHeatmap} from "../constraints";
 import {getAxisName} from "../axes";
 
 // TOOD: any better way to define domains' type?
@@ -24,6 +24,14 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   S.A.yName = getAxisName(A.encoding.y)
   S.B.xName = getAxisName(B.encoding.x)
   S.B.yName = getAxisName(B.encoding.y)
+  // # of dimensions for nesting
+  if (C.layout.type === "superimposition" && C.layout.unit === "element") {
+    let aNoms = getFieldsByType(A, "nominal")
+    // color is not a unique separation field in bar chart (instead, x or y is)
+    if (isBarChart(A)) aNoms = aNoms.filter(d => d.channel !== "color")
+    S.B.nestDim = aNoms.length < 2 ? 1 : 2
+  }
+
   // exceptions
   if (C.layout.type === "juxtaposition" && C.layout.unit === "chart" && C.layout.arrangement !== "animated") {
     S.B.xName = (C.layout.arrangement === "adjacent" || !consistency.x_axis) ? S.B.xName : getAxisName(A.encoding.x, B.encoding.x)
@@ -42,7 +50,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
     S.A.stroke_width = DEFAULT_STROKE_WIDTH
   }
   // color
-  const {colorA, colorB} = getConsistentColor(domain.A.axis["color"], Array.isArray(domain.B.axis) ? domain.B.axis[0].color : domain.B.axis.color, consistency.color)
+  const {colorA, colorB} = getConsistentColor(domain.A.axis["color"], // TODO: any clearer way?
+    S.B.nestDim === 0 ? domain.B.axis["color"] : S.B.nestDim === 1 ? domain.B.axis[0]["color"] : domain.B.axis[0][0]["color"], consistency.color)
   S.A.color = colorA
   S.B.color = colorB
   S.A.colorKey = domain.A.cKey
@@ -118,10 +127,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.B.barGap = 0
         S.B.pointSize = 1.5
 
-        if (isScatterplot(A)) {
-          S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING
-          S.A.rectPoint = true
-        }
+        // heatmap
+        S.B.cellPadding = 0
+
+        // scatterplot
+        S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING
+        S.A.rectPoint = true
       }
       break
     default:

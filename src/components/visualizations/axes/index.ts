@@ -18,21 +18,23 @@ export function renderAxes(
   const isXCategorical = spec.encoding.x.type === "nominal"
   const isYCategorical = spec.encoding.y.type === "nominal"
 
-  const qX = d3.scaleLinear()
+  const qX: d3.ScaleLinear<number, number> = isXCategorical ? null : d3.scaleLinear()
     .domain([d3.min([d3.min(xVals as number[]), 0]), d3.max(xVals as number[])]).nice()
     .rangeRound(styles.revX ? [styles.width, 0] : [0, styles.width])
-  const nX = d3.scaleBand()
+  const nX: d3.ScaleBand<string> = isXCategorical ? d3.scaleBand()
     .domain(uniqueValues(xVals, "") as string[])
-    .range(styles.revX ? [styles.width, 0] : [0, styles.width])
-  const qY = d3.scaleLinear()
+    .range(styles.revX ? [styles.width, 0] : [0, styles.width]) : null
+  const qY: d3.ScaleLinear<number, number> = isYCategorical ? null : d3.scaleLinear()
     .domain([d3.min([d3.min(yVals as number[]), 0]), d3.max(yVals as number[])]).nice()
     .rangeRound(styles.revY ? [0, styles.height] : [styles.height, 0])
-  const nY = d3.scaleBand()
+  const nY: d3.ScaleBand<string> = isYCategorical ? d3.scaleBand()
     .domain(uniqueValues(yVals, "") as string[])
-
+    .range(styles.revY ? [styles.height, 0] : [0, styles.height]) : null
   // when Y is nominal, first category should be appear on the top rather on the bottom
-  if (isYCategorical) nY.range(styles.revY ? [styles.height, 0] : [0, styles.height])
-  else nY.range(styles.revY ? [0, styles.height] : [styles.height, 0])
+
+  // if (isYCategorical) nY.range(styles.revY ? [styles.height, 0] : [0, styles.height])
+  // else nY.range(styles.revY ? [0, styles.height] : [styles.height, 0])
+  // TODO: whey range of nY is applied even when y is quantitative??
 
   // get axis and grid by field types
   // TODO: any clearer way??

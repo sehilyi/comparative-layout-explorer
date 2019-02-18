@@ -1,1 +1,2 @@
 export const DEFAULT_HEATMAP_CELL_PADDING = 1
+export const DEFAULT_INNER_CELL_PADDING = 3

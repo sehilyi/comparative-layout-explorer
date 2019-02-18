@@ -5,7 +5,7 @@ import {ConsistencyType} from "src/models/comp-spec";
 
 export const AXIS_ROOT_ID = "axis-root--"
 // general
-export const CHART_SIZE = {width: 280, height: 200}
+export const CHART_SIZE = {width: 320, height: 300}
 export const CHART_MARGIN = {top: 80, right: 50, bottom: 80, left: 100}
 export const CHART_MARGIN_NO_AXIS = {top: 20, right: 20, bottom: 20, left: 20}
 export const CHART_PADDING = {right: 20}

@@ -1,5 +1,6 @@
 import {BAR_GAP, CHART_SIZE, getConstantColor} from "../default-design-manager";
 import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
+import {DEFAULT_HEATMAP_CELL_PADDING} from "../heatmap/default-design";
 
 export type ChartStyle = CommonChartStyle
 
@@ -8,6 +9,8 @@ export interface CommonChartStyle {
   // globar style
   opacity: number
   aggregated: boolean   // TODO: do we really need this?
+  // layout
+  nestDim: 0 | 1 | 2
   // chart common
   color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>
   colorKey: string
@@ -54,13 +57,17 @@ export interface CommonChartStyle {
   // scatterplot
   pointSize: number
   rectPoint: boolean
+  // heatmap
+  cellPadding: number
 }
 
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   chartId: "A",
   opacity: 1,
   aggregated: false,
-
+  //layout
+  nestDim: 0,
+  //
   color: getConstantColor(),
   colorKey: "",
   onTop: false,
@@ -105,5 +112,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   barOffsetData: undefined,
   // scatterplot
   pointSize: SCATTER_POINT_SIZE,
-  rectPoint: false
+  rectPoint: false,
+  // heatmap
+  cellPadding: DEFAULT_HEATMAP_CELL_PADDING
 }

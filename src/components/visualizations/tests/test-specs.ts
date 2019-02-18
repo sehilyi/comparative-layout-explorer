@@ -19,6 +19,7 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 export function getExamples() {
   let examples = getExampleSpec()
   // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
+  // .filter(d => d.C.name === "test")
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
     (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? 1 : deepValue(a.C.layout) < deepValue(b.C.layout) ? -1 : deepValue(a.C.layout) > deepValue(b.C.layout) ? 1 : -1
@@ -42,7 +43,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
-          y: {field: "Creative_Type", type: "nominal"},
+          y: {field: "Major_Genre", type: "nominal"},
           color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
         }
       },
@@ -54,6 +55,38 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Source", type: "nominal"},
           y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "IMDB_Rating", type: "quantitative", aggregate: "max"}
+        }
+      },
+    },
+    {
+      C: {
+        name: "test",
+        layout: {type: "superimposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "unconnected"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "min"}
+        }
+      },
+      B: {
+        data: {
+          values: DATASET_MOVIES.rawData
+        },
+        mark: "rect",
+        encoding: {
+          x: {field: "Creative_Type", type: "nominal"},
+          y: {field: "Major_Genre", type: "nominal"},
           color: {field: "IMDB_Rating", type: "quantitative", aggregate: "max"}
         }
       },

@@ -10,7 +10,8 @@ import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
 import {deepValue} from "src/models/comp-spec-manager";
-import {isBarChart, isScatterplot} from "../constraints";
+import {isBarChart, isScatterplot, isHeatmap} from "../constraints";
+import {DEFAULT_INNER_CELL_PADDING} from "../heatmap/default-design";
 
 export type Position = {
   width: number
@@ -21,7 +22,7 @@ export type Position = {
 
 // TODO: this should also make the legends' positions
 export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
-  let nestedBs: Position[] = []
+  let nestedBs: Position[] | Position[][]
   let chartsp
   switch (deepValue(C.layout)) {
     case "juxtaposition":
@@ -55,6 +56,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
             .domain([d3.min([d3.min(aggD.A.values as number[]), 0]), d3.max(aggD.A.values as number[])]).nice()
             .rangeRound([S.A.height, 0]);
           //
+          nestedBs = [] as Position[]
           for (let i = 0; i < numOfX; i++) {
             nestedBs.push({
               left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + NESTING_PADDING,
@@ -75,6 +77,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
             .domain([d3.min([d3.min(values as number[]), 0]), d3.max(values as number[])]).nice()
             .rangeRound([0, S.A.width]);
           //
+          nestedBs = [] as Position[]
           for (let i = 0; i < numOfCategories; i++) {
             nestedBs.push({
               left: 0,
@@ -90,6 +93,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
           const yValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.y.field], A.encoding.y.aggregate).map(d => d[A.encoding.y.field])
           const pointSize = SCATTER_POINT_SIZE_FOR_NESTING
           const {x, y} = renderAxes(null, xValues, yValues, A, S.A) // TODO: check styles
+          nestedBs = [] as Position[]
           for (let i = 0; i < numOfCategories; i++) {
             nestedBs.push({
               left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + NESTING_PADDING,
@@ -97,6 +101,26 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
               width: pointSize - NESTING_PADDING * 2,
               height: pointSize - NESTING_PADDING * 2
             })
+          }
+        }
+        else if (isHeatmap(A)) {
+          const numOfXCategories = uniqueValues(A.data.values, A.encoding.x.field).length
+          const numOfYCategories = uniqueValues(A.data.values, A.encoding.y.field).length
+          const width = S.A.width, height = S.A.height
+          const cellWidth = width / numOfXCategories - S.A.cellPadding * 2 - DEFAULT_INNER_CELL_PADDING * 2
+          const cellHeight = height / numOfYCategories - S.A.cellPadding * 2 - DEFAULT_INNER_CELL_PADDING * 2
+          nestedBs = [] as Position[][]
+          for (let i = 0; i < numOfXCategories; i++) {
+            let sub: Position[] = []
+            for (let j = 0; j < numOfYCategories; j++) {
+              sub.push({
+                left: i * (cellWidth + S.A.cellPadding * 2 + DEFAULT_INNER_CELL_PADDING * 2) + S.A.cellPadding + DEFAULT_INNER_CELL_PADDING,
+                top: j * (cellHeight + S.A.cellPadding * 2 + DEFAULT_INNER_CELL_PADDING * 2) + S.A.cellPadding + DEFAULT_INNER_CELL_PADDING,
+                width: cellWidth,
+                height: cellHeight
+              })
+            }
+            nestedBs.push(sub)
           }
         }
       }

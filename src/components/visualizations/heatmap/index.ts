@@ -11,7 +11,6 @@ import {getChartPositions} from '../chart-styles/layout-manager';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {isUndefined} from 'util';
-import {DEFAULT_HEATMAP_CELL_PADDING} from './default-design';
 
 export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -37,7 +36,6 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
 
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-
   const {values} = spec.data;
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y, {field: cField} = spec.encoding.color
   const {aggregate} = spec.encoding.color
@@ -61,16 +59,16 @@ export function renderCells(
   styles: ChartStyle) {
 
   const numOfX = (x.domain() as string[]).length, numOfY = (y.domain() as string[]).length
-  const cellWidth = (styles.width / numOfX - DEFAULT_HEATMAP_CELL_PADDING * 2) * styles.mulSize,
-    cellHeight = (styles.height / numOfY - DEFAULT_HEATMAP_CELL_PADDING * 2) * styles.mulHeigh
+  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.mulSize,
+    cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.mulHeigh
 
   g.append(_g).selectAll('.cell')
     .data(data)
     .enter().append(_rect)
     .classed('cell', true)
     .attr(_fill, d => d[styles.colorKey] === null ? LIGHT_GRAY : (styles.color as d3.ScaleLinear<string, string>)(d[styles.colorKey]) as string)
-    .attr(_x, d => x(d[xKey]) + DEFAULT_HEATMAP_CELL_PADDING * cellWidth * styles.shiftBy)
-    .attr(_y, d => y(d[yKey]) + DEFAULT_HEATMAP_CELL_PADDING * cellHeight * styles.shiftYBy)
+    .attr(_x, d => x(d[xKey]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
+    .attr(_y, d => y(d[yKey]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
     .attr(_width, cellWidth)
     .attr(_height, cellHeight)
 }
