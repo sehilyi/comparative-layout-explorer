@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Spec} from "src/models/simple-vega-spec";
-import {getAggValuesByTwoKeys} from "../data-handler";
+import {getAggValuesByTwoKeys, tabularizeData2Keys} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height} from 'src/useful-factory/d3-str';
@@ -43,32 +43,12 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
   const {aggregate} = spec.encoding.color
   // TODO: when xField and yField same!
   const aggValues = getAggValuesByTwoKeys(values, xField, yField, cField, aggregate)
-  const linAggValues = tabularizeData(aggValues, domain.x as string[], domain.y as string[], xField, yField, cField)
+  const linAggValues = tabularizeData2Keys(aggValues, domain.x as string[], domain.y as string[], xField, yField, cField)
   renderCells(g, linAggValues, xField, yField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: aggregate != undefined})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
     renderLegend(legendG, styles.colorName ? styles.colorName : styles.colorKey, styles.color.domain() as string[], styles.color.range() as string[], true)
   }
-}
-// TODO: now only considering two nominal and one quantitative
-/**
- *
- * @param data {key, values: {key, value}}
- * @param n1
- * @param n2
- * @param q1
- */
-export function tabularizeData(data: object[], d1: string[], d2: string[], n1: string, n2: string, q1: string) {
-  let newData: object[] = []
-  d1.forEach(d1k => {
-    d2.forEach(d2k => {
-      const isThereD1k = data.filter(d => d["key"] === d1k).length != 0
-      const isThereD2k = isThereD1k && data.filter(d => d["key"] === d1k)[0]["values"].filter((_d: object) => _d["key"] === d2k).length != 0
-      const v = isThereD1k && isThereD2k ? data.filter(d => d["key"] === d1k)[0]["values"].filter((_d: object) => _d["key"] === d2k)[0]["value"] : null
-      newData.push({[n1]: d1k, [n2]: d2k, [q1]: v})
-    })
-  })
-  return newData
 }
 
 export function renderCells(

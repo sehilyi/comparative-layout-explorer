@@ -1,5 +1,5 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {isUndefined, isNullOrUndefined} from "util";
+import {isUndefined} from "util";
 import {_CompSpecSolid} from "src/models/comp-spec";
 import {deepValue} from "src/models/comp-spec-manager";
 import {ChartTypes} from "src/models/chart-types";
@@ -39,6 +39,10 @@ export function canRenderCompChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   return can
 }
 
+/**
+ * Get chart type.
+ * @param spec
+ */
 export function getChartType(spec: Spec): ChartTypes {
   if (isScatterplot(spec)) return "scatterplot"
   else if (isBarChart(spec)) return "barchart"
@@ -46,14 +50,22 @@ export function getChartType(spec: Spec): ChartTypes {
   else if (isHeatmap(spec)) return "heatmap"
   else return "NULL"
 }
+
 /**
  * This function checks if this chart contains aggregated visual elements
  * such as bar charts or scatterplots with aggregated points
  * @param spec
  */
 export function isChartDataAggregated(spec: Spec) {
-  return isBarChart(spec) || (isScatterplot(spec) && !isNullOrUndefined(spec.encoding.color))
+  return isBarChart(spec) || isAggregatedScatterplot(spec) || isHeatmap(spec)
 }
+
+export function isAggregatedScatterplot(spec: Spec) {
+  // when x-aggregate is not undefined, y-aggregate and color are also not undefined
+  // refer to canRenderChart
+  return isScatterplot(spec) && spec.encoding.x.aggregate !== undefined
+}
+
 export function isBarChart(spec: Spec) {
   return spec.mark === "bar" && (
     (spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative') ||
@@ -69,10 +81,4 @@ export function isLineChart(spec: Spec) {
 }
 export function isHeatmap(spec: Spec) {
   return spec.mark === "rect"
-}
-
-export function isAggregatedScatterplot(spec: Spec) {
-  // when x-aggregate is not undefined, y-aggregate and color are also not undefined
-  // refer to canRenderChart
-  return spec.encoding.x.aggregate !== undefined
 }

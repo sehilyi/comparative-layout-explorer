@@ -1,10 +1,9 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys} from ".";
+import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys, getFieldsByType, getAggValuesByKeys, tabularizeData2Keys} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {deepValue} from "src/models/comp-spec-manager";
-import {tabularizeData} from "../heatmap";
 import {isBarChart, isScatterplot, isChartDataAggregated} from "../constraints";
 
 export type ChartDomainData = {
@@ -73,7 +72,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
         getAggValues(B.data.values, B.encoding[n].field, [B.encoding[q].field], B.encoding[q].aggregate)),
       A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
   }
-  // color
+  /* color */
   else if (((deepValue(C.layout) === "juxtaposition" && C.layout.unit === "chart") || (deepValue(C.layout) === "superimposition" && C.layout.unit === "chart")) &&
     isScatterplot(A) && isScatterplot(B) && consistency.color === "same") {
     // use A color if two of them use color
@@ -88,23 +87,34 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   else if (deepValue(C.layout) === "superimposition" && C.layout.unit === "element") {
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
     if (isChartDataAggregated(B)) {
+
+      // get all nominal and quantitative fields
+      const bQuans = getFieldsByType(B, "quantitative")
+      let aNoms = getFieldsByType(A, "nominal"), bNoms = getFieldsByType(B, "nominal")
+      if (isBarChart(A)) aNoms = aNoms.filter(d => d.channel !== "color")  // color is not a unique separation field in bar chart (instead, x or y is)
+      if (isBarChart(B)) bNoms = bNoms.filter(d => d.channel === "color")
       const an = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
-      const bn = B.encoding.x.type === "nominal" ? "x" : "y", bq = B.encoding.x.type === "quantitative" ? "x" : "y"
+
+      let qValuesB: object = {}
+      bQuans.forEach(f => {
+        const allKeys = aNoms.map(d => d.field).concat(bNoms.map(d => d.field))
+        let nested = getAggValuesByKeys(A.data.values, allKeys, f.field, B.encoding[f.channel].aggregate)
+        qValuesB[f.channel] = allKeys.length === 2 ?
+          [].concat(...nested.map(d => d.values)).map((d: object) => d["value"]) :
+          [].concat(...nested.map(d => d.values).map(d => d.values)).map((d: object) => d["value"])
+      })
       let axes: AxisDomainData[] = []
-      let nested = getAggValuesByTwoKeys(A.data.values, A.encoding[an].field, B.encoding[bn].field, B.encoding[bq].field, B.encoding[bq].aggregate)
-      const yValues = [].concat(...nested.map(d => d.values)).map((d: object) => d["value"])
       for (let i = 0; i < axisA[an].length; i++) {
-        // axisB[bq] = nested[i].values.map((d: object) => d["value"]) // => global domain (Fixes #31)
-        axisB[bq] = yValues
+        bQuans.forEach(f => {axisB[f.channel] = qValuesB[f.channel]})
         axes.push({...axisB})
       }
       resB = {...resB, axis: axes}
     }
-    else if (!isChartDataAggregated(B)) {
+    else if (!isChartDataAggregated(B)) { // always scatterplot (not heatmap nor bar chart)
       const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
       let axes: AxisDomainData[] = []
       for (let i = 0; i < axisA[n].length; i++) {
-        let filteredData = B.data.values // oneOfFilter(B.data.values, A.encoding[n].field, axisA[n][i]) // => global domain (Fixes #31)
+        let filteredData = B.data.values
         axisB.x = filteredData.map(d => d[B.encoding.x.field])
         axisB.y = filteredData.map(d => d[B.encoding.y.field])
         axes.push({...axisB})
@@ -190,7 +200,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     else if (color && color.type === "quantitative") {
       if (x.type === "nominal" && y.type === "nominal") {
         const vals = getAggValuesByTwoKeys(values, x.field, y.field, color.field, color.aggregate)
-        const tabVals = tabularizeData(vals, xDomain as string[], yDomain as string[], x.field, y.field, color.field)
+        const tabVals = tabularizeData2Keys(vals, xDomain as string[], yDomain as string[], x.field, y.field, color.field)
         cDomain = tabVals.map(d => d[color.field])
         cKey = color.field
       }

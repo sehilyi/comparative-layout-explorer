@@ -1,4 +1,4 @@
-import {Aggregate, Spec} from "src/models/simple-vega-spec";
+import {Aggregate, Spec, DataType} from "src/models/simple-vega-spec";
 
 import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
@@ -67,7 +67,6 @@ export function changeKeys(aggValues: object[], keyField: string, valueFields: s
   return newVal
 }
 
-// TODO: generalize this function with getAggValues?
 export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyField2: string, valueField: string, aggregate: Aggregate) {
   return d3.nest()
     .key(d => d[keyField1])
@@ -91,6 +90,83 @@ export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyFi
       }
     })
     .entries(values);
+}
+
+// TODO: now only considering two nominal and one quantitative
+/**
+ *
+ * @param data {key, values: {key, value}}
+ * @param d1
+ * @param d2
+ * @param n1 name of nominal field
+ * @param n2 name of nominal field
+ * @param q1 name of quantitative field
+ */
+export function tabularizeData2Keys(data: object[], d1: string[], d2: string[], n1: string, n2: string, q1: string) {
+  let newData: object[] = []
+  d1.forEach(d1k => {
+    d2.forEach(d2k => {
+      const isThereD1k = data.find(d => d["key"] === d1k) !== undefined
+      const isThereD2k = isThereD1k && data.find(d => d["key"] === d1k)["values"].find((_d: object) => _d["key"] === d2k) !== undefined
+      const v = isThereD1k && isThereD2k ? data.find(d => d["key"] === d1k)["values"].find((_d: object) => _d["key"] === d2k)["value"] : null
+      newData.push({[n1]: d1k, [n2]: d2k, [q1]: v})
+    })
+  })
+  return newData
+}
+
+// TODO: make this generalizable
+/**
+ * @param data {key, values: {key, value}}
+ * @param d nominal values
+ * @param n names of nominal field
+ * @param q name of quantitative field
+ */
+export function tabularizeData3Keys(data: object[], d: string[][], n: string[], q: string) {
+  let newData: object[] = []
+  if (d.length === 3) {
+    d[0].forEach(d1k => {
+      d[1].forEach(d2k => {
+        d[2].forEach(d3k => {
+          const isThereD1k = data.find(d => d["key"] === d1k) !== undefined
+          const d1kVals = isThereD1k ? data.find(d => d["key"] === d1k)["values"] : []
+          const isThereD2k = isThereD1k && d1kVals.find((_d: object) => _d["key"] === d2k) !== undefined
+          const d2kVals = isThereD2k ? d1kVals.find((_d: object) => _d["key"] === d2k)["values"] : []
+          const isThereD3k = isThereD2k && d2kVals.find((_d: object) => _d["key"] === d3k) !== undefined
+          const d3kVals = isThereD3k ? d2kVals.find((_d: object) => _d["key"] === d3k)["values"] : []
+          const v = isThereD1k && isThereD2k && isThereD3k ? d3kVals : null // missing data as null
+          newData.push({[n[0]]: d1k, [n[1]]: d2k, [n[2]]: d3k, [q]: v})
+        })
+      })
+    })
+  }
+  return newData
+}
+
+/**
+ * This is a more generalized version of getAggValues.
+ * To be more generalized, valueField should be array of fields
+ * @param data
+ * @param keyFields
+ * @param valueField
+ * @param aggregate
+ */
+export function getAggValuesByKeys(data: object[], keyFields: string[], valueField: string, aggregate: Aggregate) {
+  let nest = d3.nest()
+  keyFields.forEach(k => {nest.key(d => d[k])}) // nest by keys
+  return nest
+    .rollup(function (leaves) {
+      switch (aggregate) {
+        case 'sum': return d3.sum(leaves, _d => _d[valueField]) as undefined
+        case 'mean': return d3.mean(leaves, _d => _d[valueField]) as undefined
+        case 'median': return d3.median(leaves, _d => _d[valueField]) as undefined
+        case 'min': return d3.min(leaves, _d => _d[valueField]) as undefined
+        case 'max': return d3.max(leaves, _d => _d[valueField]) as undefined
+        case 'count': return leaves.length as undefined
+        default: return d3.sum(leaves, _d => _d[valueField]) as undefined
+      }
+    })
+    .entries(data)
 }
 
 export function getAggregatedData(s: Spec) {
@@ -150,4 +226,16 @@ export function getDomainSumByKeys(o: object[], k1: string, k2: string, v1: stri
 
 export function oneOfFilter(d: object[], k: string, v: string | number) {
   return d.filter(d => v === "null" ? d[k] == null : d[k] == v)
+}
+
+/**
+ * get names of all nominal/quantitative fields as array
+ * @param spec
+ */
+export function getFieldsByType(spec: Spec, type: DataType) {
+  let f: {channel: string, field: string}[] = []
+  if (spec.encoding.x !== undefined && spec.encoding.x.type === type) f.push({channel: "x", field: spec.encoding.x.field})
+  if (spec.encoding.y !== undefined && spec.encoding.y.type === type) f.push({channel: "y", field: spec.encoding.y.field})
+  if (spec.encoding.color !== undefined && spec.encoding.color.type === type) f.push({channel: "color", field: spec.encoding.color.field})
+  return f
 }
