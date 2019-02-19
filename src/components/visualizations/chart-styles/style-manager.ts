@@ -56,8 +56,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
   S.A.color = colorA
   S.B.color = colorB
   // color name
-  S.A.colorName = consistency.color === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
-  S.B.colorName = consistency.color === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
+  S.A.legendNameColor = consistency.color === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
+  S.B.legendNameColor = consistency.color === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
 
   // by layout
   switch (C.layout.type) {

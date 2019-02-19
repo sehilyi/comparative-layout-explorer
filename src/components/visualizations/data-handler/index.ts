@@ -68,31 +68,6 @@ export function changeKeys(aggValues: object[], keyField: string, valueFields: s
   return newVal
 }
 
-export function getAggValuesByTwoKeys(values: object[], keyField1: string, keyField2: string, valueField: string, aggregate: Aggregate) {
-  return d3.nest()
-    .key(d => d[keyField1])
-    .key(d => d[keyField2])
-    .rollup(function (leaves) {
-      switch (aggregate) {
-        case 'sum':
-          return d3.sum(leaves, _d => _d[valueField]) as undefined; // what's wrong when undefined removed?
-        case 'mean':
-          return d3.mean(leaves, _d => _d[valueField]) as undefined;
-        case 'median':
-          return d3.median(leaves, _d => _d[valueField]) as undefined;
-        case 'min':
-          return d3.min(leaves, _d => _d[valueField]) as undefined;
-        case 'max':
-          return d3.max(leaves, _d => _d[valueField]) as undefined;
-        case 'count':
-          return leaves.length as undefined;
-        default:
-          return d3.sum(leaves, _d => _d[valueField]) as undefined;
-      }
-    })
-    .entries(values);
-}
-
 /**
  * get pivot data from d3.nest output.
  * Generalized Version.

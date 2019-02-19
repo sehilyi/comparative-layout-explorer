@@ -36,7 +36,7 @@ export interface CommonChartStyle {
   noY: boolean
   noYLine: boolean
   // legend
-  colorName: string
+  legendNameColor: string
   //
   xSlant: boolean
   width: number
@@ -92,7 +92,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   xName: undefined,
   yName: undefined,
   // legend
-  colorName: undefined,
+  legendNameColor: undefined,
   //
   xSlant: true,
   barGap: BAR_GAP,

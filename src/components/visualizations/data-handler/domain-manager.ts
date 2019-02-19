@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys, getFieldsByType, getPivotData, tabularizeData} from ".";
+import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {deepObjectValue} from "src/models/comp-spec-manager";
@@ -161,8 +161,8 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
 /**
  * Get single or union domains for x, y, and color
  */
-export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, color: Domain, cKey: string} {
-  let xDomain: Domain, yDomain: Domain, cDomain: Domain, cKey: string
+export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, color: Domain} {
+  let xDomain: Domain, yDomain: Domain, cDomain: Domain
   const {values} = spec.data
   const {x, y, color} = spec.encoding
 
@@ -228,34 +228,27 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
   { // color domain
     if (color && color.type === "nominal") {
       cDomain = uniqueValues(values, color.field)
-      cKey = color.field
     }
     else if (color && color.type === "quantitative") {
       if (x.type === "nominal" && y.type === "nominal") {
-        const vals = getAggValuesByTwoKeys(values, x.field, y.field, color.field, color.aggregate)
-        const tabVals = tabularizeData(vals, [xDomain as string[], yDomain as string[]], [x.field, y.field], color.field)
-        cDomain = tabVals.map(d => d[color.field])
-        cKey = color.field
+        const vals = getPivotData(values, [x.field, y.field], color.field, color.aggregate)
+        cDomain = vals.map(d => d[color.field])
       }
       else if (x.type === "quantitative" && y.type === "nominal") {
         // TODO:
         cDomain = [""]
-        cKey = x.field
       }
       else if (x.type === "nominal" && y.type === "quantitative") {
         // TODO:
         cDomain = [""]
-        cKey = x.field
       }
       else {
         // TODO:
         cDomain = [""]
-        cKey = x.field
       }
     }
     else if (!color) {
       cDomain = [""]
-      cKey = x.field
     }
   }
 
@@ -270,5 +263,5 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
       color && color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) : // TODO: should consider numerical color encoding
         (cDomain as number[]).concat(uDomain.color as number[])
   }
-  return {x: xDomain, y: yDomain, color: cDomain, cKey}
+  return {x: xDomain, y: yDomain, color: cDomain}
 }

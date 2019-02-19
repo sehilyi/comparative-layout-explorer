@@ -26,6 +26,7 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): Consist
   // warnings
   if (cons.y_axis != isDeepTrue(C.consistency.y_axis)) console.log('consistency.y has been changed to ' + cons.y_axis)
   if (cons.x_axis != isDeepTrue(C.consistency.x_axis)) console.log('consistency.x has been changed to ' + cons.x_axis)
+  if (cons.color != C.consistency.color) console.log('consistency.color has been changed to ' + cons.color)
 
   return cons
 }

@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Spec} from "src/models/simple-vega-spec";
-import {getAggValuesByTwoKeys, tabularizeData} from "../data-handler";
+import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white} from 'src/useful-factory/d3-str';
@@ -41,12 +41,11 @@ export function renderHeatmap(
   const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y, {field: cField} = spec.encoding.color
   const {aggregate} = spec.encoding.color
   // TODO: when xField and yField same!
-  const aggValues = getAggValuesByTwoKeys(values, xField, yField, cField, aggregate)
-  const linAggValues = tabularizeData(aggValues, [domain.x as string[], domain.y as string[]], [xField, yField], cField)
-  renderCells(g, linAggValues, xField, yField, cField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: aggregate != undefined})
+  const pivotData = getPivotData(values, [xField, yField], cField, aggregate)
+  renderCells(g, pivotData, xField, yField, cField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: aggregate != undefined})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.colorName ? styles.colorName : cField, styles.color.domain() as string[], styles.color.range() as string[], true)
+    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, styles.color.domain() as string[], styles.color.range() as string[], true)
   }
 }
 

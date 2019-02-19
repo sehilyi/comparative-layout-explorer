@@ -54,7 +54,6 @@ export function getBarColorDarkest(n: number) {
 }
 
 export function getQuantitativeColor(alt?: boolean) {
-
   return !alt ? NUMERICAL_COLORS : NUMERICAL_COLORS2
 }
 export function getNominalColor(n: number, n2?: number) {
