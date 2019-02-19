@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
-import {DEFAULT_CHART_STYLE, CommonChartStyle} from ".";
+import {DEFAULT_CHART_STYLE} from ".";
 import {getAggregatedData, getFieldsByType} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
@@ -11,7 +11,7 @@ import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
 import {getAxisName} from "../axes";
 import {_white} from "src/useful-factory/d3-str";
 
-// TOOD: any better way to define domains' type?
+// TOOD: any better way to define domain types?
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, domain: {A: ChartDomainData, B: ChartDomainData}) {
   let S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}}
 
@@ -97,10 +97,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
           S.B.mulSize = 0.5
           S.B.noAxes = true
         }
-        // S.A.color = getConstantColor() // getColor(d.A.c) // TODO: this should be eventually removed
-        // S.A.colorKey = domain.A.cKey
-        // S.B.color = getConstantColor(2) // getColor((d.B as DomainData).c)
-        // S.B.colorKey = domain.B.cKey
       }
       break
     case "superimposition":
@@ -108,7 +104,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
         S.A.legend = isAColorUsed // TODO: should consider false consistency
-        // S.A.noGrid = true // for clutter reduction
         S.B.legend = isBColorUsed
         S.B.noGrid = true
         if (consistency.x_axis) S.B.noX = true
@@ -116,7 +111,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         if (!consistency.x_axis) S.B.topX = true
         if (!consistency.y_axis) S.B.rightY = true
 
-        // S.B.opacity = 0.4
         S.A.onTop = true
       }
       else if (C.layout.unit === "element") {
@@ -142,19 +136,4 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
       break
   }
   return S
-}
-
-/**
- * This is for superimposition layout
- * @param styles
- */
-export function styleMergeForChartSize(styles: CommonChartStyle[]) {
-  return {
-    ...DEFAULT_CHART_STYLE,
-    noX: styles.filter(d => !d.noX).length === 0,
-    noY: styles.filter(d => !d.noY).length === 0,
-    rightY: styles.filter(d => d.rightY).length !== 0,
-    topX: styles.filter(d => d.topX).length !== 0,
-    legend: styles.filter(d => d.legend).length !== 0
-  }
 }

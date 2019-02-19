@@ -57,8 +57,8 @@ export function renderBarChart(
 export function renderBars(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   data: object[],
-  vKey: string,
-  gKey: string,
+  qKey: string,
+  nKey: string,
   cKey: string,
   x: d3.ScaleBand<string> | d3.ScaleLinear<number, number>,
   y: d3.ScaleLinear<number, number> | d3.ScaleBand<string>,
@@ -82,7 +82,7 @@ export function renderBars(
     .data(data)
     .enter().append(_rect)
     .classed('bar', true)
-    .attr(_fill, d => (styles.color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? vKey : cKey]) as string)
+    .attr(_fill, d => (styles.color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? qKey : cKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
 
@@ -91,23 +91,23 @@ export function renderBars(
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
 
     bars
-      .attr(_y, d => (styles.revY ? 0 : qY(d[vKey])) + // TOOD: clean up more?
-        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0]) ?
-          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0][barOffset.valueField])) : 0))
-      .attr(_x, d => nX(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_y, d => (styles.revY ? 0 : qY(d[qKey])) + // TOOD: clean up more?
+        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[nKey])[0]) ?
+          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[nKey])[0][barOffset.valueField])) : 0))
+      .attr(_x, d => nX(xPreStr + d[nKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_width, barSize)
-      .attr(_height, d => (styles.revY ? qY(d[vKey]) : height - qY(d[vKey])))
+      .attr(_height, d => (styles.revY ? qY(d[qKey]) : height - qY(d[qKey])))
   }
   else {
     const bandUnitSize = height / numOfC
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * mulSize) as number;
 
     bars
-      .attr(_x, d => (!styles.revX ? 0 : qX(d[vKey])) + // TOOD: clean up more?
-        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0]) ?
-          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[gKey])[0][barOffset.valueField])) : 0))
-      .attr(_y, d => nY(xPreStr + d[gKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_x, d => (!styles.revX ? 0 : qX(d[qKey])) + // TOOD: clean up more?
+        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[nKey])[0]) ?
+          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[nKey])[0][barOffset.valueField])) : 0))
+      .attr(_y, d => nY(xPreStr + d[nKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_height, barSize)
-      .attr(_width, d => (!styles.revX ? qX(d[vKey]) : width - qX(d[vKey])))
+      .attr(_width, d => (!styles.revX ? qX(d[qKey]) : width - qX(d[qKey])))
   }
 }

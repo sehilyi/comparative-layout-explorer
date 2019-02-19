@@ -15,7 +15,7 @@ import {isUndefined} from 'util';
 export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
 
-  d3.select(ref).selectAll('*').remove();
+  d3.select(ref).selectAll('*').remove()
 
   const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, legend: color !== undefined}])
   d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
@@ -29,7 +29,8 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
   })
 }
 
-export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined>,
+export function renderHeatmap(
+  svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]},
   styles: ChartStyle) {

@@ -43,9 +43,10 @@ export function getAggValues(values: object[], keyField: string, valueFields: st
     })
     .entries(values), keyField, valueFields)
 }
-// TODO: more efficient way for this???
+
 /**
  * This is a very naive function to rename keys reflecting field names and reduce object level by removing "value" object produced by d3.nest()
+ * TODO: make this more efficient
  * @param aggValues
  * @param keyField
  * @param valueFields
@@ -155,6 +156,10 @@ export function getPivotData(data: object[], keyFields: string[], valueField: st
   return tabularizeData(nestedData, domains, keyFields, valueField)
 }
 
+/**
+ * get aggregated data by one nominal and one quantitative values of x and y
+ * @param s
+ */
 export function getAggregatedData(s: Spec) {
   const n = s.encoding.x.type === "nominal" ? _x : _y, q = s.encoding.x.type === "quantitative" ? _x : _y
   const data = getAggValues(s.data.values, s.encoding[n].field, [s.encoding[q].field], s.encoding[q].aggregate)
@@ -164,7 +169,7 @@ export function getAggregatedData(s: Spec) {
 }
 
 /**
- * By k1 and k2, get sum of v1 and v2
+ * By k1 and k2, get sum of v1 and v2.
  * Naive implementation
  * TODO: make this more efficient
  * @param o

@@ -36,7 +36,7 @@ export const DEFAULT_STROKE_WIDTH = 1
 export const DEFAULT_STROKE = "black"
 
 // bar
-export const BAR_GAP = 10
+export const BAR_GAP = 8
 export const GAP_BETWEEN_CHARTS = 20
 export const MAX_BAR_SIZE = 100
 

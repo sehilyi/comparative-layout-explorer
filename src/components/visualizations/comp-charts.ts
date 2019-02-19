@@ -46,7 +46,8 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   if (!Array.isArray(domains.B.axis)) {
     renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
   }
-  else if (styles.B.nestDim === 1) {  // when B is separated to multiple charts by nesting
+  /* 1D nesting: B is separated to multiple charts by A */
+  else if (styles.B.nestDim === 1) {
     const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y"
     for (let i = 0; i < layouts.nestedBs.length; i++) {
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string)
@@ -61,6 +62,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       })
     }
   }
+  /* 2D nesting: for heatmap A */
   else if (styles.B.nestDim === 2) {
     const ns = getFieldsByType(A, "nominal")
     for (let i = 0; i < uniqueValues(A.data.values, ns[0].field).length; i++) {

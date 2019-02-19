@@ -7,8 +7,7 @@ import {deepObjectValue} from "src/models/comp-spec-manager";
 import {isBarChart, isScatterplot, isChartDataAggregated} from "../constraints";
 
 export type ChartDomainData = {
-  axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // for nesting
-  // cKey: string  // deprecated
+  axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
 }
 export type AxisDomainData = {
   x: Domain
@@ -20,12 +19,13 @@ export const DEFAULT_AXIS_DOMAIN = {
   y: [] as string[] | number[],
   color: [] as string[] | number[]
 }
-// TODO: this function should be much more efficiently implemented!!!
+
 /**
  * Generate domains of X, Y, and Color
  * * This does not returns unique values in domains.
  * * This does not consider horizontal bar charts.
  * * Only scatterplots and bar charts are handled.
+ * TODO: make this more efficient
  */
 export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency) {
   let resA: ChartDomainData, resB: ChartDomainData

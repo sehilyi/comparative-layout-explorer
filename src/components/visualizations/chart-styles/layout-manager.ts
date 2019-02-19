@@ -19,7 +19,6 @@ export type Position = {
   top: number
 }
 
-// TODO: this should also make the legends' positions
 export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
   let nestedBs: Position[] | Position[][]
   let chartsp
@@ -39,11 +38,10 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
         chartsp = getChartPositions(1, 1, [S.A, S.B])
       }
       else if (C.layout.unit === "element") {  // nesting
-        // TODO: only consider a.charttype === bar now
         chartsp = getChartPositions(1, 1, [S.A, S.B])
 
         // divide layouts
-        // TODO: I think sub elements' layout should be shared here
+        // TODO: sub elements' layouts should be shared here
         if (isBarChart(A) && A.encoding.x.type === "nominal") { // vertical bar chart
           const aValues = getAggregatedData(A).values
           const numOfX = getAggregatedData(A).categories.length
