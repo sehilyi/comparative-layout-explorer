@@ -76,7 +76,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.A.noX = consistency.x_axis && !S.B.revX && C.layout.arrangement === 'stacked'
         S.B.noY = consistency.y_axis && !S.B.revY && C.layout.arrangement === 'adjacent'
       }
-      else if (C.layout.unit === "element") {
+      else if (C.layout.unit === "element" && C.layout.arrangement !== "animated") {
         if (C.layout.arrangement === "stacked") { // stacked bar
           if (isBarChart(A) && isBarChart(B)) {
             S.B.noAxes = true

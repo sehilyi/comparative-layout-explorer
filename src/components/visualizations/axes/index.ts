@@ -3,7 +3,7 @@ import {Spec, Field} from "src/models/simple-vega-spec";
 import {translate, rotate, uniqueValues, shortenText} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
-import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand} from "src/useful-factory/d3-str";
+import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand, _stroke_width, _stroke, _fill, _font_size, _font_family} from "src/useful-factory/d3-str";
 import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT, AXIS_LABEL_LEN_LIMIT} from "../default-design-manager";
 import {DF_DELAY, DF_DURATION} from "../animated/default-design";
 
@@ -39,28 +39,28 @@ export function renderAxes(
   // TODO: any clearer way??
   const xAxis = styles.topX ?
     isXCategorical ?
-      d3.axisTop(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
+      d3.axisTop(nX).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
       d3.axisTop(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
     : isXCategorical ?
-      d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
+      d3.axisBottom(nX).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
       d3.axisBottom(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   const yAxis = styles.rightY ?
     isYCategorical ?
-      d3.axisRight(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
+      d3.axisRight(nY).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
       d3.axisRight(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
     isYCategorical ?
-      d3.axisLeft(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
+      d3.axisLeft(nY).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
       d3.axisLeft(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   const xGrid = isXCategorical ?
-    d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(null).tickSize(-styles.height) :
+    d3.axisBottom(nX).tickFormat(null).tickSize(-styles.height) :
     d3.axisBottom(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(null).tickSize(-styles.height)
   const yGrid = isYCategorical ?
-    d3.axisLeft(nY).ticks(Math.ceil(styles.height / 40)).tickFormat(null).tickSize(-styles.width) :
+    d3.axisLeft(nY).tickFormat(null).tickSize(-styles.width) :
     d3.axisLeft(qY).ticks(Math.ceil(styles.height / 40)).tickFormat(null).tickSize(-styles.width)
 
   /* render axes */
   if (!isNullOrUndefined(root) && !styles.noAxes) {
-    const g: GSelection = ani ? root.select(`${AXIS_ROOT_ID}A`) :
+    const g: GSelection = ani ? root.select(`.${AXIS_ROOT_ID}A`) :
       root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY))
         .classed(`${AXIS_ROOT_ID}${styles.chartId}`, true)
         .classed(AXIS_ROOT_ID, true)
@@ -75,120 +75,171 @@ export function renderAxes(
           .call(xGrid)
       }
       else {
-        g.selectAll('.x-grid')
+        g.select('.x-grid')
           .transition(tran)
-          .call(update)
+          .call((d: any) => d.call(xGrid))
       }
     }
-    function update(group: any) {
-      group.call(xGrid);
-    }
-
 
     /* grid y */
     if (!isYCategorical && !styles.noGrid) {
-      g.append('g')
-        .classed('grid y-grid', true)
-        .call(yGrid)
+      if (!ani) {
+        g.append('g')
+          .classed('grid y-grid', true)
+          .call(yGrid)
+      }
+      else {
+        g.select('.y-grid')
+          .transition(tran)
+          .call((d: any) => d.call(yGrid))
+      }
     }
 
     /* axis x */
     if (!styles.noX) {
-      const xaxis = g.append('g')
-        .classed('axis x-axis', true)
-        .attr('stroke', '#888888')
-        .attr('stroke-width', 0.5)
-        .attr('transform', translate(0, styles.topX ? 0 : styles.height))
-        .call(xAxis)
+      let xaxis: GSelection
+      if (!ani) {
+        xaxis = g.append('g')
+          .classed('axis x-axis', true)
+          .attr('stroke', '#888888')
+          .attr('stroke-width', 0.5)
+          .attr('transform', translate(0, styles.topX ? 0 : styles.height))
+          .call(xAxis)
+      }
+      else {
+        xaxis = g.select(".x-axis")
+        xaxis
+          .transition(tran).call(xAxis)
+      }
 
       /* ticks' labels */
       if (isXCategorical) {
-        g.selectAll('.x-axis text')
-          .attr(_x, styles.topX ? 6 : -6)
-          .attr(_y, 0)
-          .attr(_transform, rotate(310))
-          .attr(_text_anchor, styles.topX ? _start : _end)
+        if (!ani) {
+          g.selectAll('.x-axis .tick text')
+            .attr(_x, styles.topX ? 6 : -6)
+            .attr(_y, 0)
+            .attr(_transform, rotate(310))
+            .attr(_text_anchor, styles.topX ? _start : _end)
+        }
+        else {
+          g.selectAll('.x-axis .tick text')
+            .transition(tran)
+            // TODO: why something wrong happen when I delete these two lines?
+            .attr(_x, styles.topX ? 6 : -6)
+            .attr(_y, 0)
+        }
       }
 
       /* axis name */
-      xaxis
-        .attr('transform', translate(0, styles.topX ? 0 : styles.height))
-        .append('text')
-        .classed('axis-name x-axis-name', true)
-        .attr('x', styles.width / 2)
-        .attr('y', styles.topX ? -40 : (CHART_MARGIN.bottom - 40))
-        .style('fill', 'black')
-        .style('stroke', 'none')
-        .style('font-weight', 'bold')
-        .style('text-anchor', 'middle')
-        .text(styles.xName !== undefined ? styles.xName : getAxisName(spec.encoding.x))
+      if (!ani) {
+        xaxis
+          .attr('transform', translate(0, styles.topX ? 0 : styles.height))
+          .append('text')
+          .classed('axis-name x-axis-name', true)
+          .attr('x', styles.width / 2)
+          .attr('y', styles.topX ? -40 : (CHART_MARGIN.bottom - 40))
+          .style('fill', 'black')
+          .style('stroke', 'none')
+          .style('font-weight', 'bold')
+          .style('text-anchor', 'middle')
+          .text(styles.xName !== undefined ? styles.xName : getAxisName(spec.encoding.x))
+      }
+      else {
+        xaxis
+          .selectAll(".x-axis-name")
+          // transition // TODO:
+          .text(styles.xName !== undefined ? styles.xName : getAxisName(spec.encoding.x))
+      }
 
       if (isXCategorical) {
-        xaxis.selectAll(".axis-name")
-          .attr('y', styles.topX ? -60 : (CHART_MARGIN.bottom - 5))
+        if (!ani)
+          xaxis.selectAll(".axis-name")
+            .attr('y', styles.topX ? -60 : (CHART_MARGIN.bottom - 5))
       }
     }
 
     /* axis y */
     if (!styles.noY) {
-      const yaxis = g.append('g')
-        .attr(_transform, translate(styles.rightY ? styles.width : 0, 0))
-        .classed('axis y-axis', true)
-        .attr('stroke', '#888888')
-        .attr('stroke-width', 0.5)
-        .call(yAxis)
+      let yaxis: GSelection
+      if (!ani) {
+        yaxis = g.append('g')
+          .attr(_transform, translate(styles.rightY ? styles.width : 0, 0))
+          .classed('axis y-axis', true)
+          .attr('stroke', '#888888')
+          .attr('stroke-width', 0.5)
+          .call(yAxis)
+      }
+      else {
+        yaxis = g.select(".y-axis")
+        yaxis.transition(tran).call(yAxis)
+      }
 
       /* axis name */
       if (!styles.noYTitle) {
-        yaxis
-          .append('text')
-          .classed('axis-name y-axis-name', true)
-          .attr('transform', rotate(-90))
-          .attr('x', -styles.height / 2)
-          .attr('y', styles.rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
-          .attr('dy', '.71em')
-          .style('font-weight', 'bold')
-          .style('fill', 'black')
-          .style('stroke', 'none')
-          .style('text-anchor', 'middle')
-          .text(styles.yName !== undefined ? styles.yName : getAxisName(spec.encoding.y))
+        if (!ani) {
+          yaxis
+            .append('text')
+            .classed('axis-name y-axis-name', true)
+            .attr('transform', rotate(-90))
+            .attr('x', -styles.height / 2)
+            .attr('y', styles.rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
+            .attr('dy', '.71em')
+            .style('font-weight', 'bold')
+            .style('fill', 'black')
+            .style('stroke', 'none')
+            .style('text-anchor', 'middle')
+            .text(styles.yName !== undefined ? styles.yName : getAxisName(spec.encoding.y))
+        }
+        else {
+          yaxis
+            .selectAll(".y-axis-name")
+            // .transition(tran)  // TODO:
+            // .attr('x', -styles.height / 2)
+            // .attr('y', styles.rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
+            .attr('dy', '.71em')
+            .style('font-weight', 'bold')
+            .style('fill', 'black')
+            .style('stroke', 'none')
+            .style('text-anchor', 'middle')
+            .text(styles.yName !== undefined ? styles.yName : getAxisName(spec.encoding.y))
+        }
       }
     }
 
     /* styles */
     /* grid */
     g.selectAll('.axis path')
-      .attr('stroke-width', '1px')
+      .attr(_stroke_width, '1px')
       .attr('stroke', 'black')
 
     /* hide grid */
-    if (isYCategorical) g.selectAll('.x-axis path').attr('stroke-width', '0px')
-    if (isXCategorical) g.selectAll('.y-axis path').attr('stroke-width', '0px')
-    if (styles.simpleY) g.selectAll('.y-axis path').attr('stroke', 'white')
+    if (isYCategorical) g.selectAll('.x-axis path').attr(_stroke_width, '0px')
+    if (isXCategorical) g.selectAll('.y-axis path').attr(_stroke_width, '0px')
+    if (styles.simpleY) g.selectAll('.y-axis path').attr(_stroke, 'white')
     // if (styles.simpleY) g.selectAll('.axis text').attr(_fill, 'gray')
 
     // remove ticks in axes
     g.selectAll('.axis line')
-      .attr('stroke-width', '0px')
+      .attr(_stroke_width, '0px')
       .attr('stroke', 'black')
 
     // ticks' labels
     g.selectAll('.axis text')
-      .style('stroke-width', '0')
-      .style('stroke', 'none')
-      .attr('fill', 'black')
-      .style('font-size', '12px')
-      .attr('font-family', DEFAULT_FONT)
+      .style(_stroke_width, '0')
+      .style(_stroke, 'none')
+      .attr(_fill, 'black')
+      .style(_font_size, '12px')
+      .attr(_font_family, DEFAULT_FONT)
 
     // axis name, line, grid
     g.selectAll('.axis .axis-name').style('font-size', '12px')
     g.selectAll('.grid text').style('display', 'none')  // don't need this
     g.selectAll('.grid path') // don't need this
-      .attr('stroke', 'rgb(221, 221, 221)')
-      .attr('stroke-width', '0px')
+      .attr(_stroke, 'rgb(221, 221, 221)')
+      .attr(_stroke_width, '0px')
     g.selectAll('.grid line') // grid
-      .attr('stroke', 'rgb(221, 221, 221)')
-      .attr('stroke-width', '1px')
+      .attr(_stroke, 'rgb(221, 221, 221)')
+      .attr(_stroke_width, '1px')
   }
   return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY}
 }

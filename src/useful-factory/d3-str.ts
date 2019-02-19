@@ -14,7 +14,7 @@ export const
   // text-related
   _text = "text",
   _text_anchor = "text-anchor", _start = "start", _end = "end",
-  _font_size = "font-size",
+  _font_size = "font-size", _font_family = "font-family",
   _alignment_baseline = "alignment-baseline", _middle = "middle",
   _font_weight = "font-weight", _bold = "bold"
 
