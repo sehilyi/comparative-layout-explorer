@@ -18,6 +18,16 @@ export function uniqueValues(o: Object[], k: string) {
   return d3.set(k === "" ? o : o.map(d => d[k])).values()
 }
 
+/**
+ * shorten text to fit into container.
+ * used in axes and legends.
+ * @param t
+ * @param len
+ */
+export function shortenText(t: string, len: number) {
+  return t.length < len ? t : t.slice(0, len - 2).concat("...")
+}
+
 /* deprecated */
 export function isDeepTrue(o: boolean | object) {
   return o === true || o['value'] === true

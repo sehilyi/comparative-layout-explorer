@@ -1,7 +1,7 @@
-import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING} from "./default-design";
+import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING, LEGEND_LABEL_LEN_LIMIT} from "./default-design";
 import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end, GSelection} from "src/useful-factory/d3-str";
 import d3 = require("d3");
-import {translate} from "src/useful-factory/utils";
+import {translate, shortenText} from "src/useful-factory/utils";
 
 export function renderLegend(
   g: GSelection,
@@ -17,7 +17,10 @@ export function renderLegend(
     .style(_font_size, '10px')
     .style(_text_anchor, 'start')
     .style(_font_weight, 'bold')
-    .text(title.length > 17 ? title.slice(0, 15).concat("...") : title)
+    .text(shortenText(title, LEGEND_LABEL_LEN_LIMIT))
+    // interactions
+    .on("mouseover", (d, _i, n) => d3.select(n[_i]).text(title))
+    .on("mouseout", (d, _i, n) => d3.select(n[_i]).text(shortenText(title, LEGEND_LABEL_LEN_LIMIT)))
 
   if (!isQuantitative) {
     // Notice: domain.length is always equal or larger than range.length
@@ -39,7 +42,10 @@ export function renderLegend(
         .attr(_alignment_baseline, _middle)
         .attr(_fill, "black")
         .attr(_font_size, "10px")
-        .text((domain[i] as string).length > 17 ? (domain[i] as string).slice(0, 15).concat("...") : domain[i])
+        .text(shortenText(domain[i].toString(), LEGEND_LABEL_LEN_LIMIT))
+        // interactions
+        .on("mouseover", (d, _i, n) => d3.select(n[_i]).text(domain[i].toString()))
+        .on("mouseout", (d, _i, n) => d3.select(n[_i]).text(shortenText(domain[i].toString(), LEGEND_LABEL_LEN_LIMIT)))
 
       // omit rest of us when two many of them
       if (i == LEGEND_VISIBLE_LIMIT) {
@@ -93,10 +99,11 @@ export function renderLegend(
       .attr('dy', '.71em')
       .call(yAxis)
       .selectAll('.axis text')
+      .attr(_font_size, 8 + "px")
       // .attr(_x, -8)
       // .attr(_y, 0)
       // .attr(_transform, rotate(310))
       // .attr(_text_anchor, _end)
-      .text(d => d3.format(".0e")(Number(d)))
+      .text(d => d3.format(".2s")(Number(d)))
   }
 }

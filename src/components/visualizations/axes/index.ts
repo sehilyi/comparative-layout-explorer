@@ -179,18 +179,10 @@ export function getAxisName(f1: Field, f2?: Field): string {
   if (!f1) return ""
   if (f2) {
     if (f1.field === f2.field) {
-      if (!f1.aggregate || !f2.aggregate) {
-        return f1.field
-      }
-      else {
-        return getAxisName(f1)
-      }
+      if (!f1.aggregate || !f2.aggregate) return f1.field
+      else return getAxisName(f1)
     }
-    else {
-      return getAxisName(f1) + " and " + getAxisName(f2)
-    }
+    else return getAxisName(f1) + " and " + getAxisName(f2)
   }
-  else {
-    return f1.field + (f1.aggregate !== undefined ? "(" + f1.aggregate + ")" : "")
-  }
+  else return f1.field + (f1.aggregate !== undefined ? "(" + f1.aggregate + ")" : "")
 }
