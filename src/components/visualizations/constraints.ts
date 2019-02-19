@@ -34,6 +34,7 @@ export function canRenderCompChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   // nesting
   // visual elements (e.g., bars or points) of A should be aggregated
   if (C.layout.type === "superimposition" && C.layout.unit === "element" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false
+  if (C.layout.arrangement === "animated" && C.layout.type === "superimposition") can = false
 
   if (!can) console.log("error: such comparison is not supported.")
   return can

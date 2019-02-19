@@ -16,6 +16,7 @@ import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
 import {_transform, _width, _height, _g, _opacity} from "src/useful-factory/d3-str";
 import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
 import {animateChart} from "./animated";
+import {getLegends} from "./legends/legend-manager";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C}) // minor issues in spec are corrected here (e.g., CompSpec => _CompSpecSolid)
@@ -29,15 +30,9 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles) // set translateX and Y here
+  const {...legends} = getLegends(A, B, C, consistency, styles)
 
-  // TODO: remove this
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
-  if (deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === 'element') {
-    renderLegend(svg.append(_g).attr(_transform, translate(layouts.B.left + CHART_SIZE.width + GAP_BETWEEN_CHARTS, layouts.B.top)),
-      styles.A.legendNameColor ? styles.A.legendNameColor : ifUndefinedGetDefault(deepObjectValue(A.encoding.color, "field"), A.encoding.x.field as string),
-      [A.encoding.y.field, B.encoding.y.field],
-      styles.A.color.range().concat(styles.B.color.range()) as string[])
-  }
   /* render A */
   if (!Array.isArray(domains.A.axis)) {
     renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A.color, styles.A)
@@ -82,6 +77,16 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       }
     }
   }
+  /* render legends */
+  if (C.layout.type === "juxtaposition" && C.layout.unit === 'element') { // TODO: remove this
+    renderLegend(svg.append(_g).attr(_transform, translate(layouts.B.left + CHART_SIZE.width + GAP_BETWEEN_CHARTS, layouts.B.top)),
+      styles.A.legendNameColor ? styles.A.legendNameColor : ifUndefinedGetDefault(deepObjectValue(A.encoding.color, "field"), A.encoding.x.field as string),
+      [A.encoding.y.field, B.encoding.y.field],
+      styles.A.color.range().concat(styles.B.color.range()) as string[])
+  }
+  // TODO:
+  if (legends) console.log()
+
   /* apply visual properties after rendering charts */
   if (styles.A.onTop) svg.selectAll(".A").raise()
   if (styles.B.onTop) svg.selectAll(".B").raise()
