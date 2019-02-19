@@ -17,3 +17,10 @@ export const
   _font_size = "font-size",
   _alignment_baseline = "alignment-baseline", _middle = "middle",
   _font_weight = "font-weight", _bold = "bold"
+
+export type SVGSelection = d3.Selection<SVGSVGElement, {}, null, undefined>
+export type GSelection = d3.Selection<SVGGElement, {}, null, undefined>
+export type ScaleBand = d3.ScaleBand<string>
+export type ScaleLinear = d3.ScaleLinear<number, number>
+export type ScaleLinearColor = d3.ScaleLinear<string, string>
+export type ScaleOrdinal = d3.ScaleOrdinal<string, {}>

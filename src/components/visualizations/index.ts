@@ -5,6 +5,7 @@ import {ChartStyle} from "./chart-styles";
 import {_CompSpecSolid} from "src/models/comp-spec";
 import {renderHeatmap, renderSimpleHeatmap} from "./heatmap";
 import {canRenderChart, getChartType} from "./constraints";
+import {ScaleOrdinal, ScaleLinearColor, GSelection} from "src/useful-factory/d3-str";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   if (!canRenderChart(spec)) return
@@ -31,10 +32,10 @@ export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
 
 // TODO: this should be combined with renderSimpleChart
 export function renderChart(
-  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  g: GSelection,
   spec: Spec, // contains actual values to draw bar chart
   domain: {x: string[] | number[], y: string[] | number[]},
-  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
+  color: ScaleOrdinal | ScaleLinearColor, // this is more proper to provide color scale rather than color domain (to controll consistency)
   styles: ChartStyle) {
   switch (getChartType(spec)) {
     case "scatterplot":

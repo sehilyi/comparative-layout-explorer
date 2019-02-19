@@ -9,7 +9,7 @@ import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {getColor, getConstantColor, CHART_SIZE, CHART_MARGIN} from '../default-design-manager';
-import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
@@ -32,36 +32,32 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 }
 
 export function renderScatterplot(
-  svg: d3.Selection<SVGGElement, {}, null, undefined>,
+  svg: GSelection,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]},
-  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
+  color: ScaleOrdinal | ScaleLinearColor,
   styles: ChartStyle) {
 
   const {values} = spec.data;
-  const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
-  const cField = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
+  const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y;
+  const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
   const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
-  const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
+  const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-  renderPoints(g, aggValues, xField, yField, cField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, color, {...styles})
+  renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, color.domain() as string[], color.range() as string[])
+    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cKey, color.domain() as string[], color.range() as string[])
   }
 }
 
 export function renderPoints(
-  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  g: GSelection,
   data: object[],
-  xKey: string,
-  yKey: string,
-  cKey: string,
-  x: d3.ScaleLinear<number, number>,
-  y: d3.ScaleLinear<number, number>,
-  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
+  keys: {xKey: string, yKey: string, cKey: string},
+  scales: {x: ScaleLinear, y: ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
   g.append(_g).selectAll('.point')
@@ -71,14 +67,14 @@ export function renderPoints(
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, styles.stroke)
     .attr(_stroke_width, styles.stroke_width)
-    .attr(_fill, d => (color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? xKey : cKey]) as string)
+    .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? keys.xKey : keys.cKey]) as string)
     // circle mark
-    .attr(_cx, d => x(d[xKey]))
-    .attr(_cy, d => y(d[yKey]))
+    .attr(_cx, d => scales.x(d[keys.xKey]))
+    .attr(_cy, d => scales.y(d[keys.yKey]))
     .attr(_r, styles.pointSize)
     // rect mark
-    .attr(_x, d => x(d[xKey]) - styles.pointSize / 2.0)
-    .attr(_y, d => y(d[yKey]) - styles.pointSize / 2.0)
+    .attr(_x, d => scales.x(d[keys.xKey]) - styles.pointSize / 2.0)
+    .attr(_y, d => scales.y(d[keys.yKey]) - styles.pointSize / 2.0)
     .attr(_width, styles.pointSize)
     .attr(_height, styles.pointSize)
 }

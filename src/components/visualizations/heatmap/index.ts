@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
-import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white} from 'src/useful-factory/d3-str';
+import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection} from 'src/useful-factory/d3-str';
 import {CHART_SIZE, CHART_MARGIN, getQuantitativeColor} from '../default-design-manager';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {renderLegend} from '../legends';
@@ -28,38 +28,34 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
 }
 
 export function renderHeatmap(
-  svg: d3.Selection<SVGGElement, {}, null, undefined>,
+  svg: GSelection,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]},
-  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
+  color: ScaleOrdinal | ScaleLinearColor,
   styles: ChartStyle) {
 
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
   const {values} = spec.data;
-  const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y, {field: cField} = spec.encoding.color
+  const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y, {field: cKey} = spec.encoding.color
   const {aggregate} = spec.encoding.color
   // TODO: when xField and yField same!
-  const pivotData = getPivotData(values, [xField, yField], cField, aggregate)
-  renderCells(g, pivotData, xField, yField, cField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, color, {...styles})
+  const pivotData = getPivotData(values, [xKey, yKey], cKey, aggregate)
+  renderCells(g, pivotData, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, color.domain() as string[], color.range() as string[], true)
+    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cKey, color.domain() as string[], color.range() as string[], true)
   }
 }
 
 export function renderCells(
-  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  g: GSelection,
   data: object[],
-  xKey: string,
-  yKey: string,
-  cKey: string,
-  x: d3.ScaleBand<string>,
-  y: d3.ScaleBand<string>,
-  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
+  keys: {xKey: string, yKey: string, cKey: string},
+  scales: {x: ScaleBand, y: ScaleBand, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
-  const numOfX = (x.domain() as string[]).length, numOfY = (y.domain() as string[]).length
+  const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length
   const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.mulSize
   const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.mulHeigh
 
@@ -68,9 +64,9 @@ export function renderCells(
     .enter().append(_rect)
     .classed('cell', true)
     // d[cKey] can be either null or undefined
-    .attr(_fill, d => isNullOrUndefined(d[cKey]) ? styles.nullCellFill : (color as d3.ScaleLinear<string, string>)(d[cKey]) as string)
-    .attr(_x, d => x(d[xKey]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
-    .attr(_y, d => y(d[yKey]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
+    .attr(_fill, d => isNullOrUndefined(d[keys.cKey]) ? styles.nullCellFill : (scales.color as d3.ScaleLinear<string, string>)(d[keys.cKey]) as string)
+    .attr(_x, d => scales.x(d[keys.xKey]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
+    .attr(_y, d => scales.y(d[keys.yKey]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
     .attr(_width, cellWidth)
     .attr(_height, cellHeight)
 }

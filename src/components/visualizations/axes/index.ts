@@ -3,13 +3,13 @@ import {Spec, Field} from "src/models/simple-vega-spec";
 import {translate, rotate, uniqueValues} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
-import {_g, _transform, _x, _y, _text_anchor, _start, _end} from "src/useful-factory/d3-str";
+import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand} from "src/useful-factory/d3-str";
 import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT} from "../default-design-manager";
 
 export type Domain = string[] | number[]
 
 export function renderAxes(
-  root: d3.Selection<SVGGElement, {}, null, undefined>,
+  root: GSelection,
   xVals: string[] | number[],
   yVals: string[] | number[],
   spec: Spec,
@@ -18,23 +18,19 @@ export function renderAxes(
   const isXCategorical = spec.encoding.x.type === "nominal"
   const isYCategorical = spec.encoding.y.type === "nominal"
 
-  const qX: d3.ScaleLinear<number, number> = isXCategorical ? null : d3.scaleLinear()
+  const qX: ScaleLinear = isXCategorical ? null : d3.scaleLinear()
     .domain([d3.min([d3.min(xVals as number[]), 0]), d3.max(xVals as number[])]).nice()
     .rangeRound(styles.revX ? [styles.width, 0] : [0, styles.width])
-  const nX: d3.ScaleBand<string> = isXCategorical ? d3.scaleBand()
+  const nX: ScaleBand = isXCategorical ? d3.scaleBand()
     .domain(uniqueValues(xVals, "") as string[])
     .range(styles.revX ? [styles.width, 0] : [0, styles.width]) : null
-  const qY: d3.ScaleLinear<number, number> = isYCategorical ? null : d3.scaleLinear()
+  const qY: ScaleLinear = isYCategorical ? null : d3.scaleLinear()
     .domain([d3.min([d3.min(yVals as number[]), 0]), d3.max(yVals as number[])]).nice()
     .rangeRound(styles.revY ? [0, styles.height] : [styles.height, 0])
-  const nY: d3.ScaleBand<string> = isYCategorical ? d3.scaleBand()
+  const nY: ScaleBand = isYCategorical ? d3.scaleBand()
     .domain(uniqueValues(yVals, "") as string[])
+    // when Y is nominal, first category should be appear on the top rather on the bottom
     .range(styles.revY ? [styles.height, 0] : [0, styles.height]) : null
-  // when Y is nominal, first category should be appear on the top rather on the bottom
-
-  // if (isYCategorical) nY.range(styles.revY ? [styles.height, 0] : [0, styles.height])
-  // else nY.range(styles.revY ? [0, styles.height] : [styles.height, 0])
-  // TODO: whey range of nY is applied even when y is quantitative??
 
   // get axis and grid by field types
   // TODO: any clearer way??

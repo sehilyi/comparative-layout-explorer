@@ -1,10 +1,10 @@
 import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING} from "./default-design";
-import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end} from "src/useful-factory/d3-str";
+import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end, GSelection} from "src/useful-factory/d3-str";
 import d3 = require("d3");
 import {translate} from "src/useful-factory/utils";
 
 export function renderLegend(
-  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  g: GSelection,
   title: string,
   domain: string[] | number[],
   range: string[],

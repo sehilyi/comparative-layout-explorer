@@ -1,7 +1,7 @@
 import {BAR_GAP, CHART_SIZE, getConstantColor, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 import {DEFAULT_HEATMAP_CELL_PADDING, CELL_NULL_COLOR} from "../heatmap/default-design";
-import {_lightgray} from "src/useful-factory/d3-str";
+import {_lightgray, ScaleOrdinal, ScaleLinearColor} from "src/useful-factory/d3-str";
 
 export type ChartStyle = CommonChartStyle
 
@@ -13,7 +13,7 @@ export interface CommonChartStyle {
   nestDim: 0 | 1 | 2
   nestingPadding: number
   // chart common
-  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>
+  color: ScaleOrdinal | ScaleLinearColor
   // colorKey: string // deprecated
   onTop: boolean
   translateX: number

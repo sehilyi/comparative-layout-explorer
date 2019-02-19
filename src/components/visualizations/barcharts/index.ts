@@ -6,11 +6,10 @@ import {renderLegend} from '../legends';
 import {renderAxes} from '../axes';
 import {getAggValues} from '../data-handler';
 import {LEGEND_PADDING} from '../legends/default-design';
-import {ScaleBand, ScaleLinear} from 'd3';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
 import {getColor, CHART_SIZE, CHART_MARGIN, getBarSize} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 
@@ -31,51 +30,47 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 }
 
 export function renderBarChart(
-  svg: d3.Selection<SVGGElement, {}, null, undefined>,
+  svg: GSelection,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]},
-  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
+  color: ScaleOrdinal | ScaleLinearColor,
   styles: ChartStyle) {
 
   const {values} = spec.data
   const {verticalBar} = styles
   const {aggregate} = verticalBar ? spec.encoding.y : spec.encoding.x
   const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y"
-  const {field: nField} = spec.encoding[n], {field: qField} = spec.encoding[q]
-  const cField = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
+  const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q]
+  const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
 
-  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nField, [qField], aggregate))
+  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate))
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-  renderBars(g, aggValues, qField, nField, cField, x as ScaleBand<string>, y as ScaleLinear<number, number>, color, {...styles})
+  renderBars(g, aggValues, {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, color.domain() as string[], color.range() as string[])
+    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cKey, color.domain() as string[], color.range() as string[])
   }
 }
 
 export function renderBars(
-  g: d3.Selection<SVGGElement, {}, null, undefined>,
+  g: GSelection,
   data: object[],
-  qKey: string,
-  nKey: string,
-  cKey: string,
-  x: d3.ScaleBand<string> | d3.ScaleLinear<number, number>,
-  y: d3.ScaleLinear<number, number> | d3.ScaleBand<string>,
-  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
+  keys: {qKey: string, nKey: string, cKey: string},
+  scales: {x: ScaleBand | ScaleLinear, y: ScaleBand | ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
   const {mulSize, shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar} = styles
   let numOfC: number
-  let nX: d3.ScaleBand<string>, qX: d3.ScaleLinear<number, number>, qY: d3.ScaleLinear<number, number>, nY: d3.ScaleBand<string>
+  let nX: ScaleBand, qX: ScaleLinear, qY: ScaleLinear, nY: ScaleBand
   if (verticalBar) {
-    nX = x as d3.ScaleBand<string>
-    qY = y as d3.ScaleLinear<number, number>
+    nX = scales.x as ScaleBand
+    qY = scales.y as ScaleLinear
     numOfC = nX.domain().length
   }
   else {
-    qX = x as d3.ScaleLinear<number, number>
-    nY = y as d3.ScaleBand<string>
+    qX = scales.x as ScaleLinear
+    nY = scales.y as ScaleBand
     numOfC = nY.domain().length
   }
 
@@ -83,7 +78,7 @@ export function renderBars(
     .data(data)
     .enter().append(_rect)
     .classed('bar', true)
-    .attr(_fill, d => (color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? qKey : cKey]) as string)
+    .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? keys.qKey : keys.cKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
 
@@ -92,23 +87,23 @@ export function renderBars(
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
 
     bars
-      .attr(_y, d => (styles.revY ? 0 : qY(d[qKey])) + // TOOD: clean up more?
-        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[nKey])[0]) ?
-          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[nKey])[0][barOffset.valueField])) : 0))
-      .attr(_x, d => nX(xPreStr + d[nKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_y, d => (styles.revY ? 0 : qY(d[keys.qKey])) + // TOOD: clean up more?
+        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0]) ?
+          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0][barOffset.valueField])) : 0))
+      .attr(_x, d => nX(xPreStr + d[keys.nKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_width, barSize)
-      .attr(_height, d => (styles.revY ? qY(d[qKey]) : height - qY(d[qKey])))
+      .attr(_height, d => (styles.revY ? qY(d[keys.qKey]) : height - qY(d[keys.qKey])))
   }
   else {
     const bandUnitSize = height / numOfC
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * mulSize) as number;
 
     bars
-      .attr(_x, d => (!styles.revX ? 0 : qX(d[qKey])) + // TOOD: clean up more?
-        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[nKey])[0]) ?
-          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[nKey])[0][barOffset.valueField])) : 0))
-      .attr(_y, d => nY(xPreStr + d[nKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_x, d => (!styles.revX ? 0 : qX(d[keys.qKey])) + // TOOD: clean up more?
+        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0]) ?
+          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0][barOffset.valueField])) : 0))
+      .attr(_y, d => nY(xPreStr + d[keys.nKey]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_height, barSize)
-      .attr(_width, d => (!styles.revX ? qX(d[qKey]) : width - qX(d[qKey])))
+      .attr(_width, d => (!styles.revX ? qX(d[keys.qKey]) : width - qX(d[keys.qKey])))
   }
 }
