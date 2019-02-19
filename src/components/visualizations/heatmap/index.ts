@@ -10,7 +10,7 @@ import {renderLegend} from '../legends';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
-import {isUndefined} from 'util';
+import {isUndefined, isNullOrUndefined} from 'util';
 
 export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -60,14 +60,15 @@ export function renderCells(
   styles: ChartStyle) {
 
   const numOfX = (x.domain() as string[]).length, numOfY = (y.domain() as string[]).length
-  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.mulSize,
-    cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.mulHeigh
+  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.mulSize
+  const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.mulHeigh
 
   g.append(_g).selectAll('.cell')
     .data(data)
     .enter().append(_rect)
     .classed('cell', true)
-    .attr(_fill, d => d[cKey] === null ? styles.nullCellFill : (styles.color as d3.ScaleLinear<string, string>)(d[cKey]) as string)
+    // d[cKey] can be either null or undefined
+    .attr(_fill, d => isNullOrUndefined(d[cKey]) ? styles.nullCellFill : (styles.color as d3.ScaleLinear<string, string>)(d[cKey]) as string)
     .attr(_x, d => x(d[xKey]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
     .attr(_y, d => y(d[yKey]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
     .attr(_width, cellWidth)
