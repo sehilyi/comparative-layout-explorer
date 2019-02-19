@@ -4,6 +4,7 @@ import {isUndefined} from "util";
 import {ConsistencyType} from "src/models/comp-spec";
 
 export const AXIS_ROOT_ID = "axis-root--"
+export const CHART_CLASS_ID = "D3-CHART-"
 // general
 export const CHART_SIZE = {width: 280, height: 240}
 export const CHART_MARGIN = {top: 100, right: 120, bottom: 100, left: 120}

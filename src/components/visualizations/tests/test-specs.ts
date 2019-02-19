@@ -428,7 +428,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "test",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
-          x_axis: true, y_axis: true, color: "same"
+          x_axis: false, y_axis: true, color: "same"
         }
       },
       // https://vega.github.io/vega-lite/examples/

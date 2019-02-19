@@ -5,6 +5,7 @@ import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
 import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand} from "src/useful-factory/d3-str";
 import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT, AXIS_LABEL_LEN_LIMIT} from "../default-design-manager";
+import {DF_DELAY, DF_DURATION} from "../animated/default-design";
 
 export type Domain = string[] | number[]
 
@@ -15,6 +16,8 @@ export function renderAxes(
   spec: Spec,
   styles: ChartStyle) {
 
+  const {elementAnimated: ani} = styles
+  const tran = d3.transition().delay(DF_DELAY).duration(DF_DURATION)
   const isXCategorical = spec.encoding.x.type === "nominal"
   const isYCategorical = spec.encoding.y.type === "nominal"
 
@@ -57,20 +60,35 @@ export function renderAxes(
 
   /* render axes */
   if (!isNullOrUndefined(root) && !styles.noAxes) {
-    const g = root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).classed(AXIS_ROOT_ID, true).classed(styles.chartId, true)
+    const g: GSelection = ani ? root.select(`${AXIS_ROOT_ID}A`) :
+      root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY))
+        .classed(`${AXIS_ROOT_ID}${styles.chartId}`, true)
+        .classed(AXIS_ROOT_ID, true)
+        .classed(styles.chartId, true)
 
     /* grid x */
     if (!isXCategorical && !styles.noGrid) {
-      g.append('g')
-        .classed('grid', true)
-        .attr('transform', translate(0, styles.height))
-        .call(xGrid)
+      if (!ani) {
+        g.append('g')
+          .classed('grid x-grid', true)
+          .attr('transform', translate(0, styles.height))
+          .call(xGrid)
+      }
+      else {
+        g.selectAll('.x-grid')
+          .transition(tran)
+          .call(update)
+      }
     }
+    function update(group: any) {
+      group.call(xGrid);
+    }
+
 
     /* grid y */
     if (!isYCategorical && !styles.noGrid) {
       g.append('g')
-        .classed('grid', true)
+        .classed('grid y-grid', true)
         .call(yGrid)
     }
 
@@ -96,7 +114,7 @@ export function renderAxes(
       xaxis
         .attr('transform', translate(0, styles.topX ? 0 : styles.height))
         .append('text')
-        .classed('axis-name', true)
+        .classed('axis-name x-axis-name', true)
         .attr('x', styles.width / 2)
         .attr('y', styles.topX ? -40 : (CHART_MARGIN.bottom - 40))
         .style('fill', 'black')
@@ -124,7 +142,7 @@ export function renderAxes(
       if (!styles.noYTitle) {
         yaxis
           .append('text')
-          .classed('axis-name', true)
+          .classed('axis-name y-axis-name', true)
           .attr('transform', rotate(-90))
           .attr('x', -styles.height / 2)
           .attr('y', styles.rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
