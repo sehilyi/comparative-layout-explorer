@@ -4,7 +4,7 @@ import {translate, rotate, uniqueValues} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
 import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand} from "src/useful-factory/d3-str";
-import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT} from "../default-design-manager";
+import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT, AXIS_LABEL_LEN_LIMIT} from "../default-design-manager";
 
 export type Domain = string[] | number[]
 
@@ -36,17 +36,17 @@ export function renderAxes(
   // TODO: any clearer way??
   const xAxis = styles.topX ?
     isXCategorical ?
-      d3.axisTop(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisTop(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => d.length > AXIS_LABEL_LEN_LIMIT ? d.slice(0, AXIS_LABEL_LEN_LIMIT - 2).concat('...') : d).tickSizeOuter(0) :
       d3.axisTop(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
     : isXCategorical ?
-      d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => d.length > AXIS_LABEL_LEN_LIMIT ? d.slice(0, AXIS_LABEL_LEN_LIMIT - 2).concat('...') : d).tickSizeOuter(0) :
       d3.axisBottom(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   const yAxis = styles.rightY ?
     isYCategorical ?
-      d3.axisRight(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisRight(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => d.length > AXIS_LABEL_LEN_LIMIT ? d.slice(0, AXIS_LABEL_LEN_LIMIT - 2).concat('...') : d).tickSizeOuter(0) :
       d3.axisRight(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
     isYCategorical ?
-      d3.axisLeft(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => d.length > 12 ? d.slice(0, 10).concat('...') : d).tickSizeOuter(0) :
+      d3.axisLeft(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => d.length > AXIS_LABEL_LEN_LIMIT ? d.slice(0, AXIS_LABEL_LEN_LIMIT - 2).concat('...') : d).tickSizeOuter(0) :
       d3.axisLeft(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   const xGrid = isXCategorical ?
     d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(null).tickSize(-styles.height) :
@@ -120,13 +120,14 @@ export function renderAxes(
         .attr('stroke-width', 0.5)
         .call(yAxis)
 
+      /* axis name */
       if (!styles.noYTitle) {
         yaxis
           .append('text')
           .classed('axis-name', true)
           .attr('transform', rotate(-90))
           .attr('x', -styles.height / 2)
-          .attr('y', styles.rightY ? 50 : isYCategorical ? -90 : -55)  // TODO: is this right decision?
+          .attr('y', styles.rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
           .attr('dy', '.71em')
           .style('font-weight', 'bold')
           .style('fill', 'black')

@@ -40,7 +40,8 @@ export function renderHeatmap(
   const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y, {field: cKey} = spec.encoding.color
   const {aggregate} = spec.encoding.color
   // TODO: when xField and yField same!
-  const pivotData = getPivotData(values, [xKey, yKey], cKey, aggregate)
+  const pivotData = getPivotData(values, [xKey, yKey], cKey, aggregate, [domain.x as string[], domain.y as string[]])
+
   renderCells(g, pivotData, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
@@ -64,7 +65,7 @@ export function renderCells(
     .enter().append(_rect)
     .classed('cell', true)
     // d[cKey] can be either null or undefined
-    .attr(_fill, d => isNullOrUndefined(d[keys.cKey]) ? styles.nullCellFill : (scales.color as d3.ScaleLinear<string, string>)(d[keys.cKey]) as string)
+    .attr(_fill, d => isNullOrUndefined(d[keys.cKey]) ? styles.nullCellFill : (scales.color as ScaleLinearColor)(d[keys.cKey]))
     .attr(_x, d => scales.x(d[keys.xKey]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
     .attr(_y, d => scales.y(d[keys.yKey]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
     .attr(_width, cellWidth)

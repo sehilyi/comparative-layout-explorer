@@ -51,7 +51,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
     S.A.stroke_width = DEFAULT_STROKE_WIDTH
   }
   // color
-  const {colorA, colorB} = getConsistentColor(domain.A.axis["color"], // TODO: any clearer way?
+  // TODO: any clearer way?
+  const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
     S.B.nestDim === 0 ? domain.B.axis["color"] : S.B.nestDim === 1 ? domain.B.axis[0]["color"] : domain.B.axis[0][0]["color"], consistency.color)
   S.A.color = colorA
   S.B.color = colorB

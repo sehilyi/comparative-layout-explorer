@@ -18,8 +18,8 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
-    .filter(d => d.C.name === "test")
+  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
+  // .filter(d => d.C.name === "test")
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
     (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? 1 : deepObjectValue(a.C.layout) < deepObjectValue(b.C.layout) ? -1 : deepObjectValue(a.C.layout) > deepObjectValue(b.C.layout) ? 1 : -1
@@ -37,9 +37,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -48,9 +46,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
@@ -185,6 +181,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "test",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: true, color: "same"

@@ -77,7 +77,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   }
   /* nesting */
   // separate domain B by aggregation keys used in Chart A
-  else if (deepObjectValue(C.layout) === "superimposition" && C.layout.unit === "element") {
+  else if (C.layout.type === "superimposition" && C.layout.unit === "element") {
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
     if (isChartDataAggregated(B)) {
 

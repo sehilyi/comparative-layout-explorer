@@ -105,7 +105,7 @@ export function recTabularizeData(data: object[], keyss: string[][], keyFields: 
  * @param valueField
  * @param aggregate
  */
-export function getPivotData(data: object[], keyFields: string[], valueField: string, aggregate: Aggregate) {
+export function getPivotData(data: object[], keyFields: string[], valueField: string, aggregate: Aggregate, domains?: string[][]) {
   let nest = d3.nest()
   keyFields.forEach(k => {
     nest.key(d => d[k]) // nest by keys
@@ -124,10 +124,12 @@ export function getPivotData(data: object[], keyFields: string[], valueField: st
     })
     .entries(data)
 
-  let domains: string[][] = []
-  keyFields.forEach(d => {
-    domains.push(uniqueValues(data, d))
-  })
+  if (!domains) {
+    domains = []
+    keyFields.forEach(d => {
+      domains.push(uniqueValues(data, d))
+    })
+  }
   return tabularizeData(nestedData, domains, keyFields, valueField)
 }
 
