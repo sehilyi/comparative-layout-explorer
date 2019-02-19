@@ -18,8 +18,8 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
-  // .filter(d => d.C.name === "test")
+    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
+    .filter(d => d.C.name === "test")
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
     (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? 1 : deepObjectValue(a.C.layout) < deepObjectValue(b.C.layout) ? -1 : deepObjectValue(a.C.layout) > deepObjectValue(b.C.layout) ? 1 : -1
@@ -30,7 +30,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   return [
     {
       C: {
-        name: "test",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "unconnected"
@@ -62,7 +61,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "unconnected"
@@ -94,7 +92,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "unconnected"
@@ -126,7 +123,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "unconnected"
@@ -158,7 +154,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "unconnected"
@@ -190,7 +185,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "heatmap",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: true, color: "same"
@@ -253,7 +247,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "heatmap",
         layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
         consistency: {
           x_axis: false, y_axis: true, color: "different"
@@ -285,7 +278,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "heatmap",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
           x_axis: false, y_axis: true, color: "different"
@@ -317,7 +309,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "heatmap",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {x_axis: false, y_axis: true, color: "same"}
       },
@@ -347,7 +338,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "heatmap",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {x_axis: false, y_axis: true, color: "different"}
       },
@@ -377,7 +367,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "heatmap",
+        name: "test",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "stacked"},
         consistency: {
           x_axis: true, y_axis: false, color: "different"
@@ -440,7 +430,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "ele",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "same"
@@ -503,7 +492,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "jc",
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "stacked"},
         consistency: {
           x_axis: false, y_axis: true, color: "different"
@@ -534,7 +522,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "jc diff color",
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "stacked"},
         consistency: {
           x_axis: false, y_axis: true, color: "different"
@@ -718,7 +705,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "false color test",
         layout: {type: "juxtaposition", unit: "chart"},
         consistency: {
           x_axis: false, y_axis: true, color: "different"
@@ -811,7 +797,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "two agg scatter",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: true, color: "different"
@@ -843,7 +828,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "horizontal bar chart",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "different"
@@ -904,7 +888,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "H vs V bar charts",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "different"
@@ -935,7 +918,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "V vs H bar charts",
         layout: {type: "superimposition", unit: "element", arrangement: "adjacent", mirrored: false},
         consistency: {
           x_axis: false, y_axis: false, color: "different"
@@ -996,7 +978,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "2",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "different"
@@ -1089,7 +1070,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "scatter + horizontal bar",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "different"
