@@ -20,6 +20,7 @@ export const
 
 export type SVGSelection = d3.Selection<SVGSVGElement, {}, null, undefined>
 export type GSelection = d3.Selection<SVGGElement, {}, null, undefined>
+export type BTSelection = d3.Selection<d3.BaseType, {}, SVGGElement, {}>
 export type ScaleBand = d3.ScaleBand<string>
 export type ScaleLinear = d3.ScaleLinear<number, number>
 export type ScaleLinearColor = d3.ScaleLinear<string, string>

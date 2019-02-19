@@ -14,6 +14,7 @@ export interface CommonChartStyle {
   nestingPadding: number
   // chart common
   color: ScaleOrdinal | ScaleLinearColor
+  elementEnimated: boolean
   // colorKey: string // deprecated
   onTop: boolean
   translateX: number
@@ -71,6 +72,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   nestingPadding: NESTING_PADDING,
   //
   color: getConstantColor(),
+  elementEnimated: false,
   // colorKey: "",  // deprecated
   onTop: false,
   translateX: 0,

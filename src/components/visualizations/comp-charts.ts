@@ -30,7 +30,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles) // set translateX and Y here
-  const {...legends} = getLegends(A, B, C, consistency, styles)
+  const {...legends} = getLegends(A, B, C, consistency, styles) // TODO: empty now
 
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
   /* render A */

@@ -1,0 +1,1 @@
+export const DF_DELAY = 1500, DF_DURATION = 1500

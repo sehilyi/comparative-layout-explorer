@@ -9,9 +9,10 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection} from 'src/useful-factory/d3-str';
 import {getColor, CHART_SIZE, CHART_MARGIN, getBarSize} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
+import {DF_DURATION, DF_DELAY} from '../animated/default-design';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -45,7 +46,8 @@ export function renderBarChart(
 
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate))
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
-  const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
+  const g: GSelection = styles.elementEnimated ? svg.select(".CHART-A") :
+    svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed("CHART-" + styles.chartId, true).classed(styles.chartId, true)
   renderBars(g, aggValues, {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
@@ -74,10 +76,16 @@ export function renderBars(
     numOfC = nY.domain().length
   }
 
-  const bars = g.selectAll('.bar')
-    .data(data)
-    .enter().append(_rect)
-    .classed('bar', true)
+  const bars: BTSelection = styles.elementEnimated ?
+    g.selectAll('.bar').data(data, d => d[keys.nKey]) :
+    g.selectAll('.bar')
+      .data(data, d => d[keys.nKey])
+      .enter().append(_rect)
+      .classed('bar', true)
+
+  let animatedBars = styles.elementEnimated ? bars.transition().delay(DF_DELAY).duration(DF_DURATION) : bars
+
+  animatedBars
     .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? keys.qKey : keys.cKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
@@ -86,7 +94,7 @@ export function renderBars(
     const bandUnitSize = width / numOfC
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
 
-    bars
+    animatedBars
       .attr(_y, d => (styles.revY ? 0 : qY(d[keys.qKey])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0]) ?
           (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0][barOffset.valueField])) : 0))
@@ -98,7 +106,7 @@ export function renderBars(
     const bandUnitSize = height / numOfC
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * mulSize) as number;
 
-    bars
+    animatedBars
       .attr(_x, d => (!styles.revX ? 0 : qX(d[keys.qKey])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0]) ?
           (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0][barOffset.valueField])) : 0))
