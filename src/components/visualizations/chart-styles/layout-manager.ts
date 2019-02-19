@@ -9,7 +9,7 @@ import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
-import {deepValue} from "src/models/comp-spec-manager";
+import {deepObjectValue} from "src/models/comp-spec-manager";
 import {isBarChart, isScatterplot, isHeatmap} from "../constraints";
 
 export type Position = {
@@ -23,7 +23,7 @@ export type Position = {
 export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
   let nestedBs: Position[] | Position[][]
   let chartsp
-  switch (deepValue(C.layout)) {
+  switch (deepObjectValue(C.layout)) {
     case "juxtaposition":
       if (C.layout.unit === "chart") {
         const numOfC = C.layout.arrangement === 'adjacent' ? 2 : 1

@@ -13,7 +13,7 @@ import {renderSimpleChart} from './visualizations';
 import {getExamples, getCompTitle, getSimpleCompTitle} from './visualizations/tests/test-specs';
 import {Spec} from 'src/models/simple-vega-spec';
 import {CompSpec} from 'src/models/comp-spec';
-import {deepValue} from 'src/models/comp-spec-manager';
+import {deepObjectValue} from 'src/models/comp-spec-manager';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight)
 
 export interface AppRootProps {
@@ -81,7 +81,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' />{""}</div>
             <div className='chart'><svg ref={onBarChartA}></svg></div>
             <div className='control-pane'><textarea value={JSON.stringify(_A, null, 2)} readOnly /></div>
-            <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {deepValue(specs.C.layout)}</div>
+            <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {deepObjectValue(specs.C.layout)}</div>
             <div className='chart'><svg ref={onBarChartB}></svg></div>
             <div className='control-pane'><textarea value={JSON.stringify(_B, null, 2)} readOnly /></div>
           </div>
@@ -95,7 +95,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             <div className='result-group'>
               <div className='control-pane'><textarea value={JSON.stringify(_A, null, 2)} readOnly /></div>
               <div className='chart'><svg ref={onBarChartA}></svg></div>
-              <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {deepValue(specs.C.layout)}</div>
+              <div className='score'><FontAwesomeIcon icon="times" className='trade-mark' /> {deepObjectValue(specs.C.layout)}</div>
               <div className='control-pane'><textarea value={JSON.stringify(_B, null, 2)} readOnly /></div>
               <div className='chart'><svg ref={onBarChartB}></svg></div>
               <div className='score'><FontAwesomeIcon icon="equals" className='trade-mark' />{""}</div>

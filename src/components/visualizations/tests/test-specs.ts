@@ -1,13 +1,13 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
-import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
+import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
 import {getChartType} from "../constraints";
 import {DATASET_MOVIES} from "src/datasets/movies";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C})
   return getSimpleCompTitle(A, B, C) + " " +
-    "(" + deepValue(mC.layout).toString().slice(0, 3).toUpperCase() + "|" + mC.layout.unit.slice(0, 3).toUpperCase() + "|" +
+    "(" + deepObjectValue(mC.layout).toString().slice(0, 3).toUpperCase() + "|" + mC.layout.unit.slice(0, 3).toUpperCase() + "|" +
     mC.layout.arrangement.toString().slice(0, 1).toUpperCase() + "|" + (mC.layout.mirrored ? "M|" : "F|") +
     "|Consistency{x:" + mC.consistency.x_axis + ",y:" + mC.consistency.y_axis + ",c:" + mC.consistency.color +
     "}) " + mC.name
@@ -22,7 +22,7 @@ export function getExamples() {
   // .filter(d => d.C.name === "test")
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
-    (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? 1 : deepValue(a.C.layout) < deepValue(b.C.layout) ? -1 : deepValue(a.C.layout) > deepValue(b.C.layout) ? 1 : -1
+    (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? 1 : deepObjectValue(a.C.layout) < deepObjectValue(b.C.layout) ? -1 : deepObjectValue(a.C.layout) > deepObjectValue(b.C.layout) ? 1 : -1
   )
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {

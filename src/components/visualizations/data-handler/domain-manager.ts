@@ -3,12 +3,12 @@ import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
 import {getAggValues, getDomainSumByKeys, getAggValuesByTwoKeys, getFieldsByType, getPivotData, tabularizeData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
-import {deepValue} from "src/models/comp-spec-manager";
+import {deepObjectValue} from "src/models/comp-spec-manager";
 import {isBarChart, isScatterplot, isChartDataAggregated} from "../constraints";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // for nesting
-  cKey: string  // TODO: this should be removed eventually!
+  // cKey: string  // deprecated
 }
 export type AxisDomainData = {
   x: Domain
@@ -30,7 +30,6 @@ export const DEFAULT_AXIS_DOMAIN = {
 export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency) {
   let resA: ChartDomainData, resB: ChartDomainData
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
-  let cKeyA = "" as string, cKeyB = "" as string
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainAB} = getDomain(A, B)
   if (consistency.x_axis) {
     axisA.x = axisB.x = DomainAB.x
@@ -48,21 +47,17 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   }
   if (consistency.color === "same") {
     axisA.color = axisB.color = DomainAB.color
-    cKeyA = DomainA.cKey
-    cKeyB = DomainB.cKey
   }
   else {
     axisA.color = DomainA.color
     axisB.color = DomainB.color
-    cKeyA = DomainA.cKey
-    cKeyB = DomainB.cKey
   }
-  resA = {axis: axisA, cKey: cKeyA}
-  resB = {axis: axisB, cKey: cKeyB}
+  resA = {axis: axisA}
+  resB = {axis: axisB}
 
   /* exceptions: modify domains considering specs */
   // x or y axis
-  if (deepValue(C.layout) === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
+  if (deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
     const n = A.encoding.x.type === "nominal" ? "x" : "y",
       q = A.encoding.x.type === "quantitative" ? "x" : "y"
@@ -73,18 +68,16 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
       A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
   }
   /* color consistency */
-  else if (((deepValue(C.layout) === "juxtaposition" && C.layout.unit === "chart") || (deepValue(C.layout) === "superimposition" && C.layout.unit === "chart")) &&
+  else if (((deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "chart") || (deepObjectValue(C.layout) === "superimposition" && C.layout.unit === "chart")) &&
     isScatterplot(A) && isScatterplot(B) && consistency.color === "same") {
     // use A color if two of them use color
     // When only B use color, then use the B's
     resA.axis["color"] = resB.axis["color"] = A.encoding.color !== undefined ? DomainA.color :
       B.encoding.color !== undefined ? DomainB.color : [""]
-    resA.cKey = resB.cKey = A.encoding.color !== undefined ? DomainA.cKey :
-      B.encoding.color !== undefined ? DomainB.cKey : A.encoding.x.field
   }
   /* nesting */
   // separate domain B by aggregation keys used in Chart A
-  else if (deepValue(C.layout) === "superimposition" && C.layout.unit === "element") {
+  else if (deepObjectValue(C.layout) === "superimposition" && C.layout.unit === "element") {
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
     if (isChartDataAggregated(B)) {
 

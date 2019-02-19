@@ -25,7 +25,7 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
 
   renderHeatmap(g, spec, {x: domains.x, y: domains.y}, {
     ...DEFAULT_CHART_STYLE,
-    color: d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColor()), colorKey: domains.cKey, legend: !isUndefined(color)
+    color: d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColor()), legend: !isUndefined(color)
   })
 }
 
@@ -42,10 +42,10 @@ export function renderHeatmap(svg: d3.Selection<SVGGElement, {}, null, undefined
   // TODO: when xField and yField same!
   const aggValues = getAggValuesByTwoKeys(values, xField, yField, cField, aggregate)
   const linAggValues = tabularizeData(aggValues, [domain.x as string[], domain.y as string[]], [xField, yField], cField)
-  renderCells(g, linAggValues, xField, yField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: aggregate != undefined})
+  renderCells(g, linAggValues, xField, yField, cField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: aggregate != undefined})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.colorName ? styles.colorName : styles.colorKey, styles.color.domain() as string[], styles.color.range() as string[], true)
+    renderLegend(legendG, styles.colorName ? styles.colorName : cField, styles.color.domain() as string[], styles.color.range() as string[], true)
   }
 }
 
@@ -54,6 +54,7 @@ export function renderCells(
   data: object[],
   xKey: string,
   yKey: string,
+  cKey: string,
   x: d3.ScaleBand<string>,
   y: d3.ScaleBand<string>,
   styles: ChartStyle) {
@@ -66,7 +67,7 @@ export function renderCells(
     .data(data)
     .enter().append(_rect)
     .classed('cell', true)
-    .attr(_fill, d => d[styles.colorKey] === null ? styles.nullCellFill : (styles.color as d3.ScaleLinear<string, string>)(d[styles.colorKey]) as string)
+    .attr(_fill, d => d[cKey] === null ? styles.nullCellFill : (styles.color as d3.ScaleLinear<string, string>)(d[cKey]) as string)
     .attr(_x, d => x(d[xKey]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
     .attr(_y, d => y(d[yKey]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
     .attr(_width, cellWidth)

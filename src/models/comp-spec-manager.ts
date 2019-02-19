@@ -34,7 +34,7 @@ export function correctCompSpec(spec: CompSpec) {
  * @param spec
  * @param key
  */
-export function deepValue(spec: string | object, key?: string) {
+export function deepObjectValue(spec: string | object, key?: string) {
   key = ifUndefinedGetDefault(key, "type") as string
   if (typeof spec === "object") return spec[key]
   else return spec

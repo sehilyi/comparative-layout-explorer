@@ -12,6 +12,7 @@ import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x} from 'src/useful-factory/d3-str';
 import {getColor, CHART_SIZE, CHART_MARGIN, getBarSize} from '../default-design-manager';
+import {deepObjectValue} from 'src/models/comp-spec-manager';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -26,7 +27,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 
   renderBarChart(g, spec, {x: domains.x, y: domains.y}, {
     ...DEFAULT_CHART_STYLE,
-    color: getColor(domains.color), colorKey: domains.cKey, verticalBar: spec.encoding.x.type === "nominal", legend: !isUndefined(color)
+    color: getColor(domains.color), verticalBar: spec.encoding.x.type === "nominal", legend: !isUndefined(color)
   })
 }
 
@@ -41,14 +42,15 @@ export function renderBarChart(
   const {aggregate} = verticalBar ? spec.encoding.y : spec.encoding.x
   const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y"
   const {field: nField} = spec.encoding[n], {field: qField} = spec.encoding[q]
+  const cField = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
 
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nField, [qField], aggregate))
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-  renderBars(g, aggValues, qField, nField, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
+  renderBars(g, aggValues, qField, nField, cField, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.colorName ? styles.colorName : styles.colorKey, styles.color.domain() as string[], styles.color.range() as string[])
+    renderLegend(legendG, styles.colorName ? styles.colorName : cField, styles.color.domain() as string[], styles.color.range() as string[])
   }
 }
 
@@ -57,6 +59,7 @@ export function renderBars(
   data: object[],
   vKey: string,
   gKey: string,
+  cKey: string,
   x: d3.ScaleBand<string> | d3.ScaleLinear<number, number>,
   y: d3.ScaleLinear<number, number> | d3.ScaleBand<string>,
   styles: ChartStyle) {
@@ -79,7 +82,7 @@ export function renderBars(
     .data(data)
     .enter().append(_rect)
     .classed('bar', true)
-    .attr(_fill, d => (styles.color as d3.ScaleOrdinal<string, {}>)(d[styles.colorKey === "" ? vKey : styles.colorKey]) as string)
+    .attr(_fill, d => (styles.color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? vKey : cKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
 

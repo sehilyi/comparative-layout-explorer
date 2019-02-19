@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, _CompSpecSolid} from "src/models/comp-spec";
-import {translate, uniqueValues} from "src/useful-factory/utils";
+import {translate, uniqueValues, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {
   GAP_BETWEEN_CHARTS, CHART_SIZE, AXIS_ROOT_ID,
 } from "./default-design-manager";
@@ -12,7 +12,7 @@ import {oneOfFilter, getFieldsByType} from "./data-handler";
 import {getStyles} from "./chart-styles/style-manager";
 import {getLayouts} from "./chart-styles/layout-manager";
 import {getDomainByLayout} from "./data-handler/domain-manager";
-import {deepValue, correctCompSpec} from "src/models/comp-spec-manager";
+import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
 import {_transform, _width, _height, _g, _opacity} from "src/useful-factory/d3-str";
 import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
 import {animateChart} from "./animated";
@@ -32,9 +32,9 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
 
   // TODO: remove this
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
-  if (deepValue(C.layout) === "juxtaposition" && C.layout.unit === 'element') {
+  if (deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === 'element') {
     renderLegend(svg.append(_g).attr(_transform, translate(layouts.B.left + CHART_SIZE.width + GAP_BETWEEN_CHARTS, layouts.B.top)),
-      styles.A.colorName ? styles.A.colorName : styles.A.colorKey,
+      styles.A.colorName ? styles.A.colorName : ifUndefinedGetDefault(deepObjectValue(A.encoding.color, "field"), A.encoding.x.field as string),
       [A.encoding.y.field, B.encoding.y.field],
       styles.A.color.range().concat(styles.B.color.range()) as string[])
   }

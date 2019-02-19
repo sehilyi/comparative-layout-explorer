@@ -15,7 +15,7 @@ export interface CommonChartStyle {
   nestingPadding: number
   // chart common
   color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>
-  colorKey: string
+  // colorKey: string // deprecated
   onTop: boolean
   translateX: number
   translateY: number
@@ -73,7 +73,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   nestingPadding: NESTING_PADDING,
   //
   color: getConstantColor(),
-  colorKey: "",
+  // colorKey: "",  // deprecated
   onTop: false,
   translateX: 0,
   translateY: 0,
