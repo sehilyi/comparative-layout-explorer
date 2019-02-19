@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {Spec, Field} from "src/models/simple-vega-spec";
-import {translate, rotate, uniqueValues} from "src/useful-factory/utils";
+import {translate, rotate, uniqueValues, shortenText} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
 import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand} from "src/useful-factory/d3-str";
@@ -36,17 +36,17 @@ export function renderAxes(
   // TODO: any clearer way??
   const xAxis = styles.topX ?
     isXCategorical ?
-      d3.axisTop(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => d.length > AXIS_LABEL_LEN_LIMIT ? d.slice(0, AXIS_LABEL_LEN_LIMIT - 2).concat('...') : d).tickSizeOuter(0) :
+      d3.axisTop(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
       d3.axisTop(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
     : isXCategorical ?
-      d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => d.length > AXIS_LABEL_LEN_LIMIT ? d.slice(0, AXIS_LABEL_LEN_LIMIT - 2).concat('...') : d).tickSizeOuter(0) :
+      d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
       d3.axisBottom(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   const yAxis = styles.rightY ?
     isYCategorical ?
-      d3.axisRight(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => d.length > AXIS_LABEL_LEN_LIMIT ? d.slice(0, AXIS_LABEL_LEN_LIMIT - 2).concat('...') : d).tickSizeOuter(0) :
+      d3.axisRight(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
       d3.axisRight(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
     isYCategorical ?
-      d3.axisLeft(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => d.length > AXIS_LABEL_LEN_LIMIT ? d.slice(0, AXIS_LABEL_LEN_LIMIT - 2).concat('...') : d).tickSizeOuter(0) :
+      d3.axisLeft(nY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
       d3.axisLeft(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   const xGrid = isXCategorical ?
     d3.axisBottom(nX).ticks(Math.ceil(styles.width / 40)).tickFormat(null).tickSize(-styles.height) :
