@@ -32,7 +32,7 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
 export function renderHeatmap(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
-  domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]},
+  domain: {x: string[] | number[], y: string[] | number[]},
   styles: ChartStyle) {
 
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})

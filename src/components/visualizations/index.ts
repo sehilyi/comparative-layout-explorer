@@ -33,7 +33,7 @@ export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
 export function renderChart(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec, // contains actual values to draw bar chart
-  domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]}, // determine the axis range
+  domain: {x: string[] | number[], y: string[] | number[]},
   styles: ChartStyle) {
   switch (getChartType(spec)) {
     case "scatterplot":

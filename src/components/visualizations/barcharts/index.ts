@@ -34,7 +34,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 export function renderBarChart(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
-  domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]}, // determine the axis range
+  domain: {x: string[] | number[], y: string[] | number[]},
   styles: ChartStyle) {
 
   const {values} = spec.data

@@ -34,7 +34,7 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 export function renderScatterplot(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
-  domain: {x: string[] | number[], y: string[] | number[], color?: string[] | number[]},
+  domain: {x: string[] | number[], y: string[] | number[]},
   styles: ChartStyle) {
 
   const {values} = spec.data;
