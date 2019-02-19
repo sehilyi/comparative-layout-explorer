@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
 import {getBarSize, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../default-design-manager";
 import {ChartStyle} from ".";
-import {getAggregatedDatas, getAggValues} from "../data-handler";
+import {getAggValues, getAggregatedData} from "../data-handler";
 import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
@@ -45,23 +45,23 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Con
         // divide layouts
         // TODO: I think sub elements' layout should be shared here
         if (isBarChart(A) && A.encoding.x.type === "nominal") { // vertical bar chart
-          const aggD = getAggregatedDatas(A, B)
-          const numOfX = aggD.A.categories.length
+          const aValues = getAggregatedData(A).values
+          const numOfX = getAggregatedData(A).categories.length
           /// TODO: should be consistent with that of /barcharts/index.ts
           const bandUnitSize = S.A.width / numOfX
           const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.mulSize
           /// TODO: should be consistent with that of /axes/index.ts
           const qY = d3.scaleLinear()
-            .domain([d3.min([d3.min(aggD.A.values as number[]), 0]), d3.max(aggD.A.values as number[])]).nice()
+            .domain([d3.min([d3.min(aValues as number[]), 0]), d3.max(aValues as number[])]).nice()
             .rangeRound([S.A.height, 0]);
           //
           nestedBs = [] as Position[]
           for (let i = 0; i < numOfX; i++) {
             nestedBs.push({
               left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + S.B.nestingPadding,
-              top: qY(aggD.A.values[i]) + S.B.nestingPadding,
+              top: qY(aValues[i]) + S.B.nestingPadding,
               width: barWidth - S.B.nestingPadding * 2,
-              height: S.A.height - qY(aggD.A.values[i]) - S.B.nestingPadding // no top padding
+              height: S.A.height - qY(aValues[i]) - S.B.nestingPadding // no top padding
             })
           }
         }

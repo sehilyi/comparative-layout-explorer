@@ -163,30 +163,6 @@ export function getAggregatedData(s: Spec) {
   return {values, categories, data}
 }
 
-// TODO: this should be re-designed
-export function getAggregatedDatas(a: Spec, b: Spec) {
-  const {...dataA} = getAggregatedData(a), {...dataB} = getAggregatedData(b)
-  const abybval = getAggValuesByTwoKeys(a.data.values, a.encoding.x.field, b.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)  // TODO: what aggregation functions to use?
-  const bbyaval = getAggValuesByTwoKeys(a.data.values, b.encoding.x.field, a.encoding.x.field, a.encoding.y.field, a.encoding.y.aggregate)
-  const unionval = dataA.data.concat(dataB.data)
-
-  const unioncat = uniqueValues(dataA.data.concat(dataB.data), "key")
-  return {
-    A: {values: dataA.values, categories: dataA.categories, data: dataA.data},
-    B: {values: dataB.values, categories: dataB.categories, data: dataB.data},
-    Union: {values: unionval.map(d => d["value"]), categories: unioncat, data: unionval},
-    AbyB: {
-      values: [].concat(...abybval.map(d => d.values.map((_d: object) => _d["value"]))),
-      data: abybval,
-      sums: abybval.map(d => d3.sum(d.values.map((_d: object) => _d["value"])))
-    },
-    BbyA: {
-      values: [].concat(...bbyaval.map(d => d.values.map((_d: object) => _d["value"]))),
-      data: bbyaval
-    }
-  }
-}
-
 /**
  * By k1 and k2, get sum of v1 and v2
  * Naive implementation
@@ -210,8 +186,14 @@ export function getDomainSumByKeys(o: object[], k1: string, k2: string, v1: stri
   return result.map(d => d[v1 + " + " + v2])
 }
 
+/**
+ * filter data by nominal value
+ * @param d
+ * @param k
+ * @param v
+ */
 export function oneOfFilter(d: object[], k: string, v: string | number) {
-  return d.filter(d => v === "null" ? d[k] == null : d[k] == v)
+  return d.filter(d => v === "null" ? d[k] === null : d[k] === v)
 }
 
 /**
