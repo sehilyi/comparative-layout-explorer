@@ -9,7 +9,6 @@ export interface CommonChartStyle {
   chartId: "A" | "B"
   // globar style
   opacity: number
-  aggregated: boolean   // TODO: do we really need this?
   // layout
   nestDim: 0 | 1 | 2
   nestingPadding: number
@@ -67,7 +66,6 @@ export interface CommonChartStyle {
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   chartId: "A",
   opacity: 1,
-  aggregated: false,
   //layout
   nestDim: 0,
   nestingPadding: NESTING_PADDING,

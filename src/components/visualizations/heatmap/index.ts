@@ -42,7 +42,7 @@ export function renderHeatmap(
   const {aggregate} = spec.encoding.color
   // TODO: when xField and yField same!
   const pivotData = getPivotData(values, [xField, yField], cField, aggregate)
-  renderCells(g, pivotData, xField, yField, cField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles, aggregated: aggregate != undefined})
+  renderCells(g, pivotData, xField, yField, cField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
     renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, styles.color.domain() as string[], styles.color.range() as string[], true)

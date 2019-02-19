@@ -44,7 +44,7 @@ export function renderScatterplot(
   const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-  renderPoints(g, aggValues, xField, yField, cField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles, aggregated: aggregate !== undefined})
+  renderPoints(g, aggValues, xField, yField, cField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
