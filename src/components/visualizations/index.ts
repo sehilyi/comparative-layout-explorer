@@ -34,19 +34,20 @@ export function renderChart(
   g: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec, // contains actual values to draw bar chart
   domain: {x: string[] | number[], y: string[] | number[]},
+  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
   styles: ChartStyle) {
   switch (getChartType(spec)) {
     case "scatterplot":
-      renderScatterplot(g, spec, domain, styles)
+      renderScatterplot(g, spec, domain, color, styles)
       break
     case "barchart":
-      renderBarChart(g, spec, domain, styles)
+      renderBarChart(g, spec, domain, color, styles)
       break
     case "linechart":
       //
       break
     case "heatmap":
-      renderHeatmap(g, spec, domain, styles)
+      renderHeatmap(g, spec, domain, color, styles)
       break
     case "NULL":
       console.log("Chart type is not defined well (NULL type).")

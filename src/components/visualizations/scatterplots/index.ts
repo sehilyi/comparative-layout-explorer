@@ -28,13 +28,14 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
   d3.select(svg).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(svg).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
 
-  renderScatterplot(g, spec, {x: domain.x, y: domain.y}, styles)
+  renderScatterplot(g, spec, {x: domain.x, y: domain.y}, color, styles)
 }
 
 export function renderScatterplot(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]},
+  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
   styles: ChartStyle) {
 
   const {values} = spec.data;
@@ -44,11 +45,11 @@ export function renderScatterplot(
   const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xField, yField], aggregate) : values
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-  renderPoints(g, aggValues, xField, yField, cField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, {...styles})
+  renderPoints(g, aggValues, xField, yField, cField, x as d3.ScaleLinear<number, number>, y as d3.ScaleLinear<number, number>, color, {...styles})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, styles.color.domain() as string[], styles.color.range() as string[])
+    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, color.domain() as string[], color.range() as string[])
   }
 }
 
@@ -60,6 +61,7 @@ export function renderPoints(
   cKey: string,
   x: d3.ScaleLinear<number, number>,
   y: d3.ScaleLinear<number, number>,
+  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
   styles: ChartStyle) {
 
   g.append(_g).selectAll('.point')
@@ -69,7 +71,7 @@ export function renderPoints(
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, styles.stroke)
     .attr(_stroke_width, styles.stroke_width)
-    .attr(_fill, d => (styles.color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? xKey : cKey]) as string)
+    .attr(_fill, d => (color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? xKey : cKey]) as string)
     // circle mark
     .attr(_cx, d => x(d[xKey]))
     .attr(_cy, d => y(d[yKey]))

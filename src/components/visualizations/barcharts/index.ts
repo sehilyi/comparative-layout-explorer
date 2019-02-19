@@ -25,9 +25,8 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 
   const {...domains} = getDomain(spec)
 
-  renderBarChart(g, spec, {x: domains.x, y: domains.y}, {
-    ...DEFAULT_CHART_STYLE,
-    color: getColor(domains.color), verticalBar: spec.encoding.x.type === "nominal", legend: !isUndefined(color)
+  renderBarChart(g, spec, {x: domains.x, y: domains.y}, getColor(domains.color), {
+    ...DEFAULT_CHART_STYLE, legend: !isUndefined(color), verticalBar: spec.encoding.x.type === "nominal"
   })
 }
 
@@ -35,6 +34,7 @@ export function renderBarChart(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]},
+  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
   styles: ChartStyle) {
 
   const {values} = spec.data
@@ -47,10 +47,10 @@ export function renderBarChart(
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nField, [qField], aggregate))
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
   const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
-  renderBars(g, aggValues, qField, nField, cField, x as ScaleBand<string>, y as ScaleLinear<number, number>, {...styles})
+  renderBars(g, aggValues, qField, nField, cField, x as ScaleBand<string>, y as ScaleLinear<number, number>, color, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, styles.color.domain() as string[], styles.color.range() as string[])
+    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, color.domain() as string[], color.range() as string[])
   }
 }
 
@@ -62,6 +62,7 @@ export function renderBars(
   cKey: string,
   x: d3.ScaleBand<string> | d3.ScaleLinear<number, number>,
   y: d3.ScaleLinear<number, number> | d3.ScaleBand<string>,
+  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
   styles: ChartStyle) {
 
   const {mulSize, shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar} = styles
@@ -82,7 +83,7 @@ export function renderBars(
     .data(data)
     .enter().append(_rect)
     .classed('bar', true)
-    .attr(_fill, d => (styles.color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? qKey : cKey]) as string)
+    .attr(_fill, d => (color as d3.ScaleOrdinal<string, {}>)(d[cKey === "" ? qKey : cKey]) as string)
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
 

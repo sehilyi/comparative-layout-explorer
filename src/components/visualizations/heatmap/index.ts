@@ -23,16 +23,15 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
 
   const {...domains} = getDomain(spec)
 
-  renderHeatmap(g, spec, {x: domains.x, y: domains.y}, {
-    ...DEFAULT_CHART_STYLE,
-    color: d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColor()), legend: !isUndefined(color)
-  })
+  renderHeatmap(g, spec, {x: domains.x, y: domains.y}, d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColor()),
+    {...DEFAULT_CHART_STYLE, legend: !isUndefined(color)})
 }
 
 export function renderHeatmap(
   svg: d3.Selection<SVGGElement, {}, null, undefined>,
   spec: Spec,
   domain: {x: string[] | number[], y: string[] | number[]},
+  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
   styles: ChartStyle) {
 
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
@@ -42,10 +41,10 @@ export function renderHeatmap(
   const {aggregate} = spec.encoding.color
   // TODO: when xField and yField same!
   const pivotData = getPivotData(values, [xField, yField], cField, aggregate)
-  renderCells(g, pivotData, xField, yField, cField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, {...styles})
+  renderCells(g, pivotData, xField, yField, cField, x as d3.ScaleBand<string>, y as d3.ScaleBand<string>, color, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, styles.color.domain() as string[], styles.color.range() as string[], true)
+    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cField, color.domain() as string[], color.range() as string[], true)
   }
 }
 
@@ -57,6 +56,7 @@ export function renderCells(
   cKey: string,
   x: d3.ScaleBand<string>,
   y: d3.ScaleBand<string>,
+  color: d3.ScaleOrdinal<string, {}> | d3.ScaleLinear<string, string>,
   styles: ChartStyle) {
 
   const numOfX = (x.domain() as string[]).length, numOfY = (y.domain() as string[]).length
@@ -68,7 +68,7 @@ export function renderCells(
     .enter().append(_rect)
     .classed('cell', true)
     // d[cKey] can be either null or undefined
-    .attr(_fill, d => isNullOrUndefined(d[cKey]) ? styles.nullCellFill : (styles.color as d3.ScaleLinear<string, string>)(d[cKey]) as string)
+    .attr(_fill, d => isNullOrUndefined(d[cKey]) ? styles.nullCellFill : (color as d3.ScaleLinear<string, string>)(d[cKey]) as string)
     .attr(_x, d => x(d[xKey]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
     .attr(_y, d => y(d[yKey]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
     .attr(_width, cellWidth)

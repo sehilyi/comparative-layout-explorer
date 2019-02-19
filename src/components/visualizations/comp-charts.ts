@@ -40,11 +40,11 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   }
   /* render A */
   if (!Array.isArray(domains.A.axis)) {
-    renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A)
+    renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A.color, styles.A)
   }
   /* render B */
   if (!Array.isArray(domains.B.axis)) {
-    renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B)
+    renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B.color, styles.B)
   }
   /* 1D nesting: B is separated to multiple charts by A */
   else if (styles.B.nestDim === 1) {
@@ -53,7 +53,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string)
       let filteredSpec = {...B, data: {...B.data, values: filteredData}}
       // TODO: width and height is not included in styles => any ways to make this clearer?
-      renderChart(svg, filteredSpec, {x: domains.B.axis[i]["x"], y: domains.B.axis[i]["y"]}, {
+      renderChart(svg, filteredSpec, {x: domains.B.axis[i]["x"], y: domains.B.axis[i]["y"]}, styles.B.color, {
         ...styles.B,
         width: layouts.nestedBs[i]["width"],
         height: layouts.nestedBs[i]["height"],
@@ -72,7 +72,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
           A.encoding[ns[1].channel].field,
           domains.A.axis[ns[1].channel][j] as string)
         let filteredSpec = {...B, data: {...B.data, values: filteredData}}
-        renderChart(svg, filteredSpec, {x: domains.B.axis[i][j]["x"], y: domains.B.axis[i][j]["y"]}, {
+        renderChart(svg, filteredSpec, {x: domains.B.axis[i][j]["x"], y: domains.B.axis[i][j]["y"]}, styles.B.color, {
           ...styles.B,
           width: layouts.nestedBs[i][j].width,
           height: layouts.nestedBs[i][j].height,
