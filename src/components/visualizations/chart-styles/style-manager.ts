@@ -9,7 +9,7 @@ import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDIN
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
 import {getAxisName} from "../axes";
-import {_white} from "src/useful-factory/d3-str";
+import {_white, _black} from "src/useful-factory/d3-str";
 
 // TOOD: any better way to define domain types?
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, domain: {A: ChartDomainData, B: ChartDomainData}) {
@@ -122,11 +122,15 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
         S.B.pointSize = 1.5
 
         S.B.cellPadding = 0
-        S.B.nestingPadding = 0
+        S.B.nestingPadding = 1
         if (!isHeatmap(A)) S.B.nullCellFill = _white
         if (isHeatmap(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
         if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
         if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
+        if (!isHeatmap(B)) {
+          S.A.stroke = _black
+          S.A.stroke_width = 1
+        }
 
         // scatterplot
         S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING
