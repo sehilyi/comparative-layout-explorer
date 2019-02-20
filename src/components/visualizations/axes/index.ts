@@ -16,8 +16,8 @@ export function renderAxes(
   spec: Spec,
   styles: ChartStyle) {
 
-  const {elementAnimated: ani} = styles
-  const tran = d3.transition().delay(DF_DELAY).duration(DF_DURATION)
+  const {elementAnimated: animated} = styles
+  const tran = d3.transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
   const isXCategorical = spec.encoding.x.type === "nominal"
   const isYCategorical = spec.encoding.y.type === "nominal"
 
@@ -60,7 +60,8 @@ export function renderAxes(
 
   /* render axes */
   if (!isNullOrUndefined(root) && !styles.noAxes) {
-    const g: GSelection = ani ? root.select(`.${AXIS_ROOT_ID}A`) :
+    const g: GSelection = animated ?
+      root.select(`.${AXIS_ROOT_ID}A`) :  // for animated, select rather than append
       root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY))
         .classed(`${AXIS_ROOT_ID}${styles.chartId}`, true)
         .classed(AXIS_ROOT_ID, true)
@@ -68,7 +69,7 @@ export function renderAxes(
 
     /* grid x */
     if (!isXCategorical && !styles.noGrid) {
-      if (!ani) {
+      if (!animated) {
         g.append('g')
           .classed('grid x-grid', true)
           .attr('transform', translate(0, styles.height))
@@ -83,7 +84,7 @@ export function renderAxes(
 
     /* grid y */
     if (!isYCategorical && !styles.noGrid) {
-      if (!ani) {
+      if (!animated) {
         g.append('g')
           .classed('grid y-grid', true)
           .call(yGrid)
@@ -97,42 +98,32 @@ export function renderAxes(
 
     /* axis x */
     if (!styles.noX) {
-      let xaxis: GSelection
-      if (!ani) {
-        xaxis = g.append('g')
+      const xAxisG: GSelection = animated ?
+        g.select(".x-axis") :
+        g.append('g')
           .classed('axis x-axis', true)
           .attr('stroke', '#888888')
           .attr('stroke-width', 0.5)
           .attr('transform', translate(0, styles.topX ? 0 : styles.height))
           .call(xAxis)
-      }
-      else {
-        xaxis = g.select(".x-axis")
-        xaxis
-          .transition(tran).call(xAxis)
+
+      if (animated) {
+        xAxisG.transition(tran).call(xAxis)
       }
 
-      /* ticks' labels */
+      /* rotate y ticks' labels */
       if (isXCategorical) {
-        if (!ani) {
-          g.selectAll('.x-axis .tick text')
-            .attr(_x, styles.topX ? 6 : -6)
-            .attr(_y, 0)
-            .attr(_transform, rotate(310))
-            .attr(_text_anchor, styles.topX ? _start : _end)
-        }
-        else {
-          g.selectAll('.x-axis .tick text')
-            .transition(tran)
-            // TODO: why something wrong happen when I delete these two lines?
-            .attr(_x, styles.topX ? 6 : -6)
-            .attr(_y, 0)
-        }
+        xAxisG.selectAll('.tick text')
+          .attr(_transform, rotate(310))
+          .transition(tran)
+          .attr(_x, styles.topX ? 6 : -6)
+          .attr(_y, 0)
+          .attr(_text_anchor, styles.topX ? _start : _end)
       }
 
       /* axis name */
-      if (!ani) {
-        xaxis
+      if (!animated) {
+        xAxisG
           .attr('transform', translate(0, styles.topX ? 0 : styles.height))
           .append('text')
           .classed('axis-name x-axis-name', true)
@@ -145,39 +136,38 @@ export function renderAxes(
           .text(styles.xName !== undefined ? styles.xName : getAxisName(spec.encoding.x))
       }
       else {
-        xaxis
+        xAxisG
           .selectAll(".x-axis-name")
           // transition // TODO:
           .text(styles.xName !== undefined ? styles.xName : getAxisName(spec.encoding.x))
       }
 
       if (isXCategorical) {
-        if (!ani)
-          xaxis.selectAll(".axis-name")
+        if (!animated)
+          xAxisG.selectAll(".axis-name")
             .attr('y', styles.topX ? -60 : (CHART_MARGIN.bottom - 5))
       }
     }
 
     /* axis y */
     if (!styles.noY) {
-      let yaxis: GSelection
-      if (!ani) {
-        yaxis = g.append('g')
+      const yAxisG: GSelection = animated ?
+        g.select(".y-axis") :
+        g.append('g')
           .attr(_transform, translate(styles.rightY ? styles.width : 0, 0))
           .classed('axis y-axis', true)
           .attr('stroke', '#888888')
           .attr('stroke-width', 0.5)
           .call(yAxis)
-      }
-      else {
-        yaxis = g.select(".y-axis")
-        yaxis.transition(tran).call(yAxis)
+
+      if (animated) {
+        yAxisG.transition(tran).call(yAxis)
       }
 
       /* axis name */
       if (!styles.noYTitle) {
-        if (!ani) {
-          yaxis
+        if (!animated) {
+          yAxisG
             .append('text')
             .classed('axis-name y-axis-name', true)
             .attr('transform', rotate(-90))
@@ -191,7 +181,7 @@ export function renderAxes(
             .text(styles.yName !== undefined ? styles.yName : getAxisName(spec.encoding.y))
         }
         else {
-          yaxis
+          yAxisG
             .selectAll(".y-axis-name")
             // .transition(tran)  // TODO:
             // .attr('x', -styles.height / 2)
@@ -208,9 +198,7 @@ export function renderAxes(
 
     /* styles */
     /* grid */
-    g.selectAll('.axis path')
-      .attr(_stroke_width, '1px')
-      .attr('stroke', 'black')
+    g.selectAll('.axis path').attr(_stroke_width, '1px').attr('stroke', 'black')
 
     /* hide grid */
     if (isYCategorical) g.selectAll('.x-axis path').attr(_stroke_width, '0px')
@@ -232,8 +220,10 @@ export function renderAxes(
       .attr(_font_family, DEFAULT_FONT)
 
     // axis name, line, grid
-    g.selectAll('.axis .axis-name').style('font-size', '12px')
-    g.selectAll('.grid text').style('display', 'none')  // don't need this
+    g.selectAll('.axis .axis-name')
+      .style('font-size', '12px')
+    g.selectAll('.grid text')
+      .style('display', 'none')  // don't need this
     g.selectAll('.grid path') // don't need this
       .attr(_stroke, 'rgb(221, 221, 221)')
       .attr(_stroke_width, '0px')
