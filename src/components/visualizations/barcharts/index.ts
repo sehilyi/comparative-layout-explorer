@@ -78,9 +78,11 @@ export function renderBars(
     numOfC = nY.domain().length
   }
 
-  let bars: BTSelection = g.selectAll(".bar").data(data, d => d[keys.nKey])
+  let bars: BTSelection = g.selectAll(".bar")
+
+  debugger
+  bars = bars.data(data, d => d[keys.nKey])
     .classed('bar', true)
-  // debugger
 
   bars.exit()
     .transition().delay(DF_DELAY).duration(DF_DURATION)
