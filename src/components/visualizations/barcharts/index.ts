@@ -78,65 +78,57 @@ export function renderBars(
     numOfC = nY.domain().length
   }
 
-  // TODO: move
-  const N = "N", Q = "Q", C = "C"
+  const _N = "N", _Q = "Q", _C = "C"
   let dataCommonShape = data.map(d => ({N: d[keys.nKey], Q: d[keys.qKey], C: d[keys.cKey]}))
-  let bars: BTSelection;
+  let oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[_N])
 
-  if (!animated) {
-    bars = g.selectAll(".bar").data(dataCommonShape, d => d[N])
-      .enter().append(_rect)
-      .attr(_class, "bar")
-  }
-  else if (animated) {
-    bars = g.selectAll(".bar").data(dataCommonShape, d => d[N])
+  // remove not used
+  oldBars
+    .exit()
+    .attr("opacity", 1)
+    .transition().delay(DF_DELAY).duration(DF_DURATION)
+    .attr("opacity", 0)
+    .remove();
 
-    bars
-      .exit()
-      .attr("opacity", 1)
-      .transition().delay(1000).duration(1000)
-      .attr("opacity", 0)
-      .remove();
-
-    bars = bars.enter().append(_rect).attr(_class, "bar")
-  }
-
-  bars
-    .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
-    .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? Q : C]) as string)
+  const newBars = oldBars.enter().append(_rect).attr(_class, "bar")
     .attr(_stroke, stroke)
     .attr(_stroke_width, stroke_width)
+    .attr(_x, width)
+
+  const allBars = newBars.merge(oldBars as any)
 
   if (verticalBar) {
     const bandUnitSize = width / numOfC
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
-
-    bars
-      .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
-      .attr(_x, d => nX(xPreStr + d[N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
-      .attr(_width, barSize)
+    debugger
+    allBars
       // initial position
-      // .attr(_y, styles.revY ? 0 : height)
-      // .attr(_height, 0)
-      .attr(_y, d => (styles.revY ? 0 : qY(d[Q])) + // TOOD: clean up more?
-        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[N])[0]) ?
-          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[N])[0][barOffset.valueField])) : 0))
-      .attr(_height, d => (styles.revY ? qY(d[Q]) : height - qY(d[Q])))
+      .attr(_y, styles.revY ? 0 : height)
+      .attr(_height, 0)
+      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)
+      .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
+      .attr(_x, d => nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_width, barSize)
+      .attr(_y, d => (styles.revY ? 0 : qY(d[_Q])) + // TOOD: clean up more?
+        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
+          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0))
+      .attr(_height, d => (styles.revY ? qY(d[_Q]) : height - qY(d[_Q])))
   }
   else {
     const bandUnitSize = height / numOfC
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * mulSize) as number;
 
-    bars
-      .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
-      .attr(_y, d => nY(xPreStr + d[N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
-      .attr(_height, barSize)
+    allBars
       // initial position
-      // .attr(_x, styles.revX ? width : 0)
-      // .attr(_width, 0)
-      .attr(_x, d => (!styles.revX ? 0 : qX(d[Q])) + // TOOD: clean up more?
-        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[N])[0]) ?
-          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[N])[0][barOffset.valueField])) : 0))
-      .attr(_width, d => (!styles.revX ? qX(d[Q]) : width - qX(d[Q])))
+      .attr(_x, styles.revX ? width : 0)
+      .attr(_width, 0)
+      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)
+      .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
+      .attr(_y, d => nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_height, barSize)
+      .attr(_x, d => (!styles.revX ? 0 : qX(d[_Q])) + // TOOD: clean up more?
+        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
+          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0))
+      .attr(_width, d => (!styles.revX ? qX(d[_Q]) : width - qX(d[_Q])))
   }
 }
