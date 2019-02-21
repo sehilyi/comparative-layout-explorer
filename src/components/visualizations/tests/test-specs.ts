@@ -19,7 +19,8 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 export function getExamples() {
   let examples = getExampleSpec()
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
-    .filter(d => d.C.name === "test")
+    .filter(d => d.C.name === "test 1")
+  return examples
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
     (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? 1 : deepObjectValue(a.C.layout) < deepObjectValue(b.C.layout) ? -1 : deepObjectValue(a.C.layout) > deepObjectValue(b.C.layout) ? 1 : -1
@@ -425,7 +426,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test",
+        name: "test 1",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "same"
@@ -438,9 +439,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "bar",
         encoding: {
-          x: {field: "Source", type: "nominal"},
+          x: {field: "Creative_Type", type: "nominal"},
           y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "Source", type: "nominal"}
+          color: {field: "Creative_Type", type: "nominal"}
         }
       },
       B: {
@@ -470,9 +471,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "bar",
         encoding: {
-          x: {field: "Major_Genre", type: "nominal"},
+          x: {field: "Source", type: "nominal"},
           y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "Major_Genre", type: "nominal"}
+          color: {field: "Source", type: "nominal"}
         }
       },
       B: {

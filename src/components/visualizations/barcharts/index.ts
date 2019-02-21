@@ -9,10 +9,10 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id} from 'src/useful-factory/d3-str';
 import {getColor, CHART_SIZE, CHART_MARGIN, getBarSize, CHART_CLASS_ID} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
-import {DF_TRANSITION} from '../animated/default-design';
+import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -48,9 +48,9 @@ export function renderBarChart(
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
 
-  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate))
+  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate)) as object[]
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
-  renderBars(g, aggValues, {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
+  renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
     renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cKey, color.domain() as string[], color.range() as string[])
@@ -78,25 +78,18 @@ export function renderBars(
     numOfC = nY.domain().length
   }
 
-  let bars: BTSelection = g.selectAll(_rect).data(data,
-    function (d) {
-      return d[keys.nKey]
-    })
+  let bars: BTSelection = g.selectAll(".bar").data(data, d => d[keys.nKey])
+    .classed('bar', true)
+  // debugger
+
   bars.exit()
-    // .attr(_height, 100)
-    // .attr(_width, 100)
-    // .attr(_y, 10)
-    .transition().delay(1000).duration(1000)
-    // .attr(_fill, "red")
+    .transition().delay(DF_DELAY).duration(DF_DURATION)
     .attr('height', 0)
     .attr('y', height)
     .remove()
 
   bars = bars
     .enter().append(_rect)
-    // .attr(_fill, "green")
-    .classed('bar', true)
-    // not working?
     .merge(bars as d3.Selection<SVGRectElement, {}, SVGGElement, {}>)
 
   bars
@@ -115,7 +108,7 @@ export function renderBars(
       // .attr(_y, styles.revY ? 0 : height)
       // .attr(_height, 0)
       // animated
-      .transition(animated ? DF_TRANSITION : null)
+      .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_y, d => (styles.revY ? 0 : qY(d[keys.qKey])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0]) ?
           (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0][barOffset.valueField])) : 0))
@@ -132,7 +125,7 @@ export function renderBars(
       // .attr(_x, styles.revX ? width : 0)
       // .attr(_width, 0)
       // animated
-      .transition(animated ? DF_TRANSITION : null)
+      .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_x, d => (!styles.revX ? 0 : qX(d[keys.qKey])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0]) ?
           (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[keys.nKey])[0][barOffset.valueField])) : 0))
