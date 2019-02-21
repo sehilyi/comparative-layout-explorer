@@ -100,7 +100,7 @@ export function renderBars(
   if (verticalBar) {
     const bandUnitSize = width / numOfC
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
-    debugger
+
     allBars
       // initial position
       .attr(_y, styles.revY ? 0 : height)
