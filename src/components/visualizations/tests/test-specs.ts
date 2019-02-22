@@ -18,9 +18,9 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
-    .filter(d => d.C.name === "test 1")
-  return examples
+  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
+  // .filter(d => d.C.name === "test 1")
+  // return examples
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
     (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? 1 : deepObjectValue(a.C.layout) < deepObjectValue(b.C.layout) ? -1 : deepObjectValue(a.C.layout) > deepObjectValue(b.C.layout) ? 1 : -1

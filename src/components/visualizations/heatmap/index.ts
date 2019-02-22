@@ -56,6 +56,8 @@ export function renderCells(
   scales: {x: ScaleBand, y: ScaleBand, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
+  if (styles.height < 0 || styles.width < 0) return; // when height or width of nesting root is really small
+
   const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length
   const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.mulSize
   const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.mulHeigh
