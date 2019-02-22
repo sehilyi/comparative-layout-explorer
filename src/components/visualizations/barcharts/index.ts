@@ -82,11 +82,11 @@ export function renderBars(
   let dataCommonShape = data.map(d => ({N: d[keys.nKey], Q: d[keys.qKey], C: d[keys.cKey]}))
   let oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[_N])
 
-  // remove not used
+  // remove not used bars
   oldBars
     .exit()
     .attr("opacity", 1)
-    .transition().delay(DF_DELAY).duration(DF_DURATION)
+    .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
     .attr("opacity", 0)
     .remove();
 
@@ -106,6 +106,7 @@ export function renderBars(
       .attr(_y, styles.revY ? 0 : height)
       .attr(_height, 0)
       .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)
+      // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_x, d => nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_width, barSize)
@@ -123,6 +124,7 @@ export function renderBars(
       .attr(_x, styles.revX ? width : 0)
       .attr(_width, 0)
       .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)
+      // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_y, d => nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_height, barSize)

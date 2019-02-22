@@ -17,6 +17,7 @@ import {_transform, _width, _height, _g, _opacity} from "src/useful-factory/d3-s
 import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
 import {animateChart} from "./animated";
 import {getLegends} from "./legends/legend-manager";
+import {DF_DELAY, DF_DURATION} from "./animated/default-design";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...C}) // minor issues in spec are corrected here (e.g., CompSpec => _CompSpecSolid)
@@ -33,16 +34,25 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const {...legends} = getLegends(A, B, C, consistency, styles) // TODO: empty now
 
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
-  /* render A */
-  if (!Array.isArray(domains.A.axis)) {
-    renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A.color, styles.A)
+
+  function loopABRender() {
+    svg.selectAll("*").remove();
+    /* render A */
+    if (!Array.isArray(domains.A.axis)) {
+      renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A.color, styles.A)
+    }
+    /* render B */
+    if (!Array.isArray(domains.B.axis)) {
+      renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B.color, styles.B)
+    }
   }
-  /* render B */
-  if (!Array.isArray(domains.B.axis)) {
-    renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B.color, styles.B)
-  }
+  loopABRender();
+
+  // show element-wise animated transitions
+  if (styles.B.elementAnimated) d3.interval(function () {loopABRender();}, DF_DELAY + DF_DURATION + DF_DELAY);
+
   /* 1D nesting: B is separated to multiple charts by A */
-  else if (styles.B.nestDim === 1) {
+  if (Array.isArray(domains.B.axis) && styles.B.nestDim === 1) {
     const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y"
     for (let i = 0; i < layouts.nestedBs.length; i++) {
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string)
@@ -58,7 +68,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     }
   }
   /* 2D nesting: for heatmap A */
-  else if (styles.B.nestDim === 2) {
+  else if (Array.isArray(domains.B.axis) && styles.B.nestDim === 2) {
     const ns = getFieldsByType(A, "nominal")
     for (let i = 0; i < uniqueValues(A.data.values, ns[0].field).length; i++) {
       for (let j = 0; j < uniqueValues(A.data.values, ns[1].field).length; j++) {
