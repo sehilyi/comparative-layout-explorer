@@ -1,7 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {isUndefined} from "util";
 import {_CompSpecSolid} from "src/models/comp-spec";
-import {deepObjectValue} from "src/models/comp-spec-manager";
 import {ChartTypes} from "src/models/chart-types";
 
 export function canRenderChart(spec: Spec) {
@@ -28,7 +27,8 @@ export function canRenderCompChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   let can = true;
 
   // exceptions
-  if ((isScatterplot(A) || isScatterplot(B)) && deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "element") can = false
+  if ((isScatterplot(A) || isScatterplot(B)) &&
+    C.layout.type === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated") can = false
   if (C.layout.type === "juxtaposition" && C.layout.unit === "element" &&
     (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
   // nesting

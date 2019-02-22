@@ -43,7 +43,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
     S.A.xName = (!consistency.x_axis) ? S.A.xName : getAxisName(A.encoding.x, B.encoding.x)
     S.A.yName = (!consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
   }
-  if (C.layout.arrangement === "animated" && C.layout.unit === "element") S.B.elementAnimated = true
+  if (C.layout.type == "juxtaposition" && C.layout.arrangement === "animated" && C.layout.unit === "element") S.B.elementAnimated = true
+
   // clutter reduction
   S.B.opacity = C.clutter.opacity ? 0.4 : 1
   // consistency

@@ -8,9 +8,10 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {getColor, getConstantColor, CHART_SIZE, CHART_MARGIN} from '../default-design-manager';
+import {getColor, getConstantColor, CHART_SIZE, CHART_MARGIN, CHART_CLASS_ID} from '../default-design-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
+import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
@@ -44,7 +45,11 @@ export function renderScatterplot(
   const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
   const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
-  const g = svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(styles.chartId, true)
+
+  const g: GSelection = styles.elementAnimated ?
+    svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
+    svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
+
   renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) {
@@ -60,21 +65,39 @@ export function renderPoints(
   scales: {x: ScaleLinear, y: ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
-  g.append(_g).selectAll('.point')
-    .data(data)
-    .enter().append(styles.rectPoint ? _rect : _circle)
+  const {elementAnimated: animated} = styles;
+  const _X = "X", _Y = "Y", _C = "C";
+  let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
+
+  const oldPoints = g.selectAll('.point')
+    .data(dataCommonShape)
+
+  oldPoints
+    .exit()
+    .attr(_opacity, 1)
+    .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
+    .attr(_opacity, 0)
+    .remove();
+
+  const newPoints = oldPoints.enter().append(styles.rectPoint ? _rect : _circle)
     .classed('point', true)
+
+  const allPoints = newPoints.merge(oldPoints as any)
+
+  allPoints
+    // animated transition
+    .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
     .attr(_opacity, SCATTER_POINT_OPACITY)
+    .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _X : _C]) as string)
     .attr(_stroke, styles.stroke)
     .attr(_stroke_width, styles.stroke_width)
-    .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? keys.xKey : keys.cKey]) as string)
     // circle mark
-    .attr(_cx, d => scales.x(d[keys.xKey]))
-    .attr(_cy, d => scales.y(d[keys.yKey]))
+    .attr(_cx, d => scales.x(d[_X]))
+    .attr(_cy, d => scales.y(d[_Y]))
     .attr(_r, styles.pointSize)
     // rect mark
-    .attr(_x, d => scales.x(d[keys.xKey]) - styles.pointSize / 2.0)
-    .attr(_y, d => scales.y(d[keys.yKey]) - styles.pointSize / 2.0)
+    .attr(_x, d => scales.x(d[_X]) - styles.pointSize / 2.0)
+    .attr(_y, d => scales.y(d[_Y]) - styles.pointSize / 2.0)
     .attr(_width, styles.pointSize)
     .attr(_height, styles.pointSize)
 }

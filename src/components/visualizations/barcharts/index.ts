@@ -82,18 +82,14 @@ export function renderBars(
   let dataCommonShape = data.map(d => ({N: d[keys.nKey], Q: d[keys.qKey], C: d[keys.cKey]}))
   let oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[_N])
 
-  // remove not used bars
   oldBars
     .exit()
-    .attr("opacity", 1)
+    .attr(_opacity, 1)
     .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
-    .attr("opacity", 0)
+    .attr(_opacity, 0)
     .remove();
 
   const newBars = oldBars.enter().append(_rect).attr(_class, "bar")
-    .attr(_stroke, stroke)
-    .attr(_stroke_width, stroke_width)
-    .attr(_x, width)
 
   const allBars = newBars.merge(oldBars as any)
 
@@ -103,6 +99,9 @@ export function renderBars(
 
     allBars
       // initial position
+      .attr(_stroke, stroke)
+      .attr(_stroke_width, stroke_width)
+      .attr(_x, width)
       .attr(_y, styles.revY ? 0 : height)
       .attr(_height, 0)
       .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)

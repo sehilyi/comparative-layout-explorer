@@ -99,7 +99,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   width: CHART_SIZE.width,
   height: CHART_SIZE.height,
   altVals: undefined,
-  stroke: 'null',
+  stroke: "white",
   stroke_width: 0,
   legend: false,
   // below options are relative numbers (e.g., 0.5, 1.0, ...)
