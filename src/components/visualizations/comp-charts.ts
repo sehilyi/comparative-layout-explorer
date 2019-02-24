@@ -27,7 +27,7 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 }
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
-  const {...consistency} = correctConsistency(A, B, C)
+  const {...consistency} = correctConsistency(A, B, C)  // TODO: this should correct C rather than making new consistency
   const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles) // set translateX and Y here
