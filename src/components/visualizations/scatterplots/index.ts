@@ -45,11 +45,9 @@ export function renderScatterplot(
   const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
   const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
-
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
-
   renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
   if (styles.legend) {

@@ -43,13 +43,12 @@ export function renderBarChart(
   const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y"
   const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q]
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
-
+  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate)) as object[]
+  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
 
-  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate)) as object[]
-  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
   renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
   if (styles.legend) {
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
@@ -90,6 +89,7 @@ export function renderBars(
     .remove();
 
   const newBars = oldBars.enter().append(_rect).attr(_class, "bar")
+    .attr(_opacity, 0)
 
   const allBars = newBars.merge(oldBars as any)
 
@@ -107,6 +107,7 @@ export function renderBars(
       .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
+      .attr(_opacity, 1)
       .attr(_x, d => nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_width, barSize)
       .attr(_y, d => (styles.revY ? 0 : qY(d[_Q])) + // TOOD: clean up more?
@@ -125,6 +126,7 @@ export function renderBars(
       .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
+      .attr(_opacity, 1)
       .attr(_y, d => nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_height, barSize)
       .attr(_x, d => (!styles.revX ? 0 : qX(d[_Q])) + // TOOD: clean up more?
