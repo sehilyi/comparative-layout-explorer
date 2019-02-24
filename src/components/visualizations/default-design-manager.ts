@@ -71,19 +71,25 @@ export function getNominalColor(n: number, n2?: number) {
   }
 }
 export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: ConsistencyType) {
-  const colorA = typeof a[0] === "string" ?
-    d3.scaleOrdinal().domain(a as string[]).range(getNominalColor(a.length)) :
-    d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColor())
-
-  let colorB
+  let colorA, colorB
   if (consistency === "unconnected" || consistency === "same") {
+    colorA = typeof a[0] === "string" ?
+      d3.scaleOrdinal().domain(a as string[]).range(getNominalColor(a.length)) :
+      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColor())
+
     colorB = typeof b[0] === "string" ?
       d3.scaleOrdinal().domain(b as string[]).range(getNominalColor(b.length)) :
       d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColor())
   }
   else {
+    colorA = typeof a[0] === "string" ?
+      // d3.scaleOrdinal().domain(a as string[]).range(getNominalColor(a.length)) :
+      getConstantColor() :
+      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColor())
+
     colorB = typeof b[0] === "string" ?
-      d3.scaleOrdinal().domain(b as string[]).range(getNominalColor(a.length, b.length)) :
+      // d3.scaleOrdinal().domain(b as string[]).range(getNominalColor(a.length, b.length)) :
+      getConstantColor(2) :
       d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColor(true))
   }
   return {colorA, colorB}

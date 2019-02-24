@@ -53,9 +53,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
     S.A.stroke_width = DEFAULT_STROKE_WIDTH
   }
   // color
-  // TODO: any clearer way?
-  const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
-    S.B.nestDim === 0 ? domain.B.axis["color"] : S.B.nestDim === 1 ? domain.B.axis[0]["color"] : domain.B.axis[0][0]["color"], consistency.color)
+  const {colorA, colorB} = getConsistentColor(
+    domain.A.axis["color"],
+    // TODO: any clearer way?
+    S.B.nestDim === 0 ? domain.B.axis["color"] : S.B.nestDim === 1 ? domain.B.axis[0]["color"] : domain.B.axis[0][0]["color"],
+    consistency.color)
+
   S.A.color = colorA
   S.B.color = colorB
   // color name
@@ -68,8 +71,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
       if (C.layout.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
-        const isALegendUse = (consistency.color === "same" && C.layout.arrangement == "stacked") || (consistency.color !== "same" && isAColorUsed)
-        const isBLegendUse = (consistency.color === "same" && C.layout.arrangement == "adjacent") || (consistency.color !== "same" && isBColorUsed)
+        const isALegendUse = (consistency.color === "same" && C.layout.arrangement == "stacked") || (consistency.color === "unconnected" && isAColorUsed)
+        const isBLegendUse = (consistency.color === "same" && C.layout.arrangement == "adjacent") || (consistency.color === "unconnected" && isBColorUsed)
         S.A.legend = isALegendUse
         S.B.legend = isBLegendUse
         S.B.revY = C.layout.arrangement === "stacked" && C.layout.mirrored

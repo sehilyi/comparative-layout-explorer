@@ -19,7 +19,8 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 export function getExamples() {
   let examples = getExampleSpec()
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
-    .filter(d => d.C.name === "test 1")
+    // .filter(d => d.C.name === "test 1")
+    .filter(d => correctCompSpec({...d.C}).layout.type === "juxtaposition")
   // return examples
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
