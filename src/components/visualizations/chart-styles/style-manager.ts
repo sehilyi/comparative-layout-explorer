@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 
-import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
+import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {DEFAULT_CHART_STYLE} from ".";
 import {getAggregatedData, getFieldsByType} from "../data-handler";
 import {isUndefined} from "util";
@@ -12,7 +12,7 @@ import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
 
 // TOOD: any better way to define domain types?
-export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, domain: {A: ChartDomainData, B: ChartDomainData}) {
+export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
   let S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}}
 
   // common
@@ -57,13 +57,13 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
     domain.A.axis["color"],
     // TODO: any clearer way?
     S.B.nestDim === 0 ? domain.B.axis["color"] : S.B.nestDim === 1 ? domain.B.axis[0]["color"] : domain.B.axis[0][0]["color"],
-    consistency.color)
+    consistency.color.type)
 
   S.A.color = colorA
   S.B.color = colorB
   // color name
-  S.A.legendNameColor = consistency.color === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
-  S.B.legendNameColor = consistency.color === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
+  S.A.legendNameColor = consistency.color.type === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
+  S.B.legendNameColor = consistency.color.type === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
 
   // by layout
   switch (C.layout.type) {
@@ -71,8 +71,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Cons
       if (C.layout.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
-        const isALegendUse = (consistency.color === "same" && C.layout.arrangement == "stacked") || (consistency.color === "unconnected" && isAColorUsed)
-        const isBLegendUse = (consistency.color === "same" && C.layout.arrangement == "adjacent") || (consistency.color === "unconnected" && isBColorUsed)
+        const isALegendUse = (consistency.color.type === "same" && C.layout.arrangement == "stacked") || (consistency.color.type === "unconnected" && isAColorUsed)
+        const isBLegendUse = (consistency.color.type === "same" && C.layout.arrangement == "adjacent") || (consistency.color.type === "unconnected" && isBColorUsed)
         S.A.legend = isALegendUse
         S.B.legend = isBLegendUse
         S.B.revY = C.layout.arrangement === "stacked" && C.layout.mirrored

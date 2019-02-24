@@ -1,26 +1,32 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {Consistency, _CompSpecSolid, DEFAULT_CONSISTENCY, ConsistencyType} from "src/models/comp-spec";
+import {_CompSpecSolid, DEFAULT_CONSISTENCY, ConsistencyType, _ConsistencySolid} from "src/models/comp-spec";
 import {isDeepTrue, ifUndefinedGetDefault} from "src/useful-factory/utils";
-import {deepObjectValue} from "src/models/comp-spec-manager";
 
-export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): Consistency {
+export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): _ConsistencySolid {
   // fill empty specs
   C = {...C, consistency: {...C.consistency, color: ifUndefinedGetDefault(C.consistency.color, DEFAULT_CONSISTENCY.color) as ConsistencyType}}
 
-  let color = C.consistency.color
-  if ((C.consistency.color === "same" || C.consistency.color === "different")
+  // change to _ConsistencySolid
+  if (typeof C.consistency.color === "string") C.consistency.color = {...DEFAULT_CONSISTENCY.color, type: C.consistency.color}
+  // fill empty color specs
+  if (!C.consistency.color.target) C.consistency.color.target = DEFAULT_CONSISTENCY.color.target
+  if (!C.consistency.color.target.primary) C.consistency.color.target.primary = DEFAULT_CONSISTENCY.color.target.primary
+  if (!C.consistency.color.target.secondary) C.consistency.color.target.secondary = DEFAULT_CONSISTENCY.color.target.secondary
+
+  // correction
+  if ((C.consistency.color.type === "same" || C.consistency.color.type === "different")
     && (A.encoding.color && B.encoding.color && A.encoding.color.type !== B.encoding.color.type)) {
-    color = "unconnected"
+    C.consistency.color.type = "unconnected"
   }
 
   const cons = {
+    color: C.consistency.color,
     x_axis: (isDeepTrue(C.consistency.x_axis) &&
       A.encoding.x.type === B.encoding.x.type) ||
-      (deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated"), // always true for element-wise jux
+      (C.layout.type === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated"), // always true for element-wise jux
     y_axis: (isDeepTrue(C.consistency.y_axis) &&
       A.encoding.y.type === B.encoding.y.type) ||
-      (deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated"), // always true for element-wise jux
-    color,
+      (C.layout.type === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated"), // always true for element-wise jux
     stroke: ifUndefinedGetDefault(C.consistency.stroke, DEFAULT_CONSISTENCY.stroke)
   };
   // warnings

@@ -1,5 +1,5 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
+import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
@@ -27,7 +27,7 @@ export const DEFAULT_AXIS_DOMAIN = {
  * * Only scatterplots and bar charts are handled.
  * TODO: make this more efficient
  */
-export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency) {
+export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid) {
   let resA: ChartDomainData, resB: ChartDomainData
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainAB} = getDomain(A, B)
@@ -45,7 +45,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
     axisA.y = DomainA.y
     axisB.y = DomainB.y
   }
-  if (consistency.color === "same") {
+  if (consistency.color.type === "same") {
     axisA.color = axisB.color = DomainAB.color
   }
   else {
@@ -69,7 +69,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   }
   /* color consistency */
   else if (((deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "chart") || (deepObjectValue(C.layout) === "superimposition" && C.layout.unit === "chart")) &&
-    isScatterplot(A) && isScatterplot(B) && consistency.color === "same") {
+    isScatterplot(A) && isScatterplot(B) && consistency.color.type === "same") {
     // use A color if two of them use color
     // When only B use color, then use the B's
     resA.axis["color"] = resB.axis["color"] = A.encoding.color !== undefined ? DomainA.color :

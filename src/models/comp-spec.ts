@@ -1,3 +1,4 @@
+/* top level CompSpec */
 /**
  * CompSpec with less flexability.
  * This is used in the system and not for users.
@@ -5,7 +6,7 @@
 export interface _CompSpecSolid extends CompSpec {
   layout: LayoutTypeAndStyle
 }
-export interface CompSpec {
+export type CompSpec = {
   name?: string
   layout: Layout
   consistency?: Consistency
@@ -20,24 +21,44 @@ export type LayoutTypeAndStyle = {
   mirrored?: boolean
   arrangement?: CompArrangement
 }
-
 export type CompArrangement = "stacked" | "adjacent" | "animated" | "null"
-
 export type CompUnit = JuxCompUnit | SupCompUnit
 export type commonCompUnit = "chart" | "element"
 export type JuxCompUnit = commonCompUnit | "time"
 export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to constraint this?
 
-export type ConsistencyType = "same" | "different" | "unconnected"
-export type Consistency = { // TODO: this should also consider differnce for superimposition
+/* consistency */
+/**
+ * Consistency with less flexability.
+ * This is used in the system and not for users.
+ */
+export interface _ConsistencySolid extends Consistency {
+  color?: ConsistencyTypeAndTarget
+}
+export type Consistency = {
+  color?: ConsistencyType | ConsistencyTypeAndTarget
   x_axis?: boolean
   y_axis?: boolean
-  x_arrangement?: boolean // divide this to x_positions?
-  y_arrangement?: boolean
-  color?: ConsistencyType
-  stroke?: ConsistencyType
+  // x_arrangement?: boolean
+  // y_arrangement?: boolean
+  stroke?: ConsistencyType  // TODO: this will be removed eventually
 }
 
+/* consistency settings */
+export const CONSISTENCY_SAME = "SAME", CONSISTENCY_DIFFERENT = "different", CONSISTENCY_UNCONNECTED = "unconnected"  // TODO: use this?
+export type ConsistencyType = "same" | "different" | "unconnected"
+export type ConsistencyTypeAndTarget = {
+  type: ConsistencyType
+  target?: ConsistencyTarget
+}
+export type ElementType = "mark" | "stroke" | "axis-label"
+export type PropertyType = "foreground" | "background"
+export type ConsistencyTarget = {
+  primary?: {element: ElementType, property: PropertyType}
+  secondary?: {element: ElementType, property: PropertyType}
+}
+
+/* clutter reduction strategies */
 export type ClutterReduction = {
   opacity?: boolean
 }
@@ -56,17 +77,19 @@ export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
   mirrored: false,
   arrangement: "null"
 }
-export const DEFAULT_CONSISTENCY: Consistency = {
+export const DEFAULT_CONSISTENCY_TARGET: ConsistencyTarget = {
+  primary: {element: "mark", property: "background"},
+  secondary: {element: "mark", property: "background"}
+}
+export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
+  color: {type: "unconnected", target: DEFAULT_CONSISTENCY_TARGET},
   x_axis: false,
   y_axis: false,
-  color: "unconnected",
-  x_arrangement: false,
-  y_arrangement: false,
   stroke: "unconnected"
 }
 export const DEFAULT_CLUTTER_REDUCTION: ClutterReduction = {
   opacity: false
-  // TODO: add here
+  // TODO: add here more
 }
 export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",

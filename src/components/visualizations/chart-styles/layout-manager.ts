@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 
-import {Consistency, _CompSpecSolid} from "src/models/comp-spec";
+import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {getBarSize, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../default-design-manager";
 import {ChartStyle} from ".";
 import {getAggValues, getAggregatedData} from "../data-handler";
@@ -19,7 +19,7 @@ export type Position = {
   top: number
 }
 
-export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: Consistency, S: {A: ChartStyle, B: ChartStyle}) {
+export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, S: {A: ChartStyle, B: ChartStyle}) {
   let nestedBs: Position[] | Position[][]
   let chartsp
   switch (deepObjectValue(C.layout)) {
