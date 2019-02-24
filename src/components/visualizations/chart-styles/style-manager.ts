@@ -5,7 +5,7 @@ import {DEFAULT_CHART_STYLE} from ".";
 import {getAggregatedData, getFieldsByType} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
-import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
+import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING, getConstantColor} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
 import {getAxisName} from "../axes";
@@ -53,14 +53,24 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
     S.A.stroke_width = DEFAULT_STROKE_WIDTH
   }
   // color
-  const {colorA, colorB} = getConsistentColor(
-    domain.A.axis["color"],
+  const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
     // TODO: any clearer way?
-    S.B.nestDim === 0 ? domain.B.axis["color"] : S.B.nestDim === 1 ? domain.B.axis[0]["color"] : domain.B.axis[0][0]["color"],
-    consistency.color.type)
+    S.B.nestDim === 0 ? domain.B.axis["color"] : S.B.nestDim === 1 ? domain.B.axis[0]["color"] : domain.B.axis[0][0]["color"], consistency.color.type)
 
   S.A.color = colorA
   S.B.color = colorB
+  // TODO:
+  // if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "foreground") S.B.color = colorB
+  if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "stroke") {
+    S.B.stroke = colorA
+    S.B.strokeKey = B.encoding.x.field  // TODO: how to determine stroke reference?
+    S.B.stroke_width = 1
+  }
+  if (consistency.color.target.secondary.element === "axis-label" && consistency.color.target.secondary.property === "foreground") {
+    S.B.axisLabelColor = colorA
+    S.B.axisLabelColorKey = B.encoding.x.field  // TODO: how to determine color reference?
+  }
+
   // color name
   S.A.legendNameColor = consistency.color.type === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
   S.B.legendNameColor = consistency.color.type === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
@@ -133,7 +143,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
         if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
         if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
         if (!isHeatmap(B)) {
-          S.A.stroke = _black
+          S.A.stroke = getConstantColor(_black)
           S.A.stroke_width = 1
         }
 

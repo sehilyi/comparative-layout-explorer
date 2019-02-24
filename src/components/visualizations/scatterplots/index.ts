@@ -87,7 +87,7 @@ export function renderPoints(
     .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _X : _C]) as string)
-    .attr(_stroke, styles.stroke)
+    .attr(_stroke, d => (styles.stroke as ScaleOrdinal)(d[styles.strokeKey ? styles.strokeKey : _X]) as string)
     .attr(_stroke_width, styles.stroke_width)
     // circle mark
     .attr(_cx, d => scales.x(d[_X]))

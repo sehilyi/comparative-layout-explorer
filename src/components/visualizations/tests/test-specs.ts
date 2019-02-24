@@ -20,7 +20,8 @@ export function getExamples() {
   let examples = getExampleSpec()
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
     // .filter(d => d.C.name === "test 1")
-    .filter(d => correctCompSpec({...d.C}).layout.type === "juxtaposition")
+    .filter(d => d.C.name === "visual linking test")
+  // .filter(d => correctCompSpec({...d.C}).layout.type === "juxtaposition")
   // return examples
   return examples.sort((a, b) =>
     // sort by chart types, layout, and then unit
@@ -394,6 +395,70 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
         }
       },
+    },
+    {
+      C: {
+        name: "visual linking test",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
+        consistency: {
+          color: {
+            type: "same",
+            target: {secondary: {element: "axis-label", property: "foreground"}}
+          },
+          x_axis: false, y_axis: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
+        }
+      }
+    },
+    {
+      C: {
+        name: "visual linking test",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
+        consistency: {
+          color: {
+            type: "same",
+            target: {secondary: {element: "mark", property: "stroke"}}
+          },
+          x_axis: false, y_axis: false
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
+        }
+      }
     },
     {
       C: {

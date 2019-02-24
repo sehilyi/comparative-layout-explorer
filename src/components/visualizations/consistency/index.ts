@@ -8,14 +8,18 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): _Consis
 
   // change to _ConsistencySolid
   if (typeof C.consistency.color === "string") C.consistency.color = {...DEFAULT_CONSISTENCY.color, type: C.consistency.color}
-  // fill empty color specs
+  // fill empty color specs TODO: cover this in a separate function
   if (!C.consistency.color.target) C.consistency.color.target = DEFAULT_CONSISTENCY.color.target
   if (!C.consistency.color.target.primary) C.consistency.color.target.primary = DEFAULT_CONSISTENCY.color.target.primary
   if (!C.consistency.color.target.secondary) C.consistency.color.target.secondary = DEFAULT_CONSISTENCY.color.target.secondary
 
   // correction
-  if ((C.consistency.color.type === "same" || C.consistency.color.type === "different")
-    && (A.encoding.color && B.encoding.color && A.encoding.color.type !== B.encoding.color.type)) {
+  if ((C.consistency.color.type === "same" || C.consistency.color.type === "different") &&
+    (A.encoding.color && B.encoding.color && A.encoding.color.type !== B.encoding.color.type) //&&
+    // TODO:
+    // (C.consistency.color.target.primary.element == C.consistency.color.target.secondary.element) &&
+    // (C.consistency.color.target.primary.property == C.consistency.color.target.secondary.property)) {
+  ) {
     C.consistency.color.type = "unconnected"
   }
 
@@ -32,7 +36,7 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): _Consis
   // warnings
   if (cons.y_axis != isDeepTrue(C.consistency.y_axis)) console.log('consistency.y has been changed to ' + cons.y_axis)
   if (cons.x_axis != isDeepTrue(C.consistency.x_axis)) console.log('consistency.x has been changed to ' + cons.x_axis)
-  if (cons.color != C.consistency.color) console.log('consistency.color has been changed to ' + cons.color)
+  if (cons.color != C.consistency.color) console.log('consistency.color has been changed to ' + cons.color) // TODO:
 
   return cons
 }

@@ -99,7 +99,7 @@ export function renderBars(
 
     allBars
       // initial position
-      .attr(_stroke, stroke)
+      .attr(_stroke, d => (stroke as ScaleOrdinal)(d[styles.strokeKey ? styles.strokeKey : _Q]) as string)
       .attr(_stroke_width, stroke_width)
       .attr(_x, width)
       .attr(_y, styles.revY ? 0 : height)

@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
-import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection} from 'src/useful-factory/d3-str';
+import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width} from 'src/useful-factory/d3-str';
 import {CHART_SIZE, CHART_MARGIN, getQuantitativeColor, CHART_CLASS_ID} from '../default-design-manager';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {renderLegend} from '../legends';
@@ -60,13 +60,14 @@ export function renderCells(
 
   if (styles.height < 0 || styles.width < 0) return; // when height or width of nesting root is really small
 
-  const {elementAnimated: animated} = styles;
+  const {elementAnimated: animated, strokeKey: sKey, stroke_width: sW} = styles;
   const _X = "X", _Y = "Y", _C = "C";
+  const _S = !sKey || sKey === keys.xKey ? _X : sKey === keys.yKey ? _Y : _C // for stroke color
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
 
   const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length
-  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.mulSize
-  const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.mulHeigh
+  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.mulSize - sW * 2
+  const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.mulHeigh - sW * 2
 
   const oldCells = g.selectAll('.cell')
     .data(dataCommonShape)
@@ -84,11 +85,12 @@ export function renderCells(
   const allCells = newCells.merge(oldCells as any)
 
   allCells
-    // d[cKey] can be either null or undefined
     .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
-    .attr(_fill, d => isNullOrUndefined(d[_C]) ? styles.nullCellFill : (scales.color as ScaleLinearColor)(d[_C]))
-    .attr(_x, d => scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftBy)
-    .attr(_y, d => scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftYBy)
+    .attr(_stroke, d => (styles.stroke as ScaleOrdinal)(d[_S]) as string)
+    .attr(_stroke_width, styles.stroke_width)
+    .attr(_fill, d => isNullOrUndefined(d[_C]) ? styles.nullCellFill : (scales.color as ScaleLinearColor)(d[_C])) // d[cKey] can be either null or undefined
+    .attr(_x, d => scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftBy + sW)
+    .attr(_y, d => scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftYBy + sW)
     .attr(_width, cellWidth)
     .attr(_height, cellHeight)
 }

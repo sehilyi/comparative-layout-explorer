@@ -51,8 +51,8 @@ export type ConsistencyTypeAndTarget = {
   type: ConsistencyType
   target?: ConsistencyTarget
 }
-export type ElementType = "mark" | "stroke" | "axis-label"
-export type PropertyType = "foreground" | "background"
+export type ElementType = "mark" | "axis-label"
+export type PropertyType = "foreground" | "background" | "stroke"
 export type ConsistencyTarget = {
   primary?: {element: ElementType, property: PropertyType}
   secondary?: {element: ElementType, property: PropertyType}
@@ -78,8 +78,8 @@ export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
   arrangement: "null"
 }
 export const DEFAULT_CONSISTENCY_TARGET: ConsistencyTarget = {
-  primary: {element: "mark", property: "background"},
-  secondary: {element: "mark", property: "background"}
+  primary: {element: "mark", property: "foreground"},
+  secondary: {element: "mark", property: "foreground"}
 }
 export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
   color: {type: "unconnected", target: DEFAULT_CONSISTENCY_TARGET},

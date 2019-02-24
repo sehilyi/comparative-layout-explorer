@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined} from "util";
 import {ConsistencyType} from "src/models/comp-spec";
+import {_black} from "src/useful-factory/d3-str";
 
 export const AXIS_ROOT_ID = "axis-root--"
 export const CHART_CLASS_ID = "D3-CHART-"
@@ -35,7 +36,7 @@ export const NUMERICAL_COLORS = ['#C6E48B', /*'#7BC96F',*/ '#239A3B'/*, '#196127
 export const NUMERICAL_COLORS2 = ['#8bc6e4', /*'#7BC96F',*/ '#3b239a'/*, '#196127'*/]
 export const DEFAULT_FONT = "Roboto Condensed"
 export const DEFAULT_STROKE_WIDTH = 1
-export const DEFAULT_STROKE = "black"
+export const DEFAULT_STROKE = getConstantColor("black")
 
 // bar
 export const BAR_GAP = 8
@@ -83,12 +84,10 @@ export function getConsistentColor(a: string[] | number[], b: string[] | number[
   }
   else {
     colorA = typeof a[0] === "string" ?
-      // d3.scaleOrdinal().domain(a as string[]).range(getNominalColor(a.length)) :
       getConstantColor() :
       d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColor())
 
     colorB = typeof b[0] === "string" ?
-      // d3.scaleOrdinal().domain(b as string[]).range(getNominalColor(a.length, b.length)) :
       getConstantColor(2) :
       d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColor(true))
   }
@@ -104,8 +103,14 @@ export function getColor(d: string[] | number[], styles?: {darker: boolean}) {
     .range(darker ? getBarColorDarker(domain.length) : getNominalColor(domain.length))
 }
 
-export function getConstantColor(index?: number) {
-  let i = isUndefined(index) || index <= 0 ? 1 : index > CATEGORICAL_COLORS.length ? index - CATEGORICAL_COLORS.length : index
+/**
+ * Get constant color.
+ * @param indexOrColorStr
+ */
+export function getConstantColor(indexOrColorStr?: number | string) {
+  if (typeof indexOrColorStr === "string") return d3.scaleOrdinal().range([indexOrColorStr])
+
+  let i = isUndefined(indexOrColorStr) || indexOrColorStr <= 0 ? 1 : indexOrColorStr > CATEGORICAL_COLORS.length ? indexOrColorStr - CATEGORICAL_COLORS.length : indexOrColorStr
   return d3.scaleOrdinal()
     // no domain
     .range(getNominalColor(i).slice(i - 1, i))

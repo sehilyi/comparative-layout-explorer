@@ -1,7 +1,7 @@
 import {BAR_GAP, CHART_SIZE, getConstantColor, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 import {DEFAULT_HEATMAP_CELL_PADDING, CELL_NULL_COLOR} from "../heatmap/default-design";
-import {_lightgray, ScaleOrdinal, ScaleLinearColor} from "src/useful-factory/d3-str";
+import {_lightgray, ScaleOrdinal, ScaleLinearColor, _white, _black} from "src/useful-factory/d3-str";
 
 export type ChartStyle = CommonChartStyle
 
@@ -14,6 +14,11 @@ export interface CommonChartStyle {
   nestingPadding: number
   // chart common
   color: ScaleOrdinal | ScaleLinearColor
+  stroke: ScaleOrdinal | ScaleLinearColor
+  strokeKey: string
+  stroke_width: number
+  axisLabelColor: ScaleOrdinal | ScaleLinearColor
+  axisLabelColorKey: string
   elementAnimated: boolean
   // colorKey: string // deprecated
   onTop: boolean
@@ -42,8 +47,6 @@ export interface CommonChartStyle {
   width: number
   height: number
   altVals: object[]
-  stroke: string
-  stroke_width: number
   legend: boolean
   xPreStr: string
   // bar chart
@@ -72,8 +75,14 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   nestingPadding: NESTING_PADDING,
   //
   color: getConstantColor(),
+  stroke: getConstantColor(_white),
+  strokeKey: undefined,
+  stroke_width: 0,
+  //
+  axisLabelColor: getConstantColor(_black),
+  axisLabelColorKey: undefined,
+  //
   elementAnimated: false,
-  // colorKey: "",  // deprecated
   onTop: false,
   translateX: 0,
   translateY: 0,
@@ -99,8 +108,6 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   width: CHART_SIZE.width,
   height: CHART_SIZE.height,
   altVals: undefined,
-  stroke: "white",
-  stroke_width: 0,
   legend: false,
   // below options are relative numbers (e.g., 0.5, 1.0, ...)
   // mulSize is applied first, and then shift bars
