@@ -18,9 +18,9 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
-    // .filter(d => d.C.name === "test 1")
-    .filter(d => d.C.name === "visual linking test")
+  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
+  // .filter(d => d.C.name === "test 1")
+  // .filter(d => d.C.name === "visual linking test")
   // .filter(d => correctCompSpec({...d.C}).layout.type === "juxtaposition")
   // return examples
   return examples.sort((a, b) =>
