@@ -52,7 +52,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   // clutter reduction
   S.B.opacity = C.clutter_reduction.opacity ? 0.4 : 1
   // consistency
-  if (consistency.stroke === "different") {
+  if (consistency.stroke === "distinct") {
     S.A.stroke = DEFAULT_STROKE
     S.A.stroke_width = DEFAULT_STROKE_WIDTH
   }
@@ -77,8 +77,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   }
 
   // color name
-  S.A.legendNameColor = consistency.color.type === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
-  S.B.legendNameColor = consistency.color.type === "same" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
+  S.A.legendNameColor = consistency.color.type === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
+  S.B.legendNameColor = consistency.color.type === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
 
   // by layout
   switch (C.layout.type) {
@@ -86,8 +86,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
       if (C.layout.unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
-        const isALegendUse = (consistency.color.type === "same" && C.layout.arrangement == "stacked") || (consistency.color.type === "unconnected" && isAColorUsed)
-        const isBLegendUse = (consistency.color.type === "same" && C.layout.arrangement == "adjacent") || (consistency.color.type === "unconnected" && isBColorUsed)
+        const isALegendUse = (consistency.color.type === "shared" && C.layout.arrangement == "stacked") || (consistency.color.type === "independant" && isAColorUsed)
+        const isBLegendUse = (consistency.color.type === "shared" && C.layout.arrangement == "adjacent") || (consistency.color.type === "independant" && isBColorUsed)
         S.A.legend = isALegendUse
         S.B.legend = isBLegendUse
         S.B.revY = C.layout.arrangement === "stacked" && C.layout.mirrored

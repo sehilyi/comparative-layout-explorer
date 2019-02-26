@@ -73,7 +73,7 @@ export function getNominalColor(n: number, n2?: number) {
 }
 export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: ConsistencyType) {
   let colorA, colorB
-  if (consistency === "unconnected" || consistency === "same") {
+  if (consistency === "independant" || consistency === "shared") {
     colorA = typeof a[0] === "string" ?
       d3.scaleOrdinal().domain(a as string[]).range(getNominalColor(a.length)) :
       d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColor())

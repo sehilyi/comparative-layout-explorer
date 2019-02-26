@@ -14,13 +14,13 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): _Consis
   if (!C.consistency.color.target.secondary) C.consistency.color.target.secondary = DEFAULT_CONSISTENCY.color.target.secondary
 
   // correction
-  if ((C.consistency.color.type === "same" || C.consistency.color.type === "different") &&
+  if ((C.consistency.color.type === "shared" || C.consistency.color.type === "distinct") &&
     (A.encoding.color && B.encoding.color && A.encoding.color.type !== B.encoding.color.type) //&&
     // TODO:
     // (C.consistency.color.target.primary.element == C.consistency.color.target.secondary.element) &&
     // (C.consistency.color.target.primary.property == C.consistency.color.target.secondary.property)) {
   ) {
-    C.consistency.color.type = "unconnected"
+    C.consistency.color.type = "independant"
   }
 
   const cons = {

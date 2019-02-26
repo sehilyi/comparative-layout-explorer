@@ -45,8 +45,7 @@ export type Consistency = {
 }
 
 /* consistency settings */
-export const CONSISTENCY_SAME = "SAME", CONSISTENCY_DIFFERENT = "different", CONSISTENCY_UNCONNECTED = "unconnected"  // TODO: use this?
-export type ConsistencyType = "same" | "different" | "unconnected"
+export type ConsistencyType = "shared" | "independant" | "distinct"
 export type ConsistencyTypeAndTarget = {
   type: ConsistencyType
   target?: ConsistencyTarget
@@ -84,10 +83,10 @@ export const DEFAULT_CONSISTENCY_TARGET: ConsistencyTarget = {
   secondary: {element: "mark", property: "foreground"}
 }
 export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
-  color: {type: "unconnected", target: DEFAULT_CONSISTENCY_TARGET},
+  color: {type: "independant", target: DEFAULT_CONSISTENCY_TARGET},
   x_axis: false,
   y_axis: false,
-  stroke: "unconnected"
+  stroke: "independant"
 }
 export const DEFAULT_CLUTTER_REDUCTION: ClutterReduction = {
   opacity: false,

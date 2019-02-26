@@ -45,7 +45,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
     axisA.y = DomainA.y
     axisB.y = DomainB.y
   }
-  if (consistency.color.type === "same") {
+  if (consistency.color.type === "shared") {
     axisA.color = axisB.color = DomainAB.color
   }
   else {
@@ -69,7 +69,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   }
   /* color consistency */
   else if (((deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "chart") || (deepObjectValue(C.layout) === "superimposition" && C.layout.unit === "chart")) &&
-    isScatterplot(A) && isScatterplot(B) && consistency.color.type === "same") {
+    isScatterplot(A) && isScatterplot(B) && consistency.color.type === "shared") {
     // use A color if two of them use color
     // When only B use color, then use the B's
     resA.axis["color"] = resB.axis["color"] = A.encoding.color !== undefined ? DomainA.color :
