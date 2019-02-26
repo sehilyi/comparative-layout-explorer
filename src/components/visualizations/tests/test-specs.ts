@@ -171,7 +171,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
-          y: {field: "Major_Genre", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
           color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
         }
       },
@@ -182,8 +182,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
-          y: {field: "Major_Genre", type: "nominal"},
-          color: {field: "IMDB_Rating", type: "quantitative", aggregate: "max"}
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
         }
       },
     },
@@ -685,6 +685,37 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
+        consistency: {
+          x_axis: false, y_axis: true, color: "shared"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative"},
+          y: {field: "IMDB_Rating", type: "quantitative"},
+          color: {field: "Major_Genre", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative"},
+          y: {field: "IMDB_Rating", type: "quantitative"},
+          color: {field: "Major_Genre", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "animated", mirrored: true},
         consistency: {
           x_axis: false, y_axis: true, color: "shared"
         }
