@@ -2,6 +2,7 @@ import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND
 import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end, GSelection} from "src/useful-factory/d3-str";
 import d3 = require("d3");
 import {translate, shortenText} from "src/useful-factory/utils";
+import {isNullOrUndefined} from "util";
 
 export function renderLegend(
   g: GSelection,
@@ -25,7 +26,7 @@ export function renderLegend(
   if (!isQuantitative) {
     // Notice: domain.length is always equal or larger than range.length
     for (let i = 0; i < domain.length; i++) {
-      if (domain[i] === undefined) continue // TODO: what is the problem continuously getting undefined??
+      if (isNullOrUndefined(domain[i])) continue // TODO: what is the problem continuously getting undefined or null??
 
       g.append(_rect)
         .attr(_x, 0)

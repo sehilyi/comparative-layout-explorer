@@ -59,6 +59,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
 
   S.A.color = colorA
   S.B.color = colorB
+
   // TODO:
   // if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "foreground") S.B.color = colorB
   if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "stroke") {
@@ -142,7 +143,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
         if (isHeatmap(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
         if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
         if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
-        if (!isHeatmap(B)) {
+        if (!isHeatmap(A) && !isHeatmap(B)) {
           S.A.stroke = getConstantColor(_black)
           S.A.stroke_width = 1
         }

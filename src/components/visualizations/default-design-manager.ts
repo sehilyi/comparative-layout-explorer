@@ -108,10 +108,11 @@ export function getColor(d: string[] | number[], styles?: {darker: boolean}) {
  * @param indexOrColorStr
  */
 export function getConstantColor(indexOrColorStr?: number | string) {
-  if (typeof indexOrColorStr === "string") return d3.scaleOrdinal().range([indexOrColorStr])
+  if (typeof indexOrColorStr === "string") return d3.scaleOrdinal().domain(["NULL"]).range([indexOrColorStr])
 
   let i = isUndefined(indexOrColorStr) || indexOrColorStr <= 0 ? 1 : indexOrColorStr > CATEGORICAL_COLORS.length ? indexOrColorStr - CATEGORICAL_COLORS.length : indexOrColorStr
   return d3.scaleOrdinal()
     // no domain
+    .domain(["NULL"])
     .range(getNominalColor(i).slice(i - 1, i))
 }
