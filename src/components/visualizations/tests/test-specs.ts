@@ -18,46 +18,20 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
+
+  // debugging
   // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
   // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
   // .filter(d => d.A.mark === "point" || d.B.mark === "point")
   // .filter(d => d.C.name === "visual linking test")
-  // return examples
-  return examples.sort((a, b) =>
-    // sort by chart types, layout, and then unit
-    (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : (a.A.mark + a.B.mark) < (b.A.mark + b.A.mark) ? 1 : deepObjectValue(a.C.layout) < deepObjectValue(b.C.layout) ? -1 : deepObjectValue(a.C.layout) > deepObjectValue(b.C.layout) ? 1 : -1
-  )
+
+  return examples
+    .sort((a, b) => (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : 1)
+    .sort((a, b) => deepObjectValue(a.C.layout) < deepObjectValue(b.C.layout) ? -1 : 1)
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   const values = DATASET_MOVIES.rawData.splice(0, 500)
   return [
-    {
-      C: {
-        layout: {type: "superimposition", unit: "element"},
-        consistency: {
-          x_axis: false, y_axis: false, color: "unconnected"
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {values},
-        mark: "rect",
-        encoding: {
-          x: {field: "Source", type: "nominal"},
-          y: {field: "Creative_Type", type: "nominal"},
-          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-        }
-      },
-      B: {
-        data: {values},
-        mark: "point",
-        encoding: {
-          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      },
-    },
     {
       C: {
         layout: {type: "superimposition", unit: "element"},
@@ -184,7 +158,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test 1",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "same"
@@ -247,40 +220,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
-        consistency: {
-          x_axis: false, y_axis: true, color: "different"
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {
-          values
-        },
-        mark: "rect",
-        encoding: {
-          x: {field: "Source", type: "nominal"},
-          y: {field: "Creative_Type", type: "nominal"},
-          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-        }
-      },
-      B: {
-        data: {
-          values
-        },
-        mark: "rect",
-        encoding: {
-          x: {field: "Source", type: "nominal"},
-          y: {field: "Creative_Type", type: "nominal"},
-          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
-        }
-      },
-    },
-    {
-      C: {
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
-          x_axis: false, y_axis: true, color: "different"
+          x_axis: false, y_axis: true, color: "same"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -339,7 +281,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
-        consistency: {x_axis: false, y_axis: true, color: "different"}
+        consistency: {x_axis: true, y_axis: true, color: "different"}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
@@ -464,7 +406,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
-          x_axis: true, y_axis: true, color: "unconnected"
+          x_axis: true, y_axis: true, color: "different"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -493,7 +435,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test 1",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "same"
@@ -551,38 +492,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Source", type: "nominal"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "Source", type: "nominal"}
-        }
-      }
-    },
-    {
-      C: {
-        name: "test",
-        layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
-        consistency: {
-          x_axis: false, y_axis: false, color: "same"
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {
-          values
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"},
-          color: {field: "Source", type: "nominal"}
-        }
-      },
-      B: {
-        data: {
-          values
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"},
           color: {field: "Source", type: "nominal"}
         }
       }
@@ -666,35 +575,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           y: {field: "Source", type: "nominal"},
           color: {field: "Source", type: "nominal"}
-        }
-      },
-      B: {
-        data: {
-          values
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"}
-        }
-      }
-    },
-    {
-      C: {
-        layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "stacked"},
-        consistency: {
-          x_axis: false, y_axis: true, color: "different"
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {
-          values
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"}
         }
       },
       B: {
@@ -803,7 +683,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: false},
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {
           x_axis: false, y_axis: true, color: "same"
         }
@@ -817,7 +697,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative"},
           y: {field: "IMDB_Rating", type: "quantitative"},
-          color: {field: "Source", type: "nominal"}
+          color: {field: "Major_Genre", type: "nominal"}
         }
       },
       B: {
@@ -827,13 +707,13 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         mark: "point",
         encoding: {
           x: {field: "US_Gross", type: "quantitative"},
-          y: {field: "IMDB_Rating", type: "quantitative"}
+          y: {field: "IMDB_Rating", type: "quantitative"},
+          color: {field: "Major_Genre", type: "nominal"}
         }
       }
     },
     {
       C: {
-        name: "test 1",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "same", stroke: "different"
@@ -880,37 +760,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
           color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      },
-      B: {
-        data: {
-          values
-        },
-        mark: "point",
-        encoding: {
-          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      }
-    },
-    {
-      C: {
-        layout: {type: "juxtaposition", unit: "chart"},
-        consistency: {
-          x_axis: false, y_axis: true, color: "different"
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {
-          values
-        },
-        mark: "point",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "Major_Genre", type: "nominal"}
         }
       },
       B: {
@@ -983,37 +832,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative"},
           y: {field: "US_Gross", type: "quantitative"}
-        }
-      }
-    },
-    {
-      C: {
-        layout: {type: "superimposition", unit: "element"},
-        consistency: {
-          x_axis: false, y_axis: true, color: "different"
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {
-          values
-        },
-        mark: "point",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      },
-      B: {
-        data: {
-          values
-        },
-        mark: "point",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "Source", type: "nominal"}
         }
       }
     },
@@ -1201,7 +1019,40 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         layout: {type: "superimposition", unit: "chart"},
-        consistency: {x_axis: false, y_axis: false, color: "unconnected"},
+        consistency: {x_axis: true, y_axis: true, color: "unconnected"},
+        clutter: {
+          jitter_x: true,
+          opacity: true
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values
+        },
+        mark: "bar",
+        encoding: {
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          x: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values
+        },
+        mark: "bar",
+        encoding: {
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          x: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+    },
+    {
+      C: {
+        layout: {type: "superimposition", unit: "chart"},
+        consistency: {x_axis: false, y_axis: true, color: "unconnected"},
         clutter: {
           opacity: true
         }
@@ -1213,49 +1064,20 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         mark: "bar",
         encoding: {
-          x: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-          y: {field: "Source", type: "nominal"}
-        }
-      },
-      B: {
-        data: {
-          values
-        },
-        mark: "point",
-        encoding: {
-          x: {field: "US_Gross", type: "quantitative"},
-          y: {field: "IMDB_Rating", type: "quantitative"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      }
-    },
-    {
-      C: {
-        layout: {type: "superimposition", unit: "chart"},
-        consistency: {
-          x_axis: false, y_axis: false, color: "unconnected"
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {
-          values
-        },
-        mark: "point",
-        encoding: {
-          x: {field: "IMDB_Rating", type: "quantitative"},
-          y: {field: "US_Gross", type: "quantitative"}
-        }
-      },
-      B: {
-        data: {
-          values
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "MPAA_Rating", type: "nominal"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-          color: {field: "MPAA_Rating", type: "nominal"}
+          x: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values
+        },
+        mark: "point",
+        encoding: {
+          y: {field: "US_Gross", type: "quantitative"},
+          x: {field: "IMDB_Rating", type: "quantitative"},
+          color: {field: "Source", type: "nominal"}
         }
       }
     },

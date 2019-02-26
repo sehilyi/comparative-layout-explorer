@@ -20,6 +20,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal")
   S.A.chartId = "A"
   S.B.chartId = "B"
+  S.B.jitter_x = C.clutter.jitter_x ? 3 : 0
+  S.B.jitter_y = C.clutter.jitter_y ? 3 : 0
+  if (C.clutter.jitter_x && C.clutter.jitter_y && isHeatmap(B) && isHeatmap(A)) S.B.onTop = true;
+
   // axis
   S.A.xName = getAxisName(A.encoding.x)
   S.A.yName = getAxisName(A.encoding.y)

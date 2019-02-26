@@ -61,6 +61,8 @@ export type ConsistencyTarget = {
 /* clutter reduction strategies */
 export type ClutterReduction = {
   opacity?: boolean
+  jitter_x?: boolean
+  jitter_y?: boolean
 }
 
 export type CompReference = "A" | "B"
@@ -88,7 +90,9 @@ export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
   stroke: "unconnected"
 }
 export const DEFAULT_CLUTTER_REDUCTION: ClutterReduction = {
-  opacity: false
+  opacity: false,
+  jitter_x: false,
+  jitter_y: false
   // TODO: add here more
 }
 export const DEFAULT_COMP_SPEC: CompSpec = {

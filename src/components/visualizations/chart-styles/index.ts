@@ -20,6 +20,8 @@ export interface CommonChartStyle {
   axisLabelColor: ScaleOrdinal | ScaleLinearColor
   axisLabelColorKey: string
   elementAnimated: boolean
+  jitter_x: number
+  jitter_y: number
   // colorKey: string // deprecated
   onTop: boolean
   translateX: number
@@ -78,6 +80,8 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   stroke: getConstantColor(_white),
   strokeKey: undefined,
   stroke_width: 0,
+  jitter_x: 0,
+  jitter_y: 0,
   //
   axisLabelColor: getConstantColor(_black),
   axisLabelColorKey: undefined,

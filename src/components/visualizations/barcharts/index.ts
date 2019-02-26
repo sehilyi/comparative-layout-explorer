@@ -108,11 +108,12 @@ export function renderBars(
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)
-      .attr(_x, d => nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_x, d => nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_x)
       .attr(_width, barSize)
       .attr(_y, d => (styles.revY ? 0 : qY(d[_Q])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
-          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0))
+          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
+        styles.jitter_y)
       .attr(_height, d => (styles.revY ? qY(d[_Q]) : height - qY(d[_Q])))
   }
   else {
@@ -127,11 +128,12 @@ export function renderBars(
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)
-      .attr(_y, d => nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
+      .attr(_y, d => nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_y)
       .attr(_height, barSize)
       .attr(_x, d => (!styles.revX ? 0 : qX(d[_Q])) + // TOOD: clean up more?
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
-          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0))
+          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
+        styles.jitter_x)
       .attr(_width, d => (!styles.revX ? qX(d[_Q]) : width - qX(d[_Q])))
   }
 }
