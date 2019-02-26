@@ -1020,7 +1020,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         layout: {type: "superimposition", unit: "chart"},
         consistency: {x_axis: true, y_axis: true, color: "unconnected"},
-        clutter: {
+        clutter_reduction: {
           jitter_x: true,
           opacity: true
         }
@@ -1053,7 +1053,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         layout: {type: "superimposition", unit: "chart"},
         consistency: {x_axis: false, y_axis: true, color: "unconnected"},
-        clutter: {
+        clutter_reduction: {
           opacity: true
         }
       },

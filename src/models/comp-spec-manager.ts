@@ -11,7 +11,7 @@ export function correctCompSpec(spec: CompSpec) {
   /* fill empty parts */
   if (mSpec.name === undefined) mSpec.name = DEFAULT_COMP_SPEC.name
   if (mSpec.consistency === undefined) mSpec.consistency = DEFAULT_COMP_SPEC.consistency
-  if (mSpec.clutter === undefined) mSpec.clutter = DEFAULT_COMP_SPEC.clutter
+  if (mSpec.clutter_reduction === undefined) mSpec.clutter_reduction = DEFAULT_COMP_SPEC.clutter_reduction
   if (mSpec.reference === undefined) mSpec.reference = DEFAULT_COMP_SPEC.reference
 
   /* layout */

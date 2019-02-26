@@ -10,7 +10,7 @@ export type CompSpec = {
   name?: string
   layout: Layout
   consistency?: Consistency
-  clutter?: ClutterReduction
+  clutter_reduction?: ClutterReduction
   reference?: CompReference
 }
 export type Layout = LayoutType | LayoutTypeAndStyle
@@ -99,7 +99,7 @@ export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",
   layout: DEFAULT_LAYOUT_JUX,
   consistency: DEFAULT_CONSISTENCY,
-  clutter: DEFAULT_CLUTTER_REDUCTION,
+  clutter_reduction: DEFAULT_CLUTTER_REDUCTION,
   reference: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {
