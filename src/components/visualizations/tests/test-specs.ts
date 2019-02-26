@@ -867,7 +867,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
-          x_axis: true, y_axis: true, color: "same", stroke: "unconnected"
+          x_axis: true, y_axis: true, color: "same", stroke: "different"
         }
       },
       // https://vega.github.io/vega-lite/examples/
