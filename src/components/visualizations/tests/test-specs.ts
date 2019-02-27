@@ -19,11 +19,11 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 export function getExamples() {
   let examples = getExampleSpec()
 
-  // debugging
-  // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
-  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
-  // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-  // .filter(d => d.C.name === "visual linking test")
+    // debugging
+    // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
+    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
+    // .filter(d => d.A.mark === "point" || d.B.mark === "point")
+    .filter(d => correctCompSpec({...d.C}).name.includes("test"))
 
   return examples
     .sort((a, b) => correctCompSpec(a.C).layout.mirrored > correctCompSpec(b.C).layout.mirrored ? -1 : 1)
@@ -201,9 +201,40 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "resize test",
+        layout: {type: "superimposition", unit: "chart", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        },
+        overlap_reduction: {
+          resize: true
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
-          x_axis: false, y_axis: true, color: "shared"
+          x_axis: true, y_axis: true, color: "shared"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -365,6 +396,36 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x: {field: "Source", type: "nominal"},
           y: {field: "Creative_Type", type: "nominal"},
           color: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
+        }
+      }
+    },
+    {
+      C: {
+        name: "resize test",
+        layout: {type: "superimposition", unit: "chart"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
+        },
+        overlap_reduction: {
+          resize: true
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
         }
       }
     },

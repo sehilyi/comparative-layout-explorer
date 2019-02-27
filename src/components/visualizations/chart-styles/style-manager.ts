@@ -22,10 +22,24 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   S.B.chartId = "B"
 
   // overlap reduction
-  S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0
-  S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0
-  if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isHeatmap(B) && isHeatmap(A)) S.B.onTop = true;
-  S.B.mulSize = C.overlap_reduction.resize ? 0.5 : 1
+  if (C.layout.type === "superimposition") {
+    // only for superimposition
+    S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0
+    S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0
+    if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isHeatmap(B) && isHeatmap(A)) S.B.onTop = true;
+    if (C.overlap_reduction.resize && isHeatmap(A) && isHeatmap(B)) {
+      S.B.mulSize = C.overlap_reduction.resize ? 0.5 : 1;
+      S.B.mulHeigh = C.overlap_reduction.resize ? 0.5 : 1;
+      S.B.shiftXBy = 0.5;
+      S.B.shiftYBy = 0.5;
+    }
+    if (C.overlap_reduction.resize && isBarChart(A) && isBarChart(B)) {
+      S.B.mulSize = C.overlap_reduction.resize ? 0.5 : 1;
+      // S.B.shiftXBy = 0.5;
+      S.B.shiftYBy = 0.5;
+    }
+    if (C.overlap_reduction.resize) S.B.onTop = true;
+  }
 
   // axis
   S.A.xName = getAxisName(A.encoding.x)
@@ -115,9 +129,9 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
           }
         }
         else if (C.layout.arrangement === "adjacent") { // grouped bar
-          S.A.shiftBy = -0.5
+          S.A.shiftXBy = -0.5
           S.A.mulSize = 0.5
-          S.B.shiftBy = 0.5
+          S.B.shiftXBy = 0.5
           S.B.mulSize = 0.5
           S.B.noAxes = true
         }

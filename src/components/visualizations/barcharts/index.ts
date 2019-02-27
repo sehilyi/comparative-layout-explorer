@@ -63,7 +63,7 @@ export function renderBars(
   scales: {x: ScaleBand | ScaleLinear, y: ScaleBand | ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
-  const {mulSize, shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
+  const {mulSize, shiftXBy: shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
   let numOfC: number
   let nX: ScaleBand, qX: ScaleLinear, qY: ScaleLinear, nY: ScaleBand
   if (verticalBar) {

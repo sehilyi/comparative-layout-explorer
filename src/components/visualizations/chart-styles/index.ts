@@ -56,8 +56,8 @@ export interface CommonChartStyle {
   barSize: string
   mulSize: number
   mulHeigh: number
+  shiftXBy: number
   shiftYBy: number
-  shiftBy: number
   verticalBar: boolean
   barOffset: {data: object[], valueField: string, keyField: string}
   barOffsetData: object[] // deprecated
@@ -117,7 +117,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   // mulSize is applied first, and then shift bars
   mulSize: 1,
   mulHeigh: 1,
-  shiftBy: 0,
+  shiftXBy: 0,
   shiftYBy: 0,
   xPreStr: "",
   barSize: undefined,
