@@ -10,7 +10,7 @@ export type CompSpec = {
   name?: string
   layout: Layout
   consistency?: Consistency
-  clutter_reduction?: ClutterReduction
+  overlap_reduction?: OverlapReduction
   reference?: CompReference
 }
 export type Layout = LayoutType | LayoutTypeAndStyle
@@ -58,7 +58,7 @@ export type ConsistencyTarget = {
 }
 
 /* clutter reduction strategies */
-export type ClutterReduction = {
+export type OverlapReduction = {
   opacity?: boolean
   jitter_x?: boolean
   jitter_y?: boolean
@@ -88,7 +88,7 @@ export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
   y_axis: false,
   stroke: "independant"
 }
-export const DEFAULT_CLUTTER_REDUCTION: ClutterReduction = {
+export const DEFAULT_CLUTTER_REDUCTION: OverlapReduction = {
   opacity: false,
   jitter_x: false,
   jitter_y: false
@@ -98,7 +98,7 @@ export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",
   layout: DEFAULT_LAYOUT_JUX,
   consistency: DEFAULT_CONSISTENCY,
-  clutter_reduction: DEFAULT_CLUTTER_REDUCTION,
+  overlap_reduction: DEFAULT_CLUTTER_REDUCTION,
   reference: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {

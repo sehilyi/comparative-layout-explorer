@@ -11,7 +11,7 @@ export function correctCompSpec(spec: CompSpec) {
   /* fill empty parts */
   if (mSpec.name === undefined) mSpec.name = DEFAULT_COMP_SPEC.name
   if (mSpec.consistency === undefined) mSpec.consistency = DEFAULT_COMP_SPEC.consistency
-  if (mSpec.clutter_reduction === undefined) mSpec.clutter_reduction = DEFAULT_COMP_SPEC.clutter_reduction
+  if (mSpec.overlap_reduction === undefined) mSpec.overlap_reduction = DEFAULT_COMP_SPEC.overlap_reduction
   if (mSpec.reference === undefined) mSpec.reference = DEFAULT_COMP_SPEC.reference
 
   /* layout */

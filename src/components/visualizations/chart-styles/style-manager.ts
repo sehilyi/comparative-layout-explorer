@@ -20,9 +20,9 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal")
   S.A.chartId = "A"
   S.B.chartId = "B"
-  S.B.jitter_x = C.clutter_reduction.jitter_x ? 3 : 0
-  S.B.jitter_y = C.clutter_reduction.jitter_y ? 3 : 0
-  if (C.clutter_reduction.jitter_x && C.clutter_reduction.jitter_y && isHeatmap(B) && isHeatmap(A)) S.B.onTop = true;
+  S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0
+  S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0
+  if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isHeatmap(B) && isHeatmap(A)) S.B.onTop = true;
 
   // axis
   S.A.xName = getAxisName(A.encoding.x)
@@ -50,7 +50,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   if (C.layout.type == "juxtaposition" && C.layout.arrangement === "animated" && C.layout.unit === "element") S.B.elementAnimated = true
 
   // clutter reduction
-  S.B.opacity = C.clutter_reduction.opacity ? 0.4 : 1
+  S.B.opacity = C.overlap_reduction.opacity ? 0.4 : 1
   // consistency
   if (consistency.stroke === "distinct") {
     S.A.stroke = DEFAULT_STROKE
