@@ -36,7 +36,8 @@ export interface _ConsistencySolid extends Consistency {
   color?: ConsistencyTypeAndTarget
 }
 export type Consistency = {
-  color?: ConsistencyType | ConsistencyTypeAndTarget  // refers to hue and does not includes saturation (#51)
+  // color refers to hue for the consistency with vega. color does not includes saturation (#51)
+  color?: ConsistencyType | ConsistencyTypeAndTarget
   x_axis?: boolean
   y_axis?: boolean
   // x_arrangement?: boolean
@@ -62,6 +63,7 @@ export type OverlapReduction = {
   opacity?: boolean
   jitter_x?: boolean
   jitter_y?: boolean
+  resize?: boolean
 }
 
 export type CompReference = "A" | "B"
@@ -91,7 +93,8 @@ export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
 export const DEFAULT_CLUTTER_REDUCTION: OverlapReduction = {
   opacity: false,
   jitter_x: false,
-  jitter_y: false
+  jitter_y: false,
+  resize: false,
   // TODO: add here more
 }
 export const DEFAULT_COMP_SPEC: CompSpec = {

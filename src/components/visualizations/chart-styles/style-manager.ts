@@ -20,9 +20,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal")
   S.A.chartId = "A"
   S.B.chartId = "B"
+
+  // overlap reduction
   S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0
   S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0
   if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isHeatmap(B) && isHeatmap(A)) S.B.onTop = true;
+  S.B.mulSize = C.overlap_reduction.resize ? 0.5 : 1
 
   // axis
   S.A.xName = getAxisName(A.encoding.x)

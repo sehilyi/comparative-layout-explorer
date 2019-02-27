@@ -46,9 +46,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "MPAA_Rating", type: "nominal"},
@@ -57,9 +55,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -77,9 +73,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
@@ -88,9 +82,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -108,9 +100,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -119,9 +109,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "MPAA_Rating", type: "nominal"},
@@ -139,9 +127,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -150,9 +136,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Production_Budget", type: "quantitative"},
@@ -170,9 +154,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -181,9 +163,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -201,9 +181,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -212,9 +190,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Creative_Type", type: "nominal"},
@@ -232,9 +208,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -243,9 +217,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -261,9 +233,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -272,9 +242,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -290,9 +258,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -301,9 +267,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -386,9 +350,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -397,9 +359,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "rect",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -417,9 +377,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -428,9 +386,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
@@ -448,9 +404,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Creative_Type", type: "nominal"},
@@ -459,9 +413,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -479,9 +431,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -490,9 +440,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -572,9 +520,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -583,9 +529,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
@@ -602,9 +546,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -613,9 +555,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
@@ -633,9 +573,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -644,9 +582,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
@@ -664,9 +600,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -675,9 +609,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
@@ -695,9 +627,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative"},
@@ -706,9 +636,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "US_Gross", type: "quantitative"},
@@ -726,9 +654,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative"},
@@ -737,9 +663,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "US_Gross", type: "quantitative"},
@@ -757,9 +681,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative"},
@@ -768,9 +690,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "US_Gross", type: "quantitative"},
@@ -788,9 +708,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -799,9 +717,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
@@ -819,9 +735,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -830,9 +744,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
@@ -850,9 +762,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -861,9 +771,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -881,9 +789,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -892,9 +798,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative"},
@@ -911,9 +815,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "MPAA_Rating", type: "nominal"},
@@ -921,9 +823,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "US_Gross", type: "quantitative"},
@@ -941,9 +841,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           y: {field: "MPAA_Rating", type: "nominal"},
@@ -951,9 +849,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           y: {field: "Source", type: "nominal"},
@@ -971,9 +867,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "MPAA_Rating", type: "nominal"},
@@ -981,9 +875,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -1001,9 +893,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -1011,9 +901,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Source", type: "nominal"},
@@ -1031,9 +919,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
@@ -1041,9 +927,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "US_Gross", type: "quantitative"},
@@ -1061,9 +945,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "MPAA_Rating", type: "nominal"},
@@ -1072,9 +954,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           x: {field: "Major_Genre", type: "nominal"},
@@ -1094,9 +974,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
@@ -1105,9 +983,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
@@ -1126,9 +1002,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
@@ -1137,9 +1011,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           y: {field: "US_Gross", type: "quantitative"},
@@ -1157,9 +1029,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "point",
         encoding: {
           x: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"},
@@ -1168,9 +1038,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
       B: {
-        data: {
-          values
-        },
+        data: {values},
         mark: "bar",
         encoding: {
           y: {field: "MPAA_Rating", type: "nominal"},
