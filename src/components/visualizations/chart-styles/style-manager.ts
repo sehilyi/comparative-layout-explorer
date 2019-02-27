@@ -126,7 +126,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
         S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent'
       }
       else if (unit === "element" && arrangement !== "animated") {
-        if (arrangement === "stacked") { // stacked bar
+        if (arrangement === "stacked") {
           if (isBarChart(A) && isBarChart(B)) {
             S.B.noAxes = true
             const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
@@ -134,19 +134,28 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
             S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField}
           }
           else if (isHeatmap(A) && isHeatmap(B)) {
-            S.A.shiftY = -0.5
-            S.A.heightTimes = 0.5
-            S.B.shiftY = 0.5
-            S.B.heightTimes = 0.5
             S.B.noAxes = true
+            S.A.shiftY = -0.5
+            S.B.shiftY = 0.5
+            S.A.heightTimes = 0.5
+            S.B.heightTimes = 0.5
           }
         }
-        else if (arrangement === "adjacent") { // grouped bar
-          S.A.shiftX = -0.5
-          S.A.widthTimes = 0.5
-          S.B.shiftX = 0.5
-          S.B.widthTimes = 0.5
-          S.B.noAxes = true
+        else if (arrangement === "adjacent") {
+          if (isBarChart(A) && isBarChart(B)) {
+            S.B.noAxes = true;
+            S.A.shiftX = -0.5;
+            S.B.shiftX = 0.5;
+            S.A.verticalBar ? S.A.widthTimes = 0.5 : S.A.heightTimes = 0.5;
+            S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
+          }
+          else if (isHeatmap(A) && isHeatmap(B)) {
+            S.B.noAxes = true
+            S.A.shiftX = -0.5
+            S.B.shiftX = 0.5
+            S.A.widthTimes = 0.5
+            S.B.widthTimes = 0.5
+          }
         }
       }
       break

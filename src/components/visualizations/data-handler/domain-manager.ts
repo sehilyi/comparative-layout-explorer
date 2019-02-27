@@ -168,7 +168,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
   const {values} = spec.data
   const {x, y, color} = spec.encoding
 
-  const union = sForUnion !== undefined
+  const isUnion = sForUnion !== undefined
 
   { // x domain
     if (x.type === "nominal") {
@@ -254,15 +254,20 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
     }
   }
 
-  if (union) {
-    let {...uDomain} = getDomain(sForUnion)
-    xDomain = x.type === "nominal" ? (xDomain as string[]).concat(uDomain.x as string[]) :
-      (xDomain as number[]).concat(uDomain.x as number[])
-    yDomain = y.type === "nominal" ? (yDomain as string[]).concat(uDomain.y as string[]) :
-      (yDomain as number[]).concat(uDomain.y as number[])
-    cDomain = color && sForUnion.encoding.color && color.type !== sForUnion.encoding.color.type ? (cDomain as string[]).concat(uDomain.color as string[]) :
-      color && color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) : // TODO: should consider numerical color encoding
-        (cDomain as number[]).concat(uDomain.color as number[])
+  if (isUnion) {
+    let {...uDomain} = getDomain(sForUnion);
+    xDomain = x.type === "nominal" ?
+      (xDomain as string[]).concat(uDomain.x as string[]) :
+      (xDomain as number[]).concat(uDomain.x as number[]);
+    yDomain = y.type === "nominal" ?
+      (yDomain as string[]).concat(uDomain.y as string[]) :
+      (yDomain as number[]).concat(uDomain.y as number[]);
+
+    // TODO: should consider numerical color encoding
+    cDomain = color && sForUnion.encoding.color && color.type !== sForUnion.encoding.color.type ?
+      (cDomain as string[]).concat(uDomain.color as string[]) :
+      color && color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) :
+        (cDomain as number[]).concat(uDomain.color as number[]);
   }
   return {x: xDomain, y: yDomain, color: cDomain}
 }
