@@ -8,7 +8,7 @@ import {LEGEND_PADDING} from '../legends/default-design';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {getColor, getConstantColor, CHART_SIZE, CHART_MARGIN, CHART_CLASS_ID} from '../default-design-manager';
+import {getNominalColor, getConstantColor, CHART_SIZE, CHART_MARGIN, CHART_CLASS_ID} from '../default-design-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
@@ -21,7 +21,7 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
   d3.select(svg).selectAll('*').remove();
 
   const isColorUsed = spec.encoding.color !== undefined
-  const color = isColorUsed ? getColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
+  const color = isColorUsed ? getNominalColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
   const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
   const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, legend: isColorUsed}
   const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, legend: isColorUsed}])

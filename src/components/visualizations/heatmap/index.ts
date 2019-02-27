@@ -4,7 +4,7 @@ import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width} from 'src/useful-factory/d3-str';
-import {CHART_SIZE, CHART_MARGIN, getQuantitativeColor, CHART_CLASS_ID} from '../default-design-manager';
+import {CHART_SIZE, CHART_MARGIN, getQuantitativeColorStr, CHART_CLASS_ID} from '../default-design-manager';
 import {LEGEND_PADDING} from '../legends/default-design';
 import {renderLegend} from '../legends';
 import {getChartPositions} from '../chart-styles/layout-manager';
@@ -24,7 +24,7 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
 
   const {...domains} = getDomain(spec)
 
-  renderHeatmap(g, spec, {x: domains.x, y: domains.y}, d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColor()),
+  renderHeatmap(g, spec, {x: domains.x, y: domains.y}, d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColorStr()),
     {...DEFAULT_CHART_STYLE, legend: !isUndefined(color)})
 }
 

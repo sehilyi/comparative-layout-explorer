@@ -56,10 +56,10 @@ export function getBarColorDarkest(n: number) {
   return CATEGORICAL_COLORS_DARKEST.slice(0, n > CATEGORICAL_COLORS_DARKEST.length ? CATEGORICAL_COLORS_DARKEST.length - 1 : n)
 }
 
-export function getQuantitativeColor(alt?: boolean) {
+export function getQuantitativeColorStr(alt?: boolean) {
   return !alt ? NUMERICAL_COLORS : NUMERICAL_COLORS2
 }
-export function getNominalColor(n: number, n2?: number) {
+export function getNominalColorStr(n: number, n2?: number) {
   const pallete = CATEGORICAL_COLORS.concat(CATEGORICAL_COLORS_DARKER)
   const maxLen = CATEGORICAL_COLORS.length
   if (n > maxLen) n = maxLen
@@ -74,33 +74,36 @@ export function getNominalColor(n: number, n2?: number) {
 export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: ConsistencyType) {
   let colorA, colorB
   if (consistency === "independant" || consistency === "shared") {
-    colorA = typeof a[0] === "string" ?
-      d3.scaleOrdinal().domain(a as string[]).range(getNominalColor(a.length)) :
-      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColor())
-
-    colorB = typeof b[0] === "string" ?
-      d3.scaleOrdinal().domain(b as string[]).range(getNominalColor(b.length)) :
-      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColor())
+    // TODO: enclose this as a function?
+    colorA = a.length === 0 || typeof a[0] === "string" ?
+      getNominalColor(a) :
+      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColorStr())
+    //
+    colorB = b.length === 0 || typeof b[0] === "string" ?
+      getNominalColor(b) :
+      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColorStr())
   }
-  else {
-    colorA = typeof a[0] === "string" ?
+  else if (consistency === "distinct") {
+    colorA = a.length === 0 || typeof a[0] === "string" ?
       getConstantColor() :
-      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColor())
+      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColorStr())
 
-    colorB = typeof b[0] === "string" ?
+    colorB = b.length === 0 || typeof b[0] === "string" ?
       getConstantColor(2) :
-      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColor(true))
+      d3.scaleLinear<string>().domain(d3.extent(b as number[])).range(getQuantitativeColorStr(true))
   }
   return {colorA, colorB}
 }
-export function getColor(d: string[] | number[], styles?: {darker: boolean}) {
+export function getNominalColor(d: string[] | number[], styles?: {darker: boolean}) {
+  if (!d.length || d.length === 0) return getConstantColor();
+
   const stl = ifUndefinedGetDefault(styles, {})
   const darker = ifUndefinedGetDefault(stl["darker"], false)
   const domain = uniqueValues(d, "")
 
   return d3.scaleOrdinal()
     .domain(domain as string[])
-    .range(darker ? getBarColorDarker(domain.length) : getNominalColor(domain.length))
+    .range(darker ? getBarColorDarker(domain.length) : getNominalColorStr(domain.length))
 }
 
 /**
@@ -114,5 +117,5 @@ export function getConstantColor(indexOrColorStr?: number | string) {
   return d3.scaleOrdinal()
     // no domain
     .domain(["NULL"])
-    .range(getNominalColor(i).slice(i - 1, i))
+    .range(getNominalColorStr(i).slice(i - 1, i))
 }

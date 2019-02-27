@@ -29,26 +29,26 @@ export const DEFAULT_AXIS_DOMAIN = {
 export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid) {
   let resA: ChartDomainData, resB: ChartDomainData
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
-  const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainAB} = getDomain(A, B)
+  const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainUnion} = getDomain(A, B)
   const {type: layout, unit, arrangement} = C.layout
 
   // common
   if (consistency.x_axis) {
-    axisA.x = axisB.x = DomainAB.x
+    axisA.x = axisB.x = DomainUnion.x
   }
   else {
     axisA.x = DomainA.x
     axisB.x = DomainB.x
   }
   if (consistency.y_axis) {
-    axisA.y = axisB.y = DomainAB.y
+    axisA.y = axisB.y = DomainUnion.y
   }
   else {
     axisA.y = DomainA.y
     axisB.y = DomainB.y
   }
   if (consistency.color.type === "shared") {
-    axisA.color = axisB.color = DomainAB.color
+    axisA.color = axisB.color = DomainUnion.color
   }
   else {
     axisA.color = DomainA.color
@@ -163,14 +163,14 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
 /**
  * Get single or union domains for x, y, and color
  */
-export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, color: Domain} {
-  let xDomain: Domain, yDomain: Domain, cDomain: Domain
+export function getDomain(spec: Spec, specForUnion?: Spec): {x: Domain, y: Domain, color: Domain} {
   const {values} = spec.data
   const {x, y, color} = spec.encoding
+  const isUnion = specForUnion !== undefined
+  let xDomain: Domain, yDomain: Domain, cDomain: Domain
 
-  const isUnion = sForUnion !== undefined
-
-  { // x domain
+  /* x domain */
+  {
     if (x.type === "nominal") {
       xDomain = uniqueValues(values, x.field)
     }
@@ -198,8 +198,10 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
       }
     }
   }
+
+  /* y domain */
   // TODO: all same except x => y
-  { // y domain
+  {
     if (y.type === "nominal") {
       yDomain = uniqueValues(values, y.field)
     }
@@ -227,7 +229,9 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
       }
     }
   }
-  { // color domain
+
+  /* color domain */
+  {
     if (color && color.type === "nominal") {
       cDomain = uniqueValues(values, color.field)
     }
@@ -255,7 +259,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
   }
 
   if (isUnion) {
-    let {...uDomain} = getDomain(sForUnion);
+    let {...uDomain} = getDomain(specForUnion);
     xDomain = x.type === "nominal" ?
       (xDomain as string[]).concat(uDomain.x as string[]) :
       (xDomain as number[]).concat(uDomain.x as number[]);
@@ -264,7 +268,7 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
       (yDomain as number[]).concat(uDomain.y as number[]);
 
     // TODO: should consider numerical color encoding
-    cDomain = color && sForUnion.encoding.color && color.type !== sForUnion.encoding.color.type ?
+    cDomain = color && specForUnion.encoding.color && color.type !== specForUnion.encoding.color.type ?
       (cDomain as string[]).concat(uDomain.color as string[]) :
       color && color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) :
         (cDomain as number[]).concat(uDomain.color as number[]);

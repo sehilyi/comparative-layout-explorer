@@ -10,7 +10,7 @@ import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class} from 'src/useful-factory/d3-str';
-import {getColor, CHART_SIZE, CHART_MARGIN, CHART_CLASS_ID, getBarSize} from '../default-design-manager';
+import {getNominalColor, CHART_SIZE, CHART_MARGIN, CHART_CLASS_ID, getBarSize} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 
@@ -25,7 +25,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 
   const {...domains} = getDomain(spec)
 
-  renderBarChart(g, spec, {x: domains.x, y: domains.y}, getColor(domains.color), {
+  renderBarChart(g, spec, {x: domains.x, y: domains.y}, getNominalColor(domains.color), {
     ...DEFAULT_CHART_STYLE, legend: !isUndefined(color), verticalBar: spec.encoding.x.type === "nominal"
   })
 }
