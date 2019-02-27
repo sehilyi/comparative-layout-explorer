@@ -35,6 +35,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
 
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
 
+  // render A and (not nested) B
   function loopABRender() {
     svg.selectAll("*").remove();
     /* render A */
