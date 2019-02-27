@@ -26,8 +26,13 @@ export function getExamples() {
   // .filter(d => d.C.name === "visual linking test")
 
   return examples
+    .sort((a, b) => correctCompSpec(a.C).layout.mirrored > correctCompSpec(b.C).layout.mirrored ? -1 : 1)
     .sort((a, b) => (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : 1)
-    .sort((a, b) => deepObjectValue(a.C.layout) < deepObjectValue(b.C.layout) ? -1 : 1)
+    .sort((a, b) => correctCompSpec(a.C).layout.unit > correctCompSpec(b.C).layout.unit ? -1 : 1)
+    .sort((a, b) => correctCompSpec(a.C).layout.arrangement > correctCompSpec(b.C).layout.arrangement ? -1 : 1)
+    .sort((a, b) => correctCompSpec(a.C).layout.type > correctCompSpec(b.C).layout.type ? -1 : 1)
+    .sort((a, b) => correctCompSpec(a.C).name > correctCompSpec(b.C).name ? 1 : -1)
+
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   const values = DATASET_MOVIES.rawData.splice(0, 500)
@@ -467,7 +472,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "test",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "shared"

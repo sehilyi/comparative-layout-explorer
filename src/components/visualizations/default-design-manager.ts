@@ -7,7 +7,7 @@ import {_black} from "src/useful-factory/d3-str";
 export const AXIS_ROOT_ID = "axis-root--"
 export const CHART_CLASS_ID = "D3-CHART-"
 // general
-export const CHART_SIZE = {width: 280, height: 240}
+export const CHART_SIZE = {width: 320, height: 240}
 export const CHART_MARGIN = {top: 100, right: 120, bottom: 100, left: 120}
 export const CHART_MARGIN_NO_AXIS = {top: 20, right: 20, bottom: 20, left: 20}
 export const CHART_PADDING = {right: 20}
@@ -15,7 +15,7 @@ export const CHART_TOTAL_SIZE = {
   width: CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right,
   height: CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom
 }
-export const AXIS_LABEL_LEN_LIMIT = 18 // highly related to CHART_MARGIN
+export const AXIS_LABEL_LEN_LIMIT = 16 // highly related to CHART_MARGIN
 export const NESTING_PADDING = 3
 
 // TOOD: add more pallete
