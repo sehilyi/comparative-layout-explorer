@@ -18,8 +18,7 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-
-    // filter for debugging
+    /// filter for debugging
     // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
@@ -347,7 +346,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         consistency: {
           color: {
             type: "shared",
-            target: {secondary: {element: "mark", property: "stroke"}}
+            secondary_target: {element: "mark", property: "stroke"}
           },
           x_axis: false, y_axis: false
         }

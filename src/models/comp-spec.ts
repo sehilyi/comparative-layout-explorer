@@ -29,14 +29,14 @@ export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to co
 
 /* consistency */
 /**
- * Consistency with less flexability.
+ * Consistency with less flexibility.
  * This is used in the system and not for users.
  */
 export interface _ConsistencySolid extends Consistency {
   color?: ConsistencyTypeAndTarget
 }
 export type Consistency = {
-  // color refers to hue for the consistency with vega. color does not includes saturation (#51)
+  // color refers to hue. we use the term "color" for the consistency with Vega. color does not includes saturation (#51)
   color?: ConsistencyType | ConsistencyTypeAndTarget
   x_axis?: boolean
   y_axis?: boolean
@@ -49,14 +49,11 @@ export type Consistency = {
 export type ConsistencyType = "shared" | "independant" | "distinct"
 export type ConsistencyTypeAndTarget = {
   type: ConsistencyType
-  target?: ConsistencyTarget
+  primary_target?: {element: ElementType, property: PropertyType}
+  secondary_target?: {element: ElementType, property: PropertyType}
 }
 export type ElementType = "mark" | "axis-label"
 export type PropertyType = "foreground" | "background" | "stroke"
-export type ConsistencyTarget = {
-  primary?: {element: ElementType, property: PropertyType}
-  secondary?: {element: ElementType, property: PropertyType}
-}
 
 /* clutter reduction strategies */
 export type OverlapReduction = {
@@ -80,12 +77,14 @@ export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
   mirrored: false,
   arrangement: "null"
 }
-export const DEFAULT_CONSISTENCY_TARGET: ConsistencyTarget = {
-  primary: {element: "mark", property: "foreground"},
-  secondary: {element: "mark", property: "foreground"}
+
+export const DEFAULT_CONSISTENCY_TARGET: ConsistencyTypeAndTarget = {
+  type: "independant",
+  primary_target: {element: "mark", property: "foreground"},
+  secondary_target: {element: "mark", property: "foreground"}
 }
 export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
-  color: {type: "independant", target: DEFAULT_CONSISTENCY_TARGET},
+  color: DEFAULT_CONSISTENCY_TARGET,
   x_axis: false,
   y_axis: false,
   stroke: "independant"

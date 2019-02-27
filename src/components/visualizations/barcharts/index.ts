@@ -63,7 +63,7 @@ export function renderBars(
   scales: {x: ScaleBand | ScaleLinear, y: ScaleBand | ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
-  const {mulSize, shiftXBy: shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
+  const {widthTimes, heightTimes, shiftX: shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
   let numOfC: number
   let nX: ScaleBand, qX: ScaleLinear, qY: ScaleLinear, nY: ScaleBand
   if (verticalBar) {
@@ -95,7 +95,7 @@ export function renderBars(
 
   if (verticalBar) {
     const bandUnitSize = width / numOfC
-    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * mulSize) as number;
+    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * widthTimes) as number;
 
     allBars
       // initial position
@@ -118,10 +118,12 @@ export function renderBars(
   }
   else {
     const bandUnitSize = height / numOfC
-    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * mulSize) as number;
+    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * heightTimes) as number;
 
     allBars
       // initial position
+      .attr(_stroke, d => (stroke as ScaleOrdinal)(d[styles.strokeKey ? styles.strokeKey : _Q]) as string)
+      .attr(_stroke_width, stroke_width)
       .attr(_x, styles.revX ? width : 0)
       .attr(_width, 0)
       .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)

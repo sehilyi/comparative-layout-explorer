@@ -66,8 +66,8 @@ export function renderCells(
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
 
   const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length
-  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.mulSize - strokeWidth * 2
-  const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.mulHeigh - strokeWidth * 2
+  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.widthTimes - strokeWidth * 2
+  const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.heightTimes - strokeWidth * 2
 
   const oldCells = g.selectAll('.cell')
     .data(dataCommonShape)
@@ -89,8 +89,8 @@ export function renderCells(
     .attr(_stroke, d => (styles.stroke as ScaleOrdinal)(d[_S]) as string)
     .attr(_stroke_width, styles.stroke_width)
     .attr(_fill, d => isNullOrUndefined(d[_C]) ? styles.nullCellFill : (scales.color as ScaleLinearColor)(d[_C])) // d[cKey] can be either null or undefined
-    .attr(_x, d => scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftXBy + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1))
-    .attr(_y, d => scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftYBy + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1))
+    .attr(_x, d => scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1))
+    .attr(_y, d => scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1))
     .attr(_width, cellWidth)
     .attr(_height, cellHeight)
 }

@@ -4,14 +4,13 @@ import {isDeepTrue, ifUndefinedGetDefault} from "src/useful-factory/utils";
 
 export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): _ConsistencySolid {
   // fill empty specs
-  C = {...C, consistency: {...C.consistency, color: ifUndefinedGetDefault(C.consistency.color, DEFAULT_CONSISTENCY.color) as ConsistencyType}}
+  C = {...C, consistency: {...C.consistency, color: ifUndefinedGetDefault(C.consistency.color, {...DEFAULT_CONSISTENCY.color}) as ConsistencyType}}
 
   // change to _ConsistencySolid
   if (typeof C.consistency.color === "string") C.consistency.color = {...DEFAULT_CONSISTENCY.color, type: C.consistency.color}
   // fill empty color specs TODO: cover this in a separate function
-  if (!C.consistency.color.target) C.consistency.color.target = DEFAULT_CONSISTENCY.color.target
-  if (!C.consistency.color.target.primary) C.consistency.color.target.primary = DEFAULT_CONSISTENCY.color.target.primary
-  if (!C.consistency.color.target.secondary) C.consistency.color.target.secondary = DEFAULT_CONSISTENCY.color.target.secondary
+  if (!C.consistency.color.primary_target) C.consistency.color.primary_target = {...DEFAULT_CONSISTENCY.color.primary_target}
+  if (!C.consistency.color.secondary_target) C.consistency.color.secondary_target = {...DEFAULT_CONSISTENCY.color.secondary_target}
 
   // correction
   if ((C.consistency.color.type === "shared" || C.consistency.color.type === "distinct") &&

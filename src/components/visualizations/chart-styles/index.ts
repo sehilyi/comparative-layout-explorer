@@ -54,10 +54,10 @@ export interface CommonChartStyle {
   // bar chart
   barGap: number
   barSize: string
-  mulSize: number
-  mulHeigh: number
-  shiftXBy: number
-  shiftYBy: number
+  widthTimes: number  // mark width *= widthTimes
+  heightTimes: number // mark height *= heightTimes
+  shiftX: number
+  shiftY: number
   verticalBar: boolean
   barOffset: {data: object[], valueField: string, keyField: string}
   barOffsetData: object[] // deprecated
@@ -115,10 +115,10 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   legend: false,
   // below options are relative numbers (e.g., 0.5, 1.0, ...)
   // mulSize is applied first, and then shift bars
-  mulSize: 1,
-  mulHeigh: 1,
-  shiftXBy: 0,
-  shiftYBy: 0,
+  widthTimes: 1,
+  heightTimes: 1,
+  shiftX: 0,
+  shiftY: 0,
   xPreStr: "",
   barSize: undefined,
   // bar

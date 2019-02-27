@@ -47,7 +47,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
           const numOfX = getAggregatedData(A).categories.length
           /// TODO: should be consistent with that of /barcharts/index.ts
           const bandUnitSize = S.A.width / numOfX
-          const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.mulSize
+          const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.widthTimes
           /// TODO: should be consistent with that of /axes/index.ts
           const qY = d3.scaleLinear()
             .domain([d3.min([d3.min(aValues as number[]), 0]), d3.max(aValues as number[])]).nice()
@@ -68,7 +68,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
           const values = getAggValues(A.data.values, A.encoding.y.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
           /// TODO: should be consistent with that of /barcharts/index.ts
           const bandUnitSize = S.A.height / numOfCategories
-          const barSize = getBarSize(S.A.height, numOfCategories, S.A.barGap) * S.A.mulSize
+          const barSize = getBarSize(S.A.height, numOfCategories, S.A.barGap) * S.A.widthTimes
           /// TODO: should be consistent with that of /axes/index.ts
           const qX = d3.scaleLinear()
             .domain([d3.min([d3.min(values as number[]), 0]), d3.max(values as number[])]).nice()
