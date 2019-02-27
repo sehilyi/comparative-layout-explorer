@@ -19,9 +19,9 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 export function getExamples() {
   let examples = getExampleSpec()
 
-    // debugging
+    // filter for debugging
     // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
-    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")  // for debugging
+    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     .filter(d => correctCompSpec({...d.C}).name.includes("test"))
 

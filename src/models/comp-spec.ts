@@ -14,7 +14,7 @@ export type CompSpec = {
   reference?: CompReference
 }
 export type Layout = LayoutType | LayoutTypeAndStyle
-export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding" | "blending"
+export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding"
 export type LayoutTypeAndStyle = {
   type: LayoutType
   unit?: CompUnit
@@ -107,6 +107,5 @@ export const DEFAULT_COMP_SPEC: CompSpec = {
 export const DEFAULT_COMP_SPECS = {
   "juxtaposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX},
   "superimposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP},
-  "blending": {...DEFAULT_COMP_SPEC},  // TODO:
   "explicit-encoding": {...DEFAULT_COMP_SPEC} // TODO:
 }
