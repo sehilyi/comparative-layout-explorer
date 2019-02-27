@@ -36,7 +36,7 @@ export interface _ConsistencySolid extends Consistency {
   color?: ConsistencyTypeAndTarget
 }
 export type Consistency = {
-  color?: ConsistencyType | ConsistencyTypeAndTarget
+  color?: ConsistencyType | ConsistencyTypeAndTarget  // refers to hue and does not includes saturation (#51)
   x_axis?: boolean
   y_axis?: boolean
   // x_arrangement?: boolean
