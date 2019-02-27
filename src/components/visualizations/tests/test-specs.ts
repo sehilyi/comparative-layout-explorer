@@ -719,7 +719,38 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "chart", arrangement: "animated", mirrored: true},
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
+        consistency: {
+          x_axis: false, y_axis: true, color: "shared"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {
+          values
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative"},
+          y: {field: "IMDB_Rating", type: "quantitative"},
+          color: {field: "Major_Genre", type: "nominal"}
+        }
+      },
+      B: {
+        data: {
+          values
+        },
+        mark: "point",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative"},
+          y: {field: "IMDB_Rating", type: "quantitative"},
+          color: {field: "Major_Genre", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: true, color: "shared"
         }
@@ -903,7 +934,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element", arrangement: "adjacent", mirrored: false},
+        layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independant"
         }
@@ -963,7 +994,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element", arrangement: "adjacent"},
+        layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independant"
         }
