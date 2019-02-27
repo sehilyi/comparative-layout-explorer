@@ -20,24 +20,26 @@ export type Position = {
 }
 
 export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, S: {A: ChartStyle, B: ChartStyle}) {
+  const {unit, arrangement} = C.layout
   let nestedBs: Position[] | Position[][]
   let chartsp
   switch (deepObjectValue(C.layout)) {
     case "juxtaposition":
-      if (C.layout.unit === "chart") {
-        const numOfC = C.layout.arrangement === 'adjacent' ? 2 : 1
-        const numOfR = C.layout.arrangement === 'stacked' ? 2 : 1
+      if (unit === "chart") {
+        const numOfC = arrangement === 'adjacent' ? 2 : 1
+        const numOfR = arrangement === 'stacked' ? 2 : 1
         chartsp = getChartPositions(numOfC, numOfR, [S.A, S.B])
       }
-      else if (C.layout.unit === "element") {
+      else if (unit === "element") {
         chartsp = getChartPositions(1, 1, [S.A, S.B])
       }
       break
     case "superimposition":
-      if (C.layout.unit === "chart") {
+      if (unit === "chart") {
         chartsp = getChartPositions(1, 1, [S.A, S.B])
       }
-      else if (C.layout.unit === "element") {  // nesting
+      /* nesting */
+      else if (unit === "element") {
         chartsp = getChartPositions(1, 1, [S.A, S.B])
 
         // divide layouts

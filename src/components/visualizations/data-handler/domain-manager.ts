@@ -3,7 +3,6 @@ import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
-import {deepObjectValue} from "src/models/comp-spec-manager";
 import {isBarChart, isScatterplot, isChartDataAggregated} from "../constraints";
 
 export type ChartDomainData = {
@@ -31,6 +30,9 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   let resA: ChartDomainData, resB: ChartDomainData
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainAB} = getDomain(A, B)
+  const {type: layout, unit, arrangement} = C.layout
+
+  // common
   if (consistency.x_axis) {
     axisA.x = axisB.x = DomainAB.x
   }
@@ -57,10 +59,10 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
 
   /* exceptions: modify domains considering specs */
   // x or y axis
-  if (deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
+  if (layout === "juxtaposition" && unit === "element" && arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
     // consistency.x_axis and y_axis are always true
-    const n = A.encoding.x.type === "nominal" ? "x" : "y",
-      q = A.encoding.x.type === "quantitative" ? "x" : "y"
+    const n = A.encoding.x.type === "nominal" ? "x" : "y";
+    const q = A.encoding.x.type === "quantitative" ? "x" : "y";
 
     resA.axis[q] = resB.axis[q] = getDomainSumByKeys(  // stacked bar chart
       getAggValues(A.data.values, A.encoding[n].field, [A.encoding[q].field], A.encoding[q].aggregate).concat(
@@ -68,7 +70,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
       A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
   }
   /* color consistency */
-  else if (((deepObjectValue(C.layout) === "juxtaposition" && C.layout.unit === "chart") || (deepObjectValue(C.layout) === "superimposition" && C.layout.unit === "chart")) &&
+  else if (((layout === "juxtaposition" && unit === "chart") || (layout === "superimposition" && unit === "chart")) &&
     isScatterplot(A) && isScatterplot(B) && consistency.color.type === "shared") {
     // use A color if two of them use color
     // When only B use color, then use the B's
@@ -77,7 +79,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
   }
   /* nesting */
   // separate domain B by aggregation keys used in Chart A
-  else if (C.layout.type === "superimposition" && C.layout.unit === "element") {
+  else if (layout === "superimposition" && unit === "element") {
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
     if (isChartDataAggregated(B)) {
 
@@ -236,19 +238,19 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
       }
       else if (x.type === "quantitative" && y.type === "nominal") {
         // TODO:
-        cDomain = [""]
+        cDomain = []
       }
       else if (x.type === "nominal" && y.type === "quantitative") {
         // TODO:
-        cDomain = [""]
+        cDomain = []
       }
       else {
         // TODO:
-        cDomain = [""]
+        cDomain = []
       }
     }
     else if (!color) {
-      cDomain = [""]
+      cDomain = []
     }
   }
 
@@ -258,7 +260,6 @@ export function getDomain(spec: Spec, sForUnion?: Spec): {x: Domain, y: Domain, 
       (xDomain as number[]).concat(uDomain.x as number[])
     yDomain = y.type === "nominal" ? (yDomain as string[]).concat(uDomain.y as string[]) :
       (yDomain as number[]).concat(uDomain.y as number[])
-    // TODO: when [""]?
     cDomain = color && sForUnion.encoding.color && color.type !== sForUnion.encoding.color.type ? (cDomain as string[]).concat(uDomain.color as string[]) :
       color && color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) : // TODO: should consider numerical color encoding
         (cDomain as number[]).concat(uDomain.color as number[])

@@ -21,7 +21,9 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   S.A.chartId = "A"
   S.B.chartId = "B"
 
-  /* overlap reduction */
+  /**
+   * overlap reduction
+   */
   if (layout === "superimposition") {
     S.B.opacity = C.overlap_reduction.opacity ? 0.4 : 1;
 
@@ -74,15 +76,20 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   }
   if (layout == "juxtaposition" && arrangement === "animated" && unit === "element") S.B.elementAnimated = true
 
-  // consistency
+  /**
+   * consistency
+   */
   if (consistency.stroke === "distinct") {
     S.A.stroke = DEFAULT_STROKE
     S.A.stroke_width = DEFAULT_STROKE_WIDTH
   }
-  // color
+  /* color */
   const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
     // TODO: any clearer way?
-    S.B.nestDim === 0 ? domain.B.axis["color"] : S.B.nestDim === 1 ? domain.B.axis[0]["color"] : domain.B.axis[0][0]["color"], consistency.color.type)
+    S.B.nestDim === 0 ? domain.B.axis["color"] :
+      S.B.nestDim === 1 ? domain.B.axis[0]["color"] :
+        domain.B.axis[0][0]["color"],
+    consistency.color.type)
 
   S.A.color = colorA
   S.B.color = colorB

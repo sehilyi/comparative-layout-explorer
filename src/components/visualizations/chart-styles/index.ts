@@ -60,7 +60,6 @@ export interface CommonChartStyle {
   shiftY: number
   verticalBar: boolean
   barOffset: {data: object[], valueField: string, keyField: string}
-  barOffsetData: object[] // deprecated
   // scatterplot
   pointSize: number
   rectPoint: boolean
@@ -124,7 +123,6 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   // bar
   verticalBar: true,
   barOffset: undefined,
-  barOffsetData: undefined,
   // scatterplot
   pointSize: SCATTER_POINT_SIZE,
   rectPoint: false,
