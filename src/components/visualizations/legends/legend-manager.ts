@@ -5,7 +5,8 @@ import {ChartStyle} from "../chart-styles";
 import {Position} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
 import {LEGEND_PADDING, LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_GAP, LEGEND_MARK_SIZE} from "./default-design";
-import {isOverlapLayout} from "../constraints";
+import {isOverlapLayout, isBarChart, isScatterplot} from "../constraints";
+import {getNominalColor} from "../default-design-manager";
 
 export type LegendRecipe = {
   title: string
@@ -59,7 +60,21 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
 
   /* consistency legends */
   {
+    if (consistency.color.type === "distinct") {
+      // distinct nominal color
+      if (isBarChart(A) || isScatterplot(A)) { // TODO: decide color type more clearly
+        legends.push({
+          title: "distinct",
+          scale: getNominalColor(["a", "b"]),
+          left: 0,
+          top: lastXEnd,
+          isNominal: true
+        });
+        lastXEnd += estimateLegendSize(legends[legends.length - 1]);
+      }
 
+      // distinct quantitative color
+    }
   }
 
   return {height: lastXEnd, legends};
