@@ -1,4 +1,4 @@
-import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING, LEGEND_LABEL_LEN_LIMIT} from "./default-design";
+import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING, LEGEND_LABEL_LEN_LIMIT, LEGEND_QUAN_MARK_HEIGHT} from "./default-design";
 import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end, GSelection} from "src/useful-factory/d3-str";
 import d3 = require("d3");
 import {translate, shortenText} from "src/useful-factory/utils";
@@ -86,7 +86,7 @@ export function renderLegend(
     g.append(_g)
       .append(_rect)
       .attr(_width, LEGEND_WIDTH - LEGEND_PADDING)
-      .attr(_height, 15)
+      .attr(_height, LEGEND_QUAN_MARK_HEIGHT)
       .style(_fill, `url(#${key})`)
 
     const q = d3.scaleLinear()
