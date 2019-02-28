@@ -1,10 +1,8 @@
 import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, _CompSpecSolid} from "src/models/comp-spec";
-import {translate, uniqueValues, ifUndefinedGetDefault} from "src/useful-factory/utils";
-import {
-  GAP_BETWEEN_CHARTS, CHART_SIZE, AXIS_ROOT_ID,
-} from "./default-design-manager";
+import {translate, uniqueValues} from "src/useful-factory/utils";
+import {AXIS_ROOT_ID} from "./default-design-manager";
 import {renderLegend} from "./legends";
 import {correctConsistency} from "./consistency";
 import {renderChart} from ".";
@@ -12,7 +10,7 @@ import {oneOfFilter, getFieldsByType} from "./data-handler";
 import {getStyles} from "./chart-styles/style-manager";
 import {getLayouts} from "./chart-styles/layout-manager";
 import {getDomainByLayout} from "./data-handler/domain-manager";
-import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
+import {correctCompSpec} from "src/models/comp-spec-manager";
 import {_transform, _width, _height, _g, _opacity} from "src/useful-factory/d3-str";
 import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
 import {animateChart} from "./animated";
@@ -37,7 +35,8 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
 
   // render A and (not nested) B
   function loopABRender() {
-    svg.selectAll("*").remove();
+    svg.selectAll("." + "A").remove();
+    svg.selectAll("." + "B").remove();
     /* render A */
     if (!Array.isArray(domains.A.axis)) {
       renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A.color, styles.A)
@@ -89,13 +88,6 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     }
   }
   /* render legends */
-  if (C.layout.type === "juxtaposition" && C.layout.unit === 'element') { // TODO: remove this
-    renderLegend(svg.append(_g).attr(_transform, translate(layouts.B.left + CHART_SIZE.width + GAP_BETWEEN_CHARTS, layouts.B.top)),
-      styles.A.legendNameColor ? styles.A.legendNameColor : ifUndefinedGetDefault(deepObjectValue(A.encoding.color, "field"), A.encoding.x.field as string),
-      [A.encoding.y.field, B.encoding.y.field],
-      styles.A.color.range().concat(styles.B.color.range()) as string[])
-  }
-  //
   legends.legends.forEach(legend => {
     const legendG = svg.append(_g).attr(_transform, translate(legend.left, legend.top))
     renderLegend(legendG, legend.title, legend.scale.domain() as string[], legend.scale.range() as string[], !legend.isNominal)
