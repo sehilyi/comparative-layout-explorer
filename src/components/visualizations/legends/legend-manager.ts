@@ -25,9 +25,14 @@ export type LegendRecipe = {
  * @param S
  */
 export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, P: {A: Position, B: Position}, S: {A: ChartStyle, B: ChartStyle}) {
-  // const {type: layout, unit, arrangement} = C.layout
+  const {type: layout, unit, arrangement} = C.layout
   let legends: LegendRecipe[] = [];
+  let lastXEnd = 0
 
+  // all legends should be placed in one column layout
+  const isOneColumn = (layout === "superimposition") || (layout === "juxtaposition" && unit === "element") || (arrangement === "animated")
+
+  /* A's legend */
   if (S.A.legend) {
     legends.push({
       title: S.A.legendNameColor,
@@ -35,31 +40,28 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
       left: P.A.left + S.A.width + LEGEND_PADDING,
       top: P.A.top,
       isNominal: A.encoding.color.type === "nominal"
-    })
+    });
+    lastXEnd += legends[0].top + estimateLegendSize(legends[0]);
   }
+
+  /* B's legend */
   if (S.B.legend) {
-    let left = P.B.left + S.B.width + LEGEND_PADDING;
-    let top = P.B.top;
-
-    // superimposition or (juxtaposition && animated)
-    if (S.A.legend && legends[0].left === left && legends[0].top === top) {
-      let preLegendHeight = estimateLegendSize(legends[0])
-
-      top += preLegendHeight
-    }
-    else {
-      ///
-    }
-
     legends.push({
       title: S.B.legendNameColor,
       scale: S.B.color,
-      left,
-      top,
+      left: P.B.left + S.B.width + LEGEND_PADDING,
+      top: isOneColumn ? lastXEnd : P.B.top,
       isNominal: B.encoding.color.type === "nominal"
-    })
+    });
+    lastXEnd += estimateLegendSize(legends[legends.length - 1]);
   }
-  return {height: legends.length === 0 ? 0 : legends[legends.length - 1].top + estimateLegendSize(legends[legends.length - 1]), legends}
+
+  /* consistency legends */
+  {
+
+  }
+
+  return {height: lastXEnd, legends};
 }
 
 export function estimateLegendSize(recipe: LegendRecipe) {

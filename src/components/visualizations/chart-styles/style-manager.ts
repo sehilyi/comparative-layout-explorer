@@ -164,8 +164,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
       if (unit === "chart") {
         const isAColorUsed = !isUndefined(A.encoding.color)
         const isBColorUsed = !isUndefined(B.encoding.color)
-        S.A.legend = isAColorUsed // TODO: should consider false consistency
+        S.A.legend = isAColorUsed
         S.B.legend = isBColorUsed
+        // if two fields are identical, show only one
+        if (A.encoding.color && B.encoding.color && A.encoding.color.field === B.encoding.color.field &&
+          A.encoding.color.type === B.encoding.color.type && A.encoding.color.aggregate === B.encoding.color.aggregate) S.B.legend = false
+
         S.B.noGrid = true
         if (consistency.x_axis) S.B.noX = true
         if (consistency.y_axis) S.B.noY = true
