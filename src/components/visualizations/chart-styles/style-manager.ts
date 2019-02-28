@@ -7,13 +7,14 @@ import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING, getConstantColor} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
-import {isBarChart, isHeatmap, isScatterplot} from "../constraints";
+import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout} from "../constraints";
 import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
 
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}}
   const {type: layout, unit, arrangement, mirrored} = C.layout
+  const {type: consisColor} = consistency.color
 
   /* common */
   S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal")
@@ -90,7 +91,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
     S.B.nestDim === 0 ? domain.B.axis["color"] :
       S.B.nestDim === 1 ? domain.B.axis[0]["color"] :
         domain.B.axis[0][0]["color"],
-    consistency.color.type)
+    consisColor)
 
   S.A.color = colorA
   S.B.color = colorB
@@ -107,20 +108,58 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
     S.B.axisLabelColorKey = B.encoding.x.field  // TODO: how to determine color reference?
   }
 
+  /**
+   * Legend
+   */
+  const isAColorUsed = !isUndefined(A.encoding.color)
+  const isBColorUsed = !isUndefined(B.encoding.color)
+  const colorTypeA = !isAColorUsed ? undefined : A.encoding.color.type
+  const colorTypeB = !isBColorUsed ? undefined : B.encoding.color.type
+  if (consisColor === "shared") {
+    if (isAColorUsed || isBColorUsed) {
+      if ((layout === "superimposition") || (layout === "juxtaposition" && arrangement === "stacked")) {
+        S.A.isLegend = true;
+        S.A.legendType = colorTypeA;
+      }
+      else {
+        S.B.isLegend = true;
+        S.B.legendType = colorTypeB;
+      }
+    }
+  }
+  else if (consisColor === "distinct") {
+    // TODO: systemical color domain manager needed!
+
+  }
+  else if (consisColor === "independant") {
+    S.A.isLegend = isAColorUsed;
+    S.B.isLegend = isBColorUsed;
+    S.A.legendType = colorTypeA;
+    S.B.legendType = colorTypeB;
+
+    // exceptions
+    if (isOverlapLayout(C)) {
+      // for the space efficiency, remove redundant one if any
+      if (isAColorUsed && isBColorUsed &&
+        A.encoding.color.field === B.encoding.color.field &&
+        A.encoding.color.type === B.encoding.color.type &&
+        A.encoding.color.aggregate === B.encoding.color.aggregate)
+        S.B.isLegend = false;
+    }
+  }
+
+  // if two fields are identical, show only one
+  // if (A.encoding.color && B.encoding.color && A.encoding.color.field === B.encoding.color.field &&
+  //   A.encoding.color.type === B.encoding.color.type && A.encoding.color.aggregate === B.encoding.color.aggregate) S.B.legend = false
+
   // color name
-  S.A.legendNameColor = consistency.color.type === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
-  S.B.legendNameColor = consistency.color.type === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
+  S.A.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
+  S.B.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
 
   /* styles by layout */
   switch (layout) {
     case "juxtaposition":
       if (unit === "chart") {
-        const isAColorUsed = !isUndefined(A.encoding.color)
-        const isBColorUsed = !isUndefined(B.encoding.color)
-        const isALegendUse = (consistency.color.type === "shared" && arrangement == "stacked") || (consistency.color.type === "independant" && isAColorUsed)
-        const isBLegendUse = (consistency.color.type === "shared" && arrangement == "adjacent") || (consistency.color.type === "independant" && isBColorUsed)
-        S.A.legend = isALegendUse
-        S.B.legend = isBLegendUse
         S.B.revY = arrangement === "stacked" && mirrored
         S.A.revX = arrangement === "adjacent" && mirrored
         S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked'
@@ -162,14 +201,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
       break
     case "superimposition":
       if (unit === "chart") {
-        const isAColorUsed = !isUndefined(A.encoding.color)
-        const isBColorUsed = !isUndefined(B.encoding.color)
-        S.A.legend = isAColorUsed
-        S.B.legend = isBColorUsed
-        // if two fields are identical, show only one
-        if (A.encoding.color && B.encoding.color && A.encoding.color.field === B.encoding.color.field &&
-          A.encoding.color.type === B.encoding.color.type && A.encoding.color.aggregate === B.encoding.color.aggregate) S.B.legend = false
-
         S.B.noGrid = true
         if (consistency.x_axis) S.B.noX = true
         if (consistency.y_axis) S.B.noY = true

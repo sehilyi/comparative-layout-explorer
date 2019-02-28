@@ -21,8 +21,8 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
   const isColorUsed = spec.encoding.color !== undefined
   const color = isColorUsed ? getNominalColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
   const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
-  const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, legend: isColorUsed}
-  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, legend: isColorUsed}])
+  const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, isLegend: isColorUsed}
+  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: isColorUsed}])
 
   d3.select(svg).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(svg).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
@@ -48,7 +48,7 @@ export function renderScatterplot(
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
   renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
-  if (styles.legend) {
+  if (styles.isLegend) {
     // deprecated
     /*
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))

@@ -17,14 +17,14 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
 
   d3.select(ref).selectAll('*').remove();
 
-  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, legend: color !== undefined}])
+  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: color !== undefined}])
   d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
   const {...domains} = getDomain(spec)
 
   renderBarChart(g, spec, {x: domains.x, y: domains.y}, getNominalColor(domains.color), {
-    ...DEFAULT_CHART_STYLE, legend: !isUndefined(color), verticalBar: spec.encoding.x.type === "nominal"
+    ...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color), verticalBar: spec.encoding.x.type === "nominal"
   })
 }
 
@@ -48,7 +48,7 @@ export function renderBarChart(
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
 
   renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
-  if (styles.legend) {
+  if (styles.isLegend) {
     // deprecated
     /*
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))

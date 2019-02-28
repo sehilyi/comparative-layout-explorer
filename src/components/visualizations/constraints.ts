@@ -53,6 +53,12 @@ export function getChartType(spec: Spec): ChartTypes {
   else return "NULL"
 }
 
+
+export function isOverlapLayout(spec: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = spec.layout
+  return (layout === "superimposition") || (layout === "juxtaposition" && unit === "element") || (arrangement === "animated")
+}
+
 /**
  * This function checks if this chart contains aggregated visual elements
  * such as bar charts or scatterplots with aggregated points

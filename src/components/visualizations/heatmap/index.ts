@@ -16,14 +16,14 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
 
   d3.select(ref).selectAll('*').remove()
 
-  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, legend: color !== undefined}])
+  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: color !== undefined}])
   d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
   const {...domains} = getDomain(spec)
 
   renderHeatmap(g, spec, {x: domains.x, y: domains.y}, d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColorStr()),
-    {...DEFAULT_CHART_STYLE, legend: !isUndefined(color)})
+    {...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color)})
 }
 
 export function renderHeatmap(
@@ -43,7 +43,7 @@ export function renderHeatmap(
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
   renderCells(g, pivotData, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles})
-  if (styles.legend) {
+  if (styles.isLegend) {
     // deprecated
     /*
     const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))

@@ -38,6 +38,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   return [
     {
       C: {
+        name: "#1",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independant"
@@ -65,6 +66,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#2",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independant"
@@ -92,6 +94,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#3",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independant"
@@ -119,6 +122,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#4",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independant"
@@ -146,6 +150,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#5",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "shared"
@@ -173,6 +178,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#6",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independant"
@@ -200,7 +206,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "resize test",
+        name: "#7 resize test",
         layout: {type: "superimposition", unit: "chart", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -231,6 +237,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#8",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -258,6 +265,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#9",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {x_axis: false, y_axis: true, color: "shared"}
       },
@@ -283,6 +291,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#10",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {x_axis: true, y_axis: true, color: "distinct"}
       },
@@ -309,7 +318,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     /*
     {
       C: {
-        name: "visual linking test",
+        name: "#11 visual linking test",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {
           color: {
@@ -341,7 +350,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },*/
     {
       C: {
-        name: "visual linking test",
+        name: "#12 visual linking test",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {
           color: {
@@ -373,6 +382,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#13",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "stacked"},
         consistency: {
           x_axis: true, y_axis: false, color: "distinct"
@@ -400,7 +410,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "resize test",
+        name: "#14 resize test",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
@@ -430,6 +440,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#15",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
@@ -457,6 +468,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#16",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "shared"
@@ -484,6 +496,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#17",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "shared"
@@ -511,6 +524,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        name: "#18",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"

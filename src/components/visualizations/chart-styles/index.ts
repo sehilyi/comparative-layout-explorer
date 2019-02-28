@@ -2,6 +2,7 @@ import {BAR_GAP, CHART_SIZE, getConstantColor, NESTING_PADDING} from "../default
 import {SCATTER_POINT_SIZE} from "../scatterplots/default-design";
 import {DEFAULT_HEATMAP_CELL_PADDING, CELL_NULL_COLOR} from "../heatmap/default-design";
 import {_lightgray, ScaleOrdinal, ScaleLinearColor, _white, _black} from "src/useful-factory/d3-str";
+import {DataType} from "src/models/simple-vega-spec";
 
 export type ChartStyle = CommonChartStyle
 
@@ -49,7 +50,8 @@ export interface CommonChartStyle {
   width: number
   height: number
   altVals: object[]
-  legend: boolean
+  isLegend: boolean
+  legendType: DataType
   xPreStr: string
   // bar chart
   barGap: number
@@ -104,6 +106,8 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   xName: undefined,
   yName: undefined,
   // legend
+  isLegend: false,
+  legendType: undefined,
   legendNameColor: undefined,
   //
   xSlant: true,
@@ -111,7 +115,6 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   width: CHART_SIZE.width,
   height: CHART_SIZE.height,
   altVals: undefined,
-  legend: false,
   // below options are relative numbers (e.g., 0.5, 1.0, ...)
   // mulSize is applied first, and then shift bars
   widthTimes: 1,
