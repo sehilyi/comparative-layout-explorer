@@ -46,6 +46,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
 
   /* B's legend */
   if (S.B.isLegend) {
+    if (lastXEnd === 0) lastXEnd = P.B.top;
     legends.push({
       title: S.B.legendNameColor,
       scale: S.B.color,
