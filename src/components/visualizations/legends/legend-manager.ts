@@ -4,8 +4,8 @@ import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {ChartStyle} from "../chart-styles";
 import {Position} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
-import {LEGEND_PADDING, LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_GAP, LEGEND_MARK_SIZE} from "./default-design";
-import {isOverlapLayout, isBarChart, isScatterplot} from "../constraints";
+import {LEGEND_PADDING, LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
+import {isOverlapLayout, isBarChart, isScatterplot, getChartTitle, isHeatmap} from "../constraints";
 import {getNominalColor} from "../default-design-manager";
 
 export type LegendRecipe = {
@@ -28,7 +28,7 @@ export type LegendRecipe = {
  */
 export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, P: {A: Position, B: Position}, S: {A: ChartStyle, B: ChartStyle}) {
   let legends: LegendRecipe[] = [];
-  let lastXEnd = 0
+  let lastYEnd = 0, lastXEnd = 0, addWidth = 0;
 
   // all legends should be placed in one column layout
   const isOneColumn = isOverlapLayout(C)
@@ -42,42 +42,50 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
       top: P.A.top,
       isNominal: S.A.legendType === "nominal"
     });
-    lastXEnd += legends[0].top + estimateLegendSize(legends[0]);
+    lastYEnd += legends[0].top + estimateLegendSize(legends[0]);
+    lastXEnd = legends[0].left + LEGEND_WIDTH;
   }
 
   /* B's legend */
   if (S.B.isLegend) {
-    if (lastXEnd === 0) lastXEnd = P.B.top;
+    if (lastYEnd === 0) lastYEnd = P.B.top;
     legends.push({
       title: S.B.legendNameColor,
       scale: S.B.color,
       left: P.B.left + S.B.width + LEGEND_PADDING,
-      top: isOneColumn ? lastXEnd : P.B.top,
+      top: isOneColumn ? lastYEnd : P.B.top,
       isNominal: S.B.legendType === "nominal"
     });
-    lastXEnd += estimateLegendSize(legends[legends.length - 1]);
+    lastYEnd += estimateLegendSize(legends[legends.length - 1]);
+    lastXEnd = legends[legends.length - 1].left + LEGEND_WIDTH;
   }
 
   /* consistency legends */
   {
     if (consistency.color.type === "distinct") {
+      // put additional space for consistency legend
+      addWidth = LEGEND_WIDTH;
+
       // distinct nominal color
-      if (isBarChart(A) || isScatterplot(A)) { // TODO: decide color type more clearly
+      if (isBarChart(A) || isScatterplot(A)) { // TODO: decide color type more cleverly
         legends.push({
-          title: "distinct",
-          scale: getNominalColor(["a", "b"]),
-          left: 0,
-          top: lastXEnd,
+          title: "chart",
+          scale: getNominalColor([getChartTitle(A), getChartTitle(B)]),
+          left: lastXEnd === 0 ? P.A.width : lastXEnd,
+          top: lastYEnd === 0 ? P.A.top : lastYEnd,
           isNominal: true
         });
-        lastXEnd += estimateLegendSize(legends[legends.length - 1]);
+        lastYEnd += estimateLegendSize(legends[legends.length - 1]);
+        lastXEnd = legends[legends.length - 1].left + LEGEND_WIDTH;
       }
-
       // distinct quantitative color
+      else if (isHeatmap(A)) {
+        //
+      }
     }
   }
 
-  return {height: lastXEnd, legends};
+  return {height: lastYEnd, addWidth, legends};
 }
 
 export function estimateLegendSize(recipe: LegendRecipe) {

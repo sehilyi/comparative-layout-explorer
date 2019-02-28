@@ -31,7 +31,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const {...layouts} = getLayouts(A, B, C, consistency, styles) // set translateX and Y here
   const {...legends} = getLegends(A, B, C, consistency, {A: layouts.A, B: layouts.B}, styles)
 
-  const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, d3.max([legends.height, layouts.height]))
+  const svg = d3.select(ref).attr(_width, layouts.width + legends.addWidth).attr(_height, d3.max([legends.height, layouts.height]))
 
   // render A and (not nested) B
   function loopABRender() {

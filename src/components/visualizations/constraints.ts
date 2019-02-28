@@ -53,6 +53,14 @@ export function getChartType(spec: Spec): ChartTypes {
   else return "NULL"
 }
 
+/**
+ * Generate simple chart title.
+ * @param spec
+ */
+export function getChartTitle(spec: Spec) {
+  // TODO: make this more useful
+  return spec.encoding.x.field + " by " + spec.encoding.y.field
+}
 
 export function isOverlapLayout(spec: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = spec.layout
