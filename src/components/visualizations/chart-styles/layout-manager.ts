@@ -9,7 +9,6 @@ import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
-import {deepObjectValue} from "src/models/comp-spec-manager";
 import {isBarChart, isScatterplot, isHeatmap} from "../constraints";
 
 export type Position = {
@@ -20,27 +19,27 @@ export type Position = {
 }
 
 export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, S: {A: ChartStyle, B: ChartStyle}) {
-  const {unit, arrangement} = C.layout
-  let nestedBs: Position[] | Position[][]
-  let chartsp
-  switch (deepObjectValue(C.layout)) {
+  const {type: layout, unit, arrangement} = C.layout
+  let placement, nestedBs: Position[] | Position[][]
+
+  switch (layout) {
     case "juxtaposition":
       if (unit === "chart") {
-        const numOfC = arrangement === 'adjacent' ? 2 : 1
-        const numOfR = arrangement === 'stacked' ? 2 : 1
-        chartsp = getChartPositions(numOfC, numOfR, [S.A, S.B])
+        const numOfC = arrangement === 'adjacent' ? 2 : 1;
+        const numOfR = arrangement === 'stacked' ? 2 : 1;
+        placement = getChartPositions(numOfC, numOfR, [S.A, S.B]);
       }
       else if (unit === "element") {
-        chartsp = getChartPositions(1, 1, [S.A, S.B])
+        placement = getChartPositions(1, 1, [S.A, S.B]);
       }
-      break
+      break;
     case "superimposition":
       if (unit === "chart") {
-        chartsp = getChartPositions(1, 1, [S.A, S.B])
+        placement = getChartPositions(1, 1, [S.A, S.B]);
       }
       /* nesting */
       else if (unit === "element") {
-        chartsp = getChartPositions(1, 1, [S.A, S.B])
+        placement = getChartPositions(1, 1, [S.A, S.B]);
 
         // divide layouts
         // TODO: sub elements' layouts should be shared here
@@ -123,19 +122,20 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
           }
         }
       }
+      break;
     default:
-      break
+      break;
   }
 
   // set translate in styles
-  S.A = {...S.A, translateX: chartsp.positions[0].left, translateY: chartsp.positions[0].top}
-  S.B = {...S.B, translateX: chartsp.positions[1].left, translateY: chartsp.positions[1].top}
+  S.A = {...S.A, translateX: placement.positions[0].left, translateY: placement.positions[0].top}
+  S.B = {...S.B, translateX: placement.positions[1].left, translateY: placement.positions[1].top}
 
   return {
-    width: chartsp.size.width,
-    height: chartsp.size.height,
-    A: {...chartsp.positions[0]},
-    B: {...chartsp.positions[1]},
+    width: placement.size.width,
+    height: placement.size.height,
+    A: {...placement.positions[0]},
+    B: {...placement.positions[1]},
     // TODO: more organized way?
     nestedBs
   }

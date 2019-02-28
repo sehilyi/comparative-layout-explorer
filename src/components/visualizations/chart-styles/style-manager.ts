@@ -74,7 +74,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
     S.A.xName = (!consistency.x_axis) ? S.A.xName : getAxisName(A.encoding.x, B.encoding.x)
     S.A.yName = (!consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
   }
-  if (layout == "juxtaposition" && arrangement === "animated" && unit === "element") S.B.elementAnimated = true
+  // smooth animated transition
+  if (layout === "juxtaposition" && unit === "element" && arrangement === "animated") S.B.elementAnimated = true
 
   /**
    * consistency

@@ -31,7 +31,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const {...domains} = getDomainByLayout(A, B, C, consistency)
   const {...styles} = getStyles(A, B, C, consistency, domains)
   const {...layouts} = getLayouts(A, B, C, consistency, styles) // set translateX and Y here
-  const {...legends} = getLegends(A, B, C, consistency, styles) // TODO: empty now
+  const legends = getLegends(A, B, C, consistency, {A: layouts.A, B: layouts.B}, styles) // TODO: empty now
 
   const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height)
 
@@ -95,8 +95,11 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       [A.encoding.y.field, B.encoding.y.field],
       styles.A.color.range().concat(styles.B.color.range()) as string[])
   }
-  // TODO:
-  if (legends) console.log()
+  legends.forEach(legend => {
+    const legendG = svg.append(_g).attr(_transform, translate(legend.left, legend.top))
+    renderLegend(legendG, legend.title, legend.scale.domain() as string[], legend.scale.range() as string[], !legend.isNominal)
+  });
+
 
   /* apply visual properties after rendering charts */
   if (styles.A.onTop) svg.selectAll(".A").raise()
