@@ -30,7 +30,8 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): _Consis
     y_axis: (isDeepTrue(C.consistency.y_axis) &&
       A.encoding.y.type === B.encoding.y.type) ||
       (C.layout.type === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated"), // always true for element-wise jux
-    stroke: ifUndefinedGetDefault(C.consistency.stroke, DEFAULT_CONSISTENCY.stroke)
+    stroke: ifUndefinedGetDefault(C.consistency.stroke, DEFAULT_CONSISTENCY.stroke),
+    texture: ifUndefinedGetDefault(C.consistency.texture, DEFAULT_CONSISTENCY.texture),
   };
   // warnings
   if (cons.y_axis != isDeepTrue(C.consistency.y_axis)) console.log('consistency.y has been changed to ' + cons.y_axis)

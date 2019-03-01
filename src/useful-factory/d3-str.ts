@@ -6,6 +6,7 @@ export const
   _transform = 'transform', _g = 'g', _rect = 'rect',
   _x = 'x', _y = 'y', _cx = "cx", _cy = "cy",
   _x1 = "x1", _x2 = "x2", _y1 = "y1", _y2 = "y2",
+  _rx = "rx", _ry = "ry",
   _circle = "circle", _r = "r",
   _stroke = "stroke", _stroke_width = "stroke-width",
   _opacity = "opacity",

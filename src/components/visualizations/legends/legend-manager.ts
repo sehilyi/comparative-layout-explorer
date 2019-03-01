@@ -5,7 +5,7 @@ import {ChartStyle} from "../chart-styles";
 import {Position} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
 import {LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
-import {isOverlapLayout, isBarChart, isScatterplot, getChartTitle, isHeatmap} from "../constraints";
+import {isOverlapLayout, isBarChart, isScatterplot, getChartTitle, isHeatmap, isNestingLayout} from "../constraints";
 import {getNominalColor} from "../default-design-manager";
 
 export type LegendRecipe = {
@@ -14,6 +14,7 @@ export type LegendRecipe = {
   top: number;
   left: number;
   isNominal: boolean;
+  styles?: Object;
 }
 
 /**
@@ -40,7 +41,8 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
       scale: S.A.color,
       left: P.A.left + S.A.width,
       top: P.A.top,
-      isNominal: S.A.legendType === "nominal"
+      isNominal: S.A.legendType === "nominal",
+      styles: {isCircle: isScatterplot(A) && !isNestingLayout(C)}
     });
     lastYEnd += recipe[0].top + estimateLegendSize(recipe[0]);
   }
@@ -53,28 +55,38 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
       scale: S.B.color,
       left: P.B.left + S.B.width,
       top: isOneColumn ? lastYEnd : P.B.top,
-      isNominal: S.B.legendType === "nominal"
+      isNominal: S.B.legendType === "nominal",
+      styles: {isCircle: isScatterplot(B) && !isNestingLayout(C)}
     });
     lastYEnd += estimateLegendSize(recipe[recipe.length - 1]);
   }
 
   /* consistency legends */
   {
-    if (consistency.color.type === "distinct") {
+    if (consistency.color.type === "distinct" || consistency.stroke === "distinct" || consistency.texture === "distinct") {
       // put additional space for consistency legend
       addWidth = LEGEND_WIDTH;
+      if (isOverlapLayout(C) && (S.A.isLegend || S.B.isLegend)) {
+        addWidth -= LEGEND_WIDTH;
+      }
 
-      const left = P.B.left + S.B.width + (S.B.isLegend ? LEGEND_WIDTH : 0);
+
+      const left = P.B.left + S.B.width + (!isOverlapLayout(C) && S.B.isLegend ? LEGEND_WIDTH : 0);
       lastYEnd = lastYEnd === 0 ? P.A.top : lastYEnd
 
       // distinct nominal color
       if (isBarChart(A) || isScatterplot(A)) { // TODO: decide color type more cleverly
+        let legendStyles = {}
+        if (consistency.stroke === "distinct") legendStyles["stroke"] = ["black", "none"];
+        if (consistency.texture === "distinct") legendStyles["texture"] = [false, true];
+        if (isScatterplot(A) && !isNestingLayout(C)) legendStyles["isCircle"] = true
         recipe.push({
           title: "chart",
           scale: getNominalColor([getChartTitle(A), getChartTitle(B)]), // TODO: more clever title
           left,
           top: lastYEnd,
-          isNominal: true
+          isNominal: true,
+          styles: legendStyles
         });
       }
       // distinct quantitative color

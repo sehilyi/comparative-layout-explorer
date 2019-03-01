@@ -23,7 +23,7 @@ export function getExamples() {
   // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
   // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
   // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-  // .filter(d => d.C.name.includes("#14"))
+  // .filter(d => d.C.name.includes("distinct legend test"))
   // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32");
 
   return examples
@@ -1140,6 +1140,34 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           color: {field: "MPAA_Rating", type: "nominal"}
         }
       }
-    }
+    },
+    {
+      C: {
+        name: "#40 distinct legend test",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "distinct", texture: "distinct", stroke: "distinct"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
   ]
 }

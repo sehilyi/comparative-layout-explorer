@@ -1,5 +1,5 @@
 import {LEGEND_MARK_SIZE, LEGEND_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING, LEGEND_LABEL_LEN_LIMIT, LEGEND_QUAN_MARK_HEIGHT} from "./default-design";
-import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end, GSelection} from "src/useful-factory/d3-str";
+import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end, GSelection, _cx, _cy, _rx, _ry} from "src/useful-factory/d3-str";
 import d3 = require("d3");
 import {translate, shortenText} from "src/useful-factory/utils";
 import {isNullOrUndefined} from "util";
@@ -9,7 +9,8 @@ export function renderLegend(
   title: string,
   domain: string[] | number[],
   range: string[],
-  isQuantitative?: boolean) {
+  isQuantitative: boolean,
+  stylesDistinct?: Object) {
 
   const left = LEGEND_PADDING, right = LEGEND_PADDING
   // title
@@ -35,8 +36,29 @@ export function renderLegend(
         .attr(_y, i * (LEGEND_MARK_SIZE.height + LEGEND_GAP))
         .attr(_width, LEGEND_MARK_SIZE.width)
         .attr(_height, LEGEND_MARK_SIZE.height)
-        .attr(_fill, range[i >= range.length ? i - range.length : i])  // handle corner case
-        .attr(_stroke, "null")
+        .attr(_rx, stylesDistinct && stylesDistinct["isCircle"] ? LEGEND_MARK_SIZE.width : 0)
+        .attr(_ry, stylesDistinct && stylesDistinct["isCircle"] ? LEGEND_MARK_SIZE.height : 0)
+        .attr(_fill, function () {
+          let color = range[i >= range.length ? i - range.length : i]
+          if (stylesDistinct && stylesDistinct["texture"] && stylesDistinct["texture"][i]) {
+            const textureId = "diagonalTexture-" + color;
+            g.append("pattern")
+              .attr(_id, textureId)
+              .attr("patternUnits", "userSpaceOnUse")
+              .attr(_width, 3)
+              .attr(_height, 3)
+              .attr("patternTransform", "rotate(45)")
+              .append("rect")
+              .attr(_width, 1)
+              .attr(_height, 30)
+              .attr(_fill, d3.rgb(color).darker(1.3).toString());
+            return `url(#${textureId})`;
+          }
+          else {
+            return color;
+          }
+        })  // handle corner case
+        .attr(_stroke, stylesDistinct && stylesDistinct["stroke"] ? stylesDistinct["stroke"][i] : "none")
 
       g.append(_text)
         .attr(_x, left + LEGEND_MARK_SIZE.width + LEGEND_GAP)

@@ -67,6 +67,11 @@ export function isOverlapLayout(spec: _CompSpecSolid) {
   return (layout === "superimposition") || (layout === "juxtaposition" && unit === "element") || (arrangement === "animated")
 }
 
+export function isNestingLayout(spec: _CompSpecSolid) {
+  const {type: layout, unit} = spec.layout
+  return (layout === "superimposition" && unit === "element")
+}
+
 /**
  * This function checks if this chart contains aggregated visual elements
  * such as bar charts or scatterplots with aggregated points
