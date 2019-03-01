@@ -164,114 +164,86 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
  * Get single or union domains for x, y, and color
  */
 export function getDomain(spec: Spec, specForUnion?: Spec): {x: Domain, y: Domain, color: Domain} {
-  const {values} = spec.data
-  const {x, y, color} = spec.encoding
-  const isUnion = specForUnion !== undefined
-  let xDomain: Domain, yDomain: Domain, cDomain: Domain
+  const {values} = spec.data;
+  const {encoding} = spec;
+  const {x, y, color} = spec.encoding;
+  const isUnion = specForUnion !== undefined;
+  let xDomain: Domain, yDomain: Domain, cDomain: Domain;
+  let domains = {x: xDomain, y: yDomain, color: cDomain};
 
-  /* x domain */
-  {
-    if (x.type === "nominal") {
-      xDomain = uniqueValues(values, x.field)
+  /* x and y domain */
+  ['x', 'y'].forEach(e => {
+    const alt = (e === 'x' ? 'y' : 'x')
+    if (encoding[e].type === "nominal") {
+      domains[e] = uniqueValues(values, encoding[e].field)
     }
-    else if (x.type === "quantitative" && x.aggregate === undefined) {
-      if (y.type === "quantitative") {
-        xDomain = values.map(d => d[x.field]) as number[]
+    else if (encoding[e].type === "quantitative" && encoding[e].aggregate === undefined) {
+      if (encoding[alt].type === "quantitative") {
+        domains[e] = values.map(d => d[encoding[e].field]) as number[]
       }
       else {
         console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
         console.log(spec)
       }
     }
-    else if (x.type === "quantitative" && x.aggregate !== undefined) {
-      if (y.type === "quantitative") {
+    else if (encoding[e].type === "quantitative" && encoding[e].aggregate !== undefined) {
+      if (encoding[alt].type === "quantitative") {
         // aggregated scatterplot
-        xDomain = getAggValues(values, color.field, [x.field], x.aggregate).map((d: object) => d[x.field])
+        domains[e] = getAggValues(values, color.field, [encoding[e].field], encoding[e].aggregate).map((d: object) => d[encoding[e].field])
       }
-      else if (y.type === "nominal") {
+      else if (encoding[alt].type === "nominal") {
         // bar chart
-        xDomain = getAggValues(values, y.field, [x.field], x.aggregate).map((d: object) => d[x.field])
+        domains[e] = getAggValues(values, encoding[alt].field, [encoding[e].field], encoding[e].aggregate).map((d: object) => d[encoding[e].field])
       }
       else {
         console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
         console.log(spec)
       }
     }
-  }
-
-  /* y domain */
-  // TODO: all same except x => y
-  {
-    if (y.type === "nominal") {
-      yDomain = uniqueValues(values, y.field)
-    }
-    else if (y.type === "quantitative" && y.aggregate === undefined) {
-      if (x.type === "quantitative") {
-        yDomain = values.map(d => d[y.field])
-      }
-      else {
-        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
-        console.log(spec)
-      }
-    }
-    else if (y.type === "quantitative" && y.aggregate !== undefined) {
-      if (x.type === "quantitative") {
-        // aggregated scatterplot
-        yDomain = getAggValues(values, color.field, [y.field], y.aggregate).map((d: object) => d[y.field])
-      }
-      else if (x.type === "nominal") {
-        // bar chart
-        yDomain = getAggValues(values, x.field, [y.field], y.aggregate).map((d: object) => d[y.field])
-      }
-      else {
-        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
-        console.log(spec)
-      }
-    }
-  }
+  });
 
   /* color domain */
   {
     if (color && color.type === "nominal") {
-      cDomain = uniqueValues(values, color.field)
+      domains.color = uniqueValues(values, color.field)
     }
     else if (color && color.type === "quantitative") {
       if (x.type === "nominal" && y.type === "nominal") {
         const vals = getPivotData(values, [x.field, y.field], color.field, color.aggregate)
-        cDomain = vals.map(d => d[color.field])
+        domains.color = vals.map(d => d[color.field])
       }
       else if (x.type === "quantitative" && y.type === "nominal") {
         // TODO:
-        cDomain = []
+        domains.color = []
       }
       else if (x.type === "nominal" && y.type === "quantitative") {
         // TODO:
-        cDomain = []
+        domains.color = []
       }
       else {
         // TODO:
-        cDomain = []
+        domains.color = []
       }
     }
     else if (!color) {
-      cDomain = []
+      domains.color = []
     }
   }
 
   if (isUnion) {
     let {...uDomain} = getDomain(specForUnion);
-    xDomain = x.type === "nominal" ?
-      (xDomain as string[]).concat(uDomain.x as string[]) :
-      (xDomain as number[]).concat(uDomain.x as number[]);
-    yDomain = y.type === "nominal" ?
-      (yDomain as string[]).concat(uDomain.y as string[]) :
-      (yDomain as number[]).concat(uDomain.y as number[]);
+    domains.x = x.type === "nominal" ?
+      (domains.x as string[]).concat(uDomain.x as string[]) :
+      (domains.x as number[]).concat(uDomain.x as number[]);
+    domains.y = y.type === "nominal" ?
+      (domains.y as string[]).concat(uDomain.y as string[]) :
+      (domains.y as number[]).concat(uDomain.y as number[]);
 
     // TODO: should consider numerical color encoding
-    cDomain = color && specForUnion.encoding.color && color.type !== specForUnion.encoding.color.type ?
-      (cDomain as string[]).concat(uDomain.color as string[]) :
-      color && color.type === "nominal" ? (cDomain as string[]).concat(uDomain.color as string[]) :
-        (cDomain as number[]).concat(uDomain.color as number[]);
+    domains.color = color && specForUnion.encoding.color && color.type !== specForUnion.encoding.color.type ?
+      (domains.color as string[]).concat(uDomain.color as string[]) :
+      color && color.type === "nominal" ? (domains.color as string[]).concat(uDomain.color as string[]) :
+        (domains.color as number[]).concat(uDomain.color as number[]);
   }
-  return {x: xDomain, y: yDomain, color: cDomain}
+  return domains
 }
