@@ -207,7 +207,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
         right:
           (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + // right margin
           (s.isLegend ? LEGEND_WIDTH : 0), // legend on the right
-        top: CHART_TITLE_HEIGHT + (s.topX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top),
+        top: (lastBottom === 0 ? CHART_TITLE_HEIGHT : 0) + (s.topX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top), // CHART_TITLE_HEIGHT added for the first one
         bottom: (s.noX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
       };
       const left = ML;
