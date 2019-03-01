@@ -18,11 +18,12 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec().map(d => ({...d, C: correctCompSpec(d.C)}))
-  /// filter for debugging
-  // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
-  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
-  // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-  // .filter(d => d.C.name.includes("test"))
+    /// filter for debugging
+    // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
+    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
+    // .filter(d => d.A.mark === "point" || d.B.mark === "point")
+    // .filter(d => d.C.name.includes("test"))
+    .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32");
 
   return examples
     .sort((a, b) => a.C.layout.mirrored > b.C.layout.mirrored ? -1 : 1)
@@ -30,7 +31,7 @@ export function getExamples() {
     .sort((a, b) => a.C.layout.unit > b.C.layout.unit ? -1 : 1)
     .sort((a, b) => a.C.layout.arrangement > b.C.layout.arrangement ? -1 : 1)
     .sort((a, b) => a.C.layout.type > b.C.layout.type ? -1 : 1)
-    .sort((a, b) => a.C.name > b.C.name ? 1 : -1)
+    .sort((a, b) => a.C.name > b.C.name ? 1 : -1);
 
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {

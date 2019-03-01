@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 
 import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
-import {getBarSize, GAP_BETWEEN_CHARTS, CHART_MARGIN, CHART_MARGIN_NO_AXIS} from "../default-design-manager";
+import {getBarSize, CHART_MARGIN, CHART_MARGIN_NO_AXIS, CHART_TITLE_HEIGHT} from "../default-design-manager";
 import {ChartStyle} from ".";
 import {getAggValues, getAggregatedData} from "../data-handler";
 import d3 = require("d3");
@@ -149,16 +149,16 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
  */
 export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
   // styles that affects top or left margins of all charts
-  const ifAllNoY = styles.filter(d => !d.noY).length === 0
-  const ifThereTopX = styles.filter(d => d.topX).length !== 0
+  const ifAllNoY = styles.filter(d => !d.noY).length === 0;
+  const ifThereTopX = styles.filter(d => d.topX).length !== 0;
   // styles that affects max width and height
-  const ifAllNoX = styles.filter(d => !d.noX).length === 0
-  const isThereRightY = styles.filter(d => d.rightY).length !== 0
-  const isThereLegend = styles.filter(d => d.isLegend).length !== 0
+  const ifAllNoX = styles.filter(d => !d.noX).length === 0;
+  const isThereRightY = styles.filter(d => d.rightY).length !== 0;
+  const isThereLegend = styles.filter(d => d.isLegend).length !== 0;
 
   // margin of left and top
-  const ML = ifAllNoY ? GAP_BETWEEN_CHARTS : CHART_MARGIN.left
-  const MT = ifThereTopX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top
+  const ML = ifAllNoY ? /*GAP_BETWEEN_CHARTS*/ 0 : CHART_MARGIN.left;  // GAP deprecated
+  const MT = CHART_TITLE_HEIGHT + (ifThereTopX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top);
 
   // max width and height
   // this is not a tight calculation
@@ -167,18 +167,17 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
     ML +
     d3.max(styles.map(d => d.width)) +
     (isThereRightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) +
-    (isThereLegend ? LEGEND_WIDTH : 0)
+    (isThereLegend ? LEGEND_WIDTH : 0);
 
   const maxH =
     MT +
     d3.max(styles.map(d => d.height)) +
-    (ifAllNoX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
+    (ifAllNoX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom);
 
   // width and height includes margins
-  let positions: {left: number, top: number, width: number, height: number}[] = []
-  let lgdPositions: {left: number, top: number, width: number, height: number}[] = []
-  let totalSize = {width: 0, height: 0}
-  let lastRight = 0, lastBottom = 0, lastLegendLeft = 0 // lastLegendLeft is only for superimposition
+  let positions: {left: number, top: number, width: number, height: number}[] = [];
+  let totalSize = {width: 0, height: 0};
+  let lastRight = 0, lastBottom = 0;
 
   if (x === 1 && y === 1) { // superimposition, the length of styles can be larger than x * y
     styles.forEach(s => {
@@ -193,13 +192,9 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
         bottom: (s.noX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
       }
       positions.push({left: position.left, top: position.top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
-      // in this case, legend should be placed in the same area
-      // I simply render legend horizontally when multiple
-      lgdPositions.push({left: lastLegendLeft + position.left + position.width + position.right, top: position.top, width: LEGEND_WIDTH, height: position.height + position.bottom})
-      lastLegendLeft += LEGEND_WIDTH
-    })
-    totalSize.width = maxW
-    totalSize.height = maxH
+    });
+    totalSize.width = maxW;
+    totalSize.height = maxH;
   }
   // TODO: width or height should be used identically? (e.g., same width for vertical layout)
   // Either x or y must be 1 (i.e., no table layout).
@@ -214,16 +209,16 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
           (s.isLegend ? LEGEND_WIDTH : 0), // legend on the right
         top: (s.topX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top),
         bottom: (s.noX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
-      }
-      const left = ML
-      const top = lastBottom + position.top
+      };
+      const left = ML;
+      const top = lastBottom + position.top;
 
-      positions.push({left, top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
+      positions.push({left, top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom});
 
-      lastBottom = top + position.height + position.bottom
+      lastBottom = top + position.height + position.bottom;
     })
-    totalSize.width = maxW
-    totalSize.height = d3.sum(positions.map(d => d.height))
+    totalSize.width = maxW;
+    totalSize.height = d3.sum(positions.map(d => d.height));
   }
   else if (y === 1) {  // horizontal layout
     styles.forEach(s => {
@@ -243,10 +238,10 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
       positions.push({left, top, width: position.width + position.left + position.right, height: position.height + position.top + position.bottom})
 
       lastRight = left + s.width + position.right
-    })
-    totalSize.width = d3.sum(positions.map(d => d.width))
-    totalSize.height = maxH
+    });
+    totalSize.width = d3.sum(positions.map(d => d.width));
+    totalSize.height = maxH;
   }
-  else console.log("Something went wrong. Refer to functions related to chart size calculation.")
-  return {size: totalSize, positions, lgdPositions}
+  else console.log("Something went wrong. Refer to functions related to chart size calculation.");
+  return {size: totalSize, positions};
 }

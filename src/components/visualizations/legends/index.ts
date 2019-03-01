@@ -11,9 +11,11 @@ export function renderLegend(
   range: string[],
   isQuantitative?: boolean) {
 
+  const left = LEGEND_PADDING, right = LEGEND_PADDING
   // title
   g.append('text')
     .classed('legend-title', true)
+    .attr(_x, left)
     .attr(_y, -7)
     .style(_font_size, '10px')
     .style(_text_anchor, 'start')
@@ -29,7 +31,7 @@ export function renderLegend(
       if (isNullOrUndefined(domain[i])) continue // TODO: what is the problem continuously getting undefined or null??
 
       g.append(_rect)
-        .attr(_x, 0)
+        .attr(_x, left)
         .attr(_y, i * (LEGEND_MARK_SIZE.height + LEGEND_GAP))
         .attr(_width, LEGEND_MARK_SIZE.width)
         .attr(_height, LEGEND_MARK_SIZE.height)
@@ -37,7 +39,7 @@ export function renderLegend(
         .attr(_stroke, "null")
 
       g.append(_text)
-        .attr(_x, LEGEND_MARK_SIZE.width + LEGEND_GAP)
+        .attr(_x, left + LEGEND_MARK_SIZE.width + LEGEND_GAP)
         .attr(_y, i * (LEGEND_MARK_SIZE.height + LEGEND_GAP) + LEGEND_MARK_SIZE.height / 2.0)
         .attr(_text_anchor, _start)
         .attr(_alignment_baseline, _middle)
@@ -51,7 +53,7 @@ export function renderLegend(
       // omit rest of us when two many of them
       if (i == LEGEND_VISIBLE_LIMIT) {
         g.append(_text)
-          .attr(_x, LEGEND_MARK_SIZE.width + LEGEND_GAP)
+          .attr(_x, left + LEGEND_MARK_SIZE.width + LEGEND_GAP)
           .attr(_y, (i + 1) * (LEGEND_MARK_SIZE.height + LEGEND_GAP) + LEGEND_MARK_SIZE.height / 2.0)
           .attr(_text_anchor, _start)
           .attr(_alignment_baseline, _middle)
@@ -64,6 +66,7 @@ export function renderLegend(
     }
   }
   else {
+    const legendWidth = LEGEND_WIDTH - left - right
     const defs = g.append("defs")
     const key = "linear-gradient" + range.toString()
     const linearGradient = defs.append("linearGradient")
@@ -85,18 +88,19 @@ export function renderLegend(
 
     g.append(_g)
       .append(_rect)
-      .attr(_width, LEGEND_WIDTH - LEGEND_PADDING)
+      .attr(_x, left)
+      .attr(_width, legendWidth)
       .attr(_height, LEGEND_QUAN_MARK_HEIGHT)
       .style(_fill, `url(#${key})`)
 
     const q = d3.scaleLinear()
       .domain(d3.extent(domain as number[])).nice()
-      .rangeRound([0, LEGEND_WIDTH - LEGEND_PADDING])
+      .rangeRound([0, legendWidth])
 
     let yAxis = d3.axisBottom(q).ticks(3).tickSizeOuter(0)
     g.append(_g)
       .classed("axis", true)
-      .attr(_transform, translate(0, 15))
+      .attr(_transform, translate(left, 15))
       .attr('dy', '.71em')
       .call(yAxis)
       .selectAll('.axis text')
