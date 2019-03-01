@@ -418,7 +418,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
         },
         overlap_reduction: {
-          opacity: true
+          opacity: true, texture: true
         }
       },
       // https://vega.github.io/vega-lite/examples/

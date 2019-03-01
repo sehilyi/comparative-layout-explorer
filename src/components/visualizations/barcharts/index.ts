@@ -7,7 +7,7 @@ import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white} from 'src/useful-factory/d3-str';
 import {getNominalColor, CHART_CLASS_ID, getBarSize} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
@@ -120,7 +120,27 @@ export function renderBars(
       .attr(_stroke_width, stroke_width)
       .attr(_x, styles.revX ? width : 0)
       .attr(_width, 0)
-      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string)
+      .attr(_fill, function (d) {
+        if (!styles.texture) {
+          return (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string;
+        }
+        else {
+          // texture
+          const textureId = "diagonalTexture-" + (d[keys.cKey === "" ? _N : _C] as string).replace(/ /g, '');
+          g.append("pattern")
+            .attr(_id, textureId)
+            .attr("patternUnits", "userSpaceOnUse")
+            .attr(_width, 5)
+            .attr(_height, 5)
+            .attr("patternTransform", "rotate(45)")
+            .append("rect")
+            .attr(_width, 3)
+            .attr(_height, 10)
+            .attr("fill", (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string)
+
+          return `url(#${textureId})`;
+        }
+      })
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)

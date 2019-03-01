@@ -23,6 +23,7 @@ export interface CommonChartStyle {
   elementAnimated: boolean
   jitter_x: number
   jitter_y: number
+  texture: boolean
   // colorKey: string // deprecated
   onTop: boolean
   translateX: number
@@ -73,16 +74,17 @@ export interface CommonChartStyle {
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   chartId: "A",
   opacity: 1,
-  //layout
+  // layout
   nestDim: 0,
   nestingPadding: NESTING_PADDING,
-  //
+  // common
   color: getConstantColor(),
   stroke: getConstantColor(_white),
   strokeKey: undefined,
   stroke_width: 0,
   jitter_x: 0,
   jitter_y: 0,
+  texture: false,
   //
   axisLabelColor: getConstantColor(_black),
   axisLabelColorKey: undefined,

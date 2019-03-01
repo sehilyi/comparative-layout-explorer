@@ -57,10 +57,11 @@ export type PropertyType = "foreground" | "background" | "stroke"
 
 /* clutter reduction strategies */
 export type OverlapReduction = {
-  opacity?: boolean
-  jitter_x?: boolean
-  jitter_y?: boolean
-  resize?: boolean
+  opacity?: boolean;
+  jitter_x?: boolean;
+  jitter_y?: boolean;
+  resize?: boolean;
+  texture?: boolean;
 }
 
 export type CompReference = "A" | "B"
@@ -89,18 +90,18 @@ export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
   y_axis: false,
   stroke: "independant"
 }
-export const DEFAULT_CLUTTER_REDUCTION: OverlapReduction = {
+export const DEFAULT_OVERLAP_REDUCTION: OverlapReduction = {
   opacity: false,
   jitter_x: false,
   jitter_y: false,
   resize: false,
-  // TODO: add here more
+  texture: false
 }
 export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",
   layout: DEFAULT_LAYOUT_JUX,
   consistency: DEFAULT_CONSISTENCY,
-  overlap_reduction: DEFAULT_CLUTTER_REDUCTION,
+  overlap_reduction: DEFAULT_OVERLAP_REDUCTION,
   reference: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {

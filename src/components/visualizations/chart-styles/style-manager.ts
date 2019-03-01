@@ -27,6 +27,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
    */
   if (layout === "superimposition") {
     S.B.opacity = C.overlap_reduction.opacity ? 0.4 : 1;
+    S.B.texture = C.overlap_reduction.texture;
+    if (S.B.texture) {
+      S.B.onTop = true;
+    }
 
     S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0;
     S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0;
