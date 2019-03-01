@@ -175,7 +175,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
     (ifAllNoX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom);
 
   // width and height includes margins
-  let positions: {left: number, top: number, width: number, height: number}[] = [];
+  let positions: Position[] = [];
   let totalSize = {width: 0, height: 0};
   let lastRight = 0, lastBottom = 0;
 
@@ -207,7 +207,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
         right:
           (s.rightY ? CHART_MARGIN.right : CHART_MARGIN_NO_AXIS.right) + // right margin
           (s.isLegend ? LEGEND_WIDTH : 0), // legend on the right
-        top: (s.topX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top),
+        top: CHART_TITLE_HEIGHT + (s.topX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top),
         bottom: (s.noX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom)
       };
       const left = ML;

@@ -64,7 +64,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
       // put additional space for consistency legend
       addWidth = LEGEND_WIDTH;
 
-      const left = P.B.left + P.B.width + (S.B.isLegend ? LEGEND_WIDTH : 0);
+      const left = P.B.left + S.B.width + (S.B.isLegend ? LEGEND_WIDTH : 0);
       lastYEnd = lastYEnd === 0 ? P.A.top : lastYEnd
 
       // distinct nominal color
@@ -109,7 +109,8 @@ export function estimateLegendSize(recipe: LegendRecipe) {
     let n = d3.min([recipe.scale.domain().length, LEGEND_VISIBLE_LIMIT])
     return (
       20 /* title */ +
-      (LEGEND_GAP + LEGEND_MARK_SIZE.height) * n
+      (LEGEND_GAP + LEGEND_MARK_SIZE.height) * n +
+      (LEGEND_VISIBLE_LIMIT === n ? 30 : 0) /* height of "..." */
     );
   }
 }
