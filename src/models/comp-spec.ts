@@ -43,6 +43,7 @@ export type Consistency = {
   // x_arrangement?: boolean
   // y_arrangement?: boolean
   stroke?: ConsistencyType  // TODO: this will be removed eventually
+  texture?: ConsistencyType;
 }
 
 /* consistency settings */
@@ -61,7 +62,6 @@ export type OverlapReduction = {
   jitter_x?: boolean;
   jitter_y?: boolean;
   resize?: boolean;
-  texture?: boolean;
 }
 
 export type CompReference = "A" | "B"
@@ -88,14 +88,14 @@ export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
   color: DEFAULT_CONSISTENCY_TARGET,
   x_axis: false,
   y_axis: false,
-  stroke: "independant"
+  stroke: "independant",
+  texture: "independant"
 }
 export const DEFAULT_OVERLAP_REDUCTION: OverlapReduction = {
   opacity: false,
   jitter_x: false,
   jitter_y: false,
-  resize: false,
-  texture: false
+  resize: false
 }
 export const DEFAULT_COMP_SPEC: CompSpec = {
   name: "",

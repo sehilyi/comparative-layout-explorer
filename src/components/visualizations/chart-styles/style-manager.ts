@@ -27,7 +27,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
    */
   if (layout === "superimposition") {
     S.B.opacity = C.overlap_reduction.opacity ? 0.4 : 1;
-    S.B.texture = C.overlap_reduction.texture;
+    S.B.texture = C.consistency.texture === "distinct";
     if (S.B.texture) {
       S.B.onTop = true;
     }

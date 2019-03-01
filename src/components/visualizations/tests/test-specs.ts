@@ -18,12 +18,12 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-    // .map(d => ({...d, C: correctCompSpec(d.C)}))
-    /// filter for debugging
-    // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
-    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
-    // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-    .filter(d => d.C.name.includes("#14"))
+  // .map(d => ({...d, C: correctCompSpec(d.C)}))
+  /// filter for debugging
+  // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
+  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
+  // .filter(d => d.A.mark === "point" || d.B.mark === "point")
+  // .filter(d => d.C.name.includes("#14"))
   // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32");
 
   return examples
@@ -412,13 +412,10 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        name: "#14 resize test",
+        name: "#14 texture test",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
-          x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
-        },
-        overlap_reduction: {
-          opacity: true, texture: true
+          x_axis: true, y_axis: true, color: "shared", texture: "distinct"//, stroke: "distinct"
         }
       },
       // https://vega.github.io/vega-lite/examples/

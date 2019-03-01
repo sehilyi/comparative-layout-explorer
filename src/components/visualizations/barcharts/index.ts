@@ -124,19 +124,19 @@ export function renderBars(
         if (!styles.texture) {
           return (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string;
         }
+        // texture
         else {
-          // texture
           const textureId = "diagonalTexture-" + (d[keys.cKey === "" ? _N : _C] as string).replace(/ /g, '');
           g.append("pattern")
             .attr(_id, textureId)
             .attr("patternUnits", "userSpaceOnUse")
-            .attr(_width, 5)
-            .attr(_height, 5)
+            .attr(_width, 3)
+            .attr(_height, 3)
             .attr("patternTransform", "rotate(45)")
             .append("rect")
-            .attr(_width, 3)
+            .attr(_width, 1)
             .attr(_height, 10)
-            .attr("fill", (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string)
+            .attr("fill", d3.rgb((scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string).darker(.5).toString())
 
           return `url(#${textureId})`;
         }
