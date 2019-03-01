@@ -43,7 +43,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#1",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -71,7 +71,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#2",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -99,7 +99,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#3",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -127,7 +127,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#4",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -183,7 +183,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#6",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -841,7 +841,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#29",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: true, color: "independant"
+          x_axis: false, y_axis: true, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -869,7 +869,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#30",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: true, color: "independant"
+          x_axis: false, y_axis: true, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -896,7 +896,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#31",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -923,7 +923,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#32",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -950,7 +950,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#33",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -977,7 +977,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#34",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -1004,7 +1004,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#35",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -1031,7 +1031,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#36",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -1058,7 +1058,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         name: "#37",
         layout: {type: "superimposition", unit: "chart"},
-        consistency: {x_axis: true, y_axis: true, color: "independant"},
+        consistency: {x_axis: true, y_axis: true, color: "independent"},
         overlap_reduction: {
           jitter_x: true,
           opacity: true
@@ -1088,7 +1088,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
       C: {
         name: "#38",
         layout: {type: "superimposition", unit: "chart"},
-        consistency: {x_axis: false, y_axis: true, color: "independant"},
+        consistency: {x_axis: false, y_axis: true, color: "independent"},
         overlap_reduction: {
           opacity: true
         }
@@ -1118,7 +1118,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#39",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
-          x_axis: false, y_axis: false, color: "independant"
+          x_axis: false, y_axis: false, color: "independent"
         }
       },
       // https://vega.github.io/vega-lite/examples/

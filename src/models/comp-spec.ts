@@ -47,7 +47,7 @@ export type Consistency = {
 }
 
 /* consistency settings */
-export type ConsistencyType = "shared" | "independant" | "distinct"
+export type ConsistencyType = "shared" | "independent" | "distinct"
 export type ConsistencyTypeAndTarget = {
   type: ConsistencyType
   primary_target?: {element: ElementType, property: PropertyType}
@@ -80,7 +80,7 @@ export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
 }
 
 export const DEFAULT_CONSISTENCY_TARGET: ConsistencyTypeAndTarget = {
-  type: "independant",
+  type: "independent",
   primary_target: {element: "mark", property: "foreground"},
   secondary_target: {element: "mark", property: "foreground"}
 }
@@ -88,8 +88,8 @@ export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
   color: DEFAULT_CONSISTENCY_TARGET,
   x_axis: false,
   y_axis: false,
-  stroke: "independant",
-  texture: "independant"
+  stroke: "independent",
+  texture: "independent"
 }
 export const DEFAULT_OVERLAP_REDUCTION: OverlapReduction = {
   opacity: false,

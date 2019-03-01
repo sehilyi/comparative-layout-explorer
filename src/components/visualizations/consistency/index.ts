@@ -19,7 +19,7 @@ export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): _Consis
     // (C.consistency.color.target.primary.element == C.consistency.color.target.secondary.element) &&
     // (C.consistency.color.target.primary.property == C.consistency.color.target.secondary.property)) {
   ) {
-    C.consistency.color.type = "independant"
+    C.consistency.color.type = "independent"
   }
 
   const cons = {

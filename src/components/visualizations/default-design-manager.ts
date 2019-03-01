@@ -74,7 +74,7 @@ export function getNominalColorStr(n: number, n2?: number) {
 }
 export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: ConsistencyType) {
   let colorA, colorB
-  if (consistency === "independant" || consistency === "shared") {
+  if (consistency === "independent" || consistency === "shared") {
     // TODO: enclose this as a function?
     colorA = a.length === 0 || typeof a[0] === "string" ?
       getNominalColor(a) :

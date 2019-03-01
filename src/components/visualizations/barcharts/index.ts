@@ -135,8 +135,8 @@ export function renderBars(
             .attr("patternTransform", "rotate(45)")
             .append("rect")
             .attr(_width, 1)
-            .attr(_height, 10)
-            .attr("fill", d3.rgb((scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string).darker(.5).toString())
+            .attr(_height, 30)
+            .attr(_fill, d3.rgb((scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string).darker(1.3).toString())
 
           return `url(#${textureId})`;
         }

@@ -5,7 +5,7 @@ import {DEFAULT_CHART_STYLE} from ".";
 import {getAggregatedData, getFieldsByType} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
-import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING, getConstantColor} from "../default-design-manager";
+import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout} from "../constraints";
 import {getAxisName} from "../axes";
@@ -135,7 +135,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
     // TODO: systemical color domain manager needed!
 
   }
-  else if (consisColor === "independant") {
+  else if (consisColor === "independent") {
     S.A.isLegend = isAColorUsed;
     S.B.isLegend = isBColorUsed;
     S.A.legendType = colorTypeA;
@@ -227,8 +227,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
         if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
         if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
         if (!isHeatmap(A) && !isHeatmap(B)) {
-          S.A.stroke = getConstantColor(_black)
-          S.A.stroke_width = 1
+          // S.A.stroke = getConstantColor(_black)
+          // S.A.stroke_width = 1
         }
 
         // scatterplot
