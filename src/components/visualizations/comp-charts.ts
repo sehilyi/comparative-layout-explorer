@@ -87,7 +87,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     }
   }
   /* render legends */
-  legends.legends.forEach(legend => {
+  legends.recipe.forEach(legend => {
     const legendG = svg.append(_g).attr(_transform, translate(legend.left, legend.top));
     renderLegend(legendG, legend.title, legend.scale.domain() as string[], legend.scale.range() as string[], !legend.isNominal);
   });

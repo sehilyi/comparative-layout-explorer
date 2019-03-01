@@ -235,7 +235,8 @@ export function renderAxes(
 }
 
 export function getAxisName(f1: Field, f2?: Field): string {
-  if (!f1) return ""
+  if (!f1 && !f2) return "";
+  if (!f1) return getAxisName(f2);  // when color is not specified for f1 but shared
   if (f2) {
     if (f1.field === f2.field) {
       if (!f1.aggregate || !f2.aggregate) return f1.field

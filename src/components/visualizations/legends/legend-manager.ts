@@ -27,7 +27,7 @@ export type LegendRecipe = {
  * @param S
  */
 export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, P: {A: Position, B: Position}, S: {A: ChartStyle, B: ChartStyle}) {
-  let legends: LegendRecipe[] = [];
+  let recipe: LegendRecipe[] = [];
   let lastYEnd = 0, addWidth = 0;
 
   // all legends should be placed in one column layout
@@ -35,27 +35,27 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
 
   /* A's legend */
   if (S.A.isLegend) {
-    legends.push({
+    recipe.push({
       title: S.A.legendNameColor,
       scale: S.A.color,
       left: P.A.left + S.A.width,
       top: P.A.top,
       isNominal: S.A.legendType === "nominal"
     });
-    lastYEnd += legends[0].top + estimateLegendSize(legends[0]);
+    lastYEnd += recipe[0].top + estimateLegendSize(recipe[0]);
   }
 
   /* B's legend */
   if (S.B.isLegend) {
     if (lastYEnd === 0) lastYEnd = P.B.top;
-    legends.push({
+    recipe.push({
       title: S.B.legendNameColor,
       scale: S.B.color,
       left: P.B.left + S.B.width,
       top: isOneColumn ? lastYEnd : P.B.top,
       isNominal: S.B.legendType === "nominal"
     });
-    lastYEnd += estimateLegendSize(legends[legends.length - 1]);
+    lastYEnd += estimateLegendSize(recipe[recipe.length - 1]);
   }
 
   /* consistency legends */
@@ -69,7 +69,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
 
       // distinct nominal color
       if (isBarChart(A) || isScatterplot(A)) { // TODO: decide color type more cleverly
-        legends.push({
+        recipe.push({
           title: "chart",
           scale: getNominalColor([getChartTitle(A), getChartTitle(B)]), // TODO: more clever title
           left,
@@ -79,26 +79,26 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
       }
       // distinct quantitative color
       else if (isHeatmap(A)) {
-        legends.push({
+        recipe.push({
           title: S.A.legendNameColor,
           scale: S.A.color,
           left,
           top: lastYEnd,
           isNominal: false
         });
-        legends.push({
+        recipe.push({
           title: S.B.legendNameColor,
           scale: S.B.color,
           left,
-          top: lastYEnd + estimateLegendSize(legends[legends.length - 1]),
+          top: lastYEnd + estimateLegendSize(recipe[recipe.length - 1]),
           isNominal: false
         });
       }
-      lastYEnd += estimateLegendSize(legends[legends.length - 1]);
+      lastYEnd += estimateLegendSize(recipe[recipe.length - 1]);
     }
   }
 
-  return {height: lastYEnd, addWidth, legends};
+  return {height: lastYEnd, addWidth, recipe};
 }
 
 export function estimateLegendSize(recipe: LegendRecipe) {

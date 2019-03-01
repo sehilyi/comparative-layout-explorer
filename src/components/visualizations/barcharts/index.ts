@@ -48,13 +48,6 @@ export function renderBarChart(
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
 
   renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
-  if (styles.isLegend) {
-    // deprecated
-    /*
-    const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cKey, color.domain() as string[], color.range() as string[])
-    */
-  }
 }
 
 export function renderBars(
@@ -105,7 +98,7 @@ export function renderBars(
       .attr(_x, width)
       .attr(_y, styles.revY ? 0 : height)
       .attr(_height, 0)
-      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)
+      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string)
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)
@@ -127,7 +120,7 @@ export function renderBars(
       .attr(_stroke_width, stroke_width)
       .attr(_x, styles.revX ? width : 0)
       .attr(_width, 0)
-      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _Q : _C]) as string)
+      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string)
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)

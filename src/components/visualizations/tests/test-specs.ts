@@ -18,12 +18,12 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-  // .map(d => ({...d, C: correctCompSpec(d.C)}))
-  /// filter for debugging
-  // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
-  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
-  // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-  // .filter(d => d.C.name.includes("test"))
+    // .map(d => ({...d, C: correctCompSpec(d.C)}))
+    /// filter for debugging
+    // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
+    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
+    // .filter(d => d.A.mark === "point" || d.B.mark === "point")
+    .filter(d => d.C.name.includes("#14"))
   // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32");
 
   return examples
@@ -418,7 +418,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
         },
         overlap_reduction: {
-          resize: true
+          opacity: true
         }
       },
       // https://vega.github.io/vega-lite/examples/

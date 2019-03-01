@@ -119,11 +119,11 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
     if (isAColorUsed || isBColorUsed) {
       if ((layout === "superimposition") || (layout === "juxtaposition" && arrangement === "stacked")) {
         S.A.isLegend = true;
-        S.A.legendType = colorTypeA;
+        S.A.legendType = colorTypeA || colorTypeB;
       }
       else {
         S.B.isLegend = true;
-        S.B.legendType = colorTypeB;
+        S.B.legendType = colorTypeB || colorTypeA;
       }
     }
   }
