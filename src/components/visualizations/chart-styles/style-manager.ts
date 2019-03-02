@@ -27,10 +27,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
    */
   if (layout === "superimposition") {
     S.B.opacity = C.overlap_reduction.opacity ? 0.4 : 1;
-    if (S.B.texture) {
-      S.B.onTop = true;
-    }
-
     S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0;
     S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0;
     if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isHeatmap(B) && isHeatmap(A)) {
@@ -84,8 +80,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   /**
    * consistency
    */
-
-  S.B.texture = C.consistency.texture === "distinct";
+  S.A.texture = C.consistency.texture === "distinct";
   if (consistency.stroke === "distinct") {
     S.A.stroke = DEFAULT_STROKE;
     S.A.stroke_width = DEFAULT_STROKE_WIDTH;

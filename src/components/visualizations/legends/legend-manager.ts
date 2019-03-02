@@ -6,7 +6,6 @@ import {Position} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
 import {LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
 import {isOverlapLayout, isBarChart, isScatterplot, getChartTitle, isHeatmap, isNestingLayout} from "../constraints";
-import {getNominalColor} from "../default-design-manager";
 
 export type LegendRecipe = {
   title: string;
@@ -70,19 +69,20 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
         addWidth -= LEGEND_WIDTH;
       }
 
-
       const left = P.B.left + S.B.width + (!isOverlapLayout(C) && S.B.isLegend ? LEGEND_WIDTH : 0);
       lastYEnd = lastYEnd === 0 ? P.A.top : lastYEnd
 
       // distinct nominal color
       if (isBarChart(A) || isScatterplot(A)) { // TODO: decide color type more cleverly
         let legendStyles = {}
-        if (consistency.stroke === "distinct") legendStyles["stroke"] = ["black", "none"];
-        if (consistency.texture === "distinct") legendStyles["texture"] = [false, true];
-        if (isScatterplot(A) && !isNestingLayout(C)) legendStyles["isCircle"] = true
+        if (S.A.stroke !== S.B.stroke) legendStyles["stroke"] = [S.A.stroke.range()[0], S.B.stroke.range()[0]];
+        if (S.A.texture !== S.B.texture) legendStyles["texture"] = [S.A.texture, S.B.texture];
+        if (isScatterplot(A) && !isNestingLayout(C)) legendStyles["isCircle"] = true;
         recipe.push({
           title: "chart",
-          scale: getNominalColor([getChartTitle(A), getChartTitle(B)]), // TODO: more clever title
+          scale: d3.scaleOrdinal()
+            .domain([getChartTitle(A), getChartTitle(B)]) // TODO: more clever title
+            .range([S.A.color.range()[0], S.B.color.range()[0]]),
           left,
           top: lastYEnd,
           isNominal: true,
@@ -108,6 +108,12 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
       }
       lastYEnd += estimateLegendSize(recipe[recipe.length - 1]);
     }
+    // TODO: and more ...
+  }
+
+  /* legends for nesting */
+  if (isNestingLayout(C)) {
+    // TODO:
   }
 
   return {height: lastYEnd, addWidth, recipe};

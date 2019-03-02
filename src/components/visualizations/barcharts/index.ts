@@ -73,6 +73,7 @@ export function renderBars(
 
   const _N = "N", _Q = "Q", _C = "C"
   let dataCommonShape = data.map(d => ({N: d[keys.nKey], Q: d[keys.qKey], C: d[keys.cKey]}))
+  const cKey = keys.cKey === "" ? _N : _C
   let oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[_N])
 
   oldBars
@@ -98,7 +99,7 @@ export function renderBars(
       .attr(_x, width)
       .attr(_y, styles.revY ? 0 : height)
       .attr(_height, 0)
-      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string)
+      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[cKey]) as string)
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)
@@ -122,11 +123,11 @@ export function renderBars(
       .attr(_width, 0)
       .attr(_fill, function (d) {
         if (!styles.texture) {
-          return (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string;
+          return (scales.color as ScaleOrdinal)(d[cKey]) as string;
         }
         // texture
         else {
-          const textureId = "diagonalTexture-" + (d[keys.cKey === "" ? _N : _C] as string).replace(/ /g, '');
+          const textureId = "diagonalTexture-" + (d[cKey] as string).replace(/ /g, '');
           g.append("pattern")
             .attr(_id, textureId)
             .attr("patternUnits", "userSpaceOnUse")
@@ -136,7 +137,7 @@ export function renderBars(
             .append("rect")
             .attr(_width, 1)
             .attr(_height, 30)
-            .attr(_fill, d3.rgb((scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _N : _C]) as string).darker(1.3).toString())
+            .attr(_fill, d3.rgb((scales.color as ScaleOrdinal)(d[cKey]) as string).darker(1.3).toString())
 
           return `url(#${textureId})`;
         }

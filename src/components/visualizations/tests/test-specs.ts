@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
-import {getChartType} from "../constraints";
+import {getChartType, isNestingLayout} from "../constraints";
 import {DATASET_MOVIES} from "src/datasets/movies";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
@@ -18,13 +18,15 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 
 export function getExamples() {
   let examples = getExampleSpec()
-  // .map(d => ({...d, C: correctCompSpec(d.C)}))
-  /// filter for debugging
-  // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
-  // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
-  // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-  // .filter(d => d.C.name.includes("distinct legend test"))
-  // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32");
+    // .map(d => ({...d, C: correctCompSpec(d.C)}))
+    /// filter for debugging
+    // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
+    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
+    // .filter(d => d.A.mark === "point" || d.B.mark === "point")
+    // .filter(d => d.C.name.includes("distinct legend test"))
+    // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32")
+    .filter(d => isNestingLayout(correctCompSpec(d.C)))
+    ;
 
   return examples
   // .sort((a, b) => a.C.layout.mirrored > b.C.layout.mirrored ? -1 : 1)
@@ -1164,6 +1166,36 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         mark: "bar",
         encoding: {
           x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        name: "#41 texture test 2",
+        layout: {type: "superimposition", unit: "chart"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared", texture: "distinct"
+        },
+        overlap_reduction: {
+          jitter_y: true
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "Source", type: "nominal"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           y: {field: "Source", type: "nominal"},
           color: {field: "Source", type: "nominal"}
         }
