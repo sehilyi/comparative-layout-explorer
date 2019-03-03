@@ -99,7 +99,27 @@ export function renderBars(
       .attr(_x, width)
       .attr(_y, styles.revY ? 0 : height)
       .attr(_height, 0)
-      .attr(_fill, d => (scales.color as ScaleOrdinal)(d[cKey]) as string)
+      .attr(_fill, function (d) {
+        if (!styles.texture) {
+          return (scales.color as ScaleOrdinal)(d[cKey]) as string;
+        }
+        // texture
+        else {
+          const textureId = "diagonalTexture-" + (d[cKey] as string).replace(/ /g, '');
+          g.append("pattern")
+            .attr(_id, textureId)
+            .attr("patternUnits", "userSpaceOnUse")
+            .attr(_width, 3)
+            .attr(_height, 3)
+            .attr("patternTransform", "rotate(45)")
+            .append("rect")
+            .attr(_width, 1)
+            .attr(_height, 30)
+            .attr(_fill, d3.rgb((scales.color as ScaleOrdinal)(d[cKey]) as string).darker(1.3).toString())
+
+          return `url(#${textureId})`;
+        }
+      })
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)

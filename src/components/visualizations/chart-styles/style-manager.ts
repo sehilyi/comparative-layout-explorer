@@ -1,5 +1,4 @@
 import {Spec} from "src/models/simple-vega-spec";
-
 import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {DEFAULT_CHART_STYLE} from ".";
 import {getAggregatedData, getFieldsByType} from "../data-handler";
