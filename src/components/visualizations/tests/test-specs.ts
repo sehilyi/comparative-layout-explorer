@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
-import {getChartType, isNestingLayout} from "../constraints";
+import {getChartType} from "../constraints";
 import {DATASET_MOVIES} from "src/datasets/movies";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
@@ -25,7 +25,7 @@ export function getExamples() {
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("distinct legend test"))
     // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32")
-    .filter(d => isNestingLayout(correctCompSpec(d.C)))
+    // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 
   return examples
