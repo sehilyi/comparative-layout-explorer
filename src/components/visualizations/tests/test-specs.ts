@@ -23,7 +23,7 @@ export function getExamples() {
     // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-    .filter(d => d.C.name.includes("test"))
+    .filter(d => d.C.name.includes("element-wise juxtaposition test"))
     // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
@@ -1261,6 +1261,34 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x: {field: "Source", type: "nominal"},
           y: {field: "Creative_Type", type: "nominal"},
           color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        name: "#44 element-wise juxtaposition test",
+        layout: {type: "juxtaposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "independent"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "MPAA_Rating", type: "nominal"},
+          y: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
         }
       },
     },

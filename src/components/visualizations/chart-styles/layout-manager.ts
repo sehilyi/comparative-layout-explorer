@@ -9,7 +9,7 @@ import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
-import {isBarChart, isScatterplot, isHeatmap} from "../constraints";
+import {isBarChart, isScatterplot, isHeatmap, getChartType} from "../constraints";
 
 export type Position = {
   width: number
@@ -22,109 +22,102 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Co
   const {type: layout, unit, arrangement} = C.layout
   let placement, nestedBs: Position[] | Position[][]
 
-  switch (layout) {
-    case "juxtaposition":
-      if (unit === "chart") {
-        const numOfC = arrangement === 'adjacent' ? 2 : 1;
-        const numOfR = arrangement === 'stacked' ? 2 : 1;
-        placement = getChartPositions(numOfC, numOfR, [S.A, S.B]);
-      }
-      else if (unit === "element") {
-        placement = getChartPositions(1, 1, [S.A, S.B]);
-      }
-      break;
-    case "superimposition":
-      if (unit === "chart") {
-        placement = getChartPositions(1, 1, [S.A, S.B]);
-      }
-      /* nesting */
-      else if (unit === "element") {
-        placement = getChartPositions(1, 1, [S.A, S.B]);
+  if (layout === "juxtaposition" && unit === "chart") {
+    const numOfC = arrangement === 'adjacent' ? 2 : 1;
+    const numOfR = arrangement === 'stacked' ? 2 : 1;
+    placement = getChartPositions(numOfC, numOfR, [S.A, S.B]);
+  }
+  else if (layout === "juxtaposition" && unit === "element" && getChartType(A) === getChartType(B)) {
+    placement = getChartPositions(1, 1, [S.A, S.B]);
+  }
+  else if (layout === "superimposition" && unit === "chart") {
+    placement = getChartPositions(1, 1, [S.A, S.B]);
+  }
+  /* nesting */
+  else if ((layout === "superimposition" && unit === "element") ||
+    (layout === "juxtaposition" && unit === "element" && getChartType(A) !== getChartType(B))) {
+    placement = getChartPositions(1, 1, [S.A, S.B]);
 
-        // divide layouts
-        // TODO: sub elements' layouts should be shared here
-        if (isBarChart(A) && A.encoding.x.type === "nominal") { // vertical bar chart
-          const aValues = getAggregatedData(A).values
-          const numOfX = getAggregatedData(A).categories.length
-          /// TODO: should be consistent with that of /barcharts/index.ts
-          const bandUnitSize = S.A.width / numOfX
-          const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.widthTimes
-          /// TODO: should be consistent with that of /axes/index.ts
-          const qY = d3.scaleLinear()
-            .domain([d3.min([d3.min(aValues as number[]), 0]), d3.max(aValues as number[])]).nice()
-            .rangeRound([S.A.height, 0]);
-          //
-          nestedBs = [] as Position[]
-          for (let i = 0; i < numOfX; i++) {
-            nestedBs.push({
-              left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + S.B.nestingPadding,
-              top: qY(aValues[i]) + S.B.nestingPadding,
-              width: barWidth - S.B.nestingPadding * 2,
-              height: S.A.height - qY(aValues[i]) - S.B.nestingPadding // no top padding
-            })
-          }
-        }
-        else if (isBarChart(A) && A.encoding.y.type === "nominal") { // horizontal bar chart
-          const numOfCategories = uniqueValues(A.data.values, A.encoding.y.field).length
-          const values = getAggValues(A.data.values, A.encoding.y.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
-          /// TODO: should be consistent with that of /barcharts/index.ts
-          const bandUnitSize = S.A.height / numOfCategories
-          const barSize = getBarSize(S.A.height, numOfCategories, S.A.barGap) * S.A.widthTimes
-          /// TODO: should be consistent with that of /axes/index.ts
-          const qX = d3.scaleLinear()
-            .domain([d3.min([d3.min(values as number[]), 0]), d3.max(values as number[])]).nice()
-            .rangeRound([0, S.A.width]);
-          //
-          nestedBs = [] as Position[]
-          for (let i = 0; i < numOfCategories; i++) {
-            nestedBs.push({
-              left: 0,
-              top: i * bandUnitSize + (bandUnitSize - barSize) / 2.0 + S.B.nestingPadding,
-              width: qX(values[i]) - S.B.nestingPadding, // no right padding
-              height: barSize - S.B.nestingPadding * 2
-            })
-          }
-        }
-        else if (isScatterplot(A)) {
-          const numOfCategories = uniqueValues(A.data.values, A.encoding.color.field).length
-          const xValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
-          const yValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.y.field], A.encoding.y.aggregate).map(d => d[A.encoding.y.field])
-          const pointSize = SCATTER_POINT_SIZE_FOR_NESTING
-          const {x, y} = renderAxes(null, xValues, yValues, A, S.A) // TODO: check styles
-          nestedBs = [] as Position[]
-          for (let i = 0; i < numOfCategories; i++) {
-            nestedBs.push({
-              left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
-              top: (y as d3.ScaleLinear<number, number>)(yValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
-              width: pointSize - S.B.nestingPadding * 2,
-              height: pointSize - S.B.nestingPadding * 2
-            })
-          }
-        }
-        else if (isHeatmap(A)) {
-          const numOfXCategories = uniqueValues(A.data.values, A.encoding.x.field).length
-          const numOfYCategories = uniqueValues(A.data.values, A.encoding.y.field).length
-          const width = S.A.width, height = S.A.height
-          const cellWidth = width / numOfXCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2
-          const cellHeight = height / numOfYCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2
-          nestedBs = [] as Position[][]
-          for (let i = 0; i < numOfXCategories; i++) {
-            let sub: Position[] = []
-            for (let j = 0; j < numOfYCategories; j++) {
-              sub.push({
-                left: i * (cellWidth + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
-                top: j * (cellHeight + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
-                width: cellWidth,
-                height: cellHeight
-              })
-            }
-            nestedBs.push(sub)
-          }
-        }
+    // divide layouts
+    // TODO: sub elements' layouts should be shared here
+    if (isBarChart(A) && A.encoding.x.type === "nominal") { // vertical bar chart
+      const aValues = getAggregatedData(A).values
+      const numOfX = getAggregatedData(A).categories.length
+      /// TODO: should be consistent with that of /barcharts/index.ts
+      const bandUnitSize = S.A.width / numOfX
+      const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.widthTimes
+      /// TODO: should be consistent with that of /axes/index.ts
+      const qY = d3.scaleLinear()
+        .domain([d3.min([d3.min(aValues as number[]), 0]), d3.max(aValues as number[])]).nice()
+        .rangeRound([S.A.height, 0]);
+      //
+      nestedBs = [] as Position[]
+      for (let i = 0; i < numOfX; i++) {
+        nestedBs.push({
+          left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + S.B.nestingPadding,
+          top: qY(aValues[i]) + S.B.nestingPadding,
+          width: barWidth - S.B.nestingPadding * 2,
+          height: S.A.height - qY(aValues[i]) - S.B.nestingPadding // no top padding
+        })
       }
-      break;
-    default:
-      break;
+    }
+    else if (isBarChart(A) && A.encoding.y.type === "nominal") { // horizontal bar chart
+      const numOfCategories = uniqueValues(A.data.values, A.encoding.y.field).length
+      const values = getAggValues(A.data.values, A.encoding.y.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
+      /// TODO: should be consistent with that of /barcharts/index.ts
+      const bandUnitSize = S.A.height / numOfCategories
+      const barSize = getBarSize(S.A.height, numOfCategories, S.A.barGap) * S.A.widthTimes
+      /// TODO: should be consistent with that of /axes/index.ts
+      const qX = d3.scaleLinear()
+        .domain([d3.min([d3.min(values as number[]), 0]), d3.max(values as number[])]).nice()
+        .rangeRound([0, S.A.width]);
+      //
+      nestedBs = [] as Position[]
+      for (let i = 0; i < numOfCategories; i++) {
+        nestedBs.push({
+          left: 0,
+          top: i * bandUnitSize + (bandUnitSize - barSize) / 2.0 + S.B.nestingPadding,
+          width: qX(values[i]) - S.B.nestingPadding, // no right padding
+          height: barSize - S.B.nestingPadding * 2
+        })
+      }
+    }
+    else if (isScatterplot(A)) {
+      const numOfCategories = uniqueValues(A.data.values, A.encoding.color.field).length
+      const xValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
+      const yValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.y.field], A.encoding.y.aggregate).map(d => d[A.encoding.y.field])
+      const pointSize = SCATTER_POINT_SIZE_FOR_NESTING
+      const {x, y} = renderAxes(null, xValues, yValues, A, S.A) // TODO: check styles
+      nestedBs = [] as Position[]
+      for (let i = 0; i < numOfCategories; i++) {
+        nestedBs.push({
+          left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
+          top: (y as d3.ScaleLinear<number, number>)(yValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
+          width: pointSize - S.B.nestingPadding * 2,
+          height: pointSize - S.B.nestingPadding * 2
+        })
+      }
+    }
+    else if (isHeatmap(A)) {
+      const numOfXCategories = uniqueValues(A.data.values, A.encoding.x.field).length
+      const numOfYCategories = uniqueValues(A.data.values, A.encoding.y.field).length
+      const width = S.A.width, height = S.A.height
+      const cellWidth = width / numOfXCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2
+      const cellHeight = height / numOfYCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2
+      nestedBs = [] as Position[][]
+      for (let i = 0; i < numOfXCategories; i++) {
+        let sub: Position[] = []
+        for (let j = 0; j < numOfYCategories; j++) {
+          sub.push({
+            left: i * (cellWidth + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
+            top: j * (cellHeight + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
+            width: cellWidth,
+            height: cellHeight
+          })
+        }
+        nestedBs.push(sub)
+      }
+    }
   }
 
   // set translate in styles

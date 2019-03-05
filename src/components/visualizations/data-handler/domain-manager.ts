@@ -3,7 +3,7 @@ import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
-import {isBarChart, isScatterplot, isChartDataAggregated} from "../constraints";
+import {isBarChart, isScatterplot, isChartDataAggregated, getChartType} from "../constraints";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
@@ -77,9 +77,10 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consisten
     resA.axis["color"] = resB.axis["color"] = A.encoding.color !== undefined ? DomainA.color :
       B.encoding.color !== undefined ? DomainB.color : [""]
   }
-  /* nesting */
+  /* nesting or juxtaposition(ele) with different chart types*/
   // separate domain B by aggregation keys used in Chart A
-  else if (layout === "superimposition" && unit === "element") {
+  else if ((layout === "superimposition" && unit === "element") ||
+    (layout === "juxtaposition" && unit === "element" && getChartType(A) !== getChartType(B))) {
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
     if (isChartDataAggregated(B)) {
 

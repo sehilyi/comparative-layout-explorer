@@ -29,8 +29,8 @@ export function canRenderCompChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   // exceptions
   if ((isScatterplot(A) || isScatterplot(B)) &&
     C.layout.type === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated") can = false
-  if (C.layout.type === "juxtaposition" && C.layout.unit === "element" &&
-    (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
+  // if (C.layout.type === "juxtaposition" && C.layout.unit === "element" &&
+  //   (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
   // nesting
   // visual elements (e.g., bars or points) of A should be aggregated
   if (C.layout.type === "superimposition" && C.layout.unit === "element" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false

@@ -6,7 +6,7 @@ import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
-import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout} from "../constraints";
+import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout, getChartType} from "../constraints";
 import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
 
@@ -55,7 +55,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
   S.A.xName = getAxisName(A.encoding.x), S.A.yName = getAxisName(A.encoding.y)
   S.B.xName = getAxisName(B.encoding.x), S.B.yName = getAxisName(B.encoding.y)
   // # of dimensions for nesting
-  if (layout === "superimposition" && unit === "element") {
+  if ((layout === "superimposition" && unit === "element") ||
+    (layout === "juxtaposition" && unit === "element" && getChartType(A) !== getChartType(B))) {
     let aNoms = getFieldsByType(A, "nominal")
     // color is not a unique separation field in bar chart (instead, x or y is)
     if (isBarChart(A)) {
@@ -165,7 +166,31 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
         S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent'
       }
       else if (unit === "element" && arrangement !== "animated") {
-        if (arrangement === "stacked") {
+        if (getChartType(A) !== getChartType(B)) {
+          /* all same as superimposition ele */
+          S.B.noY = true
+          S.B.noX = true
+          S.B.noGrid = true
+          S.B.barGap = 0
+          S.B.pointSize = 1.5
+
+          S.B.cellPadding = 0
+          S.B.nestingPadding = 1
+          if (!isHeatmap(A)) S.B.nullCellFill = _white
+          if (isHeatmap(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
+          if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
+          if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
+          if (!isHeatmap(A) && !isHeatmap(B)) {
+            // S.A.stroke = getConstantColor(_black)
+            // S.A.stroke_width = 1
+          }
+
+          // scatterplot
+          S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING
+          S.A.rectPoint = true
+          ///
+        }
+        else if (arrangement === "stacked") {
           if (isBarChart(A) && isBarChart(B)) {
             S.B.noAxes = true
             const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
