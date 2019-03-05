@@ -42,10 +42,10 @@ export function renderBarChart(
   const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q]
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate)) as object[]
-  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)
+  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
-    svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
+    svg.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartShiftX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
 
   renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
 }
@@ -57,7 +57,7 @@ export function renderBars(
   scales: {x: ScaleBand | ScaleLinear, y: ScaleBand | ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
-  const {widthTimes, heightTimes, shiftX: shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
+  const {chartWidthTimes, widthTimes, heightTimes, shiftX: shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
   let numOfC: number
   let nX: ScaleBand, qX: ScaleLinear, qY: ScaleLinear, nY: ScaleBand
   if (verticalBar) {
@@ -87,16 +87,16 @@ export function renderBars(
     .attr(_opacity, 0)
 
   const allBars = newBars.merge(oldBars as any)
-
+  const newWidth = width * chartWidthTimes;
   if (verticalBar) {
-    const bandUnitSize = width / numOfC
-    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(width, numOfC, barGap) * widthTimes) as number;
+    const bandUnitSize = newWidth / numOfC
+    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(newWidth, numOfC, barGap) * widthTimes) as number;
 
     allBars
       // initial position
       .attr(_stroke, d => (stroke as ScaleOrdinal)(d[styles.strokeKey ? styles.strokeKey : _Q]) as string)
       .attr(_stroke_width, stroke_width)
-      .attr(_x, width)
+      .attr(_x, newWidth)
       .attr(_y, styles.revY ? 0 : height)
       .attr(_height, 0)
       .attr(_fill, function (d) {
@@ -128,7 +128,7 @@ export function renderBars(
       // initial position
       .attr(_stroke, d => (stroke as ScaleOrdinal)(d[styles.strokeKey ? styles.strokeKey : _Q]) as string)
       .attr(_stroke_width, stroke_width)
-      .attr(_x, styles.revX ? width : 0)
+      .attr(_x, styles.revX ? newWidth : 0)
       .attr(_width, 0)
       .attr(_fill, function (d) {
         const colorStr = (scales.color as ScaleOrdinal)(d[cKey]) as string;
@@ -149,6 +149,6 @@ export function renderBars(
         (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
           (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
         styles.jitter_x)
-      .attr(_width, d => (!styles.revX ? qX(d[_Q]) : width - qX(d[_Q])))
+      .attr(_width, d => (!styles.revX ? qX(d[_Q]) : newWidth - qX(d[_Q])))
   }
 }

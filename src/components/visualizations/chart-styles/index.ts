@@ -61,6 +61,8 @@ export interface CommonChartStyle {
   heightTimes: number // mark height *= heightTimes
   shiftX: number
   shiftY: number
+  chartShiftX: number
+  chartWidthTimes: number
   verticalBar: boolean
   barOffset: {data: object[], valueField: string, keyField: string}
   // scatterplot
@@ -121,8 +123,10 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   // mulSize is applied first, and then shift bars
   widthTimes: 1,
   heightTimes: 1,
+  chartWidthTimes: 1,
   shiftX: 0,
   shiftY: 0,
+  chartShiftX: 0,
   xPreStr: "",
   barSize: undefined,
   // bar

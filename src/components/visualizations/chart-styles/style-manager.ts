@@ -170,7 +170,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
           /* all same as superimposition ele */
           S.B.noY = true
           S.B.noX = true
-          S.B.noGrid = true
+          // S.B.noGrid = true
           S.B.barGap = 0
           S.B.pointSize = 1.5
 
@@ -184,6 +184,16 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
             // S.A.stroke = getConstantColor(_black)
             // S.A.stroke_width = 1
           }
+          ///
+          if (arrangement === "adjacent" && isHeatmap(A)) {
+            S.A.shiftX = -0.5
+            S.A.widthTimes = 0.5
+            S.B.chartShiftX = 0.5
+            S.B.chartWidthTimes = 0.5
+            S.A.cellPadding = 0
+            S.B.nestingPadding = 0
+          }
+          ///
 
           // scatterplot
           S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING

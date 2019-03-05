@@ -20,13 +20,13 @@ export function renderAxes(
   const tran = d3.transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
   const isXCategorical = spec.encoding.x.type === "nominal"
   const isYCategorical = spec.encoding.y.type === "nominal"
-
+  const newWidth = styles.width * styles.chartWidthTimes;
   const qX: ScaleLinear = isXCategorical ? null : d3.scaleLinear()
     .domain([d3.min([d3.min(xVals as number[]), 0]), d3.max(xVals as number[])]).nice()
-    .rangeRound(styles.revX ? [styles.width, 0] : [0, styles.width])
+    .rangeRound(styles.revX ? [newWidth, 0] : [0, newWidth])
   const nX: ScaleBand = isXCategorical ? d3.scaleBand()
     .domain(uniqueValues(xVals, "") as string[])
-    .range(styles.revX ? [styles.width, 0] : [0, styles.width]) : null
+    .range(styles.revX ? [newWidth, 0] : [0, newWidth]) : null
   const qY: ScaleLinear = isYCategorical ? null : d3.scaleLinear()
     .domain([d3.min([d3.min(yVals as number[]), 0]), d3.max(yVals as number[])]).nice()
     .rangeRound(styles.revY ? [0, styles.height] : [styles.height, 0])
@@ -40,10 +40,10 @@ export function renderAxes(
   const xAxis = styles.topX ?
     isXCategorical ?
       d3.axisTop(nX).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
-      d3.axisTop(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+      d3.axisTop(qX).ticks(Math.ceil(newWidth / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
     : isXCategorical ?
       d3.axisBottom(nX).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
-      d3.axisBottom(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+      d3.axisBottom(qX).ticks(Math.ceil(newWidth / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   const yAxis = styles.rightY ?
     isYCategorical ?
       d3.axisRight(nY).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
@@ -53,16 +53,16 @@ export function renderAxes(
       d3.axisLeft(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
   const xGrid = isXCategorical ?
     d3.axisBottom(nX).tickFormat(null).tickSize(-styles.height) :
-    d3.axisBottom(qX).ticks(Math.ceil(styles.width / 40)).tickFormat(null).tickSize(-styles.height)
+    d3.axisBottom(qX).ticks(Math.ceil(newWidth / 40)).tickFormat(null).tickSize(-styles.height)
   const yGrid = isYCategorical ?
-    d3.axisLeft(nY).tickFormat(null).tickSize(-styles.width) :
-    d3.axisLeft(qY).ticks(Math.ceil(styles.height / 40)).tickFormat(null).tickSize(-styles.width)
+    d3.axisLeft(nY).tickFormat(null).tickSize(-newWidth) :
+    d3.axisLeft(qY).ticks(Math.ceil(styles.height / 40)).tickFormat(null).tickSize(-newWidth)
 
   /* render axes */
   if (!isNullOrUndefined(root) && !styles.noAxes) {
     const g: GSelection = animated ?
       root.select(`.${AXIS_ROOT_ID}A`) :  // for animated, select rather than append
-      root.append(_g).attr(_transform, translate(styles.translateX, styles.translateY))
+      root.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartShiftX, styles.translateY))
         .classed(`${AXIS_ROOT_ID}${styles.chartId}`, true)
         .classed(AXIS_ROOT_ID, true)
         .classed(styles.chartId, true)
@@ -127,7 +127,7 @@ export function renderAxes(
           .attr('transform', translate(0, styles.topX ? 0 : styles.height))
           .append('text')
           .classed('axis-name x-axis-name', true)
-          .attr('x', styles.width / 2)
+          .attr('x', newWidth / 2)
           .attr('y', styles.topX ? -40 : (CHART_MARGIN.bottom - 40))
           .style('fill', 'black')
           .style('stroke', 'none')
@@ -154,7 +154,7 @@ export function renderAxes(
       const yAxisG: GSelection = animated ?
         g.select(".y-axis") :
         g.append('g')
-          .attr(_transform, translate(styles.rightY ? styles.width : 0, 0))
+          .attr(_transform, translate(styles.rightY ? newWidth : 0, 0))
           .classed('axis y-axis', true)
           .attr('stroke', '#888888')
           .attr('stroke-width', 0.5)
