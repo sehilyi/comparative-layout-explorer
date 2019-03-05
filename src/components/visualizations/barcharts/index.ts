@@ -106,7 +106,7 @@ export function renderBars(
         }
         else {
           const textureId = (d[cKey] as string)
-          return appendPattern(g, textureId, d3.rgb(colorStr).darker(1.3).toString());
+          return appendPattern(g, textureId, colorStr);
         }
       })
       // animated transition
@@ -137,7 +137,7 @@ export function renderBars(
         }
         else {
           const textureId = (d[cKey] as string)
-          return appendPattern(g, textureId, d3.rgb(colorStr).darker(1.3).toString());
+          return appendPattern(g, textureId, colorStr);//d3.rgb(colorStr).darker(1.3).toString());
         }
       })
       // animated transition

@@ -418,6 +418,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", texture: "distinct"//, stroke: "distinct"
+        },
+        overlap_reduction: {
+          opacity: true
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -1176,9 +1179,10 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#41 texture test 2",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
-          x_axis: true, y_axis: true, color: "shared", texture: "distinct"
+          x_axis: true, y_axis: true, color: "shared", texture: "distinct", stroke: "distinct"
         },
         overlap_reduction: {
+          opacity: true,
           jitter_y: true
         }
       },

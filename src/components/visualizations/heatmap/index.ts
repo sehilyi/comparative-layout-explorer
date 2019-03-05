@@ -97,7 +97,6 @@ export function renderCells(
       }
       else {
         const textureId = isNullOrUndefined(d[_C]) ? "null" : `${d[_C]}`;
-        console.log(textureId)
         return appendPattern(g, textureId, colorStr);
       }
     })

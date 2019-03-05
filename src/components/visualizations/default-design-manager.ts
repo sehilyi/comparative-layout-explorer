@@ -123,15 +123,24 @@ export function getConstantColor(indexOrColorStr?: number | string) {
 
 export function appendPattern(g: GSelection, textureId: string, color: string) {
   textureId = "diagonalTexture-" + textureId.replace(/ /g, '');
-  g.append("pattern")
+  const pattern = g.append("pattern")
     .attr(_id, textureId)
     .attr("patternUnits", "userSpaceOnUse")
     .attr(_width, 3)
     .attr(_height, 3)
-    .attr("patternTransform", "rotate(45)")
+    .attr("patternTransform", "rotate(45)");
+
+  pattern
+    .append("rect")
+    .attr(_width, 30)
+    .attr(_height, 30)
+    .attr(_fill, color);
+
+  pattern
     .append("rect")
     .attr(_width, 1)
     .attr(_height, 30)
-    .attr(_fill, color);
+    .attr(_fill, d3.rgb(color).darker(2).toString());
+
   return `url(#${textureId})`;
 }
