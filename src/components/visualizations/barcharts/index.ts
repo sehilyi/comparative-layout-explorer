@@ -100,13 +100,13 @@ export function renderBars(
       .attr(_y, styles.revY ? 0 : height)
       .attr(_height, 0)
       .attr(_fill, function (d) {
+        const colorStr = (scales.color as ScaleOrdinal)(d[cKey]) as string;
         if (!styles.texture) {
-          return (scales.color as ScaleOrdinal)(d[cKey]) as string;
+          return colorStr;
         }
         else {
-          const textureId = "diagonalTexture-" + (d[cKey] as string).replace(/ /g, '');
-          appendPattern(g, textureId, d3.rgb((scales.color as ScaleOrdinal)(d[cKey]) as string).darker(1.3).toString());
-          return `url(#${textureId})`;
+          const textureId = (d[cKey] as string)
+          return appendPattern(g, textureId, d3.rgb(colorStr).darker(1.3).toString());
         }
       })
       // animated transition
@@ -131,13 +131,13 @@ export function renderBars(
       .attr(_x, styles.revX ? width : 0)
       .attr(_width, 0)
       .attr(_fill, function (d) {
+        const colorStr = (scales.color as ScaleOrdinal)(d[cKey]) as string;
         if (!styles.texture) {
-          return (scales.color as ScaleOrdinal)(d[cKey]) as string;
+          return colorStr;
         }
         else {
-          const textureId = "diagonalTexture-" + (d[cKey] as string).replace(/ /g, '');
-          appendPattern(g, textureId, d3.rgb((scales.color as ScaleOrdinal)(d[cKey]) as string).darker(1.3).toString());
-          return `url(#${textureId})`;
+          const textureId = (d[cKey] as string)
+          return appendPattern(g, textureId, d3.rgb(colorStr).darker(1.3).toString());
         }
       })
       // animated transition

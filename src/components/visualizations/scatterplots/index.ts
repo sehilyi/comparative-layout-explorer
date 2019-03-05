@@ -6,7 +6,7 @@ import {renderAxes} from '../axes';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {getNominalColor, getConstantColor, CHART_CLASS_ID} from '../default-design-manager';
+import {getNominalColor, getConstantColor, CHART_CLASS_ID, appendPattern} from '../default-design-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
@@ -87,7 +87,16 @@ export function renderPoints(
     // animated transition
     .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
     .attr(_opacity, SCATTER_POINT_OPACITY)
-    .attr(_fill, d => (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _X : _C]) as string)
+    .attr(_fill, function (d) {
+      const colorStr = (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _X : _C]) as string;
+      if (!styles.texture) {
+        return colorStr
+      }
+      else {
+        const textureId = d[keys.cKey === "" ? _X : _C] as string;
+        return appendPattern(g, textureId, colorStr);
+      }
+    })
     .attr(_stroke, d => (styles.stroke as ScaleOrdinal)(d[styles.strokeKey ? styles.strokeKey : _X]) as string)
     .attr(_stroke_width, styles.stroke_width)
     // circle mark

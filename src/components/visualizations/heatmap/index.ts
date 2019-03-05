@@ -4,7 +4,7 @@ import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width} from 'src/useful-factory/d3-str';
-import {getQuantitativeColorStr, CHART_CLASS_ID} from '../default-design-manager';
+import {getQuantitativeColorStr, CHART_CLASS_ID, appendPattern} from '../default-design-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
@@ -89,9 +89,20 @@ export function renderCells(
     .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
     .attr(_stroke, d => (styles.stroke as ScaleOrdinal)(d[_S]) as string)
     .attr(_stroke_width, styles.stroke_width)
-    .attr(_fill, d => isNullOrUndefined(d[_C]) ? styles.nullCellFill : (scales.color as ScaleLinearColor)(d[_C])) // d[cKey] can be either null or undefined
+    .attr(_fill, function (d) {
+      // d[cKey] can be either null or undefined
+      const colorStr = isNullOrUndefined(d[_C]) ? styles.nullCellFill : (scales.color as ScaleLinearColor)(d[_C]);
+      if (!styles.texture) {
+        return colorStr;
+      }
+      else {
+        const textureId = isNullOrUndefined(d[_C]) ? "null" : `${d[_C]}`;
+        console.log(textureId)
+        return appendPattern(g, textureId, colorStr);
+      }
+    })
     .attr(_x, d => scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1))
     .attr(_y, d => scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1))
     .attr(_width, cellWidth)
-    .attr(_height, cellHeight)
+    .attr(_height, cellHeight);
 }

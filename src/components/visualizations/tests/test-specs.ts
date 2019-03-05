@@ -23,7 +23,7 @@ export function getExamples() {
     // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-    // .filter(d => d.C.name.includes("distinct legend test"))
+    .filter(d => d.C.name.includes("test"))
     // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
@@ -1200,6 +1200,65 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           color: {field: "Source", type: "nominal"}
         }
       }
+    },
+    {
+      C: {
+        name: "#42 scatterplot texture test",
+        layout: {type: "superimposition", unit: "chart"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared", stroke: "distinct", texture: "distinct"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "point",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "point",
+        encoding: {
+          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        name: "#43 heatmap texture test",
+        layout: {type: "superimposition", unit: "chart", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared", texture: "distinct"
+        },
+        overlap_reduction: {
+          resize: true
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
     },
   ]
 }

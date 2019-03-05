@@ -122,6 +122,7 @@ export function getConstantColor(indexOrColorStr?: number | string) {
 }
 
 export function appendPattern(g: GSelection, textureId: string, color: string) {
+  textureId = "diagonalTexture-" + textureId.replace(/ /g, '');
   g.append("pattern")
     .attr(_id, textureId)
     .attr("patternUnits", "userSpaceOnUse")
@@ -131,5 +132,6 @@ export function appendPattern(g: GSelection, textureId: string, color: string) {
     .append("rect")
     .attr(_width, 1)
     .attr(_height, 30)
-    .attr(_fill, color)
+    .attr(_fill, color);
+  return `url(#${textureId})`;
 }
