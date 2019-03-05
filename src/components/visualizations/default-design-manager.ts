@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined} from "util";
 import {ConsistencyType} from "src/models/comp-spec";
-import {_black} from "src/useful-factory/d3-str";
+import {_black, GSelection, _id, _width, _height, _fill} from "src/useful-factory/d3-str";
 
 export const AXIS_ROOT_ID = "axis-root--"
 export const CHART_CLASS_ID = "D3-CHART-"
@@ -119,4 +119,17 @@ export function getConstantColor(indexOrColorStr?: number | string) {
     // no domain
     .domain(["NULL"])
     .range(getNominalColorStr(i).slice(i - 1, i))
+}
+
+export function appendPattern(g: GSelection, textureId: string, color: string) {
+  g.append("pattern")
+    .attr(_id, textureId)
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr(_width, 3)
+    .attr(_height, 3)
+    .attr("patternTransform", "rotate(45)")
+    .append("rect")
+    .attr(_width, 1)
+    .attr(_height, 30)
+    .attr(_fill, color)
 }

@@ -12,9 +12,10 @@ export type CompSpec = {
   consistency?: Consistency
   overlap_reduction?: OverlapReduction
   reference?: CompReference
+  explicit_encoding?: {}  // TODO:
 }
-export type Layout = LayoutType | LayoutTypeAndStyle
 export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding"
+export type Layout = LayoutType | LayoutTypeAndStyle
 export type LayoutTypeAndStyle = {
   type: LayoutType
   unit?: CompUnit
