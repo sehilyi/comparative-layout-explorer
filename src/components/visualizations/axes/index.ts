@@ -62,7 +62,7 @@ export function renderAxes(
   if (!isNullOrUndefined(root) && !styles.noAxes) {
     const g: GSelection = animated ?
       root.select(`.${AXIS_ROOT_ID}A`) :  // for animated, select rather than append
-      root.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartShiftX, styles.translateY))
+      root.append(_g).attr(_transform, translate(styles.translateX + newWidth * styles.chartShiftX, styles.translateY))
         .classed(`${AXIS_ROOT_ID}${styles.chartId}`, true)
         .classed(AXIS_ROOT_ID, true)
         .classed(styles.chartId, true)

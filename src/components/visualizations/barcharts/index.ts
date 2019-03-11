@@ -45,7 +45,7 @@ export function renderBarChart(
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
-    svg.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartShiftX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
+    svg.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
 
   renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
 }
