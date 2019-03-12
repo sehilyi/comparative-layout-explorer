@@ -67,9 +67,21 @@ export function isOverlapLayout(spec: _CompSpecSolid) {
   return (layout === "superimposition") || (layout === "juxtaposition" && unit === "element") || (arrangement === "animated")
 }
 
+export function isNoOverlapLayout(spec: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = spec.layout
+  return (layout === "juxtaposition" && unit === "chart" && arrangement !== "animated") ||
+    (layout === "superimposition" && unit === "chart");
+}
+
 export function isNestingLayout(spec: _CompSpecSolid) {
   const {type: layout, unit} = spec.layout;
   return (layout === "superimposition" && unit === "element");
+}
+
+// TODO: clearer name?
+export function isNestingLayoutVariation(A: Spec, B: Spec, C: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = C.layout;
+  return (layout === "juxtaposition" && unit === "element" && arrangement !== "animated" && getChartType(A) !== getChartType(B));
 }
 
 export function isElementAnimated(spec: _CompSpecSolid) {

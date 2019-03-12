@@ -3,7 +3,7 @@ import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
-import {isBarChart, isScatterplot, isChartDataAggregated, getChartType, isStackedBarChart, isNestingLayout, isChartUnitScatterplots} from "../constraints";
+import {isBarChart, isScatterplot, isChartDataAggregated, isStackedBarChart, isNestingLayout, isChartUnitScatterplots, isNestingLayoutVariation} from "../constraints";
 import {_color} from "src/useful-factory/d3-str";
 
 export type ChartDomainData = {
@@ -25,11 +25,10 @@ export const DEFAULT_AXIS_DOMAIN = {
  * * This does not returns unique values in domains.
  */
 export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
-  let resA: ChartDomainData, resB: ChartDomainData
-  let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
-  const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainUnion} = getDomain(A, B)
-  const {type: layout, unit} = C.layout
-  const {consistency} = C
+  let resA: ChartDomainData, resB: ChartDomainData;
+  let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN};
+  const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainUnion} = getDomain(A, B);
+  const {consistency} = C;
 
   // common
   if (consistency.x_axis) {
@@ -79,8 +78,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
   }
   /* nesting or juxtaposition(ele) with different chart types*/
   // separate domain B by aggregation keys used in Chart A
-  else if (isNestingLayout(C) ||
-    (layout === "juxtaposition" && unit === "element" && getChartType(A) !== getChartType(B))) {
+  else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
 
     if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
 

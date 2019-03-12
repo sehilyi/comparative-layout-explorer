@@ -1,5 +1,5 @@
 import {ifUndefinedGetDefault} from "src/useful-factory/utils";
-import {CompSpec, DEFAULT_LAYOUT_JUX, _CompSpecSolid, DEFAULT_COMP_SPECS, DEFAULT_COMP_SPEC} from "./comp-spec";
+import {CompSpec, _CompSpecSolid, DEFAULT_COMP_SPECS, DEFAULT_COMP_SPEC} from "./comp-spec";
 import {Spec} from "./simple-vega-spec";
 import {correctConsistency} from "src/components/visualizations/consistency";
 
@@ -18,7 +18,7 @@ export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
 
   /* layout */
   if (typeof modifiedSpec.layout !== "object") {
-    modifiedSpec = {...modifiedSpec, layout: {...DEFAULT_LAYOUT_JUX, type: modifiedSpec.layout}}
+    modifiedSpec = {...modifiedSpec, layout: {...DEFAULT_COMP_SPECS[modifiedSpec.layout.toString()].layout, type: modifiedSpec.layout}};
   }
   else {
     // when undefined, put default value
