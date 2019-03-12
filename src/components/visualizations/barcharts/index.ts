@@ -7,7 +7,7 @@ import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray} from 'src/useful-factory/d3-str';
 import {getNominalColor, CHART_CLASS_ID, getBarSize, appendPattern} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
@@ -47,6 +47,17 @@ export function renderBarChart(
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
 
+  if (styles.isChartStroke && !styles.elementAnimated) {
+    const strokeWidth = .5
+    g.append(_rect)
+      .attr(_transform, translate(strokeWidth / 2.0, strokeWidth / 2.0))
+      .attr(_width, styles.width * styles.chartWidthTimes - strokeWidth)
+      .attr(_height, styles.height - strokeWidth)
+      .attr(_stroke, _lightgray)
+      .attr(_stroke_width, .5)
+      .attr(_fill, "none")
+      .attr(_opacity, styles.opacity)
+  }
   renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
 }
 

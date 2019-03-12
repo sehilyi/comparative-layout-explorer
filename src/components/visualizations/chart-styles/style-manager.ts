@@ -186,6 +186,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _Con
           }
           ///
           if (arrangement === "adjacent" && isHeatmap(A)) {
+            S.B.isChartStroke = true;
+
             S.A.shiftX = -0.5
             S.A.widthTimes = 0.5
 
