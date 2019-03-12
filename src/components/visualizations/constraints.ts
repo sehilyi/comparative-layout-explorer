@@ -68,8 +68,13 @@ export function isOverlapLayout(spec: _CompSpecSolid) {
 }
 
 export function isNestingLayout(spec: _CompSpecSolid) {
-  const {type: layout, unit} = spec.layout
-  return (layout === "superimposition" && unit === "element")
+  const {type: layout, unit} = spec.layout;
+  return (layout === "superimposition" && unit === "element");
+}
+
+export function isElementAnimated(spec: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = spec.layout;
+  return layout === "juxtaposition" && unit === "element" && arrangement === "animated";
 }
 
 /**
@@ -92,14 +97,36 @@ export function isBarChart(spec: Spec) {
     (spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative') ||
     (spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'nominal'))
 }
+export function isBothBarChart(A: Spec, B: Spec) {
+  return isBarChart(A) && isBarChart(B);
+}
+
 export function isScatterplot(spec: Spec) {
   return spec.mark === "point" &&
     spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'quantitative'
 }
+export function isBothScatterplot(A: Spec, B: Spec) {
+  return isScatterplot(A) && isScatterplot(B);
+}
+
 export function isLineChart(spec: Spec) {
   return spec.mark === "line" &&
     spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative'  // TODO: should add ordinal?
 }
 export function isHeatmap(spec: Spec) {
   return spec.mark === "rect"
+}
+export function isBothHeatmap(A: Spec, B: Spec) {
+  return isHeatmap(A) && isHeatmap(B);
+}
+
+export function isStackedBarChart(A: Spec, B: Spec, C: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = C.layout;
+  return layout === "juxtaposition" && unit === "element" && arrangement === "stacked" && isBarChart(A) && isBarChart(B);
+}
+
+export function isChartUnitScatterplots(A: Spec, B: Spec, C: _CompSpecSolid) {
+  const {type: layout, unit} = C.layout;
+  return ((layout === "juxtaposition" && unit === "chart") || (layout === "superimposition" && unit === "chart")) &&
+    isBothScatterplot(A, B);
 }

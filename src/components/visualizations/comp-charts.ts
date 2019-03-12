@@ -4,7 +4,6 @@ import {CompSpec, _CompSpecSolid} from "src/models/comp-spec";
 import {translate, uniqueValues} from "src/useful-factory/utils";
 import {AXIS_ROOT_ID} from "./default-design-manager";
 import {renderLegend} from "./legends";
-import {correctConsistency} from "./consistency";
 import {renderChart} from ".";
 import {oneOfFilter, getFieldsByType} from "./data-handler";
 import {getStyles} from "./chart-styles/style-manager";
@@ -49,6 +48,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B.color, styles.B);
     }
   }
+
   loopABRender();
 
   // show element-wise animated transitions
@@ -97,9 +97,11 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   });
 
   /* apply visual properties after rendering charts */
+  // z index
   if (styles.A.onTop) svg.selectAll(".A").raise();
   if (styles.B.onTop) svg.selectAll(".B").raise();
   svg.selectAll("." + AXIS_ROOT_ID).lower();
+  // animated
   if (C.layout.arrangement === "animated" && C.layout.unit === "chart") {
     animateChart(svg.selectAll(".A"), svg.selectAll(".B"));
   }

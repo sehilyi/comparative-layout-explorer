@@ -5,7 +5,7 @@ import {getChartType} from "../constraints";
 import {DATASET_MOVIES} from "src/datasets/movies";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
-  const mC = correctCompSpec({...C})
+  const mC = correctCompSpec({...A}, {...B}, {...C});
   return getSimpleCompTitle(A, B, C) + " " +
     "(" + deepObjectValue(mC.layout).toString().slice(0, 3).toUpperCase() + "|" + mC.layout.unit.slice(0, 3).toUpperCase() + "|" +
     mC.layout.arrangement.toString().slice(0, 1).toUpperCase() + "|" + (mC.layout.mirrored ? "M|" : "F|") +
@@ -23,7 +23,7 @@ export function getExamples() {
     // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-    .filter(d => d.C.name.includes("element-wise juxtaposition test"))
+    // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
     // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;

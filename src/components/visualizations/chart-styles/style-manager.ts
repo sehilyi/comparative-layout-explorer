@@ -6,116 +6,89 @@ import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
-import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout, getChartType} from "../constraints";
+import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout, getChartType, isBothHeatmap, isBothBarChart, isBothScatterplot, isNestingLayout, isElementAnimated} from "../constraints";
 import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
 
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
-  const {type: layout, unit, arrangement, mirrored} = C.layout;
   const {consistency} = C;
+  const {type: layout, unit, arrangement, mirrored} = C.layout;
   const {type: consisColor} = C.consistency.color;
 
   /* common */
-  S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal")
-  S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal")
-  S.A.chartId = "A"
-  S.B.chartId = "B"
+  S.A.chartId = "A";
+  S.B.chartId = "B";
 
-  /**
-   * overlap reduction
-   */
-  if (layout === "superimposition") {
-    S.B.opacity = C.overlap_reduction.opacity ? 0.4 : 1;
-    S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0;
-    S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0;
-    if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isHeatmap(B) && isHeatmap(A)) {
-      S.B.onTop = true;
-    }
+  S.B.elementAnimated = isElementAnimated(C);
 
-    if (C.overlap_reduction.resize) {
-      S.B.onTop = true;
+  S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
+  S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal");
 
-      if (isHeatmap(A) && isHeatmap(B)) {
-        S.B.shiftX = 0.5;
-        S.B.shiftY = 0.5;
-        S.B.widthTimes = 0.5;
-        S.B.heightTimes = 0.5;
-      }
-      else if (isBarChart(A) && isBarChart(B)) {
-        S.B.verticalBar ? S.B.shiftX = 0.5 : S.B.shiftY = 0.5;
-        S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
-      }
-      else if (isScatterplot(A) && isScatterplot(B)) {
-        ///
-      }
-    }
-  }
+  S.A.xName = getAxisName(A.encoding.x);
+  S.A.yName = getAxisName(A.encoding.y);
+  S.B.xName = getAxisName(B.encoding.x);
+  S.B.yName = getAxisName(B.encoding.y);
 
-  /* axis */
-  S.A.xName = getAxisName(A.encoding.x), S.A.yName = getAxisName(A.encoding.y)
-  S.B.xName = getAxisName(B.encoding.x), S.B.yName = getAxisName(B.encoding.y)
+  S.A.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
+  S.B.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
+
   // # of dimensions for nesting
-  if ((layout === "superimposition" && unit === "element") ||
+  if (isNestingLayout(C) ||
     (layout === "juxtaposition" && unit === "element" && getChartType(A) !== getChartType(B))) {
-    let aNoms = getFieldsByType(A, "nominal")
+    let aNoms = getFieldsByType(A, "nominal");
     // color is not a unique separation field in bar chart (instead, x or y is)
     if (isBarChart(A)) {
-      aNoms = aNoms.filter(d => d.channel !== "color")
+      aNoms = aNoms.filter(d => d.channel !== "color");
     }
-    S.B.nestDim = aNoms.length < 2 ? 1 : 2
+    S.B.nestDim = aNoms.length < 2 ? 1 : 2;
   }
   // exceptions
   if (layout === "juxtaposition" && unit === "chart" && arrangement !== "animated") {
-    S.B.xName = (arrangement === "adjacent" || !consistency.x_axis) ? S.B.xName : getAxisName(A.encoding.x, B.encoding.x)
-    S.A.yName = (arrangement === "stacked" || !consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
+    S.B.xName = (arrangement === "adjacent" || !consistency.x_axis) ? S.B.xName : getAxisName(A.encoding.x, B.encoding.x);
+    S.A.yName = (arrangement === "stacked" || !consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y);
   }
   else if ((layout === "juxtaposition" && unit === "element" && arrangement !== "animated") ||
     (layout === "superimposition" && unit === "chart")) {
-    S.A.xName = (!consistency.x_axis) ? S.A.xName : getAxisName(A.encoding.x, B.encoding.x)
-    S.A.yName = (!consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y)
+    S.A.xName = (!consistency.x_axis) ? S.A.xName : getAxisName(A.encoding.x, B.encoding.x);
+    S.A.yName = (!consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y);
   }
-  // smooth animated transition
-  if (layout === "juxtaposition" && unit === "element" && arrangement === "animated") S.B.elementAnimated = true
 
-  /**
-   * consistency
-   */
+  /* consistency */
   S.A.texture = C.consistency.texture === "distinct";
+
   if (consistency.stroke === "distinct") {
     S.A.stroke = DEFAULT_STROKE;
     S.A.stroke_width = DEFAULT_STROKE_WIDTH;
   }
-  /* color */
+
   const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
     // TODO: any clearer way?
     S.B.nestDim === 0 ? domain.B.axis["color"] :
       S.B.nestDim === 1 ? domain.B.axis[0]["color"] :
         domain.B.axis[0][0]["color"],
-    consisColor)
+    consisColor);
 
-  S.A.color = colorA
-  S.B.color = colorB
+  S.A.color = colorA;
+  S.B.color = colorB;
 
   // TODO:
   // if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "foreground") S.B.color = colorB
   if (consistency.color.secondary_target.element === "mark" && consistency.color.secondary_target.property === "stroke") {
-    S.B.stroke = colorA
-    S.B.strokeKey = B.encoding.x.field  // TODO: how to determine stroke reference?
-    S.B.stroke_width = 1
+    S.B.stroke = colorA;
+    S.B.strokeKey = B.encoding.x.field;  // TODO: how to determine stroke reference?
+    S.B.stroke_width = 1;
   }
   if (consistency.color.secondary_target.element === "axis-label" && consistency.color.secondary_target.property === "foreground") {
-    S.B.axisLabelColor = colorA
-    S.B.axisLabelColorKey = B.encoding.x.field  // TODO: how to determine color reference?
+    S.B.axisLabelColor = colorA;
+    S.B.axisLabelColorKey = B.encoding.x.field;  // TODO: how to determine color reference?
   }
 
-  /**
-   * Legend
-   */
-  const isAColorUsed = !isUndefined(A.encoding.color)
-  const isBColorUsed = !isUndefined(B.encoding.color)
-  const colorTypeA = !isAColorUsed ? undefined : A.encoding.color.type
-  const colorTypeB = !isBColorUsed ? undefined : B.encoding.color.type
+  /* legend */
+  const isAColorUsed = !isUndefined(A.encoding.color);
+  const isBColorUsed = !isUndefined(B.encoding.color);
+  const colorTypeA = !isAColorUsed ? undefined : A.encoding.color.type;
+  const colorTypeB = !isBColorUsed ? undefined : B.encoding.color.type;
   if (consisColor === "shared") {
     if (isAColorUsed || isBColorUsed) {
       if ((layout === "superimposition") || (layout === "juxtaposition" && arrangement === "stacked")) {
@@ -127,10 +100,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
         S.B.legendType = colorTypeB || colorTypeA;
       }
     }
+    else { /* no need this */}
   }
   else if (consisColor === "distinct") {
-    // TODO: systemical color domain manager needed!
-
+    ///
   }
   else if (consisColor === "independent") {
     S.A.isLegend = isAColorUsed;
@@ -138,9 +111,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     S.A.legendType = colorTypeA;
     S.B.legendType = colorTypeB;
 
-    // exceptions
+    // exceptions: for the space efficiency, remove redundant one if any
     if (isOverlapLayout(C)) {
-      // for the space efficiency, remove redundant one if any
       if (isAColorUsed && isBColorUsed &&
         A.encoding.color.field === B.encoding.color.field &&
         A.encoding.color.type === B.encoding.color.type &&
@@ -153,126 +125,145 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   // if (A.encoding.color && B.encoding.color && A.encoding.color.field === B.encoding.color.field &&
   //   A.encoding.color.type === B.encoding.color.type && A.encoding.color.aggregate === B.encoding.color.aggregate) S.B.legend = false
 
-  // color name
-  S.A.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
-  S.B.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
+  /* overlap reduction */
+  if (layout === "superimposition") {
+    S.B.opacity = C.overlap_reduction.opacity ? 0.4 : 1;
+    S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0;
+    S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0;
+    if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isBothHeatmap(A, B)) {
+      S.B.onTop = true;
+    }
+
+    if (C.overlap_reduction.resize) {
+      S.B.onTop = true;
+
+      if (isBothHeatmap(A, B)) {
+        S.B.shiftX = 0.5;
+        S.B.shiftY = 0.5;
+        S.B.widthTimes = 0.5;
+        S.B.heightTimes = 0.5;
+      }
+      else if (isBothBarChart(A, B)) {
+        S.B.verticalBar ? S.B.shiftX = 0.5 : S.B.shiftY = 0.5;
+        S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
+      }
+      else if (isBothScatterplot(A, B)) {
+        ///
+      }
+    }
+  }
 
   /* styles by layout */
-  switch (layout) {
-    case "juxtaposition":
-      if (unit === "chart") {
-        S.B.revY = arrangement === "stacked" && mirrored
-        S.A.revX = arrangement === "adjacent" && mirrored
-        S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked'
-        S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent'
-      }
-      else if (unit === "element" && arrangement !== "animated") {
-        if (getChartType(A) !== getChartType(B)) {
-          /* all same as superimposition ele */
-          S.B.noY = true
-          S.B.noX = true
-          S.B.noGrid = true
-          S.B.barGap = 0
-          S.B.pointSize = 1.5
+  if (layout === "juxtaposition") {
+    if (unit === "chart") {
+      S.B.revY = arrangement === "stacked" && mirrored;
+      S.A.revX = arrangement === "adjacent" && mirrored;
+      S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked';
+      S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent';
+    }
+    else if (unit === "element" && arrangement !== "animated") {
+      if (getChartType(A) !== getChartType(B)) {
+        /* all same as superimposition ele */
+        S.B.noY = true;
+        S.B.noX = true;
+        S.B.noGrid = true;
+        S.B.barGap = 0;
+        S.B.pointSize = 1.5;
 
-          S.B.cellPadding = 0
-          S.B.nestingPadding = 1
-          if (!isHeatmap(A)) S.B.nullCellFill = _white
-          if (isHeatmap(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
-          if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
-          if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
-          if (!isHeatmap(A) && !isHeatmap(B)) {
-            // S.A.stroke = getConstantColor(_black)
-            // S.A.stroke_width = 1
-          }
-          ///
-          if (arrangement === "adjacent" && isHeatmap(A)) {
-            S.B.isChartStroke = true;
-
-            S.A.shiftX = -0.5
-            S.A.widthTimes = 0.5
-
-            S.B.chartShiftX = 0.5
-            S.B.chartWidthTimes = 0.5
-
-            S.A.cellPadding = 0
-            S.B.nestingPadding = 0
-          }
-          ///
-
-          // scatterplot
-          S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING
-          S.A.rectPoint = true
-          ///
-        }
-        else if (arrangement === "stacked") {
-          if (isBarChart(A) && isBarChart(B)) {
-            S.B.noAxes = true
-            const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
-              {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y
-            S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField}
-          }
-          else if (isHeatmap(A) && isHeatmap(B)) {
-            S.B.noAxes = true
-            S.A.shiftY = -0.5
-            S.B.shiftY = 0.5
-            S.A.heightTimes = 0.5
-            S.B.heightTimes = 0.5
-          }
-        }
-        else if (arrangement === "adjacent") {
-          if (isBarChart(A) && isBarChart(B)) {
-            S.B.noAxes = true;
-            S.A.shiftX = -0.5;
-            S.B.shiftX = 0.5;
-            S.A.verticalBar ? S.A.widthTimes = 0.5 : S.A.heightTimes = 0.5;
-            S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
-          }
-          else if (isHeatmap(A) && isHeatmap(B)) {
-            S.B.noAxes = true
-            S.A.shiftX = -0.5
-            S.B.shiftX = 0.5
-            S.A.widthTimes = 0.5
-            S.B.widthTimes = 0.5
-          }
-        }
-      }
-      break
-    case "superimposition":
-      if (unit === "chart") {
-        S.B.noGrid = true
-        if (consistency.x_axis) S.B.noX = true
-        if (consistency.y_axis) S.B.noY = true
-        if (!consistency.x_axis) S.B.topX = true
-        if (!consistency.y_axis) S.B.rightY = true
-
-        S.A.onTop = true
-      }
-      else if (unit === "element") {
-        S.B.noY = true
-        S.B.noX = true
-        S.B.noGrid = true
-        S.B.barGap = 0
-        S.B.pointSize = 1.5
-
-        S.B.cellPadding = 0
-        S.B.nestingPadding = 1
-        if (!isHeatmap(A)) S.B.nullCellFill = _white
-        if (isHeatmap(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
-        if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
-        if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING
+        S.B.cellPadding = 0;
+        S.B.nestingPadding = 1;
+        if (!isHeatmap(A)) S.B.nullCellFill = _white;
+        if (isBothHeatmap(A, B)) S.B.nestingPadding = NESTING_PADDING;
+        if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING;
+        if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING;
         if (!isHeatmap(A) && !isHeatmap(B)) {
           // S.A.stroke = getConstantColor(_black)
           // S.A.stroke_width = 1
         }
+        ///
+        if (arrangement === "adjacent" && isHeatmap(A)) {
+          S.B.isChartStroke = true;
+
+          S.A.shiftX = -0.5;
+          S.A.widthTimes = 0.5;
+
+          S.B.chartShiftX = 0.5;
+          S.B.chartWidthTimes = 0.5;
+
+          S.A.cellPadding = 0;
+          S.B.nestingPadding = 0;
+        }
+        ///
 
         // scatterplot
-        S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING
-        S.A.rectPoint = true
+        S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING;
+        S.A.rectPoint = true;
+        ///
       }
-      break
-    default:
-      break
+      else if (arrangement === "stacked") {
+        if (isBarChart(A) && isBarChart(B)) {
+          S.B.noAxes = true;
+          const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
+            {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y;
+          S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField};
+        }
+        else if (isBothHeatmap(A, B)) {
+          S.B.noAxes = true;
+          S.A.shiftY = -0.5;
+          S.B.shiftY = 0.5;
+          S.A.heightTimes = 0.5;
+          S.B.heightTimes = 0.5;
+        }
+      }
+      else if (arrangement === "adjacent") {
+        if (isBothBarChart(A, B)) {
+          S.B.noAxes = true;
+          S.A.shiftX = -0.5;
+          S.B.shiftX = 0.5;
+          S.A.verticalBar ? S.A.widthTimes = 0.5 : S.A.heightTimes = 0.5;
+          S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
+        }
+        else if (isBothHeatmap(A, B)) {
+          S.B.noAxes = true;
+          S.A.shiftX = -0.5;
+          S.B.shiftX = 0.5;
+          S.A.widthTimes = 0.5;
+          S.B.widthTimes = 0.5;
+        }
+      }
+    }
   }
-  return S
+  else if (layout === "superimposition" && unit === "chart") {
+    S.B.noGrid = true;
+    if (consistency.x_axis) S.B.noX = true;
+    if (consistency.y_axis) S.B.noY = true;
+    if (!consistency.x_axis) S.B.topX = true;
+    if (!consistency.y_axis) S.B.rightY = true;
+
+    S.A.onTop = true;
+  }
+  else if (isNestingLayout(C)) {
+    S.B.noY = true;
+    S.B.noX = true;
+    S.B.noGrid = true;
+    S.B.barGap = 0;
+    S.B.pointSize = 1.5;
+    S.B.cellPadding = 0;
+    S.B.nestingPadding = 1;
+
+    if (!isHeatmap(A)) S.B.nullCellFill = _white;
+    if (isBothHeatmap(A, B)) S.B.nestingPadding = NESTING_PADDING;
+    if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING;
+    if (!isHeatmap(A) && !isHeatmap(B)) {
+      // S.A.stroke = getConstantColor(_black)
+      // S.A.stroke_width = 1
+    }
+    if (isScatterplot(A)) {
+      S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING;
+      S.A.rectPoint = true;
+    }
+    if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING;
+  }
+
+  return S;
 }

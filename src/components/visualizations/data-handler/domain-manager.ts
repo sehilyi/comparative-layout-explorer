@@ -3,7 +3,8 @@ import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
-import {isBarChart, isScatterplot, isChartDataAggregated, getChartType} from "../constraints";
+import {isBarChart, isScatterplot, isChartDataAggregated, getChartType, isStackedBarChart, isNestingLayout, isChartUnitScatterplots} from "../constraints";
+import {_color} from "src/useful-factory/d3-str";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
@@ -22,15 +23,12 @@ export const DEFAULT_AXIS_DOMAIN = {
 /**
  * Generate domains of X, Y, and Color
  * * This does not returns unique values in domains.
- * * This does not consider horizontal bar charts.
- * * Only scatterplots and bar charts are handled.
- * TODO: make this more efficient
  */
 export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
   let resA: ChartDomainData, resB: ChartDomainData
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainUnion} = getDomain(A, B)
-  const {type: layout, unit, arrangement} = C.layout
+  const {type: layout, unit} = C.layout
   const {consistency} = C
 
   // common
@@ -59,32 +57,34 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
   resB = {axis: axisB}
 
   /* exceptions: modify domains considering specs */
-  // x or y axis
-  if (layout === "juxtaposition" && unit === "element" && arrangement === "stacked" && isBarChart(A) && isBarChart(B)) {
-    // consistency.x_axis and y_axis are always true
-    const n = A.encoding.x.type === "nominal" ? "x" : "y";
-    const q = A.encoding.x.type === "quantitative" ? "x" : "y";
+  if (isStackedBarChart(A, B, C)) {
+    const N = A.encoding.x.type === "nominal" ? "x" : "y";  // A and B's x and y type should be same
+    const Q = A.encoding.x.type === "quantitative" ? "x" : "y";
 
-    resA.axis[q] = resB.axis[q] = getDomainSumByKeys(  // stacked bar chart
-      getAggValues(A.data.values, A.encoding[n].field, [A.encoding[q].field], A.encoding[q].aggregate).concat(
-        getAggValues(B.data.values, B.encoding[n].field, [B.encoding[q].field], B.encoding[q].aggregate)),
-      A.encoding[n].field, B.encoding[n].field, A.encoding[q].field, B.encoding[q].field)
+    const AggValuesA = getAggValues(A.data.values, A.encoding[N].field, [A.encoding[Q].field], A.encoding[Q].aggregate)
+    const AggValuesB = getAggValues(B.data.values, B.encoding[N].field, [B.encoding[Q].field], B.encoding[Q].aggregate)
+    resA.axis[Q] = resB.axis[Q] = getDomainSumByKeys(
+      AggValuesA.concat(AggValuesB),
+      A.encoding[N].field,
+      B.encoding[N].field,
+      A.encoding[Q].field,
+      B.encoding[Q].field
+    );
   }
   /* color consistency */
-  else if (((layout === "juxtaposition" && unit === "chart") || (layout === "superimposition" && unit === "chart")) &&
-    isScatterplot(A) && isScatterplot(B) && consistency.color.type === "shared") {
+  else if (isChartUnitScatterplots(A, B, C) && consistency.color.type === "shared") {
     // use A color if two of them use color
     // When only B use color, then use the B's
-    resA.axis["color"] = resB.axis["color"] = A.encoding.color !== undefined ? DomainA.color :
-      B.encoding.color !== undefined ? DomainB.color : [""]
+    resA.axis["color"] = resB.axis["color"] = A.encoding.color ? DomainA.color : B.encoding.color ? DomainB.color : [""]
   }
   /* nesting or juxtaposition(ele) with different chart types*/
   // separate domain B by aggregation keys used in Chart A
-  else if ((layout === "superimposition" && unit === "element") ||
+  else if (isNestingLayout(C) ||
     (layout === "juxtaposition" && unit === "element" && getChartType(A) !== getChartType(B))) {
-    if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
-    if (isChartDataAggregated(B)) {
 
+    if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
+
+    if (isChartDataAggregated(B)) {
       // get all nominal and quantitative fields
       const bQuans = getFieldsByType(B, "quantitative")
       let aNoms = getFieldsByType(A, "nominal"), bNoms = getFieldsByType(B, "nominal")
@@ -94,12 +94,12 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
 
       // get domains per each quantitative fields
       // TODO: shorten by recieving multiple q fields in getPivotData()
-      let bQuanValues: object = {}
+      let bQuanValues: object = {};
       bQuans.forEach(q => {
         const abNoms = aNoms.concat(bNoms)
         let pivotData = getPivotData(A.data.values, abNoms.map(d => d.field), q.field, B.encoding[q.channel].aggregate)
         bQuanValues[q.field] = pivotData.map(d => d[q.field])
-      })
+      });
 
       // put domains
       // nest by one nominal field
@@ -174,62 +174,60 @@ export function getDomain(spec: Spec, specForUnion?: Spec): {x: Domain, y: Domai
   let domains = {x: xDomain, y: yDomain, color: cDomain};
 
   /* x and y domain */
-  ['x', 'y'].forEach(e => {
-    const alt = (e === 'x' ? 'y' : 'x')
-    if (encoding[e].type === "nominal") {
-      domains[e] = uniqueValues(values, encoding[e].field)
+  ['x', 'y'].forEach(E => {
+    const ALT = (E === 'x' ? 'y' : 'x');
+    if (encoding[E].type === "nominal") {
+      domains[E] = uniqueValues(values, encoding[E].field);
     }
-    else if (encoding[e].type === "quantitative" && encoding[e].aggregate === undefined) {
-      if (encoding[alt].type === "quantitative") {
-        domains[e] = values.map(d => d[encoding[e].field]) as number[]
+    else if (encoding[E].type === "quantitative" && !encoding[E].aggregate) {
+      if (encoding[ALT].type === "quantitative") {
+        domains[E] = values.map(d => d[encoding[E].field]) as number[];
       }
       else {
-        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
-        console.log(spec)
+        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:");
+        console.log(spec);
       }
     }
-    else if (encoding[e].type === "quantitative" && encoding[e].aggregate !== undefined) {
-      if (encoding[alt].type === "quantitative") {
+    else if (encoding[E].type === "quantitative" && encoding[E].aggregate) {
+      if (encoding[ALT].type === "quantitative") {
         // aggregated scatterplot
-        domains[e] = getAggValues(values, color.field, [encoding[e].field], encoding[e].aggregate).map((d: object) => d[encoding[e].field])
+        domains[E] = getAggValues(values, color.field, [encoding[E].field], encoding[E].aggregate).map((d: object) => d[encoding[E].field]);
       }
-      else if (encoding[alt].type === "nominal") {
+      else if (encoding[ALT].type === "nominal") {
         // bar chart
-        domains[e] = getAggValues(values, encoding[alt].field, [encoding[e].field], encoding[e].aggregate).map((d: object) => d[encoding[e].field])
+        domains[E] = getAggValues(values, encoding[ALT].field, [encoding[E].field], encoding[E].aggregate).map((d: object) => d[encoding[E].field]);
       }
       else {
-        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:")
-        console.log(spec)
+        console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:");
+        console.log(spec);
       }
     }
   });
 
   /* color domain */
-  {
-    if (color && color.type === "nominal") {
-      domains.color = uniqueValues(values, color.field)
+  if (color && color.type === "nominal") {
+    domains.color = uniqueValues(values, color.field);
+  }
+  else if (color && color.type === "quantitative") {
+    if (x.type === "nominal" && y.type === "nominal") {
+      const vals = getPivotData(values, [x.field, y.field], color.field, color.aggregate);
+      domains.color = vals.map(d => d[color.field]);
     }
-    else if (color && color.type === "quantitative") {
-      if (x.type === "nominal" && y.type === "nominal") {
-        const vals = getPivotData(values, [x.field, y.field], color.field, color.aggregate)
-        domains.color = vals.map(d => d[color.field])
-      }
-      else if (x.type === "quantitative" && y.type === "nominal") {
-        // TODO:
-        domains.color = []
-      }
-      else if (x.type === "nominal" && y.type === "quantitative") {
-        // TODO:
-        domains.color = []
-      }
-      else {
-        // TODO:
-        domains.color = []
-      }
+    else if (x.type === "quantitative" && y.type === "nominal") {
+      // TODO:
+      domains.color = [];
     }
-    else if (!color) {
-      domains.color = []
+    else if (x.type === "nominal" && y.type === "quantitative") {
+      // TODO:
+      domains.color = [];
     }
+    else {
+      // TODO:
+      domains.color = [];
+    }
+  }
+  else if (!color) {
+    domains.color = [];
   }
 
   if (isUnion) {

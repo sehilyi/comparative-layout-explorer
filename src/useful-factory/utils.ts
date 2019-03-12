@@ -2,11 +2,11 @@ import * as d3 from 'd3';
 import {isNullOrUndefined} from 'util';
 
 export function translate(x: number, y: number) {
-  return `translate(${x}, ${y})`
+  return `translate(${x}, ${y})`;
 }
 
 export function rotate(d: number) {
-  return `rotate(${d})`
+  return `rotate(${d})`;
 }
 
 /**
