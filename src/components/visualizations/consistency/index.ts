@@ -1,8 +1,8 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {_CompSpecSolid, DEFAULT_CONSISTENCY, ConsistencyType, _ConsistencySolid} from "src/models/comp-spec";
+import {_CompSpecSolid, DEFAULT_CONSISTENCY, ConsistencyType, _ConsistencySolid, CompSpec} from "src/models/comp-spec";
 import {isDeepTrue, ifUndefinedGetDefault} from "src/useful-factory/utils";
 
-export function correctConsistency(A: Spec, B: Spec, C: _CompSpecSolid): _ConsistencySolid {
+export function correctConsistency(A: Spec, B: Spec, C: CompSpec): _ConsistencySolid {
   // fill empty specs
   C = {...C, consistency: {...C.consistency, color: ifUndefinedGetDefault(C.consistency.color, {...DEFAULT_CONSISTENCY.color}) as ConsistencyType}}
 

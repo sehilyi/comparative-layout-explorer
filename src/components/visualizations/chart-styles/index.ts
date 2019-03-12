@@ -7,71 +7,71 @@ import {DataType} from "src/models/simple-vega-spec";
 export type ChartStyle = CommonChartStyle
 
 export interface CommonChartStyle {
-  chartId: "A" | "B"
+  chartId: "A" | "B";
   // globar style
-  opacity: number
-  isChartStroke: boolean
+  opacity: number;
+  isChartStroke: boolean;
   // layout
-  nestDim: 0 | 1 | 2
-  nestingPadding: number
+  nestDim: 0 | 1 | 2;
+  nestingPadding: number;
   // chart common
-  color: ScaleOrdinal | ScaleLinearColor
-  stroke: ScaleOrdinal | ScaleLinearColor
-  strokeKey: string
-  stroke_width: number
-  axisLabelColor: ScaleOrdinal | ScaleLinearColor
-  axisLabelColorKey: string
-  elementAnimated: boolean
-  jitter_x: number
-  jitter_y: number
-  texture: boolean
+  color: ScaleOrdinal | ScaleLinearColor;
+  stroke: ScaleOrdinal | ScaleLinearColor;
+  strokeKey: string;
+  stroke_width: number;
+  axisLabelColor: ScaleOrdinal | ScaleLinearColor;
+  axisLabelColorKey: string;
+  elementAnimated: boolean;
+  jitter_x: number;
+  jitter_y: number;
+  texture: boolean;
   // colorKey: string // deprecated
-  onTop: boolean
-  translateX: number
-  translateY: number
+  onTop: boolean;
+  translateX: number;
+  translateY: number;
   // axes common
-  noAxes: boolean
-  noGrid: boolean
+  noAxes: boolean;
+  noGrid: boolean;
   // x-axis
-  xName: string
-  noX: boolean
-  topX: boolean
-  revX: boolean
+  xName: string;
+  noX: boolean;
+  topX: boolean;
+  revX: boolean;
   // y-axis
-  yName: string
-  simpleY: boolean
-  rightY: boolean
-  noYTitle: boolean
-  revY: boolean
-  noY: boolean
-  noYLine: boolean
+  yName: string;
+  simpleY: boolean;
+  rightY: boolean;
+  noYTitle: boolean;
+  revY: boolean;
+  noY: boolean;
+  noYLine: boolean;
   // legend
-  legendNameColor: string
+  legendNameColor: string;
   //
-  xSlant: boolean
-  width: number
-  height: number
-  altVals: object[]
-  isLegend: boolean
-  legendType: DataType
-  xPreStr: string
+  xSlant: boolean;
+  width: number;
+  height: number;
+  altVals: object[];
+  isLegend: boolean;
+  legendType: DataType;
+  xPreStr: string;
   // bar chart
-  barGap: number
-  barSize: string
-  widthTimes: number  // mark width *= widthTimes
-  heightTimes: number // mark height *= heightTimes
-  shiftX: number
-  shiftY: number
-  chartShiftX: number
-  chartWidthTimes: number
-  verticalBar: boolean
-  barOffset: {data: object[], valueField: string, keyField: string}
+  barGap: number;
+  barSize: string;
+  widthTimes: number;  // mark width *= widthTimes
+  heightTimes: number; // mark height *= heightTimes
+  shiftX: number;
+  shiftY: number;
+  chartShiftX: number;
+  chartWidthTimes: number;
+  verticalBar: boolean;
+  barOffset: {data: object[], valueField: string, keyField: string};
   // scatterplot
-  pointSize: number
-  rectPoint: boolean
+  pointSize: number;
+  rectPoint: boolean;
   // heatmap
-  cellPadding: number
-  nullCellFill: string
+  cellPadding: number;
+  nullCellFill: string;
 }
 
 export const DEFAULT_CHART_STYLE: CommonChartStyle = {

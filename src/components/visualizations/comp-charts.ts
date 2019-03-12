@@ -18,19 +18,23 @@ import {getLegends} from "./legends/legend-manager";
 import {DF_DELAY, DF_DURATION} from "./animated/default-design";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
-  const mC = correctCompSpec({...C}) // minor issues in spec are corrected here and CompSpec => _CompSpecSolid
-  if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, mC)) return;
-  d3.select(ref).selectAll('*').remove();
-  renderCompChartGeneralized(ref, A, B, mC)
+  /* correct minor issues in CompSpec and make CompSpec as _CompSpecSolid */
+  const solidC = correctCompSpec({...A}, {...B}, {...C});
+
+  /* check wheather specified charts are supported */
+  if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, solidC)) return;
+
+  /* render Comp Chart */
+  renderCompChartGeneralized(ref, A, B, solidC);
 }
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
-  const {...consistency} = correctConsistency(A, B, C);  // TODO: this should correct C rather than making new consistency
-  const {...domains} = getDomainByLayout(A, B, C, consistency); console.log(domains)
-  const {...styles} = getStyles(A, B, C, consistency, domains);
-  const {...layouts} = getLayouts(A, B, C, consistency, styles); // set translateX and Y here
-  const {...legends} = getLegends(A, B, C, consistency, {A: layouts.A, B: layouts.B}, styles);
+  const {...domains} = getDomainByLayout(A, B, C);
+  const {...styles} = getStyles(A, B, C, domains);
+  const {...layouts} = getLayouts(A, B, C, styles); // set translateX and Y here
+  const {...legends} = getLegends(A, B, C, {A: layouts.A, B: layouts.B}, styles);
 
+  d3.select(ref).selectAll('*').remove();
   const svg = d3.select(ref).attr(_width, layouts.width + legends.addWidth).attr(_height, d3.max([legends.height, layouts.height]));
 
   // render A and (not nested) B

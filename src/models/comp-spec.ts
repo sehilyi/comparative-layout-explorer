@@ -4,7 +4,8 @@
  * This is used in the system and not for users.
  */
 export interface _CompSpecSolid extends CompSpec {
-  layout: LayoutTypeAndStyle
+  layout: LayoutTypeAndStyle;
+  consistency: _ConsistencySolid;
 }
 export type CompSpec = {
   name?: string

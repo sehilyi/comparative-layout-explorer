@@ -26,11 +26,12 @@ export const DEFAULT_AXIS_DOMAIN = {
  * * Only scatterplots and bar charts are handled.
  * TODO: make this more efficient
  */
-export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid) {
+export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
   let resA: ChartDomainData, resB: ChartDomainData
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainUnion} = getDomain(A, B)
   const {type: layout, unit, arrangement} = C.layout
+  const {consistency} = C
 
   // common
   if (consistency.x_axis) {

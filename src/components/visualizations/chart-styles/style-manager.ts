@@ -10,10 +10,11 @@ import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout, getChartType} fro
 import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
 
-export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
-  const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}}
-  const {type: layout, unit, arrangement, mirrored} = C.layout
-  const {type: consisColor} = consistency.color
+export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
+  const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
+  const {type: layout, unit, arrangement, mirrored} = C.layout;
+  const {consistency} = C;
+  const {type: consisColor} = C.consistency.color;
 
   /* common */
   S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal")

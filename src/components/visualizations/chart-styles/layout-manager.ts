@@ -18,7 +18,7 @@ export type Position = {
   top: number
 }
 
-export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, S: {A: ChartStyle, B: ChartStyle}) {
+export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyle, B: ChartStyle}) {
   const {type: layout, unit, arrangement} = C.layout
   let placement, nestedBs: Position[] | Position[][]
 

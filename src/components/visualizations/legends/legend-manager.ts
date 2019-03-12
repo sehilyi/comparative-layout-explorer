@@ -26,7 +26,8 @@ export type LegendRecipe = {
  * @param P
  * @param S
  */
-export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, consistency: _ConsistencySolid, P: {A: Position, B: Position}, S: {A: ChartStyle, B: ChartStyle}) {
+export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: Position, B: Position}, S: {A: ChartStyle, B: ChartStyle}) {
+  const {consistency} = C;
   let recipe: LegendRecipe[] = [];
   let lastYEnd = 0, addWidth = 0;
 
