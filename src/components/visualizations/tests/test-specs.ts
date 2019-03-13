@@ -20,7 +20,8 @@ export function getExamples() {
   let examples = getExampleSpec()
     // .map(d => ({...d, C: correctCompSpec(d.C)}))
     /// filter for debugging
-    // .filter(d => correctCompSpec({...d.C}).layout.type === "superimposition")
+    .filter(d => d.C.overlap_reduction != null)
+    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).layout.type === "superimposition")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))

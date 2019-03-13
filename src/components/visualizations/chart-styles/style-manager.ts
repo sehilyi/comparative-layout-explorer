@@ -20,18 +20,75 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   S.A.chartId = "A";
   S.B.chartId = "B";
 
+  // animated
   S.B.elementAnimated = isElementAnimated(C);
 
+  // chart type
   S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal");
 
+  // axis name
   S.A.xName = getAxisName(A.encoding.x);
   S.A.yName = getAxisName(A.encoding.y);
   S.B.xName = getAxisName(B.encoding.x);
   S.B.yName = getAxisName(B.encoding.y);
+  // combine axis names
+  if (layout === "juxtaposition" && unit === "chart" && arrangement !== "animated") {
+    if (arrangement === "stacked" && consistency.x_axis) {
+      S.B.xName = getAxisName(A.encoding.x, B.encoding.x);
+    }
+    else if (arrangement === "adjacent" && consistency.y_axis) {
+      S.A.yName = getAxisName(A.encoding.y, B.encoding.y);
+    }
+  }
+  else if (layout === "juxtaposition" && unit === "element" && arrangement !== "animated") {
+    if (consistency.x_axis) {
+      S.A.xName = getAxisName(A.encoding.x, B.encoding.x);
+    }
+    if (consistency.y_axis) {
+      S.A.yName = getAxisName(A.encoding.y, B.encoding.y);
+    }
+  }
 
-  S.A.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color)
-  S.B.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color)
+  // mirrored for chart juxtaposition (in other layouts, mirrored set to false)
+  S.B.revY = mirrored && arrangement === "stacked";
+  S.A.revX = mirrored && arrangement === "adjacent";
+
+  // axes
+  if (layout === "juxtaposition" && unit === "chart") {
+    S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked';
+    S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent';
+  }
+  else if (layout === "superimposition" && unit === "chart") {
+    S.A.onTop = true;
+    S.B.noGrid = true;
+    S.B.noX = consistency.x_axis;
+    S.B.noY = consistency.y_axis;
+    S.B.topX = !consistency.x_axis;
+    S.B.rightY = !consistency.y_axis;
+  }
+  else if (isNestingLayoutVariation(A, B, C) || isNestingLayout(C)) {
+    S.B.noGrid = true;
+    S.B.noY = true;
+    S.B.noX = true;
+  }
+
+  // which must be on top
+  // normally, B is on top
+  if (layout === "superimposition" && unit === "chart") {
+    S.A.onTop = true;
+  }
+  // TODO: do we need this?
+  else if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isBothHeatmap(A, B)) {
+    S.B.onTop = true;
+  }
+  else if (C.overlap_reduction.resize) {
+    S.B.onTop = true;
+  }
+
+  // color legend name
+  S.A.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color);
+  S.B.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color);
 
   /* # of dimensions for nesting */
   if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
@@ -74,39 +131,41 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   }
 
   /* legend */
-  const isAColorUsed = !isUndefined(A.encoding.color);
-  const isBColorUsed = !isUndefined(B.encoding.color);
-  const colorTypeA = !isAColorUsed ? undefined : A.encoding.color.type;
-  const colorTypeB = !isBColorUsed ? undefined : B.encoding.color.type;
-  if (consisColor === "shared") {
-    if (isAColorUsed || isBColorUsed) {
-      if ((layout === "superimposition") || (layout === "juxtaposition" && arrangement === "stacked")) {
-        S.A.isLegend = true;
-        S.A.legendType = colorTypeA || colorTypeB;
+  {
+    const colorType = {
+      A: !A.encoding.color ? undefined : A.encoding.color.type,
+      B: !B.encoding.color ? undefined : B.encoding.color.type
+    };
+    if (consisColor === "shared") {
+      if (A.encoding.color || B.encoding.color) {
+        if ((layout === "superimposition") || (layout === "juxtaposition" && arrangement === "stacked")) {
+          S.A.isLegend = true;
+          S.A.legendType = colorType.A || colorType.B;
+        }
+        else {
+          S.B.isLegend = true;
+          S.B.legendType = colorType.B || colorType.A;
+        }
       }
-      else {
-        S.B.isLegend = true;
-        S.B.legendType = colorTypeB || colorTypeA;
-      }
+      else { /* no legend */}
     }
-    else { /* no legend */}
-  }
-  else if (consisColor === "distinct") {
-    ///
-  }
-  else if (consisColor === "independent") {
-    S.A.isLegend = isAColorUsed;
-    S.B.isLegend = isBColorUsed;
-    S.A.legendType = colorTypeA;
-    S.B.legendType = colorTypeB;
+    else if (consisColor === "distinct") {
+      ///
+    }
+    else if (consisColor === "independent") {
+      S.A.isLegend = !isUndefined(A.encoding.color);
+      S.B.isLegend = !isUndefined(B.encoding.color);
+      S.A.legendType = colorType.A;
+      S.B.legendType = colorType.B;
 
-    // exceptions: for the space efficiency, remove redundant one if any
-    if (isOverlapLayout(C)) {
-      if (isAColorUsed && isBColorUsed &&
-        A.encoding.color.field === B.encoding.color.field &&
-        A.encoding.color.type === B.encoding.color.type &&
-        A.encoding.color.aggregate === B.encoding.color.aggregate)
-        S.B.isLegend = false;
+      // exceptions: for the space efficiency, remove redundant one if any
+      if (isOverlapLayout(C)) {
+        if (A.encoding.color && B.encoding.color &&
+          A.encoding.color.field === B.encoding.color.field &&
+          A.encoding.color.type === B.encoding.color.type &&
+          A.encoding.color.aggregate === B.encoding.color.aggregate)
+          S.B.isLegend = false;
+      }
     }
   }
 
@@ -115,17 +174,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   //   A.encoding.color.type === B.encoding.color.type && A.encoding.color.aggregate === B.encoding.color.aggregate) S.B.legend = false
 
   /* overlap reduction */
-  if (layout === "superimposition") {
+  {
     S.B.opacity = C.overlap_reduction.opacity ? 0.4 : 1;
     S.B.jitter_x = C.overlap_reduction.jitter_x ? 3 : 0;
     S.B.jitter_y = C.overlap_reduction.jitter_y ? 3 : 0;
-    if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isBothHeatmap(A, B)) {
-      S.B.onTop = true;
-    }
 
     if (C.overlap_reduction.resize) {
-      S.B.onTop = true;
-
       if (isBothHeatmap(A, B)) {
         S.B.shiftX = 0.5;
         S.B.shiftY = 0.5;
@@ -142,29 +196,15 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     }
   }
 
-  /* styles by layout */
-  if (layout === "juxtaposition" && unit === "chart") {
-    S.B.revY = arrangement === "stacked" && mirrored;
-    S.A.revX = arrangement === "adjacent" && mirrored;
-    S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked';
-    S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent';
-
-    if (arrangement !== "animated") {
-      S.B.xName = (arrangement === "adjacent" || !consistency.x_axis) ? S.B.xName : getAxisName(A.encoding.x, B.encoding.x);
-      S.A.yName = (arrangement === "stacked" || !consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y);
-    }
-  }
-  else if (isNestingLayoutVariation(A, B, C) || isNestingLayout(C)) {
-    S.B.noY = true;
-    S.B.noX = true;
-    S.B.noGrid = true;
+  /* other style details */
+  if (isNestingLayoutVariation(A, B, C) || isNestingLayout(C)) {
     S.B.barGap = 0;
-    S.B.pointSize = 1.5;
     S.B.cellPadding = 0;
     S.B.nestingPadding = 1;
     // scatterplot
-    S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING;
     S.A.rectPoint = true;
+    S.A.pointSize = SCATTER_POINT_SIZE_FOR_NESTING;
+    S.B.pointSize = 1.5;
 
     if (!isHeatmap(A)) S.B.nullCellFill = _white;
     if (isBothHeatmap(A, B)) S.B.nestingPadding = NESTING_PADDING;
@@ -186,9 +226,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     ///
   }
   else if (layout === "juxtaposition" && unit === "element" && arrangement !== "animated") {
-    S.A.xName = (!consistency.x_axis) ? S.A.xName : getAxisName(A.encoding.x, B.encoding.x);
-    S.A.yName = (!consistency.y_axis) ? S.A.yName : getAxisName(A.encoding.y, B.encoding.y);
-
     if (isBothBarChart(A, B)) {
       S.B.noAxes = true;
       if (arrangement === "stacked") {
@@ -210,14 +247,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
       S.A.heightTimes = 0.5;
       S.B.heightTimes = 0.5;
     }
-  }
-  else if (layout === "superimposition" && unit === "chart") {
-    S.A.onTop = true;
-    S.B.noGrid = true;
-    if (consistency.x_axis) S.B.noX = true;
-    if (consistency.y_axis) S.B.noY = true;
-    if (!consistency.x_axis) S.B.topX = true;
-    if (!consistency.y_axis) S.B.rightY = true;
   }
 
   return S;

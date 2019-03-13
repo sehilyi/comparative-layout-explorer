@@ -9,28 +9,28 @@ import {correctConsistency} from "src/components/visualizations/consistency";
  * @param C
  */
 export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
-  let modifiedSpec = {...C}
+  let solidC = {...C}
   /* fill empty parts */
-  if (modifiedSpec.name === undefined) modifiedSpec.name = DEFAULT_COMP_SPEC.name
-  if (modifiedSpec.consistency === undefined) modifiedSpec.consistency = DEFAULT_COMP_SPEC.consistency
-  if (modifiedSpec.overlap_reduction === undefined) modifiedSpec.overlap_reduction = DEFAULT_COMP_SPEC.overlap_reduction
-  if (modifiedSpec.reference === undefined) modifiedSpec.reference = DEFAULT_COMP_SPEC.reference
+  if (solidC.name === undefined) solidC.name = DEFAULT_COMP_SPEC.name
+  if (solidC.consistency === undefined) solidC.consistency = DEFAULT_COMP_SPEC.consistency
+  if (solidC.overlap_reduction === undefined) solidC.overlap_reduction = DEFAULT_COMP_SPEC.overlap_reduction
+  if (solidC.reference === undefined) solidC.reference = DEFAULT_COMP_SPEC.reference
 
   /* layout */
-  if (typeof modifiedSpec.layout !== "object") {
-    modifiedSpec = {...modifiedSpec, layout: {...DEFAULT_COMP_SPECS[modifiedSpec.layout.toString()].layout, type: modifiedSpec.layout}};
+  if (typeof solidC.layout !== "object") {
+    solidC = {...solidC, layout: {...DEFAULT_COMP_SPECS[solidC.layout.toString()].layout, type: solidC.layout}};
   }
   else {
     // when undefined, put default value
     // TODO: have these as keys? ["mirrored", "arrangement"]
-    modifiedSpec.layout.mirrored = ifUndefinedGetDefault(modifiedSpec.layout.mirrored, DEFAULT_COMP_SPECS[modifiedSpec.layout.type].layout["mirrored"])
-    modifiedSpec.layout.arrangement = ifUndefinedGetDefault(modifiedSpec.layout.arrangement, DEFAULT_COMP_SPECS[modifiedSpec.layout.type].layout["arrangement"])
+    solidC.layout.mirrored = ifUndefinedGetDefault(solidC.layout.mirrored, DEFAULT_COMP_SPECS[solidC.layout.type].layout["mirrored"])
+    solidC.layout.arrangement = ifUndefinedGetDefault(solidC.layout.arrangement, DEFAULT_COMP_SPECS[solidC.layout.type].layout["arrangement"])
   }
 
   /* consistency */
-  modifiedSpec = {...modifiedSpec, consistency: correctConsistency(A, B, C)};
+  solidC = {...solidC, consistency: correctConsistency(A, B, C)};
 
-  return modifiedSpec as _CompSpecSolid  // TODO: is this safe?
+  return solidC as _CompSpecSolid  // TODO: is this safe?
 }
 
 /**
