@@ -6,7 +6,7 @@ import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
-import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout, isBothHeatmap, isBothBarChart, isBothScatterplot, isNestingLayout, isElementAnimated, isNestingLayoutVariation} from "../constraints";
+import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout, isBothHeatmap, isBothBarChart, isBothScatterplot, isNestingLayout, isElementAnimated, isNestingLayoutVariation, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap} from "../constraints";
 import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
 
@@ -59,6 +59,11 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked';
     S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent';
   }
+  if (layout === "juxtaposition" && unit === "element" && arrangement !== "animated") {
+    if (isBothBarChart(A, B) || isBothHeatmap(A, B)) {
+      S.B.noAxes = true;
+    }
+  }
   else if (layout === "superimposition" && unit === "chart") {
     S.B.noGrid = true;
     S.B.noX = consistency.x_axis;
@@ -74,6 +79,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
 
   // which must be on top
   // normally, B is on top
+  // when two of them are true, B is on top
   if (layout === "superimposition" && unit === "chart") {
     S.A.onTop = true;
   }
@@ -100,12 +106,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
 
   /* consistency */
   S.A.texture = C.consistency.texture === "distinct";
-
   if (consistency.stroke === "distinct") {
     S.A.stroke = DEFAULT_STROKE;
     S.A.stroke_width = DEFAULT_STROKE_WIDTH;
   }
-
   const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
     // TODO: any clearer way?
     S.B.nestDim === 0 ? domain.B.axis["color"] :
@@ -223,29 +227,22 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     }
     ///
   }
-  else if (layout === "juxtaposition" && unit === "element" && arrangement !== "animated") {
-    if (isBothBarChart(A, B)) {
-      S.B.noAxes = true;
-      if (arrangement === "stacked") {
-        const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
-          {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y;
-        S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField};
-      }
-      else if (arrangement === "adjacent") {
-        S.A.shiftX = -0.5;
-        S.B.shiftX = 0.5;
-        S.A.verticalBar ? S.A.widthTimes = 0.5 : S.A.heightTimes = 0.5;
-        S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
-      }
-    }
-    else if (isBothHeatmap(A, B)) {
-      S.B.noAxes = true;
-      S.A.shiftY = -0.5;
-      S.B.shiftY = 0.5;
-      S.A.heightTimes = 0.5;
-      S.B.heightTimes = 0.5;
-    }
+  else if (isStackedBarChart(A, B, C)) {
+    const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
+      {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y;
+    S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField};
   }
-
+  else if (isGroupedBarChart(A, B, C)) {
+    S.A.shiftX = -0.5;
+    S.B.shiftX = 0.5;
+    S.A.verticalBar ? S.A.widthTimes = 0.5 : S.A.heightTimes = 0.5;
+    S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
+  }
+  else if (isDivisionHeatmap(A, B, C)) {
+    S.A.shiftY = -0.5;
+    S.B.shiftY = 0.5;
+    S.A.heightTimes = 0.5;
+    S.B.heightTimes = 0.5;
+  }
   return S;
 }
