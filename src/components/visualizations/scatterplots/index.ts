@@ -39,8 +39,9 @@ export function renderScatterplot(
 
   const {values} = spec.data;
   const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y;
-  const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
   const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
+  const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
+
   const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
   const g: GSelection = styles.elementAnimated ?
@@ -62,7 +63,7 @@ export function renderPoints(
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
 
   const oldPoints = g.selectAll('.point')
-    .data(dataCommonShape)
+    .data(dataCommonShape);
 
   oldPoints
     .exit()
@@ -72,14 +73,12 @@ export function renderPoints(
     .remove();
 
   const newPoints = oldPoints.enter().append(styles.rectPoint ? _rect : _circle)
-    .classed('point', true)
+    .classed('point', true);
 
-  const allPoints = newPoints.merge(oldPoints as any)
+  const allPoints = newPoints.merge(oldPoints as any);
 
   allPoints
-    // animated transition
     .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
-    .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_fill, function (d) {
       const colorStr = (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _X : _C]) as string;
       if (!styles.texture) {
@@ -90,6 +89,7 @@ export function renderPoints(
         return appendPattern(g, textureId, colorStr);
       }
     })
+    .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, d => (styles.stroke as ScaleOrdinal)(d[styles.strokeKey ? styles.strokeKey : _X]) as string)
     .attr(_stroke_width, styles.stroke_width)
     // circle mark
@@ -100,5 +100,5 @@ export function renderPoints(
     .attr(_x, d => scales.x(d[_X]) - styles.pointSize / 2.0)
     .attr(_y, d => scales.y(d[_Y]) - styles.pointSize / 2.0)
     .attr(_width, styles.pointSize)
-    .attr(_height, styles.pointSize)
+    .attr(_height, styles.pointSize);
 }

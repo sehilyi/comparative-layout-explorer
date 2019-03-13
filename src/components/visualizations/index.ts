@@ -4,8 +4,9 @@ import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
 import {ChartStyle} from "./chart-styles";
 import {_CompSpecSolid} from "src/models/comp-spec";
 import {renderHeatmap, renderSimpleHeatmap} from "./heatmap";
-import {canRenderChart, getChartType} from "./constraints";
+import {canRenderChart} from "./constraints";
 import {ScaleOrdinal, ScaleLinearColor, GSelection} from "src/useful-factory/d3-str";
+import {getChartType} from "src/models/chart-types";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
   if (!canRenderChart(spec)) return

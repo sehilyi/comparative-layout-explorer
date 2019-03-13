@@ -5,7 +5,8 @@ import {ChartStyle} from "../chart-styles";
 import {Position} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
 import {LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
-import {isOverlapLayout, isBarChart, isScatterplot, getChartTitle, isHeatmap, isNestingLayout} from "../constraints";
+import {getChartTitle} from "../constraints";
+import {isOverlapLayout, isScatterplot, isNestingLayout, isBarChart, isHeatmap} from "src/models/chart-types";
 
 export type LegendRecipe = {
   title: string;

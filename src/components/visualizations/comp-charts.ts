@@ -11,10 +11,11 @@ import {getLayouts} from "./chart-styles/layout-manager";
 import {getDomainByLayout} from "./data-handler/domain-manager";
 import {correctCompSpec} from "src/models/comp-spec-manager";
 import {_transform, _width, _height, _g, _opacity} from "src/useful-factory/d3-str";
-import {canRenderChart, canRenderCompChart, isScatterplot} from "./constraints";
+import {canRenderChart, canRenderCompChart} from "./constraints";
 import {animateChart} from "./animated";
 import {getLegends} from "./legends/legend-manager";
 import {DF_DELAY, DF_DURATION} from "./animated/default-design";
+import {isScatterplot, isChartAnimated} from "src/models/chart-types";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   /* correct minor issues in CompSpec and make CompSpec as _CompSpecSolid */
@@ -97,12 +98,12 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   });
 
   /* apply visual properties after rendering charts */
-  // z index
+  // z-index
   if (styles.A.onTop) svg.selectAll(".A").raise();
   if (styles.B.onTop) svg.selectAll(".B").raise();
   svg.selectAll("." + AXIS_ROOT_ID).lower();
   // animated
-  if (C.layout.arrangement === "animated" && C.layout.unit === "chart") {
+  if (isChartAnimated(C)) {
     animateChart(svg.selectAll(".A"), svg.selectAll(".B"));
   }
 }

@@ -3,8 +3,8 @@ import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
-import {isBarChart, isScatterplot, isChartDataAggregated, isStackedBarChart, isNestingLayout, isChartUnitScatterplots, isNestingLayoutVariation} from "../constraints";
 import {_color} from "src/useful-factory/d3-str";
+import {isStackedBarChart, isChartUnitScatterplots, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot} from "src/models/chart-types";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting

@@ -41,6 +41,7 @@ export function renderBarChart(
   const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y"
   const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q]
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
+
   const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate)) as object[]
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
   const g: GSelection = styles.elementAnimated ?
@@ -69,23 +70,23 @@ export function renderBars(
   styles: ChartStyle) {
 
   const {chartWidthTimes, widthTimes, heightTimes, shiftX: shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
-  let numOfC: number
-  let nX: ScaleBand, qX: ScaleLinear, qY: ScaleLinear, nY: ScaleBand
+  let numOfC: number;
+  let nX: ScaleBand, qX: ScaleLinear, qY: ScaleLinear, nY: ScaleBand;
   if (verticalBar) {
-    nX = scales.x as ScaleBand
-    qY = scales.y as ScaleLinear
-    numOfC = nX.domain().length
+    nX = scales.x as ScaleBand;
+    qY = scales.y as ScaleLinear;
+    numOfC = nX.domain().length;
   }
   else {
-    qX = scales.x as ScaleLinear
-    nY = scales.y as ScaleBand
-    numOfC = nY.domain().length
+    qX = scales.x as ScaleLinear;
+    nY = scales.y as ScaleBand;
+    numOfC = nY.domain().length;
   }
 
-  const _N = "N", _Q = "Q", _C = "C"
-  let dataCommonShape = data.map(d => ({N: d[keys.nKey], Q: d[keys.qKey], C: d[keys.cKey]}))
+  const _N = "N", _Q = "Q", _C = "C";
+  const dataCommonShape = data.map(d => ({N: d[keys.nKey], Q: d[keys.qKey], C: d[keys.cKey]}));
   const cKey = keys.cKey === "" ? _N : _C
-  let oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[_N])
+  const oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[_N])
 
   oldBars
     .exit()
@@ -100,7 +101,7 @@ export function renderBars(
   const allBars = newBars.merge(oldBars as any)
   const newWidth = width * chartWidthTimes;
   if (verticalBar) {
-    const bandUnitSize = newWidth / numOfC
+    const bandUnitSize = newWidth / numOfC;
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(newWidth, numOfC, barGap) * widthTimes) as number;
 
     allBars

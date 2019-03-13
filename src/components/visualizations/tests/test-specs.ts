@@ -1,8 +1,8 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec} from "src/models/comp-spec";
 import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
-import {getChartType} from "../constraints";
 import {DATASET_MOVIES} from "src/datasets/movies";
+import {getChartType} from "src/models/chart-types";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...A}, {...B}, {...C});
@@ -13,7 +13,7 @@ export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
     "}) " + mC.name
 }
 export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
-  return getChartType(A) + " x " + getChartType(B)
+  return getChartType(A) + " x " + getChartType(B);
 }
 
 export function getExamples() {

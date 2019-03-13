@@ -6,9 +6,9 @@ import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
-import {isBarChart, isHeatmap, isScatterplot, isOverlapLayout, isBothHeatmap, isBothBarChart, isBothScatterplot, isNestingLayout, isElementAnimated, isNestingLayoutVariation, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap} from "../constraints";
 import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
+import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot} from "src/models/chart-types";
 
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
@@ -16,18 +16,18 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   const {type: layout, unit, arrangement, mirrored} = C.layout;
   const {type: consisColor} = C.consistency.color;
 
-  /* common */
+  /* css selector */
   S.A.chartId = "A";
   S.B.chartId = "B";
 
-  // animated
+  /* animated */
   S.B.elementAnimated = isElementAnimated(C);
 
   // chart type
   S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal");
 
-  // axis name
+  /* axis name */
   S.A.xName = getAxisName(A.encoding.x);
   S.A.yName = getAxisName(A.encoding.y);
   S.B.xName = getAxisName(B.encoding.x);
@@ -50,11 +50,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     }
   }
 
-  // mirrored for chart juxtaposition (in other layouts, mirrored set to false)
+  /* mirrored */
+  // only for chart juxtaposition (in other layouts, mirrored set to false)
   S.B.revY = mirrored && arrangement === "stacked";
   S.A.revX = mirrored && arrangement === "adjacent";
 
-  // axes
+  /* axis */
   if (layout === "juxtaposition" && unit === "chart") {
     S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked';
     S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent';
@@ -77,7 +78,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     S.B.noX = true;
   }
 
-  // which must be on top
+  /* z index */
   // normally, B is on top
   // when two of them are true, B is on top
   if (layout === "superimposition" && unit === "chart") {
@@ -91,8 +92,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   }
 
   // color legend name
-  S.A.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(A.encoding.color);
-  S.B.legendNameColor = consisColor === "shared" ? getAxisName(A.encoding.color, B.encoding.color) : getAxisName(B.encoding.color);
+  S.A.legendNameColor = getAxisName(A.encoding.color, consisColor === "shared" ? B.encoding.color : undefined);
+  S.B.legendNameColor = getAxisName(A.encoding.color, consisColor === "shared" ? B.encoding.color : undefined);
 
   /* # of dimensions for nesting */
   if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
@@ -105,31 +106,34 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   }
 
   /* consistency */
-  S.A.texture = C.consistency.texture === "distinct";
-  if (consistency.stroke === "distinct") {
-    S.A.stroke = DEFAULT_STROKE;
-    S.A.stroke_width = DEFAULT_STROKE_WIDTH;
-  }
-  const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
-    // TODO: any clearer way?
-    S.B.nestDim === 0 ? domain.B.axis["color"] :
-      S.B.nestDim === 1 ? domain.B.axis[0]["color"] :
-        domain.B.axis[0][0]["color"],
-    consisColor);
+  {
+    S.A.texture = C.consistency.texture === "distinct";
+    if (consistency.stroke === "distinct") {
+      S.A.stroke = DEFAULT_STROKE;
+      S.A.stroke_width = DEFAULT_STROKE_WIDTH;
+    }
+    const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
+      // TODO: any clearer way?
+      S.B.nestDim === 0 ? domain.B.axis["color"] :
+        S.B.nestDim === 1 ? domain.B.axis[0]["color"] :
+          domain.B.axis[0][0]["color"],
+      consisColor);
 
-  S.A.color = colorA;
-  S.B.color = colorB;
+    S.A.color = colorA;
+    S.B.color = colorB;
 
-  // TODO: cross consistency
-  // if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "foreground") S.B.color = colorB
-  if (consistency.color.secondary_target.element === "mark" && consistency.color.secondary_target.property === "stroke") {
-    S.B.stroke = colorA;
-    S.B.strokeKey = B.encoding.x.field;  // TODO: how to determine stroke reference?
-    S.B.stroke_width = 1;
-  }
-  if (consistency.color.secondary_target.element === "axis-label" && consistency.color.secondary_target.property === "foreground") {
-    S.B.axisLabelColor = colorA;
-    S.B.axisLabelColorKey = B.encoding.x.field;  // TODO: how to determine color reference?
+    /* cross consistency */
+    // TODO:
+    // if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "foreground") S.B.color = colorB
+    if (consistency.color.secondary_target.element === "mark" && consistency.color.secondary_target.property === "stroke") {
+      S.B.stroke = colorA;
+      S.B.strokeKey = B.encoding.x.field;  // TODO: how to determine stroke reference?
+      S.B.stroke_width = 1;
+    }
+    if (consistency.color.secondary_target.element === "axis-label" && consistency.color.secondary_target.property === "foreground") {
+      S.B.axisLabelColor = colorA;
+      S.B.axisLabelColorKey = B.encoding.x.field;  // TODO: how to determine color reference?
+    }
   }
 
   /* legend */
@@ -170,7 +174,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
       }
     }
   }
-
   // if two fields are identical, show only one
   // if (A.encoding.color && B.encoding.color && A.encoding.color.field === B.encoding.color.field &&
   //   A.encoding.color.type === B.encoding.color.type && A.encoding.color.aggregate === B.encoding.color.aggregate) S.B.legend = false
@@ -199,7 +202,24 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   }
 
   /* other style details */
-  if (isNestingLayoutVariation(A, B, C) || isNestingLayout(C)) {
+  if (isStackedBarChart(A, B, C)) {
+    const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y;
+    const {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y;
+    S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField};
+  }
+  else if (isGroupedBarChart(A, B, C)) {
+    S.A.shiftX = -0.5;
+    S.B.shiftX = 0.5;
+    S.A.verticalBar ? S.A.widthTimes = 0.5 : S.A.heightTimes = 0.5;
+    S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
+  }
+  else if (isDivisionHeatmap(A, B, C)) {
+    S.A.shiftY = -0.5;
+    S.B.shiftY = 0.5;
+    S.A.heightTimes = 0.5;
+    S.B.heightTimes = 0.5;
+  }
+  else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
     S.B.barGap = 0;
     S.B.cellPadding = 0;
     S.B.nestingPadding = 1;
@@ -226,23 +246,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
       S.B.nestingPadding = 0;
     }
     ///
-  }
-  else if (isStackedBarChart(A, B, C)) {
-    const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y,
-      {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y;
-    S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField};
-  }
-  else if (isGroupedBarChart(A, B, C)) {
-    S.A.shiftX = -0.5;
-    S.B.shiftX = 0.5;
-    S.A.verticalBar ? S.A.widthTimes = 0.5 : S.A.heightTimes = 0.5;
-    S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
-  }
-  else if (isDivisionHeatmap(A, B, C)) {
-    S.A.shiftY = -0.5;
-    S.B.shiftY = 0.5;
-    S.A.heightTimes = 0.5;
-    S.B.heightTimes = 0.5;
   }
   return S;
 }
