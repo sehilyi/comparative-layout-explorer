@@ -60,7 +60,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent';
   }
   else if (layout === "superimposition" && unit === "chart") {
-    S.A.onTop = true;
     S.B.noGrid = true;
     S.B.noX = consistency.x_axis;
     S.B.noY = consistency.y_axis;
@@ -78,11 +77,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   if (layout === "superimposition" && unit === "chart") {
     S.A.onTop = true;
   }
-  // TODO: do we need this?
-  else if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isBothHeatmap(A, B)) {
+  if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isBothHeatmap(A, B)) {
     S.B.onTop = true;
   }
-  else if (C.overlap_reduction.resize) {
+  if (C.overlap_reduction.resize) {
     S.B.onTop = true;
   }
 

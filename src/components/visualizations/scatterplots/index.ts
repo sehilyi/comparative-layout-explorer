@@ -48,13 +48,6 @@ export function renderScatterplot(
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
   renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles})
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
-  if (styles.isLegend) {
-    // deprecated
-    /*
-    const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cKey, color.domain() as string[], color.range() as string[])
-    */
-  }
 }
 
 export function renderPoints(

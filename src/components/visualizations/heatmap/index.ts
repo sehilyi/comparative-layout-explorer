@@ -42,14 +42,7 @@ export function renderHeatmap(
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
-  renderCells(g, pivotData, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles})
-  if (styles.isLegend) {
-    // deprecated
-    /*
-    const legendG = svg.append(_g).attr(_transform, translate(styles.translateX + CHART_SIZE.width + (styles.rightY ? CHART_MARGIN.right : 0) + LEGEND_PADDING, styles.translateY))
-    renderLegend(legendG, styles.legendNameColor ? styles.legendNameColor : cKey, color.domain() as string[], color.range() as string[], true)
-    */
-  }
+  renderCells(g, pivotData, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles});
 }
 
 export function renderCells(
@@ -63,15 +56,15 @@ export function renderCells(
 
   const {elementAnimated: animated, strokeKey: sKey, stroke_width: strokeWidth} = styles;
   const _X = "X", _Y = "Y", _C = "C";
-  const _S = !sKey || sKey === keys.xKey ? _X : sKey === keys.yKey ? _Y : _C // for stroke color
+  const _S = !sKey || sKey === keys.xKey ? _X : sKey === keys.yKey ? _Y : _C; // for stroke color
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
 
-  const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length
-  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.widthTimes - strokeWidth * 2
-  const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.heightTimes - strokeWidth * 2
+  const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length;
+  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.widthTimes - strokeWidth * 2;
+  const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.heightTimes - strokeWidth * 2;
 
   const oldCells = g.selectAll('.cell')
-    .data(dataCommonShape)
+    .data(dataCommonShape);
 
   oldCells
     .exit()
@@ -81,9 +74,9 @@ export function renderCells(
     .remove();
 
   const newCells = oldCells.enter().append(_rect)
-    .classed('cell', true)
+    .classed('cell', true);
 
-  const allCells = newCells.merge(oldCells as any)
+  const allCells = newCells.merge(oldCells as any);
 
   allCells
     .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
