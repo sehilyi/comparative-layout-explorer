@@ -118,6 +118,5 @@ export function renderCells(
       height: cellHeight
     });
   });
-
   return coordinates;
 }

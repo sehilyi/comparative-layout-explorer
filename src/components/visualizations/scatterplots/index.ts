@@ -6,7 +6,7 @@ import {renderAxes} from '../axes';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {getNominalColor, getConstantColor, CHART_CLASS_ID, appendPattern} from '../default-design-manager';
+import {getNominalColor, getConstantColor, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
@@ -47,7 +47,8 @@ export function renderScatterplot(
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
-  renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles})
+  let visualReciepe = renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles})
+  return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX, y: d.y + styles.translateY}});
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
 }
 
@@ -57,6 +58,8 @@ export function renderPoints(
   keys: {xKey: string, yKey: string, cKey: string},
   scales: {x: ScaleLinear, y: ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
+
+  let coordinates: Coordinate[] = [];
 
   const {elementAnimated: animated} = styles;
   const _X = "X", _Y = "Y", _C = "C";
@@ -101,4 +104,16 @@ export function renderPoints(
     .attr(_y, d => scales.y(d[_Y]) - styles.pointSize / 2.0)
     .attr(_width, styles.pointSize)
     .attr(_height, styles.pointSize);
+
+  // TODO: redundant with upper part!
+  dataCommonShape.forEach(d => {
+    coordinates.push({
+      id: null,
+      x: scales.x(d[_X]),
+      y: scales.y(d[_Y]),
+      width: 0, //styles.pointSize,
+      height: 0, //styles.pointSize
+    });
+  });
+  return coordinates;
 }
