@@ -40,7 +40,7 @@ export type LineConnection = {
   style?: {};  // dotted, ...
   // add more... target, source, curvature
 }
-export type Anchor = "auto" | "top" | "bottom" | "left" | "right";
+export type Anchor = "auto" | "top" | "bottom" | "left" | "right" | "center-middle";  // ...
 
 /* consistency */
 /**
