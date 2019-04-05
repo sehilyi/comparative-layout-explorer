@@ -20,8 +20,11 @@ export function getExamples() {
   let examples = getExampleSpec()
     // .map(d => ({...d, C: correctCompSpec(d.C)}))
     /// filter for debugging
-    .filter(d => d.C.overlap_reduction != null)
-    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).layout.type === "superimposition")
+    .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
+    // .filter(d => d.C.overlap_reduction != null)
+    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).layout.type === "juxtaposition" &&
+    //   correctCompSpec(d.A, d.B, {...d.C}).layout.unit === "chart" &&
+    //   correctCompSpec(d.A, d.B, {...d.C}).layout.arrangement !== "animated")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
@@ -1290,6 +1293,33 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x: {field: "MPAA_Rating", type: "nominal"},
           y: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
           color: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+    },
+    {
+      C: {
+        name: "#45",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
+        consistency: {x_axis: false, y_axis: true, color: "shared"},
+        explicit_encoding: {line_connection: {type: true}}
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
         }
       },
     },

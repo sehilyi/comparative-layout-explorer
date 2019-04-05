@@ -9,28 +9,36 @@ import {correctConsistency} from "src/components/visualizations/consistency";
  * @param C
  */
 export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
-  let solidC = {...C}
+  let _C = {...C}
   /* fill empty parts */
-  if (solidC.name === undefined) solidC.name = DEFAULT_COMP_SPEC.name
-  if (solidC.consistency === undefined) solidC.consistency = DEFAULT_COMP_SPEC.consistency
-  if (solidC.overlap_reduction === undefined) solidC.overlap_reduction = DEFAULT_COMP_SPEC.overlap_reduction
-  if (solidC.reference === undefined) solidC.reference = DEFAULT_COMP_SPEC.reference
+  if (_C.name === undefined) _C.name = DEFAULT_COMP_SPEC.name
+  if (_C.consistency === undefined) _C.consistency = DEFAULT_COMP_SPEC.consistency
+  if (_C.overlap_reduction === undefined) _C.overlap_reduction = DEFAULT_COMP_SPEC.overlap_reduction
+  if (_C.reference === undefined) _C.reference = DEFAULT_COMP_SPEC.reference
 
   /* layout */
-  if (typeof solidC.layout !== "object") {
-    solidC = {...solidC, layout: {...DEFAULT_COMP_SPECS[solidC.layout.toString()].layout, type: solidC.layout}};
+  if (typeof _C.layout !== "object") {
+    _C = {..._C, layout: {...DEFAULT_COMP_SPECS[_C.layout.toString()].layout, type: _C.layout}};
   }
   else {
     // when undefined, put default value
     // TODO: have these as keys? ["mirrored", "arrangement"]
-    solidC.layout.mirrored = ifUndefinedGetDefault(solidC.layout.mirrored, DEFAULT_COMP_SPECS[solidC.layout.type].layout["mirrored"])
-    solidC.layout.arrangement = ifUndefinedGetDefault(solidC.layout.arrangement, DEFAULT_COMP_SPECS[solidC.layout.type].layout["arrangement"])
+    _C.layout.mirrored = ifUndefinedGetDefault(_C.layout.mirrored, DEFAULT_COMP_SPECS[_C.layout.type].layout["mirrored"])
+    _C.layout.arrangement = ifUndefinedGetDefault(_C.layout.arrangement, DEFAULT_COMP_SPECS[_C.layout.type].layout["arrangement"])
   }
 
   /* consistency */
-  solidC = {...solidC, consistency: correctConsistency(A, B, C)};
+  let solidC = {..._C, consistency: correctConsistency(A, B, C)} as _CompSpecSolid;
 
-  return solidC as _CompSpecSolid  // TODO: is this safe?
+  /* explicit encoding */
+  // for superimposition and animated, do not use line connections
+  if (solidC.explicit_encoding && solidC.explicit_encoding.line_connection) {
+    if (solidC.layout.arrangement === "animated" || solidC.layout.type === "superimposition") {
+      solidC.explicit_encoding.line_connection = {...solidC.explicit_encoding.line_connection, type: false};
+    }
+  }
+
+  return solidC;  // TODO: is this safe?
 }
 
 /**

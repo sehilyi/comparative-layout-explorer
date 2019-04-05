@@ -91,6 +91,14 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       }
     }
   }
+
+  /* explicit encoding */
+  if (C.explicit_encoding) {
+    if (C.explicit_encoding.line_connection && C.explicit_encoding.line_connection.type) {
+
+    }
+  }
+
   /* render legends */
   legends.recipe.forEach(legend => {
     const legendG = svg.append(_g).attr(_transform, translate(legend.left, legend.top));

@@ -8,26 +8,31 @@ export interface _CompSpecSolid extends CompSpec {
   consistency: _ConsistencySolid;
 }
 export type CompSpec = {
-  name?: string
-  layout: Layout
-  consistency?: Consistency
-  overlap_reduction?: OverlapReduction
-  reference?: CompReference
-  explicit_encoding?: {}  // TODO:
+  name?: string;
+  reference?: CompReference;
+  layout: Layout;
+  consistency?: Consistency;
+  overlap_reduction?: OverlapReduction;
+  explicit_encoding?: ExplicitEncoding;
 }
-export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding"
-export type Layout = LayoutType | LayoutTypeAndStyle
+export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding";
+export type Layout = LayoutType | LayoutTypeAndStyle;
 export type LayoutTypeAndStyle = {
-  type: LayoutType
-  unit?: CompUnit
-  mirrored?: boolean
-  arrangement?: CompArrangement
+  type: LayoutType;
+  unit?: CompUnit;
+  mirrored?: boolean;
+  arrangement?: CompArrangement;
 }
-export type CompArrangement = "stacked" | "adjacent" | "animated" | "null"
-export type CompUnit = JuxCompUnit | SupCompUnit
-export type commonCompUnit = "chart" | "element"
-export type JuxCompUnit = commonCompUnit | "time"
-export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to constraint this?
+export type CompArrangement = "stacked" | "adjacent" | "animated" | "null";
+export type CompUnit = JuxCompUnit | SupCompUnit;
+export type commonCompUnit = "chart" | "element";
+export type JuxCompUnit = commonCompUnit | "time";
+export type SupCompUnit = commonCompUnit | "area";
+
+/* explicit encoding */
+export type ExplicitEncoding = {
+  line_connection?: {type: boolean};  // TODO: later consider target, source, curvature
+}
 
 /* consistency */
 /**
@@ -35,28 +40,28 @@ export type SupCompUnit = commonCompUnit | "area" // TODO: think about how to co
  * This is used in the system and not for users.
  */
 export interface _ConsistencySolid extends Consistency {
-  color?: ConsistencyTypeAndTarget
+  color?: ConsistencyTypeAndTarget;
 }
 export type Consistency = {
   // color refers to hue. we use the term "color" for the consistency with Vega. color does not includes saturation (#51)
-  color?: ConsistencyType | ConsistencyTypeAndTarget
-  x_axis?: boolean
-  y_axis?: boolean
+  color?: ConsistencyType | ConsistencyTypeAndTarget;
+  x_axis?: boolean;
+  y_axis?: boolean;
   // x_arrangement?: boolean
   // y_arrangement?: boolean
-  stroke?: ConsistencyType  // TODO: this will be removed eventually
+  stroke?: ConsistencyType;  // TODO: this will be removed eventually
   texture?: ConsistencyType;
 }
 
 /* consistency settings */
 export type ConsistencyType = "shared" | "independent" | "distinct"
 export type ConsistencyTypeAndTarget = {
-  type: ConsistencyType
-  primary_target?: {element: ElementType, property: PropertyType}
-  secondary_target?: {element: ElementType, property: PropertyType}
+  type: ConsistencyType;
+  primary_target?: {element: ElementType, property: PropertyType};
+  secondary_target?: {element: ElementType, property: PropertyType};
 }
-export type ElementType = "mark" | "axis-label"
-export type PropertyType = "foreground" | "background" | "stroke"
+export type ElementType = "mark" | "axis-label";
+export type PropertyType = "foreground" | "background" | "stroke";
 
 /* clutter reduction strategies */
 export type OverlapReduction = {
@@ -66,8 +71,8 @@ export type OverlapReduction = {
   resize?: boolean;
 }
 
-export type CompReference = "A" | "B"
-export const DEFAULT_COMP_REFERENCE = "A"
+export type CompReference = "A" | "B";  // TODO: change to first and second
+export const DEFAULT_COMP_REFERENCE = "A";
 
 export const DEFAULT_LAYOUT_JUX: LayoutTypeAndStyle = {
   type: "juxtaposition",
