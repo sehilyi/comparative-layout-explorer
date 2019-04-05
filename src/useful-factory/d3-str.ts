@@ -3,7 +3,7 @@ export const
   _id = "id", _class = "class",
   _width = 'width', _height = 'height',
   _fill = 'fill', _color = 'color', _white = "white", _black = "black", _lightgray = "lightgray",
-  _transform = 'transform', _g = 'g', _rect = 'rect',
+  _transform = 'transform', _g = 'g', _rect = 'rect', _line = 'line', _path = "path", _d = "d",
   _x = 'x', _y = 'y', _cx = "cx", _cy = "cy",
   _x1 = "x1", _x2 = "x2", _y1 = "y1", _y2 = "y2",
   _rx = "rx", _ry = "ry",
@@ -18,6 +18,7 @@ export const
   _font_size = "font-size", _font_family = "font-family",
   _alignment_baseline = "alignment-baseline", _middle = "middle",
   _font_weight = "font-weight", _bold = "bold"
+  ;
 
 export type SVGSelection = d3.Selection<SVGSVGElement, {}, null, undefined>
 export type GSelection = d3.Selection<SVGGElement, {}, null, undefined>

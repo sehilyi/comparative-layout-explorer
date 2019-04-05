@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {CompSpec, _CompSpecSolid} from "src/models/comp-spec";
 import {translate, uniqueValues} from "src/useful-factory/utils";
-import {AXIS_ROOT_ID} from "./default-design-manager";
+import {AXIS_ROOT_ID, Coordinate} from "./default-design-manager";
 import {renderLegend} from "./legends";
 import {renderChart} from ".";
 import {oneOfFilter, getFieldsByType} from "./data-handler";
@@ -16,6 +16,7 @@ import {animateChart} from "./animated";
 import {getLegends} from "./legends/legend-manager";
 import {DF_DELAY, DF_DURATION} from "./animated/default-design";
 import {isScatterplot, isChartAnimated} from "src/models/chart-types";
+import {renderLineConnection} from "./line-connection";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   /* correct minor issues in CompSpec and make CompSpec as _CompSpecSolid */
@@ -34,6 +35,8 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const {...layouts} = getLayouts(A, B, C, styles); // set translateX and Y here
   const {...legends} = getLegends(A, B, C, {A: layouts.A, B: layouts.B}, styles);
 
+  let coordinateA: Coordinate[] | void, coordinateB: Coordinate[] | void;
+
   d3.select(ref).selectAll('*').remove();
   const svg = d3.select(ref).attr(_width, layouts.width + legends.addWidth).attr(_height, d3.max([legends.height, layouts.height]));
 
@@ -42,11 +45,11 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     svg.selectAll(".A,.B").remove();
     /* render A */
     if (!Array.isArray(domains.A.axis)) {
-      renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A.color, styles.A);
+      coordinateA = renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A.color, styles.A);
     }
     /* render B */
     if (!Array.isArray(domains.B.axis)) {
-      renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B.color, styles.B);
+      coordinateB = renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B.color, styles.B);
     }
   }
 
@@ -95,7 +98,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   /* explicit encoding */
   if (C.explicit_encoding) {
     if (C.explicit_encoding.line_connection && C.explicit_encoding.line_connection.type) {
-
+      renderLineConnection(svg, coordinateA as Coordinate[], coordinateB as Coordinate[]);
     }
   }
 

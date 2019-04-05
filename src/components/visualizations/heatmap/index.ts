@@ -4,7 +4,7 @@ import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width} from 'src/useful-factory/d3-str';
-import {getQuantitativeColorStr, CHART_CLASS_ID, appendPattern} from '../default-design-manager';
+import {getQuantitativeColorStr, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
@@ -41,8 +41,10 @@ export function renderHeatmap(
   const pivotData = getPivotData(values, [xKey, yKey], cKey, aggregate, [domain.x as string[], domain.y as string[]])
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
-    svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
-  renderCells(g, pivotData, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles});
+    svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true);
+
+  let visualReciepe = renderCells(g, pivotData, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles});
+  return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX, y: d.y + styles.translateY}});
 }
 
 export function renderCells(
@@ -52,7 +54,9 @@ export function renderCells(
   scales: {x: ScaleBand, y: ScaleBand, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
-  if (styles.height < 0 || styles.width < 0) return; // when height or width of nesting root is really small
+  if (styles.height < 0 || styles.width < 0) return []; // when height or width of nesting root is too small
+
+  let coordinates: Coordinate[] = [];
 
   const {elementAnimated: animated, strokeKey: sKey, stroke_width: strokeWidth} = styles;
   const _X = "X", _Y = "Y", _C = "C";
@@ -93,8 +97,27 @@ export function renderCells(
         return appendPattern(g, textureId, colorStr);
       }
     })
-    .attr(_x, d => scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1))
-    .attr(_y, d => scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1))
+    .attr(_x, function (d) {
+      const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1);
+      return x;
+    })
+    .attr(_y, function (d) {
+      const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1);
+      return y;
+    })
     .attr(_width, cellWidth)
     .attr(_height, cellHeight);
+
+  // TODO: redundant with upper part!
+  dataCommonShape.forEach(d => {
+    coordinates.push({
+      id: null,
+      x: scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1),
+      y: scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1),
+      width: cellWidth,
+      height: cellHeight
+    });
+  });
+
+  return coordinates;
 }

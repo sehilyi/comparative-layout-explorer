@@ -40,21 +40,15 @@ export function renderChart(
   styles: ChartStyle) {
   switch (getChartType(spec)) {
     case "scatterplot":
-      renderScatterplot(g, spec, domain, color, styles)
-      break
+      return renderScatterplot(g, spec, domain, color, styles);
     case "barchart":
-      renderBarChart(g, spec, domain, color, styles)
-      break
-    case "linechart":
-      //
-      break
+      return renderBarChart(g, spec, domain, color, styles);
     case "heatmap":
-      renderHeatmap(g, spec, domain, color, styles)
-      break
+      return renderHeatmap(g, spec, domain, color, styles);
+    case "linechart":
     case "NULL":
-      console.log("Chart type is not defined well (NULL type).")
-      break
     default:
-      break
+      console.log("Chart type is not defined well (NULL type).");
+      return null;
   }
 }

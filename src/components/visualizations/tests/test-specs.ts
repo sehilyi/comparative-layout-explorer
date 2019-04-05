@@ -32,7 +32,7 @@ export function getExamples() {
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 
-  return examples
+  return examples;
   // .sort((a, b) => a.C.layout.mirrored > b.C.layout.mirrored ? -1 : 1)
   // .sort((a, b) => (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : 1)
   // .sort((a, b) => a.C.layout.unit > b.C.layout.unit ? -1 : 1)
