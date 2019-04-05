@@ -31,8 +31,16 @@ export type SupCompUnit = commonCompUnit | "area";
 
 /* explicit encoding */
 export type ExplicitEncoding = {
-  line_connection?: {type: boolean};  // TODO: later consider target, source, curvature
+  line_connection?: LineConnection;
+  // add more...
 }
+export type LineConnection = {
+  type: boolean;
+  anchor?: Anchor;
+  style?: {};  // dotted, ...
+  // add more... target, source, curvature
+}
+export type Anchor = "auto" | "top" | "bottom" | "left" | "right";
 
 /* consistency */
 /**
@@ -60,7 +68,7 @@ export type ConsistencyTypeAndTarget = {
   primary_target?: {element: ElementType, property: PropertyType};
   secondary_target?: {element: ElementType, property: PropertyType};
 }
-export type ElementType = "mark" | "axis-label";
+export type ElementType = "mark" | "axis";
 export type PropertyType = "foreground" | "background" | "stroke";
 
 /* clutter reduction strategies */

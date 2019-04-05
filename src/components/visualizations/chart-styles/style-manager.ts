@@ -130,7 +130,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
       S.B.strokeKey = B.encoding.x.field;  // TODO: how to determine stroke reference?
       S.B.stroke_width = 1;
     }
-    if (consistency.color.secondary_target.element === "axis-label" && consistency.color.secondary_target.property === "foreground") {
+    if (consistency.color.secondary_target.element === "axis" && consistency.color.secondary_target.property === "foreground") {
       S.B.axisLabelColor = colorA;
       S.B.axisLabelColorKey = B.encoding.x.field;  // TODO: how to determine color reference?
     }

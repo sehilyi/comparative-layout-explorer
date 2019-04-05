@@ -9,9 +9,9 @@ export function renderLineConnection(g: GSelection, source: Coordinate[], target
   for (let i = 0; i < source.length; i++) {
     const sourcePoint = [source[i].x + source[i].width / 2.0, source[i].y + source[i].height / 2.0];
     const targetPoint = [target[i].x + target[i].width / 2.0, target[i].y + target[i].height / 2.0];
-    const controlPoint1 = [(sourcePoint[0] + targetPoint[0]) / 2.0, (sourcePoint[1] + targetPoint[1]) / 2.0 - Math.abs(sourcePoint[0] - targetPoint[0]) / 40.0];
 
-    paths.push([sourcePoint, controlPoint1, targetPoint]);
+    // https://www.d3-graph-gallery.com/bundle
+    paths.push([sourcePoint, targetPoint]);
     points.push(sourcePoint);
     points.push(targetPoint);
   }
@@ -43,10 +43,10 @@ export function renderLineConnection(g: GSelection, source: Coordinate[], target
     .enter()
     .append(_path)
     .classed(_line, true)
-    .attr(_d, d3.line().x(d => d[0]).y(d => d[1]).curve(d3.curveBundle.beta(0.85)))//curveCatmullRom.alpha(0.5)))
+    .attr(_d, d3.line().x(d => d[0]).y(d => d[1]).curve(d3.curveBasis))//curveCatmullRom.alpha(0.5)))
     .attr(_fill, "none")
     .attr(_stroke, _black)
     .attr(_stroke_width, 1 + 'px')
-    .attr(_opacity, 0.1)
+    .attr(_opacity, 0.3)
   // .attr("marker-end", "url(#triangle)");
 }
