@@ -1409,5 +1409,32 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
+    {
+      C: {
+        name: "#49",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: false},
+        consistency: {x_axis: false, y_axis: true, color: "shared"},
+        explicit_encoding: {line_connection: {type: true}}
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
   ]
 }

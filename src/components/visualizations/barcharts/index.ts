@@ -181,7 +181,7 @@ export function renderBars(
             (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
           styles.jitter_y,
         width: barSize,
-        height: (styles.revY ? qY(d[_Q]) : height - qY(d[_Q]))
+        height: 0
       });
     });
   }
@@ -197,7 +197,7 @@ export function renderBars(
             (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
           styles.jitter_x,
         y: nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_y,
-        width: (!styles.revX ? qX(d[_Q]) : newWidth - qX(d[_Q])),
+        width: 0,
         height: barSize
       });
     });
