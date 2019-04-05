@@ -8,7 +8,7 @@ import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomain} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray} from 'src/useful-factory/d3-str';
-import {getNominalColor, CHART_CLASS_ID, getBarSize, appendPattern} from '../default-design-manager';
+import {getNominalColor, CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 
@@ -59,7 +59,8 @@ export function renderBarChart(
       .attr(_fill, "none")
       .attr(_opacity, styles.opacity)
   }
-  renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
+  let visualReciepe = renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
+  return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, y: d.y + styles.translateY}})
 }
 
 export function renderBars(
@@ -68,6 +69,8 @@ export function renderBars(
   keys: {qKey: string, nKey: string, cKey: string},
   scales: {x: ScaleBand | ScaleLinear, y: ScaleBand | ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
+
+  let coordinates: Coordinate[] = [];
 
   const {chartWidthTimes, widthTimes, heightTimes, shiftX: shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
   let numOfC: number;
@@ -163,4 +166,41 @@ export function renderBars(
         styles.jitter_x)
       .attr(_width, d => (!styles.revX ? qX(d[_Q]) : newWidth - qX(d[_Q])))
   }
+
+  // TODO: redundant with upper part!
+  if (verticalBar) {
+    const bandUnitSize = newWidth / numOfC;
+    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(newWidth, numOfC, barGap) * widthTimes) as number;
+
+    dataCommonShape.forEach(d => {
+      coordinates.push({
+        id: null,
+        x: nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_x,
+        y: (styles.revY ? 0 : qY(d[_Q])) + // TOOD: clean up more?
+          (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
+            (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
+          styles.jitter_y,
+        width: barSize,
+        height: (styles.revY ? qY(d[_Q]) : height - qY(d[_Q]))
+      });
+    });
+  }
+  else {
+    const bandUnitSize = height / numOfC
+    const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(height, numOfC, barGap) * heightTimes) as number;
+
+    dataCommonShape.forEach(d => {
+      coordinates.push({
+        id: null,
+        x: (!styles.revX ? 0 : qX(d[_Q])) + // TOOD: clean up more?
+          (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
+            (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
+          styles.jitter_x,
+        y: nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_y,
+        width: (!styles.revX ? qX(d[_Q]) : newWidth - qX(d[_Q])),
+        height: barSize
+      });
+    });
+  }
+  return coordinates;
 }
