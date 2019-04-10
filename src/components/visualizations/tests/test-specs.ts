@@ -22,9 +22,9 @@ export function getExamples() {
     /// filter for debugging
     // .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
     // .filter(d => d.C.overlap_reduction != null)
-    .filter(d => correctCompSpec(d.A, d.B, {...d.C}).layout.type === "juxtaposition" &&
-      correctCompSpec(d.A, d.B, {...d.C}).layout.unit === "chart" &&
-      correctCompSpec(d.A, d.B, {...d.C}).layout.arrangement !== "animated")
+    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).layout.type === "juxtaposition" &&
+    // correctCompSpec(d.A, d.B, {...d.C}).layout.unit === "chart" &&
+    // correctCompSpec(d.A, d.B, {...d.C}).layout.arrangement !== "animated")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
@@ -1237,65 +1237,65 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    {
-      C: {
-        name: "#43 heatmap texture test",
-        layout: {type: "superimposition", unit: "chart", arrangement: "adjacent"},
-        consistency: {
-          x_axis: true, y_axis: true, color: "shared", texture: "distinct"
-        },
-        overlap_reduction: {
-          resize: true
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {values},
-        mark: "rect",
-        encoding: {
-          x: {field: "Source", type: "nominal"},
-          y: {field: "Creative_Type", type: "nominal"},
-          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-        }
-      },
-      B: {
-        data: {values},
-        mark: "rect",
-        encoding: {
-          x: {field: "Source", type: "nominal"},
-          y: {field: "Creative_Type", type: "nominal"},
-          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
-        }
-      },
-    },
-    {
-      C: {
-        name: "#44 element-wise juxtaposition test",
-        layout: {type: "juxtaposition", unit: "element"},
-        consistency: {
-          x_axis: false, y_axis: false, color: "independent"
-        }
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {values},
-        mark: "rect",
-        encoding: {
-          x: {field: "Source", type: "nominal"},
-          y: {field: "Creative_Type", type: "nominal"},
-          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-        }
-      },
-      B: {
-        data: {values},
-        mark: "bar",
-        encoding: {
-          x: {field: "MPAA_Rating", type: "nominal"},
-          y: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      },
-    },
+    // {
+    //   C: {
+    //     name: "#43 heatmap texture test",
+    //     layout: {type: "superimposition", unit: "chart", arrangement: "adjacent"},
+    //     consistency: {
+    //       x_axis: true, y_axis: true, color: "shared", texture: "distinct"
+    //     },
+    //     overlap_reduction: {
+    //       resize: true
+    //     }
+    //   },
+    //   // https://vega.github.io/vega-lite/examples/
+    //   A: {
+    //     data: {values},
+    //     mark: "rect",
+    //     encoding: {
+    //       x: {field: "Source", type: "nominal"},
+    //       y: {field: "Creative_Type", type: "nominal"},
+    //       color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+    //     }
+    //   },
+    //   B: {
+    //     data: {values},
+    //     mark: "rect",
+    //     encoding: {
+    //       x: {field: "Source", type: "nominal"},
+    //       y: {field: "Creative_Type", type: "nominal"},
+    //       color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+    //     }
+    //   },
+    // },
+    // {
+    //   C: {
+    //     name: "#44 element-wise juxtaposition test",
+    //     layout: {type: "juxtaposition", unit: "element"},
+    //     consistency: {
+    //       x_axis: false, y_axis: false, color: "independent"
+    //     }
+    //   },
+    //   // https://vega.github.io/vega-lite/examples/
+    //   A: {
+    //     data: {values},
+    //     mark: "rect",
+    //     encoding: {
+    //       x: {field: "Source", type: "nominal"},
+    //       y: {field: "Creative_Type", type: "nominal"},
+    //       color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+    //     }
+    //   },
+    //   B: {
+    //     data: {values},
+    //     mark: "bar",
+    //     encoding: {
+    //       x: {field: "MPAA_Rating", type: "nominal"},
+    //       y: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+    //       color: {field: "MPAA_Rating", type: "nominal"}
+    //     }
+    //   },
+    // },
     {
       C: {
         name: "#45",
