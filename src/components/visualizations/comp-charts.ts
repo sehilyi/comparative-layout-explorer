@@ -20,13 +20,13 @@ import {renderLineConnection} from "./line-connection";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   /* correct minor issues in CompSpec and make CompSpec as _CompSpecSolid */
-  const solidC = correctCompSpec({...A}, {...B}, {...C});
+  const {_A, _B, solidC} = correctCompSpec({...A}, {...B}, {...C});
 
   /* check wheather specified charts are supported */
-  if (!canRenderChart(A) || !canRenderChart(B) || !canRenderCompChart(A, B, solidC)) return;
+  if (!canRenderChart(_A) || !canRenderChart(_B) || !canRenderCompChart(_A, _B, solidC)) return;
 
   /* render Comp Chart */
-  renderCompChartGeneralized(ref, A, B, solidC);
+  renderCompChartGeneralized(ref, _A, _B, solidC);
 }
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {

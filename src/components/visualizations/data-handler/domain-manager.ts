@@ -30,38 +30,38 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainUnion} = getDomain(A, B);
   const {consistency} = C;
 
-  // common
+  /* common part */
   if (consistency.x_axis) {
-    axisA.x = axisB.x = DomainUnion.x
+    axisA.x = axisB.x = DomainUnion.x;
   }
   else {
-    axisA.x = DomainA.x
-    axisB.x = DomainB.x
+    axisA.x = DomainA.x;
+    axisB.x = DomainB.x;
   }
   if (consistency.y_axis) {
-    axisA.y = axisB.y = DomainUnion.y
+    axisA.y = axisB.y = DomainUnion.y;
   }
   else {
-    axisA.y = DomainA.y
-    axisB.y = DomainB.y
+    axisA.y = DomainA.y;
+    axisB.y = DomainB.y;
   }
   if (consistency.color.type === "shared") {
-    axisA.color = axisB.color = DomainUnion.color
+    axisA.color = axisB.color = DomainUnion.color;
   }
   else {
-    axisA.color = DomainA.color
-    axisB.color = DomainB.color
+    axisA.color = DomainA.color;
+    axisB.color = DomainB.color;
   }
-  resA = {axis: axisA}
-  resB = {axis: axisB}
+  resA = {axis: axisA};
+  resB = {axis: axisB};
 
   /* exceptions: modify domains considering specs */
   if (isStackedBarChart(A, B, C)) {
     const N = A.encoding.x.type === "nominal" ? "x" : "y";  // A and B's x and y type should be same
     const Q = A.encoding.x.type === "quantitative" ? "x" : "y";
 
-    const AggValuesA = getAggValues(A.data.values, A.encoding[N].field, [A.encoding[Q].field], A.encoding[Q].aggregate)
-    const AggValuesB = getAggValues(B.data.values, B.encoding[N].field, [B.encoding[Q].field], B.encoding[Q].aggregate)
+    const AggValuesA = getAggValues(A.data.values, A.encoding[N].field, [A.encoding[Q].field], A.encoding[Q].aggregate);
+    const AggValuesB = getAggValues(B.data.values, B.encoding[N].field, [B.encoding[Q].field], B.encoding[Q].aggregate);
     resA.axis[Q] = resB.axis[Q] = getDomainSumByKeys(
       AggValuesA.concat(AggValuesB),
       A.encoding[N].field,
@@ -74,57 +74,57 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
   else if (isChartUnitScatterplots(A, B, C) && consistency.color.type === "shared") {
     // use A color if two of them use color
     // When only B use color, then use the B's
-    resA.axis["color"] = resB.axis["color"] = A.encoding.color ? DomainA.color : B.encoding.color ? DomainB.color : [""]
+    resA.axis["color"] = resB.axis["color"] = A.encoding.color ? DomainA.color : B.encoding.color ? DomainB.color : [""];
   }
   /* nesting or juxtaposition(ele) with different chart types*/
   // separate domain B by aggregation keys used in Chart A
   else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
 
-    if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().")
+    if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().");
 
     if (isChartDataAggregated(B)) {
       // get all nominal and quantitative fields
       const bQuans = getFieldsByType(B, "quantitative")
-      let aNoms = getFieldsByType(A, "nominal"), bNoms = getFieldsByType(B, "nominal")
-      if (isBarChart(A)) aNoms = aNoms.filter(d => d.channel !== "color") // color is not a unique separation field in bar chart (instead, x or y is)
-      if (isBarChart(B)) bNoms = bNoms.filter(d => d.channel === "color") // color is not a unique separation field in bar chart (instead, x or y is)
-      const aNom = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y" // in scatterplot, color is the separation field
+      let aNoms = getFieldsByType(A, "nominal"), bNoms = getFieldsByType(B, "nominal");
+      if (isBarChart(A)) aNoms = aNoms.filter(d => d.channel !== "color"); // color is not a unique separation field in bar chart (instead, x or y is)
+      if (isBarChart(B)) bNoms = bNoms.filter(d => d.channel === "color"); // color is not a unique separation field in bar chart (instead, x or y is)
+      const aNom = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y"; // in scatterplot, color is the separation field
 
       // get domains per each quantitative fields
       // TODO: shorten by recieving multiple q fields in getPivotData()
       let bQuanValues: object = {};
       bQuans.forEach(q => {
-        const abNoms = aNoms.concat(bNoms)
-        let pivotData = getPivotData(A.data.values, abNoms.map(d => d.field), q.field, B.encoding[q.channel].aggregate)
-        bQuanValues[q.field] = pivotData.map(d => d[q.field])
+        const abNoms = aNoms.concat(bNoms);
+        let pivotData = getPivotData(A.data.values, abNoms.map(d => d.field), q.field, B.encoding[q.channel].aggregate);
+        bQuanValues[q.field] = pivotData.map(d => d[q.field]);
       });
 
       // put domains
       // nest by one nominal field
       if (aNoms.length === 1) {
-        let axes: AxisDomainData[] = []
+        let axes: AxisDomainData[] = [];
         for (let i = 0; i < axisA[aNom].length; i++) {
           bQuans.forEach(q => {
-            axisB[q.channel] = bQuanValues[q.field]
+            axisB[q.channel] = bQuanValues[q.field];
           })
-          axes.push({...axisB})
+          axes.push({...axisB});
         }
-        resB = {...resB, axis: axes}
+        resB = {...resB, axis: axes};
       }
       // nest by two nominal fields
       else if (aNoms.length === 2) {
-        let axes: AxisDomainData[][] = []
+        let axes: AxisDomainData[][] = [];
         for (let i = 0; i < axisA[aNoms[0].channel].length; i++) {
-          let subAxes: AxisDomainData[] = []
+          let subAxes: AxisDomainData[] = [];
           for (let j = 0; j < axisA[aNoms[1].channel].length; j++) {
             bQuans.forEach(q => {
-              axisB[q.channel] = bQuanValues[q.field]
+              axisB[q.channel] = bQuanValues[q.field];
             })
-            subAxes.push({...axisB})
+            subAxes.push({...axisB});
           }
-          axes.push(subAxes)
+          axes.push(subAxes);
         }
-        resB = {...resB, axis: axes}
+        resB = {...resB, axis: axes};
       }
     }
     // TODO: combine this with upper part

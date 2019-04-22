@@ -5,7 +5,7 @@ import {DATASET_MOVIES} from "src/datasets/movies";
 import {getChartType} from "src/models/chart-types";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
-  const mC = correctCompSpec({...A}, {...B}, {...C});
+  const mC = correctCompSpec({...A}, {...B}, {...C}).solidC;
   return getSimpleCompTitle(A, B, C) + " " +
     "(" + deepObjectValue(mC.layout).toString().slice(0, 3).toUpperCase() + "|" + mC.layout.unit.slice(0, 3).toUpperCase() + "|" +
     mC.layout.arrangement.toString().slice(0, 1).toUpperCase() + "|" + (mC.layout.mirrored ? "M|" : "F|") +
