@@ -8,8 +8,8 @@ import {AxisStyle, DEFAULT_AXIS_STYLE} from "./axis";
 
 export type ChartStyle = CommonChartStyle
 
-export interface CommonChartStyle
-  extends BarChartStyle, ScatterplotStyle, HeatmapStyle, LegendStyle, AxisStyle {
+export interface CommonChartStyle extends
+  BarChartStyle, ScatterplotStyle, HeatmapStyle, LegendStyle, AxisStyle {
 
   // chart
   width: number;

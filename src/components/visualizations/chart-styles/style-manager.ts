@@ -174,6 +174,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
       }
     }
   }
+  // TODO:
   // if two fields are identical, show only one
   // if (A.encoding.color && B.encoding.color && A.encoding.color.field === B.encoding.color.field &&
   //   A.encoding.color.type === B.encoding.color.type && A.encoding.color.aggregate === B.encoding.color.aggregate) S.B.legend = false
@@ -232,7 +233,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     if (isBothHeatmap(A, B)) S.B.nestingPadding = NESTING_PADDING;
     if (isBarChart(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING;
     if (isScatterplot(A) && isHeatmap(B)) S.B.nestingPadding = NESTING_PADDING;
-    ///
+
     if (layout === "juxtaposition" && arrangement === "adjacent" && isHeatmap(A)) {
       S.B.isChartStroke = true;
 
@@ -245,7 +246,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
       S.A.cellPadding = 0;
       S.B.nestingPadding = 0;
     }
-    ///
   }
   return S;
 }

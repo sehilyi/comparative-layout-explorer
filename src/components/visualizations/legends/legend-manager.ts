@@ -67,11 +67,11 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: Position,
     if (consistency.color.type === "distinct" || consistency.stroke === "distinct" || consistency.texture === "distinct") {
       // put additional space for consistency legend
       addWidth = LEGEND_WIDTH;
-      if (isOverlapLayout(C) && (S.A.isLegend || S.B.isLegend)) {
+      if (isOverlapLayout(C) && (S.A.isLegend || S.B.isLegend) || C.consistency.color.type === "shared") {
         addWidth -= LEGEND_WIDTH;
       }
 
-      const left = P.B.left + S.B.width + (!isOverlapLayout(C) && S.B.isLegend ? LEGEND_WIDTH : 0);
+      const left = P.B.left + S.B.width + (!isOverlapLayout(C) && S.B.isLegend && C.consistency.color.type !== "shared" ? LEGEND_WIDTH : 0);
       lastYEnd = lastYEnd === 0 ? P.A.top : lastYEnd
 
       // distinct nominal color
@@ -81,7 +81,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: Position,
         if (S.A.texture !== S.B.texture) legendStyles["texture"] = [S.A.texture, S.B.texture];
         if (isScatterplot(A) && !isNestingLayout(C)) legendStyles["isCircle"] = true;
         recipe.push({
-          title: "chart",
+          title: "Chart",
           scale: d3.scaleOrdinal()
             .domain([getChartTitle(A), getChartTitle(B)]) // TODO: more clever title
             .range([S.A.color.range()[0], S.B.color.range()[0]]),
