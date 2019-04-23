@@ -8,12 +8,12 @@ import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDIN
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
-import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot} from "src/models/chart-types";
+import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot, isChartsJuxtaposed, isElementsJuxtaposed, isChartsSuperimposed} from "src/models/chart-types";
 
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
   const {consistency} = C;
-  const {type: layout, unit, arrangement, mirrored} = C.layout;
+  const {type: layout, arrangement, mirrored} = C.layout;
   const {type: consisColor} = C.consistency.color;
 
   /* css selector */
@@ -33,7 +33,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   S.B.xName = getAxisName(B.encoding.x);
   S.B.yName = getAxisName(B.encoding.y);
   // combine axis names
-  if (layout === "juxtaposition" && unit === "chart" && arrangement !== "animated") {
+  if (isChartsJuxtaposed(C)) {
     if (arrangement === "stacked" && consistency.x_axis) {
       S.B.xName = getAxisName(A.encoding.x, B.encoding.x);
     }
@@ -41,7 +41,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
       S.A.yName = getAxisName(A.encoding.y, B.encoding.y);
     }
   }
-  else if (layout === "juxtaposition" && unit === "element" && arrangement !== "animated") {
+  else if (isElementsJuxtaposed(C)) {
     if (consistency.x_axis) {
       S.A.xName = getAxisName(A.encoding.x, B.encoding.x);
     }
@@ -56,16 +56,16 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   S.A.revX = mirrored && arrangement === "adjacent";
 
   /* axis */
-  if (layout === "juxtaposition" && unit === "chart") {
+  if (isChartsJuxtaposed(C)) {
     S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked';
     S.B.noY = consistency.y_axis && !S.B.revY && arrangement === 'adjacent';
   }
-  if (layout === "juxtaposition" && unit === "element" && arrangement !== "animated") {
+  if (isElementsJuxtaposed(C)) {
     if (isBothBarChart(A, B) || isBothHeatmap(A, B)) {
       S.B.noAxes = true;
     }
   }
-  else if (layout === "superimposition" && unit === "chart") {
+  else if (isChartsSuperimposed(C)) {
     S.B.noGrid = true;
     S.B.noX = consistency.x_axis;
     S.B.noY = consistency.y_axis;
@@ -81,7 +81,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   /* z index */
   // normally, B is on top
   // when two of them are true, B is on top
-  if (layout === "superimposition" && unit === "chart") {
+  if (isChartsSuperimposed(C)) {
     S.A.onTop = true;
   }
   if (C.overlap_reduction.jitter_x && C.overlap_reduction.jitter_y && isBothHeatmap(A, B)) {

@@ -5,7 +5,7 @@ import {isUndefined} from 'util';
 import {renderAxes} from '../axes';
 import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
-import {getDomain} from '../data-handler/domain-manager';
+import {getDomainData} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray} from 'src/useful-factory/d3-str';
 import {getNominalColor, CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} from '../default-design-manager';
@@ -21,7 +21,7 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
-  const {...domains} = getDomain(spec)
+  const {...domains} = getDomainData(spec)
 
   renderBarChart(g, spec, {x: domains.x, y: domains.y}, getNominalColor(domains.color), {
     ...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color), verticalBar: spec.encoding.x.type === "nominal"
