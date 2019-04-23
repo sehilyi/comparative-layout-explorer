@@ -1468,5 +1468,90 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
+    {
+      C: {
+        name: "#51 width test",
+        style: {width: 500},
+        layout: {type: "superimposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "independent"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          y: {field: "MPAA_Rating", type: "nominal"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        name: "#52",
+        style: {height: 300},
+        layout: {type: "superimposition", unit: "element"},
+        consistency: {
+          x_axis: false, y_axis: false, color: "independent"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          y: {field: "MPAA_Rating", type: "nominal"},
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          y: {field: "Source", type: "nominal"},
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        name: "#53",
+        style: {height: 400},
+        layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
   ]
 }

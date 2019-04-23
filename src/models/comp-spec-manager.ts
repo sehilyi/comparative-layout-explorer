@@ -39,8 +39,10 @@ export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
   }
 
   /* change referece */
-  const _A = solidC.reference === "A" ? {...A} : {...B};
-  const _B = solidC.reference === "A" ? {...B} : {...A};
+  const _A = solidC.reference === "first" ? {...A} : {...B};
+  const _B = solidC.reference === "first" ? {...B} : {...A};
+
+
 
   return {_A, _B, solidC};  // TODO: is this safe?
 }

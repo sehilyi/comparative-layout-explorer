@@ -106,6 +106,13 @@ export function isBothHeatmap(A: Spec, B: Spec) {
   return isHeatmap(A) && isHeatmap(B);
 }
 
+export function isColorIdentical(A: Spec, B: Spec) {
+  return A.encoding.color && B.encoding.color &&
+    A.encoding.color.field === B.encoding.color.field &&
+    A.encoding.color.type === B.encoding.color.type &&
+    A.encoding.color.aggregate === B.encoding.color.aggregate;
+}
+
 export function isStackedBarChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = C.layout;
   return layout === "juxtaposition" && unit === "element" && arrangement === "stacked" && isBothBarChart(A, B);

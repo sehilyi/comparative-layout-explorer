@@ -14,6 +14,8 @@ export type CompSpec = {
   consistency?: Consistency;
   overlap_reduction?: OverlapReduction;
   explicit_encoding?: ExplicitEncoding;
+
+  style?: CompStyle;
 }
 export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding";
 export type Layout = LayoutType | LayoutTypeAndStyle;
@@ -55,10 +57,10 @@ export type Consistency = {
   color?: ConsistencyType | ConsistencyTypeAndTarget;
   x_axis?: boolean;
   y_axis?: boolean;
-  // x_arrangement?: boolean
-  // y_arrangement?: boolean
   stroke?: ConsistencyType;  // TODO: this will be removed eventually
   texture?: ConsistencyType;
+  // x_arrangement?: boolean
+  // y_arrangement?: boolean
 }
 
 /* consistency settings */
@@ -77,6 +79,11 @@ export type OverlapReduction = {
   jitter_x?: boolean;
   jitter_y?: boolean;
   resize?: boolean;
+}
+
+export type CompStyle = {
+  width?: number;
+  height?: number;
 }
 
 export type CompReference = "first" | "second";
@@ -120,7 +127,7 @@ export const DEFAULT_COMP_SPEC: CompSpec = {
   reference: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {
-  "juxtaposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX},
-  "superimposition": {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP},
+  juxtaposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX},
+  superimposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP},
   "explicit-encoding": {...DEFAULT_COMP_SPEC}
 }
