@@ -79,8 +79,8 @@ export type OverlapReduction = {
   resize?: boolean;
 }
 
-export type CompReference = "A" | "B";  // TODO: change to first and second
-export const DEFAULT_COMP_REFERENCE = "A";
+export type CompReference = "first" | "second";
+export const DEFAULT_COMP_REFERENCE = "first";
 
 export const DEFAULT_LAYOUT_JUX: LayoutTypeAndStyle = {
   type: "juxtaposition",
