@@ -24,10 +24,10 @@ export const DEFAULT_AXIS_DOMAIN = {
  * Generate domains of X, Y, and Color
  * * This does not returns unique values in domains.
  */
-export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
+export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
   let resA: ChartDomainData, resB: ChartDomainData;
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN};
-  const {...DomainA} = getDomain(A), {...DomainB} = getDomain(B), {...DomainUnion} = getDomain(A, B);
+  const {...DomainA} = getDomainData(A), {...DomainB} = getDomainData(B), {...DomainUnion} = getDomainData(A, B);
   const {consistency} = C;
 
   /* common part */
@@ -163,7 +163,7 @@ export function getDomainByLayout(A: Spec, B: Spec, C: _CompSpecSolid) {
 /**
  * Get single or union domains for x, y, and color
  */
-export function getDomain(spec: Spec, specForUnion?: Spec): {x: Domain, y: Domain, color: Domain} {
+export function getDomainData(spec: Spec, specForUnion?: Spec): {x: Domain, y: Domain, color: Domain} {
   const {values} = spec.data;
   const {encoding} = spec;
   const {x, y, color} = spec.encoding;
@@ -229,7 +229,7 @@ export function getDomain(spec: Spec, specForUnion?: Spec): {x: Domain, y: Domai
   }
 
   if (isUnion) {
-    let {...uDomain} = getDomain(specForUnion);
+    let {...uDomain} = getDomainData(specForUnion);
     domains.x = x.type === "nominal" ?
       (domains.x as string[]).concat(uDomain.x as string[]) :
       (domains.x as number[]).concat(uDomain.x as number[]);

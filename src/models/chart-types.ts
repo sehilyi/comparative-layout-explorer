@@ -15,13 +15,32 @@ export function getChartType(spec: Spec): ChartTypes {
   else return "NULL"
 }
 
+export function isChartsJuxtaposed(spec: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = spec.layout;
+  return (layout === "juxtaposition" && unit === "chart" && arrangement !== "animated");
+}
+export function isElementsJuxtaposed(spec: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = spec.layout;
+  return (layout === "juxtaposition" && unit === "element" && arrangement !== "animated");
+}
+export function isChartsSuperimposed(spec: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = spec.layout;
+  // arrangement cannot be animated when superimposed
+  return (layout === "superimposition" && unit === "chart" && arrangement !== "animated");
+}
+export function isElementsSuperimposed(spec: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = spec.layout;
+  // arrangement cannot be animated when superimposed
+  return (layout === "superimposition" && unit === "element" && arrangement !== "animated");
+}
+
 export function isOverlapLayout(spec: _CompSpecSolid) {
-  const {type: layout, unit, arrangement} = spec.layout
-  return (layout === "superimposition") || (layout === "juxtaposition" && unit === "element") || (arrangement === "animated")
+  const {type: layout, unit, arrangement} = spec.layout;
+  return (layout === "superimposition") || (layout === "juxtaposition" && unit === "element") || (arrangement === "animated");
 }
 
 export function isNoOverlapLayout(spec: _CompSpecSolid) {
-  const {type: layout, unit, arrangement} = spec.layout
+  const {type: layout, unit, arrangement} = spec.layout;
   return (layout === "juxtaposition" && unit === "chart" && arrangement !== "animated") ||
     (layout === "superimposition" && unit === "chart");
 }

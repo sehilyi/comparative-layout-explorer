@@ -39,15 +39,15 @@ export function renderScatterplot(
 
   const {values} = spec.data;
   const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y;
-  const {aggregate} = spec.encoding.y // TODO: do not consider different aggregation functions for x and y for the simplicity
-  const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
+  const {aggregate} = spec.encoding.y; // TODO: do not consider different aggregation functions for x and y for the simplicity
+  const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string);
 
-  const aggValues = aggregate !== undefined ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values
-  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
+  const aggValues = aggregate ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values;
+  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles});
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
-    svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
-  let visualReciepe = renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles})
+    svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true);
+  let visualReciepe = renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles});
   return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX, y: d.y + styles.translateY}});
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
 }
@@ -85,7 +85,7 @@ export function renderPoints(
     .attr(_fill, function (d) {
       const colorStr = (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _X : _C]) as string;
       if (!styles.texture) {
-        return colorStr
+        return colorStr;
       }
       else {
         const textureId = d[keys.cKey === "" ? _X : _C] as string;

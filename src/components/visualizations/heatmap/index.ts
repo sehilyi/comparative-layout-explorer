@@ -7,7 +7,7 @@ import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white,
 import {getQuantitativeColorStr, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
-import {getDomain} from '../data-handler/domain-manager';
+import {getDomainData} from '../data-handler/domain-manager';
 import {isUndefined, isNullOrUndefined} from 'util';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 
@@ -20,7 +20,7 @@ export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
   d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
   const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
-  const {...domains} = getDomain(spec)
+  const {...domains} = getDomainData(spec)
 
   renderHeatmap(g, spec, {x: domains.x, y: domains.y}, d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColorStr()),
     {...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color)})

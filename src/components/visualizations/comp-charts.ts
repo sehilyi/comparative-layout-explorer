@@ -8,7 +8,7 @@ import {renderChart} from ".";
 import {oneOfFilter, getFieldsByType} from "./data-handler";
 import {getStyles} from "./chart-styles/style-manager";
 import {getLayouts} from "./chart-styles/layout-manager";
-import {getDomainByLayout} from "./data-handler/domain-manager";
+import {getDomain} from "./data-handler/domain-manager";
 import {correctCompSpec} from "src/models/comp-spec-manager";
 import {_transform, _width, _height, _g, _opacity} from "src/useful-factory/d3-str";
 import {canRenderChart, canRenderCompChart} from "./constraints";
@@ -30,7 +30,7 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 }
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
-  const {...domains} = getDomainByLayout(A, B, C);
+  const {...domains} = getDomain(A, B, C);
   const {...styles} = getStyles(A, B, C, domains);
   const {...layouts} = getLayouts(A, B, C, styles); // set translateX and Y here
   const {...legends} = getLegends(A, B, C, {A: layouts.A, B: layouts.B}, styles);

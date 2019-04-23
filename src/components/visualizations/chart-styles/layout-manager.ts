@@ -9,7 +9,7 @@ import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
-import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isScatterplot, isHeatmap} from "src/models/chart-types";
+import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isScatterplot, isHeatmap, isChartsSuperimposed} from "src/models/chart-types";
 
 export type Position = {
   width: number
@@ -30,7 +30,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyl
   else if (layout === "juxtaposition" && unit === "element" && getChartType(A) === getChartType(B)) {
     placement = getChartPositions(1, 1, [S.A, S.B]);
   }
-  else if (layout === "superimposition" && unit === "chart") {
+  else if (isChartsSuperimposed(C)) {
     placement = getChartPositions(1, 1, [S.A, S.B]);
   }
   /* nesting */
