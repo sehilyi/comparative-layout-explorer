@@ -25,11 +25,11 @@ export type LayoutTypeAndStyle = {
   mirrored?: boolean;
   arrangement?: CompArrangement;
 }
-export type CompArrangement = "stacked" | "adjacent" | "animated" | "null";
+export type CompArrangement = "stacked" | "adjacent" | "animated" | "diagonal" | "null";
 export type CompUnit = JuxCompUnit | SupCompUnit;
 export type commonCompUnit = "chart" | "element";
-export type JuxCompUnit = commonCompUnit | "time";
-export type SupCompUnit = commonCompUnit | "area";
+export type JuxCompUnit = commonCompUnit | "time";  // deprecated
+export type SupCompUnit = commonCompUnit | "area";  // deprecated
 
 /* explicit encoding */
 export type ExplicitEncoding = {

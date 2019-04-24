@@ -3,7 +3,7 @@ import {Spec} from "src/models/simple-vega-spec";
 import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
-import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width} from 'src/useful-factory/d3-str';
+import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width, _path, _d} from 'src/useful-factory/d3-str';
 import {getQuantitativeColorStr, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
@@ -58,7 +58,7 @@ export function renderCells(
 
   let coordinates: Coordinate[] = [];
 
-  const {elementAnimated: animated, strokeKey: sKey, stroke_width: strokeWidth} = styles;
+  const {elementAnimated: animated, strokeKey: sKey, stroke_width: strokeWidth, triangleCell} = styles;
   const _X = "X", _Y = "Y", _C = "C";
   const _S = !sKey || sKey === keys.xKey ? _X : sKey === keys.yKey ? _Y : _C; // for stroke color
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
@@ -77,7 +77,7 @@ export function renderCells(
     .attr(_opacity, 0)
     .remove();
 
-  const newCells = oldCells.enter().append(_rect)
+  const newCells = oldCells.enter().append(triangleCell === "none" ? _rect : _path)
     .classed('cell', true);
 
   const allCells = newCells.merge(oldCells as any);
@@ -96,17 +96,37 @@ export function renderCells(
         const textureId = isNullOrUndefined(d[_C]) ? "null" : `${d[_C]}`;
         return appendPattern(g, textureId, colorStr);
       }
-    })
-    .attr(_x, function (d) {
-      const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1);
-      return x;
-    })
-    .attr(_y, function (d) {
-      const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1);
-      return y;
-    })
-    .attr(_width, cellWidth)
-    .attr(_height, cellHeight);
+    });
+
+  if (triangleCell === "top") {
+    allCells
+      .attr(_d, function (d) {
+        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1);
+        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1);
+        return "M " + x + " " + y + " L " + (x + cellWidth) + " " + y + " L " + (x + cellWidth) + " " + (y + cellHeight) + " Z";
+      });
+  }
+  else if (triangleCell === "bottom") {
+    allCells
+      .attr(_d, function (d) {
+        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1);
+        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1);
+        return "M " + x + " " + y + " L " + x + " " + (y + cellHeight) + " L " + (x + cellWidth) + " " + (y + cellHeight) + " Z";
+      });
+  }
+  else {
+    allCells
+      .attr(_x, function (d) {
+        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1);
+        return x;
+      })
+      .attr(_y, function (d) {
+        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1);
+        return y;
+      })
+      .attr(_width, cellWidth)
+      .attr(_height, cellHeight);
+  }
 
   // TODO: redundant with upper part!
   dataCommonShape.forEach(d => {

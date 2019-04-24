@@ -28,7 +28,7 @@ export function getExamples() {
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
-    // .filter(d => d.C.name === "#10" || d.C.name === "#15" || d.C.name === "#32")
+    .filter(d => d.C.name === "#54")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 
@@ -215,7 +215,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         name: "#7 resize test",
-        layout: {type: "superimposition", unit: "chart", arrangement: "adjacent"},
+        layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
@@ -1529,6 +1529,34 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         name: "#53",
         style: {height: 400},
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        name: "#54",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "diagonal"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         }

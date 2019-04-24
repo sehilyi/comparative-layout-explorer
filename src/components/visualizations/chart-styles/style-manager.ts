@@ -235,10 +235,16 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     S.B.verticalBar ? S.B.widthTimes = 0.5 : S.B.heightTimes = 0.5;
   }
   else if (isDivisionHeatmap(A, B, C)) {
-    S.A.shiftY = -0.5;
-    S.B.shiftY = 0.5;
-    S.A.heightTimes = 0.5;
-    S.B.heightTimes = 0.5;
+    if (C.layout.arrangement === "diagonal") {
+      S.A.triangleCell = "bottom";
+      S.B.triangleCell = "top";
+    }
+    else {
+      S.A.shiftY = -0.5;
+      S.B.shiftY = 0.5;
+      S.A.heightTimes = 0.5;
+      S.B.heightTimes = 0.5;
+    }
   }
   else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
     S.B.barGap = 0;
