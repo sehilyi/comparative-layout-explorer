@@ -60,7 +60,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
       let newObject = {};
       newObject[axField] = axVal;
       newObject[ayField] = ayVal;
-      newObject[acolorField] = Math.abs(v[acolorField] - valsB.filter(d => d[bxField] === axVal && d[byField] === ayVal)[0][bcolorField]);
+      newObject[acolorField] = v[acolorField] - valsB.filter(d => d[bxField] === axVal && d[byField] === ayVal)[0][bcolorField];
       eeColorDomain.push(newObject);
     });
     axisA.color = eeColorDomain.map(d => d[acolorField]);

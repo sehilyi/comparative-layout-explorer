@@ -35,6 +35,7 @@ export const CATEGORICAL_COLORS_DARKEST = [
 
 export const NUMERICAL_COLORS = ['#C6E48B', /*'#7BC96F',*/ '#239A3B'/*, '#196127'*/]  // git heatmap color scheme
 export const NUMERICAL_COLORS2 = ['#8bc6e4', /*'#7BC96F',*/ '#3b239a'/*, '#196127'*/]
+export const DIVERSING_COLORS = ["#FAA142", "white", "#588BB8"];
 export const DEFAULT_FONT = "Roboto Condensed"
 export const DEFAULT_STROKE_WIDTH = 1
 export const DEFAULT_STROKE = getConstantColor("black")
@@ -65,6 +66,9 @@ export function getBarColorDarkest(n: number) {
   return CATEGORICAL_COLORS_DARKEST.slice(0, n > CATEGORICAL_COLORS_DARKEST.length ? CATEGORICAL_COLORS_DARKEST.length - 1 : n)
 }
 
+export function getDiversingColorStr() {
+  return DIVERSING_COLORS;
+}
 export function getQuantitativeColorStr(alt?: boolean) {
   return !alt ? NUMERICAL_COLORS : NUMERICAL_COLORS2
 }
@@ -83,9 +87,11 @@ export function getNominalColorStr(n: number, n2?: number) {
 export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: ConsistencyType) {
   let colorA, colorB;
   if (isNullOrUndefined(b)) {
+    // now, only for explicit encoding
     colorA = a.length === 0 || typeof a[0] === "string" ?
       getNominalColor(a) :
-      d3.scaleLinear<string>().domain(d3.extent(a as number[])).range(getQuantitativeColorStr());
+      d3.scaleLinear<string>().domain([d3.min(a as number[]), 0, d3.max(a as number[])]).range(getDiversingColorStr());  // TODO: change to diverging
+
     colorB = undefined;
   }
 
