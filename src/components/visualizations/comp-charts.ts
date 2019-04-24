@@ -30,6 +30,7 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 }
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
+  // all {}.B are set to undefined when layout === explicit encoding
   const {...domains} = getDomain(A, B, C);
   const {...styles} = getStyles(A, B, C, domains);
   const {...layouts} = getLayouts(A, B, C, styles); // set translateX and Y here
@@ -48,7 +49,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
       coordinateA = renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, styles.A.color, styles.A);
     }
     /* render B */
-    if (!Array.isArray(domains.B.axis)) {
+    if (domains.B && !Array.isArray(domains.B.axis)) {
       coordinateB = renderChart(svg, B, {x: domains.B.axis.x, y: domains.B.axis.y}, styles.B.color, styles.B);
     }
   }
@@ -56,10 +57,10 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   loopABRender();
 
   // show element-wise animated transitions
-  if (styles.B.elementAnimated) d3.interval(function () {loopABRender();}, DF_DELAY + DF_DURATION + DF_DELAY);
+  if (styles.B && styles.B.elementAnimated) d3.interval(function () {loopABRender();}, DF_DELAY + DF_DURATION + DF_DELAY);
 
   /* 1D nesting: B is separated to multiple charts by A */
-  if (Array.isArray(domains.B.axis) && styles.B.nestDim === 1) {
+  if (domains.B && styles.B && Array.isArray(domains.B.axis) && styles.B.nestDim === 1) {
     const n = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y";
     for (let i = 0; i < layouts.nestedBs.length; i++) {
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string);
@@ -75,7 +76,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     }
   }
   /* 2D nesting: for heatmap A */
-  else if (Array.isArray(domains.B.axis) && styles.B.nestDim === 2) {
+  else if (domains.B && styles.B && Array.isArray(domains.B.axis) && styles.B.nestDim === 2) {
     const ns = getFieldsByType(A, "nominal");
     for (let i = 0; i < uniqueValues(A.data.values, ns[0].field).length; i++) {
       for (let j = 0; j < uniqueValues(A.data.values, ns[1].field).length; j++) {
@@ -111,7 +112,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   /* apply visual properties after rendering charts */
   // z-index
   if (styles.A.onTop) svg.selectAll(".A").raise();
-  if (styles.B.onTop) svg.selectAll(".B").raise();
+  if (styles.B && styles.B.onTop) svg.selectAll(".B").raise();
   svg.selectAll("." + AXIS_ROOT_ID).lower();
   // animated
   if (isChartAnimated(C)) {

@@ -113,6 +113,10 @@ export function isColorIdentical(A: Spec, B: Spec) {
     A.encoding.color.aggregate === B.encoding.color.aggregate;
 }
 
+export function isEEChart(C: _CompSpecSolid) {
+  const {type: layout} = C.layout;
+  return layout === "explicit-encoding";
+}
 export function isStackedBarChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = C.layout;
   return layout === "juxtaposition" && unit === "element" && arrangement === "stacked" && isBothBarChart(A, B);

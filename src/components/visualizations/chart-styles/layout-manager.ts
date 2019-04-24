@@ -9,7 +9,7 @@ import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
-import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isScatterplot, isHeatmap, isChartsSuperimposed} from "src/models/chart-types";
+import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isScatterplot, isHeatmap, isChartsSuperimposed, isEEChart} from "src/models/chart-types";
 
 export type Position = {
   width: number
@@ -22,7 +22,10 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyl
   const {type: layout, unit, arrangement} = C.layout
   let placement, nestedBs: Position[] | Position[][]
 
-  if (layout === "juxtaposition" && unit === "chart") {
+  if (layout === "explicit-encoding") {
+    placement = getChartPositions(1, 1, [S.A]);
+  }
+  else if (layout === "juxtaposition" && unit === "chart") {
     const numOfC = arrangement === 'adjacent' ? 2 : 1;
     const numOfR = arrangement === 'stacked' ? 2 : 1;
     placement = getChartPositions(numOfC, numOfR, [S.A, S.B]);
@@ -121,13 +124,13 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyl
 
   // set translate in styles
   S.A = {...S.A, translateX: placement.positions[0].left, translateY: placement.positions[0].top}
-  S.B = {...S.B, translateX: placement.positions[1].left, translateY: placement.positions[1].top}
+  if (!isEEChart(C)) S.B = {...S.B, translateX: placement.positions[1].left, translateY: placement.positions[1].top}
 
   return {
     width: placement.size.width,
     height: placement.size.height,
     A: {...placement.positions[0]},
-    B: {...placement.positions[1]},
+    B: isEEChart(C) ? undefined : {...placement.positions[1]},
     // TODO: more organized way?
     nestedBs
   }
@@ -140,6 +143,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyl
  * @param styles
  */
 export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
+
   // styles that affects top or left margins of all charts
   const ifAllNoY = styles.filter(d => !d.noY).length === 0;
   const ifThereTopX = styles.filter(d => d.topX).length !== 0;
@@ -171,7 +175,9 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
   let totalSize = {width: 0, height: 0};
   let lastRight = 0, lastBottom = 0;
 
-  if (x === 1 && y === 1) { // superimposition, the length of styles can be larger than x * y
+  // single chart OR
+  // superimposition, the length of styles can be larger than x * y
+  if (styles.length === 1 || (x === 1 && y === 1)) {
     styles.forEach(s => {
       const position = {
         width: s.width,

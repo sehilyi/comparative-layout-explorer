@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {Spec, Field} from "src/models/simple-vega-spec";
-import {translate, rotate, uniqueValues, shortenText} from "src/useful-factory/utils";
+import {translate, rotate, uniqueValues, shortenText, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
 import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand, _stroke_width, _stroke, _fill, _font_size, _font_family} from "src/useful-factory/d3-str";
@@ -234,15 +234,16 @@ export function renderAxes(
   return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY}
 }
 
-export function getAxisName(f1: Field, f2?: Field): string {
+export function getAxisName(f1: Field, f2?: Field, midstr?: string): string {
+  const midStr = ifUndefinedGetDefault(midstr, "and");
   if (!f1 && !f2) return "";
   if (!f1) return getAxisName(f2);  // when color is not specified for f1 but shared
   if (f2) {
     if (f1.field === f2.field) {
-      if (!f1.aggregate || !f2.aggregate) return f1.field
-      else return getAxisName(f1)
+      if (!f1.aggregate || !f2.aggregate) return f1.field;
+      else return getAxisName(f1);
     }
-    else return getAxisName(f1) + " and " + getAxisName(f2)
+    else return getAxisName(f1) + " " + midStr + " " + getAxisName(f2);
   }
-  else return f1.field + (f1.aggregate !== undefined ? "(" + f1.aggregate + ")" : "")
+  else return f1.field + (f1.aggregate !== undefined ? "(" + f1.aggregate + ")" : "");
 }

@@ -4,7 +4,7 @@ import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {_color} from "src/useful-factory/d3-str";
-import {isStackedBarChart, isChartUnitScatterplots, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot} from "src/models/chart-types";
+import {isStackedBarChart, isChartUnitScatterplots, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot, isEEChart, isBothHeatmap} from "src/models/chart-types";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
@@ -31,6 +31,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {consistency} = C;
 
   /* common part */
+  // x
   if (consistency.x_axis) {
     axisA.x = axisB.x = DomainUnion.x;
   }
@@ -38,6 +39,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
     axisA.x = DomainA.x;
     axisB.x = DomainB.x;
   }
+  // y
   if (consistency.y_axis) {
     axisA.y = axisB.y = DomainUnion.y;
   }
@@ -45,7 +47,25 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
     axisA.y = DomainA.y;
     axisB.y = DomainB.y;
   }
-  if (consistency.color.type === "shared") {
+  // color
+  if (isBothHeatmap(A, B) && isEEChart(C)) {
+    const axField = A.encoding.x.field, ayField = A.encoding.y.field, acolorField = A.encoding.color.field;
+    const bxField = B.encoding.x.field, byField = B.encoding.y.field, bcolorField = B.encoding.color.field;
+    const valsA = getPivotData(A.data.values, [A.encoding.x.field, A.encoding.y.field], A.encoding.color.field, A.encoding.color.aggregate);
+    const valsB = getPivotData(B.data.values, [B.encoding.x.field, B.encoding.y.field], B.encoding.color.field, B.encoding.color.aggregate);
+    let eeColorDomain: Object[] = [];
+    // TODO: if x and y are different?
+    valsA.forEach(v => {
+      const axVal = v[axField], ayVal = v[ayField];
+      let newObject = {};
+      newObject[axField] = axVal;
+      newObject[ayField] = ayVal;
+      newObject[acolorField] = Math.abs(v[acolorField] - valsB.filter(d => d[bxField] === axVal && d[byField] === ayVal)[0][bcolorField]);
+      eeColorDomain.push(newObject);
+    });
+    axisA.color = eeColorDomain.map(d => d[acolorField]);
+  }
+  else if (consistency.color.type === "shared") {
     axisA.color = axisB.color = DomainUnion.color;
   }
   else {
@@ -157,7 +177,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
       }
     }
   }
-  return {A: resA, B: resB}
+  return {A: resA, B: isEEChart(C) ? undefined : resB}
 }
 
 /**

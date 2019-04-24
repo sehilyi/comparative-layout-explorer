@@ -8,7 +8,7 @@ import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDIN
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {getAxisName} from "../axes";
 import {_white, _black} from "src/useful-factory/d3-str";
-import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot, isChartsJuxtaposed, isElementsJuxtaposed, isChartsSuperimposed, isColorIdentical} from "src/models/chart-types";
+import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot, isChartsJuxtaposed, isElementsJuxtaposed, isChartsSuperimposed, isColorIdentical, isEEChart} from "src/models/chart-types";
 
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
@@ -52,29 +52,6 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   S.B.revY = mirrored && arrangement === "stacked";
   S.A.revX = mirrored && arrangement === "adjacent";
 
-  /* axis name */
-  S.A.xName = getAxisName(A.encoding.x);
-  S.A.yName = getAxisName(A.encoding.y);
-  S.B.xName = getAxisName(B.encoding.x);
-  S.B.yName = getAxisName(B.encoding.y);
-  // combine axis names (e.g., "imdb" and "rt" to "imdb and rt")
-  if (isChartsJuxtaposed(C)) {
-    if (arrangement === "stacked" && consistency.x_axis) {
-      S.B.xName = getAxisName(A.encoding.x, B.encoding.x);
-    }
-    else if (arrangement === "adjacent" && consistency.y_axis) {
-      S.A.yName = getAxisName(A.encoding.y, B.encoding.y);
-    }
-  }
-  else if (isElementsJuxtaposed(C)) {
-    if (consistency.x_axis) {
-      S.A.xName = getAxisName(A.encoding.x, B.encoding.x);
-    }
-    if (consistency.y_axis) {
-      S.A.yName = getAxisName(A.encoding.y, B.encoding.y);
-    }
-  }
-
   /* axis styles */
   if (isChartsJuxtaposed(C)) {
     S.A.noX = consistency.x_axis && !S.B.revX && arrangement === 'stacked';
@@ -98,9 +75,38 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     S.B.noX = true;
   }
 
-  // combine legend name
-  S.A.legendNameColor = getAxisName(A.encoding.color, colorConsis === "shared" ? B.encoding.color : undefined);
-  S.B.legendNameColor = getAxisName(A.encoding.color, colorConsis === "shared" ? B.encoding.color : undefined);
+  /* axis name */
+  S.A.xName = getAxisName(A.encoding.x);
+  S.A.yName = getAxisName(A.encoding.y);
+  S.B.xName = getAxisName(B.encoding.x);
+  S.B.yName = getAxisName(B.encoding.y);
+  // combine axis names (e.g., "imdb" and "rt" to "imdb and rt")
+  if (isChartsJuxtaposed(C)) {
+    if (arrangement === "stacked" && consistency.x_axis) {
+      S.B.xName = getAxisName(A.encoding.x, B.encoding.x);
+    }
+    else if (arrangement === "adjacent" && consistency.y_axis) {
+      S.A.yName = getAxisName(A.encoding.y, B.encoding.y);
+    }
+  }
+  else if (isElementsJuxtaposed(C)) {
+    if (consistency.x_axis) {
+      S.A.xName = getAxisName(A.encoding.x, B.encoding.x);
+    }
+    if (consistency.y_axis) {
+      S.A.yName = getAxisName(A.encoding.y, B.encoding.y);
+    }
+  }
+
+  /* combine legend name */
+  const diffStr = isEEChart(C) ? "-" : "and";  // TODO: support diverse types
+  if (isEEChart(C)) {
+    S.A.legendNameColor = getAxisName(A.encoding.color, B.encoding.color, diffStr);
+  }
+  else {
+    S.A.legendNameColor = getAxisName(A.encoding.color, colorConsis === "shared" ? B.encoding.color : undefined, diffStr);
+    S.B.legendNameColor = getAxisName(A.encoding.color, colorConsis === "shared" ? B.encoding.color : undefined, diffStr);
+  }
 
   /* z index */
   // normally, B is on top
@@ -175,26 +181,31 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     }
 
     // color
-    const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
-      // TODO: any clearer way?
-      S.B.nestDim === 0 ? domain.B.axis["color"] :
-        S.B.nestDim === 1 ? domain.B.axis[0]["color"] :
-          domain.B.axis[0][0]["color"],
-      colorConsis);
+    if (isEEChart(C)) {
+      S.A.color = getConsistentColor(domain.A.axis["color"], null, null).colorA;
+    }
+    else {
+      const {colorA, colorB} = getConsistentColor(domain.A.axis["color"],
+        // TODO: any clearer way?
+        S.B.nestDim === 0 ? domain.B.axis["color"] :
+          S.B.nestDim === 1 ? domain.B.axis[0]["color"] :
+            domain.B.axis[0][0]["color"],
+        colorConsis);
 
-    S.A.color = colorA;
-    S.B.color = colorB;
+      S.A.color = colorA;
+      S.B.color = colorB;
+    }
 
     /* cross consistency */
     // TODO:
     // if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "foreground") S.B.color = colorB
     if (consistency.color.secondary_target.element === "mark" && consistency.color.secondary_target.property === "stroke") {
-      S.B.stroke = colorA;
+      S.B.stroke = S.A.color;
       S.B.strokeKey = B.encoding.x.field;  // TODO: how to determine stroke reference?
       S.B.stroke_width = 1;
     }
     if (consistency.color.secondary_target.element === "axis" && consistency.color.secondary_target.property === "foreground") {
-      S.B.axisLabelColor = colorA;
+      S.B.axisLabelColor = S.A.color;
       S.B.axisLabelColorKey = B.encoding.x.field;  // TODO: how to determine color reference?
     }
   }
@@ -272,6 +283,10 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
       S.A.cellPadding = 0;
       S.B.nestingPadding = 0;
     }
+  }
+
+  if (isEEChart(C)) {
+    S.B = undefined;
   }
   return S;
 }

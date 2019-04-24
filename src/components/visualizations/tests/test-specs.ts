@@ -28,7 +28,7 @@ export function getExamples() {
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
-    .filter(d => d.C.name === "#54")
+    .filter(d => d.C.name === "#54" || d.C.name === "#55")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 
@@ -1560,6 +1560,31 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        name: "#55",
+        layout: {type: "explicit-encoding"}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {

@@ -49,7 +49,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: Position,
   }
 
   /* B's legend */
-  if (S.B.isLegend) {
+  if (S.B && S.B.isLegend) {
     if (lastYEnd === 0) lastYEnd = P.B.top;
     recipe.push({
       title: S.B.legendNameColor,
