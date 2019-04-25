@@ -15,8 +15,9 @@ import {canRenderChart, canRenderCompChart} from "./constraints";
 import {animateChart} from "./animated";
 import {getLegends} from "./legends/legend-manager";
 import {DF_DELAY, DF_DURATION} from "./animated/default-design";
-import {isScatterplot, isChartAnimated} from "src/models/chart-types";
+import {isScatterplot, isChartAnimated, isEEChart} from "src/models/chart-types";
 import {renderLineConnection} from "./line-connection";
+import {getChartData} from "./data-handler/chart-data-manager";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
   /* correct minor issues in CompSpec and make CompSpec as _CompSpecSolid */
@@ -31,12 +32,17 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
   // all {}.B are set to undefined when layout === explicit encoding
+  const {...chartdata} = getChartData(A, B, C);
   const {...domains} = getDomain(A, B, C);
   const {...styles} = getStyles(A, B, C, domains);
   const {...layouts} = getLayouts(A, B, C, styles); // set translateX and Y here
   const {...legends} = getLegends(A, B, C, {A: layouts.A, B: layouts.B}, styles);
 
   let coordinateA: Coordinate[] | void, coordinateB: Coordinate[] | void;
+
+  // TODO:
+  if (isEEChart(C)) styles.A.altVals = chartdata.A;
+  //
 
   d3.select(ref).selectAll('*').remove();
   const svg = d3.select(ref).attr(_width, layouts.width + legends.addWidth).attr(_height, d3.max([legends.height, layouts.height]));

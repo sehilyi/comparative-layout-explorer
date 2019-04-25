@@ -22,7 +22,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyl
   const {type: layout, unit, arrangement} = C.layout
   let placement, nestedBs: Position[] | Position[][]
 
-  if (layout === "explicit-encoding") {
+  if (isEEChart(C)) {
     placement = getChartPositions(1, 1, [S.A]);
   }
   else if (layout === "juxtaposition" && unit === "chart") {

@@ -7,7 +7,7 @@ import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {getAxisName} from "../axes";
-import {_white, _black} from "src/useful-factory/d3-str";
+import {_white, _black, _y, _x} from "src/useful-factory/d3-str";
 import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot, isChartsJuxtaposed, isElementsJuxtaposed, isChartsSuperimposed, isColorIdentical, isEEChart} from "src/models/chart-types";
 
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
@@ -46,6 +46,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   // chart type
   S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal");
+  S.A.isTickMark = (isEEChart(C) && isBothBarChart(A, B));
 
   /* mirrored */
   // only for chart juxtaposition (in other layouts, mirrored set to false)
@@ -95,6 +96,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     }
     if (consistency.y_axis) {
       S.A.yName = getAxisName(A.encoding.y, B.encoding.y);
+    }
+  }
+  else if (isEEChart(C)) {
+    if (isBothBarChart(A, B)) {
+      const Q = A.encoding.x.type === "quantitative" ? _x : _y;
+      S.A[Q + "Name"] = getAxisName(A.encoding[Q], B.encoding[Q], "-");  // when two of them are same!
     }
   }
 
@@ -247,8 +254,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   }
   else if (isDivisionHeatmap(A, B, C)) {
     if (C.layout.arrangement === "diagonal") {
-      S.A.triangleCell = "bottom";
-      S.B.triangleCell = "top";
+      S.A.triangularCell = "bottom";
+      S.B.triangularCell = "top";
     }
     else {
       S.A.shiftY = -0.5;

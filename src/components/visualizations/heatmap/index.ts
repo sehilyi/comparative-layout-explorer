@@ -58,7 +58,7 @@ export function renderCells(
 
   let coordinates: Coordinate[] = [];
 
-  const {elementAnimated: animated, strokeKey: sKey, stroke_width: strokeWidth, triangleCell} = styles;
+  const {elementAnimated: animated, strokeKey: sKey, stroke_width: strokeWidth, triangularCell: triangleCell} = styles;
   const _X = "X", _Y = "Y", _C = "C";
   const _S = !sKey || sKey === keys.xKey ? _X : sKey === keys.yKey ? _Y : _C; // for stroke color
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
@@ -98,6 +98,7 @@ export function renderCells(
       }
     });
 
+  // shape
   if (triangleCell === "top") {
     allCells
       .attr(_d, function (d) {

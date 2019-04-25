@@ -3,6 +3,7 @@ import {ifUndefinedGetDefault, uniqueValues} from "src/useful-factory/utils";
 import {isUndefined, isNullOrUndefined} from "util";
 import {ConsistencyType} from "src/models/comp-spec";
 import {_black, GSelection, _id, _width, _height, _fill} from "src/useful-factory/d3-str";
+import {MAX_BAR_SIZE} from "./barcharts/default-design";
 
 export const AXIS_ROOT_ID = "axis-root--"
 export const CHART_CLASS_ID = "D3-CHART-"
@@ -39,14 +40,6 @@ export const DIVERSING_COLORS = ["#F07386", "#D0CDE5", "#85A8D0"];
 export const DEFAULT_FONT = "Roboto Condensed"
 export const DEFAULT_STROKE_WIDTH = 1
 export const DEFAULT_STROKE = getConstantColor("black")
-
-// bar
-export const BAR_GAP = 8
-export const GAP_BETWEEN_CHARTS = 20
-export const MAX_BAR_SIZE = 100
-
-export const BAR_COLOR = '#4E79A7'
-export const BAR_COLOR2 = '#F28E2B'
 
 export type Coordinate = {
   id: string;

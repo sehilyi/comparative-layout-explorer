@@ -11,6 +11,7 @@ import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _strok
 import {getNominalColor, CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
+import {TICK_THICKNESS} from './default-design';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -35,21 +36,21 @@ export function renderBarChart(
   color: ScaleOrdinal | ScaleLinearColor,
   styles: ChartStyle) {
 
-  const {values} = spec.data
-  const {verticalBar} = styles
-  const {aggregate} = verticalBar ? spec.encoding.y : spec.encoding.x
-  const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y"
-  const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q]
-  const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string)
+  const {values} = spec.data;
+  const {verticalBar} = styles;
+  const {aggregate} = verticalBar ? spec.encoding.y : spec.encoding.x;
+  const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y";
+  const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q];
+  const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string);
 
-  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate)) as object[]
-  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles)  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
+  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate)) as object[];
+  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles);  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
 
   if (styles.isChartStroke && !styles.elementAnimated) {
-    const strokeWidth = .5
+    const strokeWidth = .5;
     g.append(_rect)
       .attr(_transform, translate(strokeWidth / 2.0, strokeWidth / 2.0))
       .attr(_width, styles.width * styles.chartWidthTimes - strokeWidth)
@@ -57,10 +58,10 @@ export function renderBarChart(
       .attr(_stroke, _lightgray)
       .attr(_stroke_width, .5)
       .attr(_fill, "none")
-      .attr(_opacity, styles.opacity)
+      .attr(_opacity, styles.opacity);
   }
-  let visualReciepe = renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x: x as ScaleBand, y: y as ScaleLinear, color}, {...styles})
-  return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, y: d.y + styles.translateY}})
+  let visualReciepe = renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x, y, color}, {...styles});
+  return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, y: d.y + styles.translateY}});
 }
 
 export function renderBars(
@@ -70,9 +71,25 @@ export function renderBars(
   scales: {x: ScaleBand | ScaleLinear, y: ScaleBand | ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
+  // styles
+  const {
+    isTickMark,
+    chartWidthTimes,
+    widthTimes,
+    heightTimes,
+    shiftX: shiftBy,
+    barOffset,
+    xPreStr,
+    barGap,
+    width,
+    height,
+    stroke,
+    stroke_width,
+    verticalBar,
+    elementAnimated: animated} = styles;
+
   let coordinates: Coordinate[] = [];
 
-  const {chartWidthTimes, widthTimes, heightTimes, shiftX: shiftBy, barOffset, xPreStr, barGap, width, height, stroke, stroke_width, verticalBar, elementAnimated: animated} = styles
   let numOfC: number;
   let nX: ScaleBand, qX: ScaleLinear, qY: ScaleLinear, nY: ScaleBand;
   if (verticalBar) {
@@ -103,6 +120,7 @@ export function renderBars(
 
   const allBars = newBars.merge(oldBars as any)
   const newWidth = width * chartWidthTimes;
+
   if (verticalBar) {
     const bandUnitSize = newWidth / numOfC;
     const barSize = ifUndefinedGetDefault(styles.barSize, getBarSize(newWidth, numOfC, barGap) * widthTimes) as number;
@@ -160,11 +178,32 @@ export function renderBars(
       .attr(_opacity, 1)
       .attr(_y, d => nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_y)
       .attr(_height, barSize)
-      .attr(_x, d => (!styles.revX ? 0 : qX(d[_Q])) + // TOOD: clean up more?
-        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
-          (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
-        styles.jitter_x)
-      .attr(_width, d => (!styles.revX ? qX(d[_Q]) : newWidth - qX(d[_Q])))
+      .attr(_x, function (d) {
+        if (isTickMark) {
+          return qX(d[_Q] - TICK_THICKNESS / 2.0);
+        }
+
+        let xPosition = styles.revX ? qX(d[_Q]) : 0;
+        // jittering
+        xPosition += styles.jitter_x;
+        // add offset
+        if (barOffset && barOffset.data.find(_d => _d[barOffset.keyField] === d[_N])) {
+          xPosition += qX(barOffset.data.find(_d => _d[barOffset.keyField] === d[_N])[barOffset.valueField]);
+        }
+        return xPosition;
+      })
+      .attr(_width, function (d) {
+        if (isTickMark) {
+          return TICK_THICKNESS;
+        }
+        else if (styles.revX) {
+          return newWidth - qX(d[_Q]);
+        }
+        // regular bar chart
+        else {
+          return qX(d[_Q]);
+        }
+      });
   }
 
   // TODO: redundant with upper part!

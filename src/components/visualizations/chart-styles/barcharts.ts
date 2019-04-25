@@ -1,4 +1,4 @@
-import {BAR_GAP} from "../default-design-manager";
+import {BAR_GAP} from "../barcharts/default-design";
 
 export interface BarChartStyle {
   barGap: number;
@@ -11,6 +11,7 @@ export interface BarChartStyle {
   chartWidthTimes: number;
   verticalBar: boolean;
   barOffset: {data: object[], valueField: string, keyField: string};
+  isTickMark: boolean;  // for explicit-encoding
 }
 
 export const DEFAULT_BARCHART_STYLE: BarChartStyle = {
@@ -26,4 +27,5 @@ export const DEFAULT_BARCHART_STYLE: BarChartStyle = {
   barSize: undefined,
   verticalBar: true,
   barOffset: undefined,
+  isTickMark: false,
 }

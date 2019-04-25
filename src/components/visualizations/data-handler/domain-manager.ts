@@ -3,8 +3,8 @@ import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
-import {_color} from "src/useful-factory/d3-str";
-import {isStackedBarChart, isChartUnitScatterplots, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot, isEEChart, isBothHeatmap} from "src/models/chart-types";
+import {_color, _y, _x} from "src/useful-factory/d3-str";
+import {isStackedBarChart, isChartUnitScatterplots, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot, isEEChart, isBothHeatmap, isBothBarChart} from "src/models/chart-types";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
@@ -48,30 +48,54 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
     axisB.y = DomainB.y;
   }
   // color
-  if (isBothHeatmap(A, B) && isEEChart(C)) {
-    const axField = A.encoding.x.field, ayField = A.encoding.y.field, acolorField = A.encoding.color.field;
-    const bxField = B.encoding.x.field, byField = B.encoding.y.field, bcolorField = B.encoding.color.field;
-    const valsA = getPivotData(A.data.values, [A.encoding.x.field, A.encoding.y.field], A.encoding.color.field, A.encoding.color.aggregate);
-    const valsB = getPivotData(B.data.values, [B.encoding.x.field, B.encoding.y.field], B.encoding.color.field, B.encoding.color.aggregate);
-    let eeColorDomain: Object[] = [];
-    // TODO: if x and y are different?
-    valsA.forEach(v => {
-      const axVal = v[axField], ayVal = v[ayField];
-      let newObject = {};
-      newObject[axField] = axVal;
-      newObject[ayField] = ayVal;
-      newObject[acolorField] = v[acolorField] - valsB.filter(d => d[bxField] === axVal && d[byField] === ayVal)[0][bcolorField];
-      eeColorDomain.push(newObject);
-    });
-    axisA.color = eeColorDomain.map(d => d[acolorField]);
-  }
-  else if (consistency.color.type === "shared") {
+  if (consistency.color.type === "shared") {
     axisA.color = axisB.color = DomainUnion.color;
   }
   else {
     axisA.color = DomainA.color;
     axisB.color = DomainB.color;
   }
+
+  /* exception: explicit encoding */
+  if (isEEChart(C)) {
+    if (isBothHeatmap(A, B)) {
+      const axField = A.encoding.x.field, ayField = A.encoding.y.field, acolorField = A.encoding.color.field;
+      const bxField = B.encoding.x.field, byField = B.encoding.y.field, bcolorField = B.encoding.color.field;
+      const valsA = getPivotData(A.data.values, [A.encoding.x.field, A.encoding.y.field], A.encoding.color.field, A.encoding.color.aggregate);
+      const valsB = getPivotData(B.data.values, [B.encoding.x.field, B.encoding.y.field], B.encoding.color.field, B.encoding.color.aggregate);
+      let eeColorDomain: Object[] = [];
+      // TODO: if x and y are different?
+      valsA.forEach(v => {
+        const axVal = v[axField], ayVal = v[ayField];
+        let newObject = {};
+        newObject[axField] = axVal;
+        newObject[ayField] = ayVal;
+        newObject[acolorField] = v[acolorField] - valsB.filter(d => d[bxField] === axVal && d[byField] === ayVal)[0][bcolorField];
+        eeColorDomain.push(newObject);
+      });
+      axisA.color = eeColorDomain.map(d => d[acolorField]);
+    }
+    else if (isBothBarChart(A, B)) {
+      const {values} = A.data;
+      const Q = A.encoding.x.type === "quantitative" ? _x : _y;
+      const N = Q === _x ? _y : _x;
+
+      const aqField = A.encoding[Q].field, anField = A.encoding[N].field;
+      const bqField = B.encoding[Q].field, bnField = B.encoding[N].field;
+
+      const aggValA = getAggValues(values, A.encoding[N].field, [A.encoding[Q].field], A.encoding[Q].aggregate);
+      const aggValB = getAggValues(values, B.encoding[N].field, [B.encoding[Q].field], B.encoding[Q].aggregate);
+      let eeQDomain: Object[] = [];
+      aggValA.forEach(v => {
+        let newObject = {};
+        newObject[anField] = v[anField];
+        newObject[aqField] = v[aqField] - aggValB.filter(d => d[bnField] === v[anField])[0][bqField];
+        eeQDomain.push(newObject);
+      });
+      axisA[Q] = eeQDomain.map(d => d[aqField]);
+    }
+  }
+
   resA = {axis: axisA};
   resB = {axis: axisB};
 
@@ -177,7 +201,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
       }
     }
   }
-  return {A: resA, B: isEEChart(C) ? undefined : resB}
+  return {A: resA, B: isEEChart(C) ? undefined : resB};
 }
 
 /**
@@ -193,12 +217,12 @@ export function getDomainData(spec: Spec, specForUnion?: Spec): {x: Domain, y: D
 
   /* x and y domain */
   ['x', 'y'].forEach(E => {
-    const ALT = (E === 'x' ? 'y' : 'x');
+    const ALT_E = (E === 'x' ? 'y' : 'x');
     if (encoding[E].type === "nominal") {
       domains[E] = uniqueValues(values, encoding[E].field);
     }
     else if (encoding[E].type === "quantitative" && !encoding[E].aggregate) {
-      if (encoding[ALT].type === "quantitative") {
+      if (encoding[ALT_E].type === "quantitative") {
         domains[E] = values.map(d => d[encoding[E].field]) as number[];
       }
       else {
@@ -207,13 +231,13 @@ export function getDomainData(spec: Spec, specForUnion?: Spec): {x: Domain, y: D
       }
     }
     else if (encoding[E].type === "quantitative" && encoding[E].aggregate) {
-      if (encoding[ALT].type === "quantitative") {
+      if (encoding[ALT_E].type === "quantitative") {
         // aggregated scatterplot
         domains[E] = getAggValues(values, color.field, [encoding[E].field], encoding[E].aggregate).map((d: object) => d[encoding[E].field]);
       }
-      else if (encoding[ALT].type === "nominal") {
+      else if (encoding[ALT_E].type === "nominal") {
         // bar chart
-        domains[E] = getAggValues(values, encoding[ALT].field, [encoding[E].field], encoding[E].aggregate).map((d: object) => d[encoding[E].field]);
+        domains[E] = getAggValues(values, encoding[ALT_E].field, [encoding[E].field], encoding[E].aggregate).map((d: object) => d[encoding[E].field]);
       }
       else {
         console.log("Something went wrong during deciding domains. Refer to getDomain(spec). The spec is:");
