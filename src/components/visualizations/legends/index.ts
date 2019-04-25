@@ -12,6 +12,8 @@ export function renderLegend(
   isQuantitative: boolean,
   stylesDistinct?: Object) {
 
+  const isDiversing = isQuantitative && range.length === 3;
+
   const left = LEGEND_PADDING, right = LEGEND_PADDING
   // title
   g.append('text')
@@ -98,12 +100,16 @@ export function renderLegend(
       .attr(_x2, '100%')
       .attr(_y2, '100%')
 
-    let scale = d3.scaleLinear<string>().range(range).domain(d3.extent(domain as number[]))
+    let colorScale = d3.scaleLinear<string>().range(range).domain(domain as number[]);
     linearGradient.selectAll("stop")
-      .data([
-        {offset: `${100 * 0 / 2}%`, color: scale(d3.extent(domain as number[])[0])},
-        {offset: `${100 * 2 / 2}%`, color: scale(d3.extent(domain as number[])[1])}
-      ])
+      .data(
+        isDiversing ?
+          [{offset: `${0}%`, color: colorScale(d3.extent(domain as number[])[0])},
+          {offset: `${50}%`, color: colorScale(0)},
+          {offset: `${100}%`, color: colorScale(d3.extent(domain as number[])[1])}]
+          : [{offset: `${0}%`, color: colorScale(d3.extent(domain as number[])[0])},
+          {offset: `${100}%`, color: colorScale(d3.extent(domain as number[])[1])}]
+      )
       .enter().append("stop")
       .attr(_offset, d => d[_offset])
       .attr(_stop_color, d => d[_color])
