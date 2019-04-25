@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import {Spec} from "src/models/simple-vega-spec";
 import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
-import {translate} from "src/useful-factory/utils";
+import {translate, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width, _path, _d} from 'src/useful-factory/d3-str';
 import {getQuantitativeColorStr, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
@@ -38,7 +38,7 @@ export function renderHeatmap(
   const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y, {field: cKey} = spec.encoding.color
   const {aggregate} = spec.encoding.color
   // TODO: when xField and yField same!
-  const pivotData = getPivotData(values, [xKey, yKey], cKey, aggregate, [domain.x as string[], domain.y as string[]])
+  const pivotData = ifUndefinedGetDefault(styles.altVals, getPivotData(values, [xKey, yKey], cKey, aggregate, [domain.x as string[], domain.y as string[]])) as object[];
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true);
@@ -55,10 +55,14 @@ export function renderCells(
   styles: ChartStyle) {
 
   if (styles.height < 0 || styles.width < 0) return []; // when height or width of nesting root is too small
+  console.log(data);
+  const {
+    elementAnimated: animated,
+    strokeKey: sKey,
+    stroke_width: strokeWidth,
+    triangularCell: triangleCell} = styles;
 
   let coordinates: Coordinate[] = [];
-
-  const {elementAnimated: animated, strokeKey: sKey, stroke_width: strokeWidth, triangularCell: triangleCell} = styles;
   const _X = "X", _Y = "Y", _C = "C";
   const _S = !sKey || sKey === keys.xKey ? _X : sKey === keys.yKey ? _Y : _C; // for stroke color
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));

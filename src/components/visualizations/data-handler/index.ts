@@ -124,7 +124,7 @@ export function getPivotData(data: object[], keyFields: string[], valueField: st
     })
     .entries(data)
 
-  if (!domains) {
+  if (!domains) { // TODO: purpose of this???
     domains = []
     keyFields.forEach(d => {
       domains.push(uniqueValues(data, d))
