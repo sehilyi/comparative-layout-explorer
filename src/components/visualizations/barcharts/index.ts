@@ -147,11 +147,30 @@ export function renderBars(
       .attr(_opacity, 1)
       .attr(_x, d => nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_x)
       .attr(_width, barSize)
-      .attr(_y, d => (styles.revY ? 0 : qY(d[_Q])) + // TOOD: clean up more?
-        (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
-          (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
-        styles.jitter_y)
-      .attr(_height, d => (styles.revY ? qY(d[_Q]) : height - qY(d[_Q])))
+      .attr(_y, function (d) {
+        if (isTickMark) {
+          return qY(d[_Q]) - TICK_THICKNESS / 2.0;
+        }
+        let yPosition = styles.revY ? 0 : qY(d[_Q]);
+        // jiterring
+        yPosition += styles.jitter_y;
+        // add offset
+        if (barOffset && barOffset.data.find(_d => _d[barOffset.keyField] === d[_N])) {
+          yPosition += -height + qY(barOffset.data.find(_d => _d[barOffset.keyField] === d[_N])[barOffset.valueField]);
+        }
+        return yPosition;
+      })
+      .attr(_height, function (d) {
+        if (isTickMark) {
+          return TICK_THICKNESS;
+        }
+        else if (styles.revY) {
+          return qY(d[_Q]);
+        }
+        else {
+          return height - qY(d[_Q]);
+        }
+      });
   }
   else {
     const bandUnitSize = height / numOfC
@@ -215,7 +234,7 @@ export function renderBars(
       coordinates.push({
         id: null,
         x: nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_x,
-        y: (styles.revY ? 0 : qY(d[_Q])) + // TOOD: clean up more?
+        y: (styles.revY ? 0 : qY(d[_Q])) +
           (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
             (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
           styles.jitter_y,
