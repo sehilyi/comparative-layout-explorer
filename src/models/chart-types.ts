@@ -102,6 +102,9 @@ export function isBothBarChart(A: Spec, B: Spec) {
 export function isBothScatterplot(A: Spec, B: Spec) {
   return isScatterplot(A) && isScatterplot(B);
 }
+export function isBothAggregatedScatterplot(A: Spec, B: Spec) {
+  return isAggregatedScatterplot(A) && isAggregatedScatterplot(B);
+}
 export function isBothHeatmap(A: Spec, B: Spec) {
   return isHeatmap(A) && isHeatmap(B);
 }

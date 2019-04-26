@@ -1,12 +1,12 @@
 import * as d3 from 'd3';
 import {translate, uniqueValues, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {Spec} from 'src/models/simple-vega-spec';
-import {SCATTER_POINT_OPACITY} from './default-design';
+import {SCATTER_POINT_OPACITY, CROSS_SYMBOL} from './default-design';
 import {renderAxes} from '../axes';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {getNominalColor, getConstantColor, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
-import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection, _path, _d} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 import {getAggValues} from '../data-handler';
@@ -43,8 +43,7 @@ export function renderScatterplot(
   const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y;
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string);
 
-  const aggValues = styles.altVals;//aggregate ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values;
-  console.log(styles.altVals)
+  const aggValues = styles.altVals;
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles});
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
@@ -61,9 +60,17 @@ export function renderPoints(
   scales: {x: ScaleLinear, y: ScaleLinear, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
-  let coordinates: Coordinate[] = [];
+  const {
+    elementAnimated: animated,
+    rectPoint,
+    isCrossMark,
+    texture,
+    stroke,
+    stroke_width,
+    strokeKey,
+    pointSize} = styles;
 
-  const {elementAnimated: animated} = styles;
+  let coordinates: Coordinate[] = [];
   const _X = "X", _Y = "Y", _C = "C";
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
 
@@ -77,7 +84,7 @@ export function renderPoints(
     .attr(_opacity, 0)
     .remove();
 
-  const newPoints = oldPoints.enter().append(styles.rectPoint ? _rect : _circle)
+  const newPoints = oldPoints.enter().append(isCrossMark ? _path : rectPoint ? _rect : _circle)
     .classed('point', true);
 
   const allPoints = newPoints.merge(oldPoints as any);
@@ -86,7 +93,7 @@ export function renderPoints(
     .transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
     .attr(_fill, function (d) {
       const colorStr = (scales.color as ScaleOrdinal)(d[keys.cKey === "" ? _X : _C]) as string;
-      if (!styles.texture) {
+      if (!texture) {
         return colorStr;
       }
       else {
@@ -95,17 +102,24 @@ export function renderPoints(
       }
     })
     .attr(_opacity, SCATTER_POINT_OPACITY)
-    .attr(_stroke, d => (styles.stroke as ScaleOrdinal)(d[styles.strokeKey ? styles.strokeKey : _X]) as string)
-    .attr(_stroke_width, styles.stroke_width)
+    .attr(_stroke, d => (stroke as ScaleOrdinal)(d[strokeKey ? strokeKey : _X]) as string)
+    .attr(_stroke_width, stroke_width)
+    // .attr(_d, d3.symbol().type(d3.symbolCross))
+    .attr(_d, CROSS_SYMBOL)
+    // .attr(_d,
+    //   "M 10 10 L 30 30 M 30 10 L 10 30"
+    // )
     // circle mark
     .attr(_cx, d => scales.x(d[_X]))
     .attr(_cy, d => scales.y(d[_Y]))
-    .attr(_r, styles.pointSize)
+    .attr(_r, pointSize)
     // rect mark
-    .attr(_x, d => scales.x(d[_X]) - styles.pointSize / 2.0)
-    .attr(_y, d => scales.y(d[_Y]) - styles.pointSize / 2.0)
-    .attr(_width, styles.pointSize)
-    .attr(_height, styles.pointSize);
+    .attr(_x, d => scales.x(d[_X]) - pointSize / 2.0)
+    .attr(_y, d => scales.y(d[_Y]) - pointSize / 2.0)
+    .attr(_width, pointSize)
+    .attr(_height, pointSize)
+    // cross mark
+    .attr(_transform, d => isCrossMark ? translate(scales.x(d[_X]), scales.y(d[_Y])) : translate(0, 0));
 
   // TODO: redundant with upper part!
   dataCommonShape.forEach(d => {

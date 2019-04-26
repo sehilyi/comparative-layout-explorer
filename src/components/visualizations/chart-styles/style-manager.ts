@@ -47,6 +47,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
   S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal");
   S.A.isTickMark = (isEEChart(C) && isBothBarChart(A, B));
+  S.A.isCrossMark = (isEEChart(C) && isBothScatterplot(A, B));
 
   /* mirrored */
   // only for chart juxtaposition (in other layouts, mirrored set to false)

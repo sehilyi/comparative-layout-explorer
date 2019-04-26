@@ -11,6 +11,7 @@ import {getNominalColor, CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} 
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 import {TICK_THICKNESS} from './default-design';
+import {getChartData} from '../data-handler/chart-data-manager';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -24,7 +25,8 @@ export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {...domains} = getDomainData(spec)
 
   renderBarChart(g, spec, {x: domains.x, y: domains.y}, getNominalColor(domains.color), {
-    ...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color), verticalBar: spec.encoding.x.type === "nominal"
+    ...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color), verticalBar: spec.encoding.x.type === "nominal",
+    altVals: getChartData(spec).A
   })
 }
 
