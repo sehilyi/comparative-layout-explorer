@@ -104,6 +104,7 @@ export function recTabularizeData(data: object[], keyss: string[][], keyFields: 
  * @param keyFields
  * @param valueField
  * @param aggregate
+ * @param domains pivot data using only these categories (???)
  */
 export function getPivotData(data: object[], keyFields: string[], valueField: string, aggregate: Aggregate, domains?: string[][]) {
   let nest = d3.nest()

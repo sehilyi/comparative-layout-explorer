@@ -15,7 +15,7 @@ import {canRenderChart, canRenderCompChart} from "./constraints";
 import {animateChart} from "./animated";
 import {getLegends} from "./legends/legend-manager";
 import {DF_DELAY, DF_DURATION} from "./animated/default-design";
-import {isScatterplot, isChartAnimated, isEEChart} from "src/models/chart-types";
+import {isScatterplot, isChartAnimated} from "src/models/chart-types";
 import {renderLineConnection} from "./line-connection";
 import {getChartData} from "./data-handler/chart-data-manager";
 
@@ -41,7 +41,10 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   let coordinateA: Coordinate[] | void, coordinateB: Coordinate[] | void;
 
   // TODO:
-  if (isEEChart(C)) styles.A.altVals = chartdata.A;
+  if (chartdata.A)
+    styles.A.altVals = chartdata.A;
+  if (styles.B && chartdata.B)
+    styles.B.altVals = chartdata.B;
   //
 
   d3.select(ref).selectAll('*').remove();
@@ -71,6 +74,9 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     for (let i = 0; i < layouts.nestedBs.length; i++) {
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string);
       let filteredSpec = {...B, data: {...B.data, values: filteredData}};
+      ///
+      styles.B.altVals = getChartData(filteredSpec, undefined, undefined, [domains.B.axis[i]["x"], domains.B.axis[i]["y"]]).A;
+      ///
       // TODO: width and height is not included in styles => any ways to make this clearer?
       renderChart(svg, filteredSpec, {x: domains.B.axis[i]["x"], y: domains.B.axis[i]["y"]}, styles.B.color, {
         ...styles.B,
@@ -91,6 +97,9 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
           A.encoding[ns[1].channel].field,
           domains.A.axis[ns[1].channel][j] as string);
         let filteredSpec = {...B, data: {...B.data, values: filteredData}};
+        ///
+        styles.B.altVals = getChartData(filteredSpec, undefined, undefined, [domains.B.axis[i][j]["x"], domains.B.axis[i][j]["y"]]).A;
+        ///
         renderChart(svg, filteredSpec, {x: domains.B.axis[i][j]["x"], y: domains.B.axis[i][j]["y"]}, styles.B.color, {
           ...styles.B,
           width: layouts.nestedBs[i][j].width,

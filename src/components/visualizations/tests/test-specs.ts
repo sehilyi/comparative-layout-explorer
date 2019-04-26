@@ -28,7 +28,7 @@ export function getExamples() {
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
-    .filter(d => d.C.name === "#55" || d.C.name === "#56" || d.C.name === "#57")
+    // .filter(d => d.C.name === "#55" || d.C.name === "#56" || d.C.name === "#57")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 

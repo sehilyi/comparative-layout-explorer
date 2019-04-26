@@ -3,7 +3,6 @@ import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {isUndefined} from 'util';
 import {renderAxes} from '../axes';
-import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomainData} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
@@ -36,14 +35,12 @@ export function renderBarChart(
   color: ScaleOrdinal | ScaleLinearColor,
   styles: ChartStyle) {
 
-  const {values} = spec.data;
   const {verticalBar} = styles;
-  const {aggregate} = verticalBar ? spec.encoding.y : spec.encoding.x;
   const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y";
   const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q];
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string);
 
-  const aggValues = ifUndefinedGetDefault(styles.altVals, getAggValues(values, nKey, [qKey], aggregate)) as object[];
+  const aggValues = styles.altVals;
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles);  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :

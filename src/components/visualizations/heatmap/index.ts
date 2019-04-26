@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
 import {Spec} from "src/models/simple-vega-spec";
-import {getPivotData} from "../data-handler";
 import {renderAxes} from "../axes";
-import {translate, ifUndefinedGetDefault} from "src/useful-factory/utils";
+import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width, _path, _d} from 'src/useful-factory/d3-str';
 import {getQuantitativeColorStr, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
@@ -10,20 +9,21 @@ import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomainData} from '../data-handler/domain-manager';
 import {isUndefined, isNullOrUndefined} from 'util';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
+import {getChartData} from '../data-handler/chart-data-manager';
 
 export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
 
-  d3.select(ref).selectAll('*').remove()
+  d3.select(ref).selectAll('*').remove();
 
-  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: color !== undefined}])
-  d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
+  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: color !== undefined}]);
+  d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height);
   const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
 
-  const {...domains} = getDomainData(spec)
+  const {...domains} = getDomainData(spec);
 
   renderHeatmap(g, spec, {x: domains.x, y: domains.y}, d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColorStr()),
-    {...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color)})
+    {...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color), altVals: getChartData(spec).A});
 }
 
 export function renderHeatmap(
@@ -33,12 +33,9 @@ export function renderHeatmap(
   color: ScaleOrdinal | ScaleLinearColor,
   styles: ChartStyle) {
 
-  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles})
-  const {values} = spec.data;
-  const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y, {field: cKey} = spec.encoding.color
-  const {aggregate} = spec.encoding.color
-  // TODO: when xField and yField same!
-  const pivotData = ifUndefinedGetDefault(styles.altVals, getPivotData(values, [xKey, yKey], cKey, aggregate, [domain.x as string[], domain.y as string[]])) as object[];
+  const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles});
+  const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y, {field: cKey} = spec.encoding.color;
+  const pivotData = styles.altVals;
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true);
@@ -55,7 +52,6 @@ export function renderCells(
   styles: ChartStyle) {
 
   if (styles.height < 0 || styles.width < 0) return []; // when height or width of nesting root is too small
-  console.log(data);
   const {
     elementAnimated: animated,
     strokeKey: sKey,
