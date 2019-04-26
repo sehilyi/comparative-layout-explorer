@@ -3,13 +3,13 @@ import {translate, uniqueValues, ifUndefinedGetDefault} from 'src/useful-factory
 import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_OPACITY} from './default-design';
 import {renderAxes} from '../axes';
-import {getAggValues} from '../data-handler';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getChartPositions} from '../chart-styles/layout-manager';
 import {getNominalColor, getConstantColor, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
+import {getAggValues} from '../data-handler';
 
 export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
 
@@ -21,7 +21,10 @@ export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
   const isColorUsed = spec.encoding.color !== undefined
   const color = isColorUsed ? getNominalColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
   const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
-  const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, isLegend: isColorUsed}
+  const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y;
+  const {aggregate} = spec.encoding.y; // do not consider different aggregation functions for x and y for the simplicity
+  const aggValues = aggregate ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values;
+  const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, isLegend: isColorUsed, altVals: aggValues}
   const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: isColorUsed}])
 
   d3.select(svg).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
@@ -37,12 +40,11 @@ export function renderScatterplot(
   color: ScaleOrdinal | ScaleLinearColor,
   styles: ChartStyle) {
 
-  const {values} = spec.data;
   const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y;
-  const {aggregate} = spec.encoding.y; // TODO: do not consider different aggregation functions for x and y for the simplicity
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string);
 
-  const aggValues = aggregate ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values;
+  const aggValues = styles.altVals;//aggregate ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values;
+  console.log(styles.altVals)
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles});
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :

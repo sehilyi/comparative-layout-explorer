@@ -74,9 +74,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     for (let i = 0; i < layouts.nestedBs.length; i++) {
       let filteredData = oneOfFilter(B.data.values, A.encoding[n].field, domains.A.axis[n][i] as string);
       let filteredSpec = {...B, data: {...B.data, values: filteredData}};
-      ///
       styles.B.altVals = getChartData(filteredSpec, undefined, undefined, [domains.B.axis[i]["x"], domains.B.axis[i]["y"]]).A;
-      ///
       // TODO: width and height is not included in styles => any ways to make this clearer?
       renderChart(svg, filteredSpec, {x: domains.B.axis[i]["x"], y: domains.B.axis[i]["y"]}, styles.B.color, {
         ...styles.B,
@@ -97,9 +95,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
           A.encoding[ns[1].channel].field,
           domains.A.axis[ns[1].channel][j] as string);
         let filteredSpec = {...B, data: {...B.data, values: filteredData}};
-        ///
         styles.B.altVals = getChartData(filteredSpec, undefined, undefined, [domains.B.axis[i][j]["x"], domains.B.axis[i][j]["y"]]).A;
-        ///
         renderChart(svg, filteredSpec, {x: domains.B.axis[i][j]["x"], y: domains.B.axis[i][j]["y"]}, styles.B.color, {
           ...styles.B,
           width: layouts.nestedBs[i][j].width,

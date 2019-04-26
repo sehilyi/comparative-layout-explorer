@@ -1,6 +1,6 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid} from "src/models/comp-spec";
-import {isEEChart, isBothBarChart, isBothHeatmap, isHeatmap, isBarChart} from "src/models/chart-types";
+import {isEEChart, isBothBarChart, isBothHeatmap, isHeatmap, isBarChart, isScatterplot, isBothScatterplot} from "src/models/chart-types";
 import {getAggValues, getPivotData} from ".";
 import {isNullOrUndefined} from "util";
 
@@ -31,6 +31,10 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
       const {field: nField} = spec.encoding[aN], {field: qField} = spec.encoding[aQ];
 
       chartdata[AorB] = getAggValues(values, nField, [qField], qAggregate);
+    }
+    else if (isScatterplot(spec)) {
+      // do not consider different aggregation functions for x and y for the simplicity
+      chartdata[AorB] = xAggregate ? getAggValues(values, spec.encoding.color.field, [xField, yField], xAggregate) : values;
     }
   });
 
@@ -79,6 +83,9 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
       });
 
       chartdata["A"] = data;
+    }
+    else if (isBothScatterplot(A, B)) {
+
     }
   }
 
