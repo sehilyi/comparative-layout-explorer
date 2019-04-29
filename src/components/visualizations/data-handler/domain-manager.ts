@@ -1,10 +1,10 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
-import {getAggValues, getFieldsByType, getPivotData} from ".";
+import {getAggValues, getFieldsByType, getPivotData, getDomainSumByKeys, getNQofXY} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {_color, _y, _x} from "src/useful-factory/d3-str";
-import {isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isEEChart} from "src/models/chart-types";
+import {isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isEEChart, isStackedBarChart} from "src/models/chart-types";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
@@ -75,13 +75,23 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
   resA = {axis: axisA};
   resB = {axis: axisB};
 
-  /* exceptions: nesting */
-  // separate B's Q domains by A and B's N fields
+  /* exceptions */
+  // stacked Bar Chart: Q data should be aggregated values
+  if (isStackedBarChart(A, B, C)) {
+
+    const {N, Q} = getNQofXY(A);  // should be identical to getNQofXY(B)
+
+    axis.A[Q] = axis.B[Q] = getDomainSumByKeys(
+      chartdata.A.concat(chartdata.B),
+      A.encoding[N].field, B.encoding[N].field,
+      A.encoding[Q].field, B.encoding[Q].field
+    );
+  }
+  // nesting: separate B's Q domains by A and B's N fields
   if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
 
     // cannot be nested
     if (!isChartDataAggregated(A)) console.log("Something is wrong in calculating domains. Refer to getDomainByLayout().");
-
 
     /* determin the seperation field */
     let ANs = getFieldsByType(A, "nominal");

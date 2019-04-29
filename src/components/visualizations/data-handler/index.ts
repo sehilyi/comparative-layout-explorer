@@ -3,6 +3,7 @@ import {Aggregate, Spec, DataType} from "src/models/simple-vega-spec";
 import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
 import {_x, _y} from "src/useful-factory/d3-str";
+import {isBarChart} from "src/models/chart-types";
 
 /**
  * return type: { key: [...categories by keyField], value: {valueFields[0]: aggregated value, valueFields[1]: aggregated value, ..., valueField[valueFields.length - 1]: aggregated value} }
@@ -139,11 +140,11 @@ export function getPivotData(data: object[], keyFields: string[], valueField: st
  * @param s
  */
 export function getAggregatedData(s: Spec) {
-  const n = s.encoding.x.type === "nominal" ? _x : _y, q = s.encoding.x.type === "quantitative" ? _x : _y
-  const data = getAggValues(s.data.values, s.encoding[n].field, [s.encoding[q].field], s.encoding[q].aggregate)
-  const categories = uniqueValues(data, s.encoding[n].field)
-  const values = data.map((d: object) => d[s.encoding.y.field])
-  return {values, categories, data}
+  const {N, Q} = getNQofXY(s);
+  const data = getAggValues(s.data.values, s.encoding[N].field, [s.encoding[Q].field], s.encoding[Q].aggregate);
+  const categories = uniqueValues(data, s.encoding[N].field);
+  const values = data.map((d: object) => d[s.encoding.y.field]);
+  return {values, categories, data};
 }
 
 /**
@@ -180,13 +181,24 @@ export function oneOfFilter(d: object[], k: string, v: string | number) {
 }
 
 /**
- * get names of all nominal/quantitative fields as array
- * @param spec
+ * get N and Q channel of X and Y.
+ * only for bar chart when there is only one N and Q
+ * @param s spec
  */
-export function getFieldsByType(spec: Spec, type: DataType) {
+export function getNQofXY(s: Spec) {
+  if (!isBarChart(s)) return undefined;
+  return s.encoding.x.type === "quantitative" ? {Q: _x, N: _y} : {Q: _y, N: _x};
+}
+
+
+/**
+ * get names of all nominal/quantitative fields as array
+ * @param s spec
+ */
+export function getFieldsByType(s: Spec, t: DataType) {
   let f: {channel: string, field: string}[] = []
-  if (spec.encoding.x && spec.encoding.x.type === type) f.push({channel: "x", field: spec.encoding.x.field})
-  if (spec.encoding.y && spec.encoding.y.type === type) f.push({channel: "y", field: spec.encoding.y.field})
-  if (spec.encoding.color && spec.encoding.color.type === type) f.push({channel: "color", field: spec.encoding.color.field})
+  if (s.encoding.x && s.encoding.x.type === t) f.push({channel: "x", field: s.encoding.x.field})
+  if (s.encoding.y && s.encoding.y.type === t) f.push({channel: "y", field: s.encoding.y.field})
+  if (s.encoding.color && s.encoding.color.type === t) f.push({channel: "color", field: s.encoding.color.field})
   return f
 }

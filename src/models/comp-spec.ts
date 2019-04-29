@@ -8,7 +8,7 @@ export interface _CompSpecSolid extends CompSpec {
   consistency: _ConsistencySolid;
 }
 export type CompSpec = {
-  name?: string;
+  description?: string;
   reference?: CompReference;
   layout: Layout;
   consistency?: Consistency;
@@ -120,7 +120,7 @@ export const DEFAULT_OVERLAP_REDUCTION: OverlapReduction = {
   resize: false
 }
 export const DEFAULT_COMP_SPEC: CompSpec = {
-  name: "",
+  description: "",
   layout: DEFAULT_LAYOUT_JUX,
   consistency: DEFAULT_CONSISTENCY,
   overlap_reduction: DEFAULT_OVERLAP_REDUCTION,

@@ -76,7 +76,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     // console.log(_C)
     return !PRESENTATION ? (
       <div key={key} className="example-element-root">
-        <h1>{getSimpleCompTitle(specs.A, specs.B, specs.C) + (specs.C.name ? " (name: " + specs.C.name + ")" : "")}</h1>
+        <h1>{getSimpleCompTitle(specs.A, specs.B, specs.C) + (specs.C.description ? " (name: " + specs.C.description + ")" : "")}</h1>
         <div className='example-element'>
           <div className='result-group'>
             <div className='chart'><svg ref={onBarChartC}></svg></div>

@@ -11,7 +11,7 @@ import {correctConsistency} from "src/components/visualizations/consistency";
 export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
   let _C = {...C}
   /* fill empty parts */
-  if (_C.name === undefined) _C.name = DEFAULT_COMP_SPEC.name;
+  if (_C.description === undefined) _C.description = DEFAULT_COMP_SPEC.description;
   if (_C.consistency === undefined) _C.consistency = DEFAULT_COMP_SPEC.consistency;
   if (_C.overlap_reduction === undefined) _C.overlap_reduction = DEFAULT_COMP_SPEC.overlap_reduction;
   if (_C.reference === undefined) _C.reference = DEFAULT_COMP_SPEC.reference;

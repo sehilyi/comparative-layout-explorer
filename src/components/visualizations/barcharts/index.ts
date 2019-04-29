@@ -6,12 +6,13 @@ import {renderAxes} from '../axes';
 import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
 import {getDomainData} from '../data-handler/domain-manager';
 import {getChartPositions} from '../chart-styles/layout-manager';
-import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray, _N, _C, _Q} from 'src/useful-factory/d3-str';
 import {getNominalColor, CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 import {TICK_THICKNESS} from './default-design';
 import {getChartData} from '../data-handler/chart-data-manager';
+import {getNQofXY} from '../data-handler';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
   const {color} = spec.encoding;
@@ -37,9 +38,8 @@ export function renderBarChart(
   color: ScaleOrdinal | ScaleLinearColor,
   styles: ChartStyle) {
 
-  const {verticalBar} = styles;
-  const q = verticalBar ? "y" : "x", n = verticalBar ? "x" : "y";
-  const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q];
+  const {N, Q} = getNQofXY(spec);
+  const {field: nKey} = spec.encoding[N], {field: qKey} = spec.encoding[Q];
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string);
 
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles);  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
@@ -101,7 +101,6 @@ export function renderBars(
     numOfC = nY.domain().length;
   }
 
-  const _N = "N", _Q = "Q", _C = "C";
   const dataCommonShape = data.map(d => ({N: d[keys.nKey], Q: d[keys.qKey], C: d[keys.cKey]}));
   const cKey = keys.cKey === "" ? _N : _C
   const oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[_N])

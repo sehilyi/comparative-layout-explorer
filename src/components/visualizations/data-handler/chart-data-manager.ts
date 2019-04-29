@@ -1,8 +1,9 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid} from "src/models/comp-spec";
-import {isEEChart, isBothBarChart, isBothHeatmap, isHeatmap, isBarChart, isScatterplot, isBothScatterplot, isBothAggregatedScatterplot, isStackedBarChart} from "src/models/chart-types";
-import {getAggValues, getPivotData, getDomainSumByKeys} from ".";
+import {isEEChart, isBothBarChart, isBothHeatmap, isHeatmap, isBarChart, isScatterplot, isBothScatterplot, isBothAggregatedScatterplot} from "src/models/chart-types";
+import {getAggValues, getPivotData, getNQofXY} from ".";
 import {isNullOrUndefined} from "util";
+import {_y} from "src/useful-factory/d3-str";
 
 export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: string[][]) {
 
@@ -17,7 +18,7 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
     const spec: Spec = specs[AorB];
     const {values} = spec.data;
     const {field: xField, aggregate: xAggregate} = spec.encoding.x;
-    const {field: yField, type: yType, aggregate: yAggregate} = spec.encoding.y;
+    const {field: yField, aggregate: yAggregate} = spec.encoding.y;
 
     if (isHeatmap(spec)) {
       const {field: cField, aggregate: cAggregate} = spec.encoding.color;
@@ -26,10 +27,10 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
       chartdata[AorB] = getPivotData(values, [xField, yField], cField, cAggregate, domains);
     }
     else if (isBarChart(spec)) {
-      const aVerticalBar = yType === "quantitative";
-      const qAggregate = aVerticalBar ? yAggregate : xAggregate;
-      const aQ = aVerticalBar ? "y" : "x", aN = aVerticalBar ? "x" : "y";
-      const {field: nField} = spec.encoding[aN], {field: qField} = spec.encoding[aQ];
+      const {N, Q} = getNQofXY(spec);
+      const verticalBar = Q === _y;
+      const qAggregate = verticalBar ? yAggregate : xAggregate;
+      const {field: nField} = spec.encoding[N], {field: qField} = spec.encoding[Q];
 
       chartdata[AorB] = getAggValues(values, nField, [qField], qAggregate);
     }
@@ -41,45 +42,29 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
 
   if (!C) return chartdata;
 
-  /* exceptions */
-  // Stacked Bar Chart: Q data should be aggregated values
-  if (isStackedBarChart(A, B, C)) {
-
-    // x and y types of A chart and the B should be identical
-    const N = A.encoding.x.type === "nominal" ? "x" : "y";
-    const Q = A.encoding.x.type === "quantitative" ? "x" : "y";
-
-    chartdata.A[Q] = chartdata.B[Q] = getDomainSumByKeys(
-      chartdata.A.concat(chartdata.B),
-      A.encoding[N].field, B.encoding[N].field,
-      A.encoding[Q].field, B.encoding[Q].field
-    );
-  }
-
+  /* explicit-encoding chart */
   if (isEEChart(C)) {
     if (isBothBarChart(A, B)) {
       let data: object[] = [];
 
-      const aVerticalBar = A.encoding.y.type === "quantitative";
-      const aQ = aVerticalBar ? "y" : "x", aN = aVerticalBar ? "x" : "y";
-      const {field: anKey} = A.encoding[aN], {field: aqKey} = A.encoding[aQ];
+      const {N: AN, Q: AQ} = getNQofXY(A);
+      const {field: anKey} = A.encoding[AN], {field: aqKey} = A.encoding[AQ];
 
-      const bVerticalBar = B.encoding.y.type === "quantitative";
-      const bQ = bVerticalBar ? "y" : "x", bN = bVerticalBar ? "x" : "y";
-      const {field: bnKey} = B.encoding[bN], {field: bqKey} = B.encoding[bQ];
+      const {N: BN, Q: BQ} = getNQofXY(B);
+      const {field: bnKey} = B.encoding[BN], {field: bqKey} = B.encoding[BQ];
 
       // combine
-      chartdata["A"].forEach(aav => {
+      chartdata.A.forEach(aav => {
         const newValue = {};
         // based on A's keys
         // TODO: if x and y are different?
         // TODO: determine field name!
         newValue[anKey] = aav[anKey];
-        newValue[aqKey] = aav[aqKey] - chartdata["B"].find((d: any) => d[bnKey] === aav[anKey])[bqKey];
+        newValue[aqKey] = aav[aqKey] - chartdata.B.find((d: any) => d[bnKey] === aav[anKey])[bqKey];
         data.push(newValue);
       });
 
-      chartdata["A"] = data;
+      chartdata.A = data;
     }
     else if (isBothHeatmap(A, B)) {
       let data: object[] = [];

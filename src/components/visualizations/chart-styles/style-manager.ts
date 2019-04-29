@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {DEFAULT_CHART_STYLE} from ".";
-import {getAggregatedData, getFieldsByType} from "../data-handler";
+import {getAggregatedData, getFieldsByType, getNQofXY} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
 import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
@@ -101,7 +101,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   }
   else if (isEEChart(C)) {
     if (isBothBarChart(A, B)) {
-      const Q = A.encoding.x.type === "quantitative" ? _x : _y;
+      const {Q} = getNQofXY(A);
       S.A[Q + "Name"] = getAxisName(A.encoding[Q], B.encoding[Q], "-");  // when two of them are same!
     }
   }
@@ -243,8 +243,9 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
 
   /* other style details */
   if (isStackedBarChart(A, B, C)) {
-    const {field: nField} = A.encoding.x.type === "nominal" ? A.encoding.x : A.encoding.y;
-    const {field: qField} = A.encoding.x.type === "quantitative" ? A.encoding.x : A.encoding.y;
+    const {N, Q} = getNQofXY(A);
+    const {field: nField} = A.encoding[N];
+    const {field: qField} = A.encoding[Q];
     S.B.barOffset = {data: getAggregatedData(A).data, valueField: qField, keyField: nField};
   }
   else if (isGroupedBarChart(A, B, C)) {
