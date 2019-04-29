@@ -4,7 +4,7 @@ import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {_color, _y, _x} from "src/useful-factory/d3-str";
-import {isStackedBarChart, isChartUnitScatterplots, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot, isEEChart, isBothHeatmap, isBothBarChart} from "src/models/chart-types";
+import {isStackedBarChart, isChartUnitScatterplots, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot, isEEChart} from "src/models/chart-types";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
@@ -24,76 +24,52 @@ export const DEFAULT_AXIS_DOMAIN = {
  * Generate domains of X, Y, and Color
  * * This does not returns unique values in domains.
  */
-export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid) {
+export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: object[], B: object[]}) {
   let resA: ChartDomainData, resB: ChartDomainData;
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN};
-  const {...DomainA} = getDomainData(A), {...DomainB} = getDomainData(B), {...DomainUnion} = getDomainData(A, B);
+  const spec = {A, B};
+  const axis = {A: axisA, B: axisB};
+  const {...DomainA} = getDomainData(A), {...DomainB} = getDomainData(B);
+  // const {...DomainUnion} = getDomainData(A, B);  // deprecated
   const {consistency} = C;
 
   /* common part */
-  // x
-  if (consistency.x_axis) {
-    axisA.x = axisB.x = DomainUnion.x;
-  }
-  else {
-    axisA.x = DomainA.x;
-    axisB.x = DomainB.x;
-  }
-  // y
-  if (consistency.y_axis) {
-    axisA.y = axisB.y = DomainUnion.y;
-  }
-  else {
-    axisA.y = DomainA.y;
-    axisB.y = DomainB.y;
-  }
-  // color
-  if (consistency.color.type === "shared") {
-    axisA.color = axisB.color = DomainUnion.color;
-  }
-  else {
-    axisA.color = DomainA.color;
-    axisB.color = DomainB.color;
-  }
+  ["A", "B"].forEach(AorB => {
+    if (!chartdata || !chartdata[AorB]) return; // chartdata[AorB] can be undefined if layout.type === explicit-encoding
 
-  /* exception: explicit encoding */
-  if (isEEChart(C)) {
-    if (isBothHeatmap(A, B)) {
-      const axField = A.encoding.x.field, ayField = A.encoding.y.field, acolorField = A.encoding.color.field;
-      const bxField = B.encoding.x.field, byField = B.encoding.y.field, bcolorField = B.encoding.color.field;
-      const valsA = getPivotData(A.data.values, [A.encoding.x.field, A.encoding.y.field], A.encoding.color.field, A.encoding.color.aggregate);
-      const valsB = getPivotData(B.data.values, [B.encoding.x.field, B.encoding.y.field], B.encoding.color.field, B.encoding.color.aggregate);
-      let eeColorDomain: Object[] = [];
-      // TODO: if x and y are different?
-      valsA.forEach(v => {
-        const axVal = v[axField], ayVal = v[ayField];
-        let newObject = {};
-        newObject[axField] = axVal;
-        newObject[ayField] = ayVal;
-        newObject[acolorField] = v[acolorField] - valsB.filter(d => d[bxField] === axVal && d[byField] === ayVal)[0][bcolorField];
-        eeColorDomain.push(newObject);
-      });
-      axisA.color = eeColorDomain.map(d => d[acolorField]);
-    }
-    else if (isBothBarChart(A, B)) {
-      const {values} = A.data;
-      const Q = A.encoding.x.type === "quantitative" ? _x : _y;
-      const N = Q === _x ? _y : _x;
+    const _data = chartdata[AorB];
+    const _spec = spec[AorB];
+    const _axis = axis[AorB];
 
-      const aqField = A.encoding[Q].field, anField = A.encoding[N].field;
-      const bqField = B.encoding[Q].field, bnField = B.encoding[N].field;
+    ["x", "y", "color"].forEach(en => {
+      if (!_spec.encoding[en]) return;  // some spec can be unspecified
 
-      const aggValA = getAggValues(values, A.encoding[N].field, [A.encoding[Q].field], A.encoding[Q].aggregate);
-      const aggValB = getAggValues(values, B.encoding[N].field, [B.encoding[Q].field], B.encoding[Q].aggregate);
-      let eeQDomain: Object[] = [];
-      aggValA.forEach(v => {
-        let newObject = {};
-        newObject[anField] = v[anField];
-        newObject[aqField] = v[aqField] - aggValB.filter(d => d[bnField] === v[anField])[0][bqField];
-        eeQDomain.push(newObject);
-      });
-      axisA[Q] = eeQDomain.map(d => d[aqField]);
-    }
+      const isNominal = _spec.encoding[en].type === "nominal";
+
+      _axis[en] = isNominal ? uniqueValues(_data, _spec.encoding[en].field)
+        : _data.map((d: any) => d[_spec.encoding[en].field]);
+    });
+  });
+
+  /* consistency */
+  if (consistency && consistency.x_axis) {
+    // x types of A and B should be same
+    axis.A.x = axis.B.x = A.encoding.x.type === "nominal" ?
+      (axis.A.x as string[]).concat(axis.B.x as string[]) :
+      (axis.A.x as number[]).concat(axis.B.x as number[]);
+  }
+  if (consistency && consistency.y_axis) {
+    // y types of A and B should be same
+    axis.A.y = axis.B.y = A.encoding.y.type === "nominal" ?
+      (axis.A.y as string[]).concat(axis.B.y as string[]) :
+      (axis.A.y as number[]).concat(axis.B.y as number[]);
+  }
+  if (consistency && consistency.color.type === "shared") {
+    // TODO: should consider numerical color encoding
+    axisA.color = axisB.color = A.encoding.color && B.encoding.color && A.encoding.color.type !== B.encoding.color.type ?
+      (axis.A.color as string[]).concat(axis.B.color as string[]) :
+      A.encoding.color && A.encoding.color.type === "nominal" ? (axis.A.color as string[]).concat(axis.B.color as string[]) :
+        (axis.A.color as number[]).concat(axis.B.color as number[]);
   }
 
   resA = {axis: axisA};

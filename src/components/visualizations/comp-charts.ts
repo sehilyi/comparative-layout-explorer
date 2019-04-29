@@ -31,9 +31,9 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
 }
 
 export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec, C: _CompSpecSolid) {
-  // all {}.B are set to undefined when layout === explicit encoding
+  // all {}.B are set to undefined if layout === explicit encoding
   const {...chartdata} = getChartData(A, B, C);
-  const {...domains} = getDomain(A, B, C);
+  const {...domains} = getDomain(A, B, C, chartdata);
   const {...styles} = getStyles(A, B, C, domains);
   const {...layouts} = getLayouts(A, B, C, styles); // set translateX and Y here
   const {...legends} = getLegends(A, B, C, {A: layouts.A, B: layouts.B}, styles);

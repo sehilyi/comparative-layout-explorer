@@ -31,6 +31,10 @@ export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
   let solidC = {..._C, consistency: correctConsistency(A, B, C)} as _CompSpecSolid;
 
   /* explicit encoding */
+  // regular ee
+  // if (solidC.layout.type === "explicit-encoding") solidC.consistency = undefined;
+
+  // line connection
   // for superimposition and animated, do not use line connections
   if (solidC.explicit_encoding && solidC.explicit_encoding.line_connection) {
     if (solidC.layout.arrangement === "animated" || solidC.layout.type === "superimposition") {
@@ -41,8 +45,6 @@ export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
   /* change referece */
   const _A = solidC.reference === "first" ? {...A} : {...B};
   const _B = solidC.reference === "first" ? {...B} : {...A};
-
-
 
   return {_A, _B, solidC};  // TODO: is this safe?
 }

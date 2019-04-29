@@ -42,7 +42,6 @@ export function renderBarChart(
   const {field: nKey} = spec.encoding[n], {field: qKey} = spec.encoding[q];
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string);
 
-  const aggValues = styles.altVals;
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles);  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
@@ -59,7 +58,7 @@ export function renderBarChart(
       .attr(_fill, "none")
       .attr(_opacity, styles.opacity);
   }
-  let visualReciepe = renderBars(g, Object.assign([], aggValues), {qKey, nKey, cKey}, {x, y, color}, {...styles});
+  const visualReciepe = renderBars(g, Object.assign([], styles.altVals), {qKey, nKey, cKey}, {x, y, color}, {...styles});
   return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, y: d.y + styles.translateY}});
 }
 
