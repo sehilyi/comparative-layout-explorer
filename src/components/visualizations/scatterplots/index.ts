@@ -43,12 +43,11 @@ export function renderScatterplot(
   const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y;
   const cKey = ifUndefinedGetDefault(deepObjectValue(spec.encoding.color, "field"), "" as string);
 
-  const aggValues = styles.altVals;
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles});
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true);
-  let visualReciepe = renderPoints(g, aggValues, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles});
+  let visualReciepe = renderPoints(g, styles.altVals, {xKey, yKey, cKey}, {x: x as ScaleLinear, y: y as ScaleLinear, color}, {...styles});
   return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX, y: d.y + styles.translateY}});
   // console.log(styles.color.domain() as string[]) // TODO: undefined value added on tail after the right above code. what is the problem??
 }

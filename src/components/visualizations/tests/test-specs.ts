@@ -1668,7 +1668,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative"},
           y: {field: "US_Gross", type: "quantitative"},
-          color: {field: "MPAA_Rating", type: "nominal"}
+          // color: {field: "MPAA_Rating", type: "nominal"}
         }
       },
       B: {

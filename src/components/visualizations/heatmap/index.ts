@@ -35,12 +35,11 @@ export function renderHeatmap(
 
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, {...styles});
   const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y, {field: cKey} = spec.encoding.color;
-  const pivotData = styles.altVals;
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
     svg.append(_g).attr(_transform, translate(styles.translateX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true);
 
-  let visualReciepe = renderCells(g, pivotData, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles});
+  let visualReciepe = renderCells(g, styles.altVals, {xKey, yKey, cKey}, {x: x as ScaleBand, y: y as ScaleBand, color}, {...styles});
   return visualReciepe.map(function (d) {return {...d, x: d.x + styles.translateX, y: d.y + styles.translateY}});
 }
 
@@ -56,7 +55,8 @@ export function renderCells(
     elementAnimated: animated,
     strokeKey: sKey,
     stroke_width: strokeWidth,
-    triangularCell: triangleCell} = styles;
+    triangularCell: triangleCell
+  } = styles;
 
   let coordinates: Coordinate[] = [];
   const _X = "X", _Y = "Y", _C = "C";

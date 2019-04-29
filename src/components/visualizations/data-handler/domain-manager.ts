@@ -1,10 +1,10 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
-import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".";
+import {getAggValues, getFieldsByType, getPivotData} from ".";
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {_color, _y, _x} from "src/useful-factory/d3-str";
-import {isStackedBarChart, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot, isEEChart} from "src/models/chart-types";
+import {isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isEEChart} from "src/models/chart-types";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
@@ -22,7 +22,7 @@ export const DEFAULT_AXIS_DOMAIN = {
 
 /**
  * Generate domains of X, Y, and Color
- * * This does not returns unique values in domains.
+ * * This does not returns unique values of domains.
  */
 export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: object[], B: object[]}) {
   let resA: ChartDomainData, resB: ChartDomainData;
@@ -33,6 +33,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
 
   /* common part */
   ["A", "B"].forEach(AorB => {
+
     if (!chartdata || !chartdata[AorB]) return; // chartdata[AorB] can be undefined if layout.type === explicit-encoding
 
     const _data = chartdata[AorB];
@@ -40,6 +41,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
     const _axis = axis[AorB];
 
     ["x", "y", "color"].forEach(en => {
+
       if (!_spec.encoding[en]) return;  // some spec can be unspecified
 
       const isNominal = _spec.encoding[en].type === "nominal";
@@ -73,100 +75,64 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
   resA = {axis: axisA};
   resB = {axis: axisB};
 
-  /* exceptions: modify domains considering specs */
-  if (isStackedBarChart(A, B, C)) {
-    const N = A.encoding.x.type === "nominal" ? "x" : "y";  // A and B's x and y type should be same
-    const Q = A.encoding.x.type === "quantitative" ? "x" : "y";
+  /* exceptions: nesting */
+  // separate B's Q domains by A and B's N fields
+  if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
 
-    const AggValuesA = getAggValues(A.data.values, A.encoding[N].field, [A.encoding[Q].field], A.encoding[Q].aggregate);
-    const AggValuesB = getAggValues(B.data.values, B.encoding[N].field, [B.encoding[Q].field], B.encoding[Q].aggregate);
-    resA.axis[Q] = resB.axis[Q] = getDomainSumByKeys(
-      AggValuesA.concat(AggValuesB),
-      A.encoding[N].field,
-      B.encoding[N].field,
-      A.encoding[Q].field,
-      B.encoding[Q].field
-    );
-  }
-  /* nesting or juxtaposition(ele) with different chart types*/
-  // separate domain B by aggregation keys used in Chart A
-  else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
+    // cannot be nested
+    if (!isChartDataAggregated(A)) console.log("Something is wrong in calculating domains. Refer to getDomainByLayout().");
 
-    if (!isChartDataAggregated(A)) console.log("Something wrong in calculating domains. Refer to getDomainByLayout().");
 
-    if (isChartDataAggregated(B)) {
-      // get all nominal and quantitative fields
-      const bQuans = getFieldsByType(B, "quantitative")
-      let aNoms = getFieldsByType(A, "nominal"), bNoms = getFieldsByType(B, "nominal");
-      if (isBarChart(A)) aNoms = aNoms.filter(d => d.channel !== "color"); // color is not a unique separation field in bar chart (instead, x or y is)
-      if (isBarChart(B)) bNoms = bNoms.filter(d => d.channel === "color"); // color is not a unique separation field in bar chart (instead, x or y is)
-      const aNom = isScatterplot(A) ? "color" : A.encoding.x.type === "nominal" ? "x" : "y"; // in scatterplot, color is the separation field
+    /* determin the seperation field */
+    let ANs = getFieldsByType(A, "nominal");
+    let BNs = getFieldsByType(B, "nominal");
 
-      // get domains per each quantitative fields
-      // TODO: shorten by recieving multiple q fields in getPivotData()
-      let bQuanValues: object = {};
-      bQuans.forEach(q => {
-        const abNoms = aNoms.concat(bNoms);
-        let pivotData = getPivotData(A.data.values, abNoms.map(d => d.field), q.field, B.encoding[q.channel].aggregate);
-        bQuanValues[q.field] = pivotData.map(d => d[q.field]);
-      });
+    // in bar chart, color is not a unique separation field
+    // instead, x or y is. so remove color.
+    if (isBarChart(A)) ANs = ANs.filter(d => d.channel !== "color");
+    if (isBarChart(B)) BNs = BNs.filter(d => d.channel !== "color");
 
-      // put domains
-      // nest by one nominal field
-      if (aNoms.length === 1) {
-        let axes: AxisDomainData[] = [];
-        for (let i = 0; i < axisA[aNom].length; i++) {
-          bQuans.forEach(q => {
-            axisB[q.channel] = bQuanValues[q.field];
-          })
-          axes.push({...axisB});
-        }
-        resB = {...resB, axis: axes};
+    // get domains by each Q field
+    const BQs = getFieldsByType(B, "quantitative");
+    let BQValues: object = {};
+
+    BQs.forEach(Q => {
+      if (isChartDataAggregated(B)) {
+        const allNs = ANs.concat(BNs).map(d => d.field);
+        const pivotData = getPivotData(A.data.values, allNs, Q.field, B.encoding[Q.channel].aggregate);
+        BQValues[Q.field] = pivotData.map(d => d[Q.field]);
       }
-      // nest by two nominal fields
-      else if (aNoms.length === 2) {
-        let axes: AxisDomainData[][] = [];
-        for (let i = 0; i < axisA[aNoms[0].channel].length; i++) {
-          let subAxes: AxisDomainData[] = [];
-          for (let j = 0; j < axisA[aNoms[1].channel].length; j++) {
-            bQuans.forEach(q => {
-              axisB[q.channel] = bQuanValues[q.field];
-            })
-            subAxes.push({...axisB});
-          }
-          axes.push(subAxes);
-        }
-        resB = {...resB, axis: axes};
+      else {
+        BQValues[Q.field] = B.data.values.map(d => d[Q.field]);
       }
+    });
+
+    /* determin domains */
+    // nest by only one N field
+    if (ANs.length === 1) {
+      let axes: AxisDomainData[] = [];
+      for (let i = 0; i < axisA[ANs[0].channel].length; i++) {
+        BQs.forEach(Q => {
+          axisB[Q.channel] = BQValues[Q.field];
+        });
+        axes.push({...axisB});
+      }
+      resB = {...resB, axis: axes};
     }
-    // TODO: combine this with upper part
-    else if (!isChartDataAggregated(B)) { // always scatterplot (not heatmap nor bar chart)
-      let aNoms = getFieldsByType(A, "nominal")
-      if (aNoms.length === 1) {
-        let axes: AxisDomainData[] = []
-        for (let i = 0; i < axisA[aNoms[0].channel].length; i++) {
-          let filteredData = B.data.values  // globar domain
-          axisB.x = filteredData.map(d => d[B.encoding.x.field])
-          axisB.y = filteredData.map(d => d[B.encoding.y.field])
-          axes.push({...axisB})
+    // nest by two N fields
+    else if (ANs.length === 2) {
+      let axes: AxisDomainData[][] = [];
+      for (let i = 0; i < axisA[ANs[0].channel].length; i++) {
+        let subAxes: AxisDomainData[] = [];
+        for (let j = 0; j < axisA[ANs[1].channel].length; j++) {
+          BQs.forEach(q => {
+            axisB[q.channel] = BQValues[q.field];
+          });
+          subAxes.push({...axisB});
         }
-        resB = {...resB, axis: axes}
+        axes.push(subAxes);
       }
-      // nest by two nominal fields
-      else if (aNoms.length === 2) {
-        let axes: AxisDomainData[][] = []
-        for (let i = 0; i < axisA[aNoms[0].channel].length; i++) {
-          let subAxes: AxisDomainData[] = []
-          for (let j = 0; j < axisA[aNoms[1].channel].length; j++) {
-            let filteredData = B.data.values  // globar domain
-            axisB.x = filteredData.map(d => d[B.encoding.x.field])
-            axisB.y = filteredData.map(d => d[B.encoding.y.field])
-            subAxes.push({...axisB})
-          }
-          axes.push(subAxes)
-        }
-        resB = {...resB, axis: axes}
-      }
+      resB = {...resB, axis: axes};
     }
   }
   return {A: resA, B: isEEChart(C) ? undefined : resB};

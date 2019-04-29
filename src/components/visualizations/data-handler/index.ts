@@ -185,8 +185,8 @@ export function oneOfFilter(d: object[], k: string, v: string | number) {
  */
 export function getFieldsByType(spec: Spec, type: DataType) {
   let f: {channel: string, field: string}[] = []
-  if (spec.encoding.x !== undefined && spec.encoding.x.type === type) f.push({channel: "x", field: spec.encoding.x.field})
-  if (spec.encoding.y !== undefined && spec.encoding.y.type === type) f.push({channel: "y", field: spec.encoding.y.field})
-  if (spec.encoding.color !== undefined && spec.encoding.color.type === type) f.push({channel: "color", field: spec.encoding.color.field})
+  if (spec.encoding.x && spec.encoding.x.type === type) f.push({channel: "x", field: spec.encoding.x.field})
+  if (spec.encoding.y && spec.encoding.y.type === type) f.push({channel: "y", field: spec.encoding.y.field})
+  if (spec.encoding.color && spec.encoding.color.type === type) f.push({channel: "color", field: spec.encoding.color.field})
   return f
 }
