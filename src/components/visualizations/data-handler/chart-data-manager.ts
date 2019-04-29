@@ -109,7 +109,7 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
       else {
         let data: object[] = [];
 
-        const axField = A.encoding.x.field, ayField = A.encoding.y.field, acolorField = A.encoding.color.field;
+        const axField = A.encoding.x.field, ayField = A.encoding.y.field, acolorField = A.encoding.color.field; // TODO: consider consistency
         const bxField = B.encoding.x.field, byField = B.encoding.y.field;
 
         // combine

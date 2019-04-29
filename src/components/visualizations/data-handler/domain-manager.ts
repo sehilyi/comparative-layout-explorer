@@ -4,7 +4,7 @@ import {getAggValues, getDomainSumByKeys, getFieldsByType, getPivotData} from ".
 import {uniqueValues} from "src/useful-factory/utils";
 import {Domain} from "../axes";
 import {_color, _y, _x} from "src/useful-factory/d3-str";
-import {isStackedBarChart, isChartUnitScatterplots, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot, isEEChart} from "src/models/chart-types";
+import {isStackedBarChart, isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isScatterplot, isEEChart} from "src/models/chart-types";
 
 export type ChartDomainData = {
   axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
@@ -29,8 +29,6 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN};
   const spec = {A, B};
   const axis = {A: axisA, B: axisB};
-  const {...DomainA} = getDomainData(A), {...DomainB} = getDomainData(B);
-  // const {...DomainUnion} = getDomainData(A, B);  // deprecated
   const {consistency} = C;
 
   /* common part */
@@ -89,12 +87,6 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
       A.encoding[Q].field,
       B.encoding[Q].field
     );
-  }
-  /* color consistency */
-  else if (isChartUnitScatterplots(A, B, C) && consistency.color.type === "shared") {
-    // use A color if two of them use color
-    // When only B use color, then use the B's
-    resA.axis["color"] = resB.axis["color"] = A.encoding.color ? DomainA.color : B.encoding.color ? DomainB.color : [""];
   }
   /* nesting or juxtaposition(ele) with different chart types*/
   // separate domain B by aggregation keys used in Chart A
@@ -182,6 +174,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
 
 /**
  * Get single or union domains for x, y, and color
+ * (deprecated)
  */
 export function getDomainData(spec: Spec, specForUnion?: Spec): {x: Domain, y: Domain, color: Domain} {
   const {values} = spec.data;
