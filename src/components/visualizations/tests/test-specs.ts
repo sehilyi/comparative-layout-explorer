@@ -1644,9 +1644,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"},
+          color: {field: "Major_Genre", type: "nominal"},
         },
-        transform: [{filter: {field: "Major_Genre", oneOf: "Drama"}}]
+        transform: [{filter: {field: "Distributor", oneOf: "Walt Disney Pictures"}}]
       },
       B: {
         data: {values},
@@ -1654,9 +1654,9 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
+          color: {field: "Major_Genre", type: "nominal"}
         },
-        transform: [{filter: {field: "Major_Genre", oneOf: "Adventure"}}]
+        transform: [{filter: {field: "Distributor", oneOf: "Universal"}}]
       }
     },
     {
