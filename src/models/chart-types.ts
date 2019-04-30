@@ -8,11 +8,10 @@ export type ChartTypes = "scatterplot" | "barchart" | "linechart" | "heatmap" | 
  * @param spec
  */
 export function getChartType(spec: Spec): ChartTypes {
-  if (isScatterplot(spec)) return "scatterplot"
-  else if (isBarChart(spec)) return "barchart"
-  else if (isLineChart(spec)) return "linechart"
-  else if (isHeatmap(spec)) return "heatmap"
-  else return "NULL"
+  if (isScatterplot(spec)) return "scatterplot";
+  else if (isBarChart(spec)) return "barchart";
+  else if (isHeatmap(spec)) return "heatmap";
+  else return "NULL";
 }
 
 export function isChartsJuxtaposed(spec: _CompSpecSolid) {
@@ -71,30 +70,26 @@ export function isElementAnimated(spec: _CompSpecSolid) {
  * @param spec
  */
 export function isChartDataAggregated(spec: Spec) {
-  return isBarChart(spec) || isAggregatedScatterplot(spec) || isHeatmap(spec)
+  return isBarChart(spec) || isAggregatedScatterplot(spec) || isHeatmap(spec);
 }
 
 export function isAggregatedScatterplot(spec: Spec) {
   // when x-aggregate is not undefined, y-aggregate and color are also not undefined
   // refer to canRenderChart
-  return isScatterplot(spec) && spec.encoding.x.aggregate !== undefined
+  return isScatterplot(spec) && spec.encoding.x.aggregate !== undefined;
 }
 
 export function isBarChart(spec: Spec) {
   return spec.mark === "bar" && (
     (spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative') ||
-    (spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'nominal'))
+    (spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'nominal'));
 }
 export function isScatterplot(spec: Spec) {
   return spec.mark === "point" &&
-    spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'quantitative'
-}
-export function isLineChart(spec: Spec) {
-  return spec.mark === "line" &&
-    spec.encoding.x.type === 'nominal' && spec.encoding.y.type === 'quantitative'  // TODO: should add ordinal?
+    spec.encoding.x.type === 'quantitative' && spec.encoding.y.type === 'quantitative';
 }
 export function isHeatmap(spec: Spec) {
-  return spec.mark === "rect"
+  return spec.mark === "rect";
 }
 export function isBothBarChart(A: Spec, B: Spec) {
   return isBarChart(A) && isBarChart(B);

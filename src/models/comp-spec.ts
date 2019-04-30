@@ -9,13 +9,12 @@ export interface _CompSpecSolid extends CompSpec {
 }
 export type CompSpec = {
   description?: string;
-  reference?: CompReference;
   layout: Layout;
   consistency?: Consistency;
   overlap_reduction?: OverlapReduction;
   explicit_encoding?: ExplicitEncoding;
-
   style?: CompStyle;
+  reference?: CompReference;
 }
 export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding";
 export type Layout = LayoutType | LayoutTypeAndStyle;

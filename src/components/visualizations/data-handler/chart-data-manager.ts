@@ -1,7 +1,7 @@
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid} from "src/models/comp-spec";
 import {isEEChart, isBothBarChart, isBothHeatmap, isHeatmap, isBarChart, isScatterplot, isBothScatterplot, isBothAggregatedScatterplot} from "src/models/chart-types";
-import {getAggValues, getPivotData, getNQofXY} from ".";
+import {getAggValues, getPivotData, getNQofXY, getFilteredData} from ".";
 import {isNullOrUndefined} from "util";
 import {_y} from "src/useful-factory/d3-str";
 
@@ -16,7 +16,8 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
     if (!B && AorB === "B") return;
 
     const spec: Spec = specs[AorB];
-    const {values} = spec.data;
+    // const {values} = spec.data;
+    const filteredData = getFilteredData(spec);
     const {field: xField, aggregate: xAggregate} = spec.encoding.x;
     const {field: yField, aggregate: yAggregate} = spec.encoding.y;
 
@@ -24,7 +25,7 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
       const {field: cField, aggregate: cAggregate} = spec.encoding.color;
 
       // TODO: when xField and yField same
-      chartdata[AorB] = getPivotData(values, [xField, yField], cField, cAggregate, domains);
+      chartdata[AorB] = getPivotData(filteredData, [xField, yField], cField, cAggregate, domains);
     }
     else if (isBarChart(spec)) {
       const {N, Q} = getNQofXY(spec);
@@ -32,11 +33,11 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
       const qAggregate = verticalBar ? yAggregate : xAggregate;
       const {field: nField} = spec.encoding[N], {field: qField} = spec.encoding[Q];
 
-      chartdata[AorB] = getAggValues(values, nField, [qField], qAggregate);
+      chartdata[AorB] = getAggValues(filteredData, nField, [qField], qAggregate);
     }
     else if (isScatterplot(spec)) {
       // do not consider different aggregation functions for x and y for the simplicity
-      chartdata[AorB] = xAggregate ? getAggValues(values, spec.encoding.color.field, [xField, yField], xAggregate) : values;
+      chartdata[AorB] = xAggregate ? getAggValues(filteredData, spec.encoding.color.field, [xField, yField], xAggregate) : filteredData;
     }
   });
 

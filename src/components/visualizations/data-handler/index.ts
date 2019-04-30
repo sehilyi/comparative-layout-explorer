@@ -170,6 +170,18 @@ export function getDomainSumByKeys(o: object[], k1: string, k2: string, v1: stri
   return result.map(d => d[v1 + " + " + v2])
 }
 
+export function getFilteredData(s: Spec) {
+  let filteredData = Object.assign([], s.data.values);
+  if (s.transform) {
+    s.transform.forEach(t => {
+      const k = t.filter.field;
+      const v = t.filter.oneOf;
+      filteredData = oneOfFilter(filteredData, k, v);
+    });
+  }
+  return filteredData;
+}
+
 /**
  * filter data by nominal value
  * @param d
@@ -177,7 +189,7 @@ export function getDomainSumByKeys(o: object[], k1: string, k2: string, v1: stri
  * @param v
  */
 export function oneOfFilter(d: object[], k: string, v: string | number) {
-  return d.filter(d => v === "null" ? d[k] === null : d[k] === v)
+  return Object.assign([], d).filter(d => v === "null" ? d[k] === null : d[k] === v);
 }
 
 /**

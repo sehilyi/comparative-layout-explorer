@@ -29,7 +29,7 @@ export function getExamples() {
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
     // .filter(d => d.C.description === "#19")
-    // .filter(d => d.C.name === "#59")// || d.C.name === "#55" || d.C.name === "#56" || d.C.name === "#57" || d.C.name === "#58")
+    .filter(d => d.C.description === "#55" || d.C.description === "#56" || d.C.description === "#57" || d.C.description === "#58")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 
@@ -1585,7 +1585,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         description: "#55",
-        layout: {type: "explicit-encoding"}
+        layout: {type: "explicit-encoding", unit: "element"}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
@@ -1603,38 +1603,39 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Source", type: "nominal"},
           y: {field: "Creative_Type", type: "nominal"},
-          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+          color: {field: "Production_Budget", type: "quantitative", aggregate: "mean"}
         }
       },
     },
     {
       C: {
         description: "#56",
-        layout: {type: "explicit-encoding"}
+        layout: {type: "explicit-encoding", unit: "element"},
+        style: {height: 380}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
         data: {values},
         mark: "bar",
         encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"},
-          color: {field: "Source", type: "nominal"}
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          y: {field: "Major_Genre", type: "nominal"},
+          color: {field: "Major_Genre", type: "nominal"}
         }
       },
       B: {
         data: {values},
         mark: "bar",
         encoding: {
-          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"}
+          x: {field: "Production_Budget", type: "quantitative", aggregate: "mean"},
+          y: {field: "Major_Genre", type: "nominal"}
         }
       }
     },
     {
       C: {
         description: "#57",
-        layout: "explicit-encoding"
+        layout: {type: "explicit-encoding", unit: "element"}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
@@ -1643,23 +1644,25 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         encoding: {
           x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
+          color: {field: "MPAA_Rating", type: "nominal"},
+        },
+        transform: [{filter: {field: "Major_Genre", oneOf: "Drama"}}]
       },
       B: {
         data: {values},
         mark: "point",
         encoding: {
-          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
           y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
           color: {field: "MPAA_Rating", type: "nominal"}
-        }
+        },
+        transform: [{filter: {field: "Major_Genre", oneOf: "Adventure"}}]
       }
     },
     {
       C: {
         description: "#58",
-        layout: "explicit-encoding"
+        layout: {type: "explicit-encoding", unit: "element"}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
