@@ -3,7 +3,7 @@ import {Spec, Field} from "src/models/simple-vega-spec";
 import {translate, rotate, uniqueValues, shortenText, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
-import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand, _stroke_width, _stroke, _fill, _font_size, _font_family} from "src/useful-factory/d3-str";
+import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand, _stroke_width, _stroke, _fill, _font_size, _font_family, _line, _x1, _x2, _y1, _y2, _color, _stroke_dasharray, _black, _gray} from "src/useful-factory/d3-str";
 import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT, AXIS_LABEL_LEN_LIMIT} from "../default-design-manager";
 import {DF_DELAY, DF_DURATION} from "../animated/default-design";
 
@@ -73,7 +73,19 @@ export function renderAxes(
         g.append('g')
           .classed('grid x-grid', true)
           .attr('transform', translate(0, styles.height))
-          .call(xGrid)
+          .call(xGrid);
+
+        if (d3.min([d3.min(xVals as number[]), 0]) !== 0 && d3.max(xVals as number[]) !== 0) {
+          g.append(_line)
+            .classed("guideline", true)
+            .attr(_x1, qX(0) + 0.5)
+            .attr(_x2, qX(0) + 0.5)
+            .attr(_y1, 0)
+            .attr(_y2, styles.height)
+            .attr(_stroke, _gray)
+            .attr(_stroke_width, 0.5)
+            .attr(_stroke_dasharray, "4 2 4 2");
+        }
       }
       else {
         g.select('.x-grid')
@@ -87,12 +99,24 @@ export function renderAxes(
       if (!animated) {
         g.append('g')
           .classed('grid y-grid', true)
-          .call(yGrid)
+          .call(yGrid);
+
+        if (d3.min([d3.min(yVals as number[]), 0]) !== 0 && d3.max(yVals as number[]) !== 0) {
+          g.append(_line)
+            .classed("guideline", true)
+            .attr(_y1, qY(0) + 0.5)
+            .attr(_y2, qY(0) + 0.5)
+            .attr(_x1, 0)
+            .attr(_x2, newWidth)
+            .attr(_stroke, _gray)
+            .attr(_stroke_width, 0.5)
+            .attr(_stroke_dasharray, "4 2 4 2");
+        }
       }
       else {
         g.select('.y-grid')
           .transition(tran)
-          .call((d: any) => d.call(yGrid))
+          .call((d: any) => d.call(yGrid));
       }
     }
 
