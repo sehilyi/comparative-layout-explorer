@@ -142,15 +142,13 @@ export function renderBars(
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)
-      .attr(_x, d => nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_x)
+      .attr(_x, d => nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_width, barSize)
       .attr(_y, function (d) {
         if (isTickMark) {
           return qY(d[_Q]) - TICK_THICKNESS / 2.0;
         }
         let yPosition = styles.revY ? 0 : qY(d[_Q]);
-        // jiterring
-        yPosition += styles.jitter_y;
         // add offset
         if (barOffset && barOffset.data.find(_d => _d[barOffset.keyField] === d[_N])) {
           yPosition += -height + qY(barOffset.data.find(_d => _d[barOffset.keyField] === d[_N])[barOffset.valueField]);
@@ -192,7 +190,7 @@ export function renderBars(
       // animated transition
       .transition().delay(animated ? DF_DELAY : null).duration(animated ? DF_DURATION : null)
       .attr(_opacity, 1)
-      .attr(_y, d => nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_y)
+      .attr(_y, d => nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy)
       .attr(_height, barSize)
       .attr(_x, function (d) {
         if (isTickMark) {
@@ -200,8 +198,6 @@ export function renderBars(
         }
 
         let xPosition = styles.revX ? qX(d[_Q]) : 0;
-        // jittering
-        xPosition += styles.jitter_x;
         // add offset
         if (barOffset && barOffset.data.find(_d => _d[barOffset.keyField] === d[_N])) {
           xPosition += qX(barOffset.data.find(_d => _d[barOffset.keyField] === d[_N])[barOffset.valueField]);
@@ -230,11 +226,10 @@ export function renderBars(
     dataCommonShape.forEach(d => {
       coordinates.push({
         id: null,
-        x: nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_x,
+        x: nX(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy,
         y: (styles.revY ? 0 : qY(d[_Q])) +
           (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
-            (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
-          styles.jitter_y,
+            (- height + qY(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0),
         width: barSize,
         height: 0
       });
@@ -249,9 +244,8 @@ export function renderBars(
         id: null,
         x: (!styles.revX ? 0 : qX(d[_Q])) + // TOOD: clean up more?
           (!isUndefined(barOffset) && !isUndefined(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0]) ?
-            (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0) +
-          styles.jitter_x,
-        y: nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy + styles.jitter_y,
+            (qX(barOffset.data.filter(_d => _d[barOffset.keyField] === d[_N])[0][barOffset.valueField])) : 0),
+        y: nY(xPreStr + d[_N]) + bandUnitSize / 2.0 - barSize / 2.0 + barSize * shiftBy,
         width: 0,
         height: barSize
       });

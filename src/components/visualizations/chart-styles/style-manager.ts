@@ -50,7 +50,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   S.A.isCrossMark = (isEEChart(C) && isBothScatterplot(A, B));
 
   /* mirrored */
-  // only for chart juxtaposition (in other layouts, mirrored set to false)
+  // only for chart juxtaposition (in other layouts, mirrored is set to false)
   S.B.revY = mirrored && arrangement === "stacked";
   S.A.revX = mirrored && arrangement === "adjacent";
 

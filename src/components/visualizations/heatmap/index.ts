@@ -50,7 +50,12 @@ export function renderCells(
   scales: {x: ScaleBand, y: ScaleBand, color: ScaleOrdinal | ScaleLinearColor},
   styles: ChartStyle) {
 
-  if (styles.height < 0 || styles.width < 0) return []; // when height or width of nesting root is too small
+  const {
+    width,
+    height,
+  } = styles;
+
+  if (height < 0 || width < 0) return []; // when height or width of nesting root is too small
   const {
     elementAnimated: animated,
     strokeKey: sKey,
@@ -64,8 +69,8 @@ export function renderCells(
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
 
   const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length;
-  const cellWidth = (styles.width / numOfX - styles.cellPadding * 2) * styles.widthTimes - strokeWidth * 2;
-  const cellHeight = (styles.height / numOfY - styles.cellPadding * 2) * styles.heightTimes - strokeWidth * 2;
+  const cellWidth = (width / numOfX - styles.cellPadding * 2) * styles.widthTimes - strokeWidth * 2;
+  const cellHeight = (height / numOfY - styles.cellPadding * 2) * styles.heightTimes - strokeWidth * 2;
 
   const oldCells = g.selectAll('.cell')
     .data(dataCommonShape);
@@ -102,27 +107,27 @@ export function renderCells(
   if (triangleCell === "top") {
     allCells
       .attr(_d, function (d) {
-        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1);
-        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1);
+        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth;
+        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth;
         return "M " + x + " " + y + " L " + (x + cellWidth) + " " + y + " L " + (x + cellWidth) + " " + (y + cellHeight) + " Z";
       });
   }
   else if (triangleCell === "bottom") {
     allCells
       .attr(_d, function (d) {
-        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1);
-        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1);
+        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth;
+        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth;
         return "M " + x + " " + y + " L " + x + " " + (y + cellHeight) + " L " + (x + cellWidth) + " " + (y + cellHeight) + " Z";
       });
   }
   else {
     allCells
       .attr(_x, function (d) {
-        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_x * 1);
+        const x = scales.x(d[_X]) + styles.cellPadding + (cellWidth) * styles.shiftX + strokeWidth;
         return x;
       })
       .attr(_y, function (d) {
-        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth + (isNullOrUndefined(d[_C]) ? 0 : styles.jitter_y * 1);
+        const y = scales.y(d[_Y]) + styles.cellPadding + (cellHeight) * styles.shiftY + strokeWidth;
         return y;
       })
       .attr(_width, cellWidth)

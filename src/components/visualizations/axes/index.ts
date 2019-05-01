@@ -16,63 +16,88 @@ export function renderAxes(
   spec: Spec,
   styles: ChartStyle) {
 
-  const {elementAnimated: animated} = styles
-  const tran = d3.transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0)
-  const isXCategorical = spec.encoding.x.type === "nominal"
-  const isYCategorical = spec.encoding.y.type === "nominal"
-  const newWidth = styles.width * styles.chartWidthTimes;
+  const {
+    chartId,
+    elementAnimated: animated,
+    jitter_x,
+    jitter_y,
+    revX,
+    revY,
+    width,
+    chartWidthTimes,
+    height,
+    topX,
+    rightY,
+    simpleY,
+    noX,
+    noY,
+    noAxes,
+    noGrid,
+    translateX,
+    translateY,
+    chartShiftX,
+    xName,
+    yName,
+    noYTitle
+  } = styles;
+
+  const tran = d3.transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0);
+  const isXCategorical = spec.encoding.x.type === "nominal";
+  const isYCategorical = spec.encoding.y.type === "nominal";
+  const base = {x: jitter_x, y: jitter_y};
+  const size = {width: width * chartWidthTimes + base.x, height: height + base.y};
   const qX: ScaleLinear = isXCategorical ? null : d3.scaleLinear()
     .domain([d3.min([d3.min(xVals as number[]), 0]), d3.max(xVals as number[])]).nice()
-    .rangeRound(styles.revX ? [newWidth, 0] : [0, newWidth])
+    .rangeRound(revX ? [size.width, base.x] : [base.x, size.width]);
   const nX: ScaleBand = isXCategorical ? d3.scaleBand()
     .domain(uniqueValues(xVals, "") as string[])
-    .range(styles.revX ? [newWidth, 0] : [0, newWidth]) : null
+    .range(revX ? [size.width, base.x] : [base.x, size.width]) : null;
   const qY: ScaleLinear = isYCategorical ? null : d3.scaleLinear()
     .domain([d3.min([d3.min(yVals as number[]), 0]), d3.max(yVals as number[])]).nice()
-    .rangeRound(styles.revY ? [0, styles.height] : [styles.height, 0])
+    .rangeRound(revY ? [base.y, size.height] : [size.height, base.y]);
   const nY: ScaleBand = isYCategorical ? d3.scaleBand()
     .domain(uniqueValues(yVals, "") as string[])
     // when Y is nominal, first category should be appear on the top rather on the bottom
-    .range(styles.revY ? [styles.height, 0] : [0, styles.height]) : null
+    .range(revY ? [size.height, base.y] : [base.y, size.height]) : null;
 
   // get axis and grid by field types
   // TODO: any clearer way??
-  const xAxis = styles.topX ?
+  const xAxis = topX ?
     isXCategorical ?
       d3.axisTop(nX).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
-      d3.axisTop(qX).ticks(Math.ceil(newWidth / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+      d3.axisTop(qX).ticks(Math.ceil(size.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
     : isXCategorical ?
       d3.axisBottom(nX).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
-      d3.axisBottom(qX).ticks(Math.ceil(newWidth / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
-  const yAxis = styles.rightY ?
+      d3.axisBottom(qX).ticks(Math.ceil(size.width / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0);
+  const yAxis = rightY ?
     isYCategorical ?
       d3.axisRight(nY).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
-      d3.axisRight(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
+      d3.axisRight(qY).ticks(simpleY ? 1 : Math.ceil(size.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0) :
     isYCategorical ?
       d3.axisLeft(nY).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
-      d3.axisLeft(qY).ticks(styles.simpleY ? 1 : Math.ceil(styles.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0)
+      d3.axisLeft(qY).ticks(simpleY ? 1 : Math.ceil(size.height / 40)).tickFormat(d3.format('.2s')).tickSizeOuter(0);
   const xGrid = isXCategorical ?
-    d3.axisBottom(nX).tickFormat(null).tickSize(-styles.height) :
-    d3.axisBottom(qX).ticks(Math.ceil(newWidth / 40)).tickFormat(null).tickSize(-styles.height)
+    d3.axisBottom(nX).tickFormat(null).tickSize(-size.height) :
+    d3.axisBottom(qX).ticks(Math.ceil(size.width / 40)).tickFormat(null).tickSize(-size.height);
   const yGrid = isYCategorical ?
-    d3.axisLeft(nY).tickFormat(null).tickSize(-newWidth) :
-    d3.axisLeft(qY).ticks(Math.ceil(styles.height / 40)).tickFormat(null).tickSize(-newWidth)
+    d3.axisLeft(nY).tickFormat(null).tickSize(-size.width) :
+    d3.axisLeft(qY).ticks(Math.ceil(size.height / 40)).tickFormat(null).tickSize(-size.width);
 
   /* render axes */
-  if (!isNullOrUndefined(root) && !styles.noAxes) {
+  if (!isNullOrUndefined(root) && !noAxes) {
     const g: GSelection = animated ?
       root.select(`.${AXIS_ROOT_ID}A`) :  // for animated, select rather than append
-      root.append(_g).attr(_transform, translate(styles.translateX + newWidth * styles.chartShiftX, styles.translateY))
-        .classed(`${AXIS_ROOT_ID}${styles.chartId}`, true)
+      root.append(_g).attr(_transform, translate(translateX + size.width * chartShiftX, translateY))
+        .classed(`${AXIS_ROOT_ID}${chartId}`, true)
         .classed(AXIS_ROOT_ID, true)
-        .classed(styles.chartId, true)
+        .classed(chartId, true);
 
     /* grid x */
-    if (!isXCategorical && !styles.noGrid) {
+    if (!isXCategorical && !noGrid) {
       if (!animated) {
         g.append('g')
           .classed('grid x-grid', true)
-          .attr('transform', translate(0, styles.height))
+          .attr('transform', translate(0, size.height))
           .call(xGrid);
 
         if (d3.min([d3.min(xVals as number[]), 0]) !== 0 && d3.max(xVals as number[]) !== 0) {
@@ -81,7 +106,7 @@ export function renderAxes(
             .attr(_x1, qX(0) + 0.5)
             .attr(_x2, qX(0) + 0.5)
             .attr(_y1, 0)
-            .attr(_y2, styles.height)
+            .attr(_y2, size.height)
             .attr(_stroke, _gray)
             .attr(_stroke_width, 0.5)
             .attr(_stroke_dasharray, "4 2 4 2");
@@ -90,12 +115,12 @@ export function renderAxes(
       else {
         g.select('.x-grid')
           .transition(tran)
-          .call((d: any) => d.call(xGrid))
+          .call((d: any) => d.call(xGrid));
       }
     }
 
     /* grid y */
-    if (!isYCategorical && !styles.noGrid) {
+    if (!isYCategorical && !noGrid) {
       if (!animated) {
         g.append('g')
           .classed('grid y-grid', true)
@@ -107,7 +132,7 @@ export function renderAxes(
             .attr(_y1, qY(0) + 0.5)
             .attr(_y2, qY(0) + 0.5)
             .attr(_x1, 0)
-            .attr(_x2, newWidth)
+            .attr(_x2, size.width)
             .attr(_stroke, _gray)
             .attr(_stroke_width, 0.5)
             .attr(_stroke_dasharray, "4 2 4 2");
@@ -121,18 +146,18 @@ export function renderAxes(
     }
 
     /* axis x */
-    if (!styles.noX) {
+    if (!noX) {
       const xAxisG: GSelection = animated ?
         g.select(".x-axis") :
         g.append('g')
           .classed('axis x-axis', true)
           .attr('stroke', '#888888')
           .attr('stroke-width', 0.5)
-          .attr('transform', translate(0, styles.topX ? 0 : styles.height))
-          .call(xAxis)
+          .attr('transform', translate(0, topX ? 0 : size.height))
+          .call(xAxis);
 
       if (animated) {
-        xAxisG.transition(tran).call(xAxis)
+        xAxisG.transition(tran).call(xAxis);
       }
 
       /* rotate y ticks' labels */
@@ -140,100 +165,100 @@ export function renderAxes(
         xAxisG.selectAll('.tick text')
           .attr(_transform, rotate(310))
           .transition(tran)
-          .attr(_x, styles.topX ? 6 : -6)
+          .attr(_x, topX ? 6 : -6)
           .attr(_y, 0)
-          .attr(_text_anchor, styles.topX ? _start : _end)
+          .attr(_text_anchor, topX ? _start : _end);
       }
 
       /* axis name */
       if (!animated) {
         xAxisG
-          .attr('transform', translate(0, styles.topX ? 0 : styles.height))
+          .attr('transform', translate(0, topX ? 0 : size.height))
           .append('text')
           .classed('axis-name x-axis-name', true)
-          .attr('x', newWidth / 2)
-          .attr('y', styles.topX ? -40 : (CHART_MARGIN.bottom - 40))
+          .attr('x', size.width / 2)
+          .attr('y', topX ? -40 : (CHART_MARGIN.bottom - 40))
           .style('fill', 'black')
           .style('stroke', 'none')
           .style('font-weight', 'bold')
           .style('text-anchor', 'middle')
-          .text(styles.xName !== undefined ? styles.xName : getAxisName(spec.encoding.x))
+          .text(xName !== undefined ? xName : getAxisName(spec.encoding.x));
       }
       else {
         xAxisG
           .selectAll(".x-axis-name")
           // transition // TODO:
-          .text(styles.xName !== undefined ? styles.xName : getAxisName(spec.encoding.x))
+          .text(xName !== undefined ? xName : getAxisName(spec.encoding.x));
       }
 
       if (isXCategorical) {
         if (!animated)
           xAxisG.selectAll(".axis-name")
-            .attr('y', styles.topX ? -60 : (CHART_MARGIN.bottom - 5))
+            .attr('y', topX ? -60 : (CHART_MARGIN.bottom - 5));
       }
     }
 
     /* axis y */
-    if (!styles.noY) {
+    if (!noY) {
       const yAxisG: GSelection = animated ?
         g.select(".y-axis") :
         g.append('g')
-          .attr(_transform, translate(styles.rightY ? newWidth : 0, 0))
+          .attr(_transform, translate(rightY ? size.width : 0, 0))
           .classed('axis y-axis', true)
           .attr('stroke', '#888888')
           .attr('stroke-width', 0.5)
-          .call(yAxis)
+          .call(yAxis);
 
       if (animated) {
-        yAxisG.transition(tran).call(yAxis)
+        yAxisG.transition(tran).call(yAxis);
       }
 
       /* axis name */
-      if (!styles.noYTitle) {
+      if (!noYTitle) {
         if (!animated) {
           yAxisG
             .append('text')
             .classed('axis-name y-axis-name', true)
             .attr('transform', rotate(-90))
-            .attr('x', -styles.height / 2)
-            .attr('y', styles.rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
+            .attr('x', -size.height / 2)
+            .attr('y', rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
             .attr('dy', '.71em')
             .style('font-weight', 'bold')
             .style('fill', 'black')
             .style('stroke', 'none')
             .style('text-anchor', 'middle')
-            .text(styles.yName !== undefined ? styles.yName : getAxisName(spec.encoding.y))
+            .text(yName !== undefined ? yName : getAxisName(spec.encoding.y));
         }
         else {
           yAxisG
             .selectAll(".y-axis-name")
             // .transition(tran)  // TODO:
-            // .attr('x', -styles.height / 2)
-            // .attr('y', styles.rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
+            // .attr('x', -size.height / 2)
+            // .attr('y', rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
             .attr('dy', '.71em')
             .style('font-weight', 'bold')
             .style('fill', 'black')
             .style('stroke', 'none')
             .style('text-anchor', 'middle')
-            .text(styles.yName !== undefined ? styles.yName : getAxisName(spec.encoding.y))
+            .text(yName !== undefined ? yName : getAxisName(spec.encoding.y));
         }
       }
     }
 
     /* styles */
     /* grid */
-    g.selectAll('.axis path').attr(_stroke_width, '1px').attr('stroke', 'black')
+    g.selectAll('.axis path').attr(_stroke_width, '1px').attr('stroke', 'black');
 
     /* hide grid */
-    if (isYCategorical) g.selectAll('.x-axis path').attr(_stroke_width, '0px')
-    if (isXCategorical) g.selectAll('.y-axis path').attr(_stroke_width, '0px')
-    if (styles.simpleY) g.selectAll('.y-axis path').attr(_stroke, 'white')
-    // if (styles.simpleY) g.selectAll('.axis text').attr(_fill, 'gray')
+    if (isYCategorical) g.selectAll('.x-axis path').attr(_stroke_width, '0px');
+    if (isXCategorical) g.selectAll('.y-axis path').attr(_stroke_width, '0px');
+    if (simpleY) g.selectAll('.y-axis path').attr(_stroke, 'white');
+    // if (simpleY) g.selectAll('.axis text').attr(_fill, 'gray')
 
     // remove ticks in axes
     g.selectAll('.axis line')
       .attr(_stroke_width, '0px')
-      .attr('stroke', 'black')
+      .attr('stroke', 'black');
 
     // ticks' labels
     g.selectAll('.axis text')
@@ -241,21 +266,21 @@ export function renderAxes(
       .style(_stroke, 'none')
       .attr(_fill, 'black')
       .style(_font_size, '12px')
-      .attr(_font_family, DEFAULT_FONT)
+      .attr(_font_family, DEFAULT_FONT);
 
     // axis name, line, grid
     g.selectAll('.axis .axis-name')
-      .style('font-size', '12px')
+      .style('font-size', '12px');
     g.selectAll('.grid text')
-      .style('display', 'none')  // don't need this
+      .style('display', 'none'); // don't need this
     g.selectAll('.grid path') // don't need this
       .attr(_stroke, 'rgb(221, 221, 221)')
-      .attr(_stroke_width, '0px')
+      .attr(_stroke_width, '0px');
     g.selectAll('.grid line') // grid
       .attr(_stroke, 'rgb(221, 221, 221)')
-      .attr(_stroke_width, '1px')
+      .attr(_stroke_width, '1px');
   }
-  return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY}
+  return {x: isXCategorical ? nX : qX, y: isYCategorical ? nY : qY};
 }
 
 export function getAxisName(f1: Field, f2?: Field, midstr?: string): string {

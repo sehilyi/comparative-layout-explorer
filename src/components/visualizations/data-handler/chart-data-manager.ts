@@ -75,18 +75,18 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
 
       // TODO: if x and y are different?
       // TODO: determine field name!
-      chartdata["A"].forEach(v => {
+      chartdata.A.forEach(v => {
         const axVal = v[axField], ayVal = v[ayField];
         let newObject = {};
         newObject[axField] = axVal;
         newObject[ayField] = ayVal;
-        newObject[acolorField] = v[acolorField] - chartdata["B"].find((d: any) => d[bxField] === axVal && d[byField] === ayVal)[bcolorField];
-        if (isNullOrUndefined(v[acolorField]) && isNullOrUndefined(chartdata["B"].find((d: any) => d[bxField] === axVal && d[byField] === ayVal)[bcolorField]))
+        newObject[acolorField] = v[acolorField] - chartdata.B.find((d: any) => d[bxField] === axVal && d[byField] === ayVal)[bcolorField];
+        if (isNullOrUndefined(v[acolorField]) && isNullOrUndefined(chartdata.B.find((d: any) => d[bxField] === axVal && d[byField] === ayVal)[bcolorField]))
           newObject[acolorField] = undefined;
         data.push(newObject);
       });
 
-      chartdata["A"] = data;
+      chartdata.A = data;
     }
     else if (isBothScatterplot(A, B)) {
       if (isBothAggregatedScatterplot(A, B)) {
@@ -96,17 +96,17 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
         const bxField = B.encoding.x.field, byField = B.encoding.y.field, bcolorField = B.encoding.color.field;
 
         // combine
-        chartdata["A"].forEach(aav => {
+        chartdata.A.forEach(aav => {
           const newValue = {};
           // TODO: if A's color and B's color are different?
           // TODO: determine field name!
           newValue[acolorField] = aav[acolorField];
-          newValue[axField] = aav[axField] - chartdata["B"].find((d: any) => d[bcolorField] === aav[acolorField])[bxField];
-          newValue[ayField] = aav[ayField] - chartdata["B"].find((d: any) => d[bcolorField] === aav[acolorField])[byField];
+          newValue[axField] = aav[axField] - chartdata.B.find((d: any) => d[bcolorField] === aav[acolorField])[bxField];
+          newValue[ayField] = aav[ayField] - chartdata.B.find((d: any) => d[bcolorField] === aav[acolorField])[byField];
           data.push(newValue);
         });
 
-        chartdata["A"] = data;
+        chartdata.A = data;
       }
       else {
         let data: object[] = [];
@@ -117,20 +117,20 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
 
         // combine
         let cnt = 0;  // TODO: not accurate
-        chartdata["A"].forEach(aav => {
+        chartdata.A.forEach(aav => {
           const newValue = {};
           // TODO: if A's color and B's color are different?
           // TODO: determine field name!
           if (acolorField) {
             newValue[acolorField] = aav[acolorField];
           }
-          newValue[axField] = aav[axField] - chartdata["B"][cnt][bxField];
-          newValue[ayField] = aav[ayField] - chartdata["B"][cnt][byField];
+          newValue[axField] = aav[axField] - chartdata.B[cnt][bxField];
+          newValue[ayField] = aav[ayField] - chartdata.B[cnt][byField];
           data.push(newValue);
           cnt++;
         });
 
-        chartdata["A"] = data;
+        chartdata.A = data;
       }
     }
   }

@@ -29,7 +29,7 @@ export function getExamples() {
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
     // .filter(d => d.C.description === "#19")
-    .filter(d => d.C.description === "#55" || d.C.description === "#56" || d.C.description === "#57" || d.C.description === "#58")
+    // .filter(d => d.C.description === "#55" || d.C.description === "#56" || d.C.description === "#57" || d.C.description === "#58")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 
