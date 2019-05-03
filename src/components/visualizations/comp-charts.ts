@@ -35,7 +35,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   const {...chartdata} = getChartData(A, B, C);
   const {...domains} = getDomain(A, B, C, chartdata);
   const {...styles} = getStyles(A, B, C, domains);
-  const {...layouts} = getLayouts(A, B, C, styles); // set translateX and Y here
+  const {...layouts} = getLayouts(A, B, C, domains, styles); // set translateX and Y here
   const {...legends} = getLegends(A, B, C, {A: layouts.A, B: layouts.B}, styles);
 
   let coordinateA: Coordinate[] | void, coordinateB: Coordinate[] | void;

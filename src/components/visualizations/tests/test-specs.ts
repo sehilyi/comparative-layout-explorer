@@ -22,7 +22,7 @@ export function getExamples() {
     /// filter for debugging
     // .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
     // .filter(d => d.C.overlap_reduction != null)
-    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).layout.type === "juxtaposition" &&
+    .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.type === "explicit-encoding")
     // correctCompSpec(d.A, d.B, {...d.C}).layout.unit === "chart" &&
     // correctCompSpec(d.A, d.B, {...d.C}).layout.arrangement !== "animated")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")

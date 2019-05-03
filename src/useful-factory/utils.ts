@@ -15,7 +15,7 @@ export function rotate(d: number) {
  * @param k
  */
 export function uniqueValues(o: Object[], k: string) {
-  return d3.set(k === "" ? o : o.map(d => d[k])).values()
+  return d3.set(k === "" ? o : o.map(d => d[k])).values();
 }
 
 /**
@@ -25,20 +25,20 @@ export function uniqueValues(o: Object[], k: string) {
  * @param len
  */
 export function shortenText(t: string, len: number) {
-  return t.length < len ? t : t.slice(0, len - 2).concat("...")
+  return t.length < len ? t : t.slice(0, len - 2).concat("...");
 }
 
 /* deprecated */
 export function isDeepTrue(o: boolean | object) {
-  return o === true || o['value'] === true
+  return o === true || o['value'] === true;
 }
 
 export function isUndefinedOrFalse(o: boolean) {
-  return o === undefined || o === false
+  return o === undefined || o === false;
 }
 
 export function ifUndefinedGetDefault(o: any, d: any) {
-  return isNullOrUndefined(o) ? d : o
+  return isNullOrUndefined(o) ? d : o;
 }
 /**
  * Return random integers from low (inclusive) to high (exclusive).
@@ -46,7 +46,7 @@ export function ifUndefinedGetDefault(o: any, d: any) {
  * @param high
  */
 export function randint(low: number, high: number) {
-  return Math.floor(Math.random() * (high - low)) + low
+  return Math.floor(Math.random() * (high - low)) + low;
 }
 
 export function removeItemFromArray(array: ReadonlyArray<any>, index: number) {
@@ -56,7 +56,7 @@ export function removeItemFromArray(array: ReadonlyArray<any>, index: number) {
       ...array.slice(0, index),
       ...array.slice(index + 1)
     ]
-  }
+  };
 }
 
 export function insertItemToArray<T>(array: ReadonlyArray<T>, index: number, item: T) {
@@ -64,7 +64,7 @@ export function insertItemToArray<T>(array: ReadonlyArray<T>, index: number, ite
     ...array.slice(0, index),
     item,
     ...array.slice(index)
-  ]
+  ];
 }
 
 export function modifyItemInArray<T>(array: ReadonlyArray<T>, index: number, modifier: (t: Readonly<T>) => T) {
@@ -72,5 +72,5 @@ export function modifyItemInArray<T>(array: ReadonlyArray<T>, index: number, mod
     ...array.slice(0, index),
     modifier(array[index]),
     ...array.slice(index + 1)
-  ]
+  ];
 }

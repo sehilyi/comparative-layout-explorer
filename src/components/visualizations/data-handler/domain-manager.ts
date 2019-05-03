@@ -7,12 +7,12 @@ import {_color, _y, _x} from "src/useful-factory/d3-str";
 import {isNestingLayout, isNestingLayoutVariation, isChartDataAggregated, isBarChart, isEEChart, isStackedBarChart} from "src/models/chart-types";
 
 export type ChartDomainData = {
-  axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][]  // multi-dim array for nesting
+  axis: AxisDomainData | AxisDomainData[] | AxisDomainData[][];  // multi-dim array for nesting
 }
 export type AxisDomainData = {
-  x: Domain
-  y: Domain
-  color: Domain
+  x: Domain;
+  y: Domain;
+  color: Domain;
 }
 export const DEFAULT_AXIS_DOMAIN = {
   x: [] as string[] | number[],

@@ -38,8 +38,7 @@ export function renderAxes(
     chartShiftX,
     xName,
     yName,
-    noYTitle
-  } = styles;
+    noYTitle} = styles;
 
   const tran = d3.transition().delay(animated ? DF_DELAY : 0).duration(animated ? DF_DURATION : 0);
   const isXCategorical = spec.encoding.x.type === "nominal";
@@ -61,7 +60,6 @@ export function renderAxes(
     .range(revY ? [size.height, base.y] : [base.y, size.height]) : null;
 
   // get axis and grid by field types
-  // TODO: any clearer way??
   const xAxis = topX ?
     isXCategorical ?
       d3.axisTop(nX).tickFormat(d => shortenText(d, AXIS_LABEL_LEN_LIMIT)).tickSizeOuter(0) :
@@ -101,6 +99,7 @@ export function renderAxes(
           .call(xGrid);
 
         if (d3.min([d3.min(xVals as number[]), 0]) !== 0 && d3.max(xVals as number[]) !== 0) {
+          // zero grid
           g.append(_line)
             .classed("guideline", true)
             .attr(_x1, qX(0) + 0.5)
@@ -127,6 +126,7 @@ export function renderAxes(
           .call(yGrid);
 
         if (d3.min([d3.min(yVals as number[]), 0]) !== 0 && d3.max(yVals as number[]) !== 0) {
+          // zero grid
           g.append(_line)
             .classed("guideline", true)
             .attr(_y1, qY(0) + 0.5)

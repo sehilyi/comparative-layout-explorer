@@ -10,20 +10,48 @@ import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
 import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isScatterplot, isHeatmap, isChartsSuperimposed, isEEChart} from "src/models/chart-types";
+import {ChartDomainData, AxisDomainData} from "../data-handler/domain-manager";
 
-export type Position = {
-  width: number
-  height: number
-  left: number
-  top: number
+export interface Position {
+  width: number;
+  height: number;
+  left: number;
+  top: number;
 }
 
-export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyle, B: ChartStyle}) {
+export interface ChartLayout {
+  // axis size
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+  // chart size
+  width: number;
+  height: number;
+  // legend size
+  legend: number;
+}
+
+export const DEFAULT_CHART_LAYOUT: ChartLayout = {
+  // axis size
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  // chart size
+  width: 0,
+  height: 0,
+  // legend size
+  legend: 0
+}
+
+export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}, S: {A: ChartStyle, B: ChartStyle}) {
   const {type: layout, unit, arrangement} = C.layout
   let placement, nestedBs: Position[] | Position[][]
 
   if (isEEChart(C)) {
-    placement = getChartPositions(1, 1, [S.A]);
+    const layouts = getSingleChartLayout(A, domain.A, S.A);
+    placement = getChartPositions(1, 1, [S.A], [layouts]);
   }
   else if (layout === "juxtaposition" && unit === "chart") {
     const numOfC = arrangement === 'adjacent' ? 2 : 1;
@@ -117,7 +145,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyl
             height: cellHeight
           })
         }
-        nestedBs.push(sub)
+        nestedBs.push(sub);
       }
     }
   }
@@ -133,6 +161,59 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyl
     B: isEEChart(C) ? undefined : {...placement.positions[1]},
     // TODO: more organized way?
     nestedBs
+  };
+}
+
+/**
+ * get ChartLayout by spec and style
+ * @param spec
+ * @param style
+ */
+export function getSingleChartLayout(spec: Spec, doamin: ChartDomainData, style: ChartStyle) {
+
+  if (style.nestDim !== 0) return undefined;
+
+  const {
+    noX,
+    noY,
+    topX,
+    rightY,
+    isLegend
+  } = style;
+
+  const WidthOfYAxis = estimateMaxTextWidth((doamin.axis as AxisDomainData).y, spec.encoding.y.type === "nominal", false);
+  const heightOfXAxis = estimateMaxTextWidth((doamin.axis as AxisDomainData).x, spec.encoding.x.type === "nominal", spec.encoding.x.type === "nominal");
+
+  const top = (noX ? 5 : topX ? heightOfXAxis : 5) + CHART_TITLE_HEIGHT;
+  const bottom = noX ? 5 : topX ? 5 : heightOfXAxis;
+  const right = noY ? 5 : rightY ? WidthOfYAxis : 5;
+  const left = noY ? 5 : rightY ? 5 : WidthOfYAxis;
+
+  const width = style.width;
+  const height = style.height;
+
+  // TODO:
+  const legend = isLegend ? LEGEND_WIDTH : 0;
+
+  return {top, bottom, right, left, width, height, legend} as ChartLayout;
+}
+
+// TODO:
+export function estimateMaxTextWidth(domain: string[] | number[], isNominal: boolean, isVertical: boolean) {
+  const NOPN = 6, AXIS_NAME_SIZE = 30, NOPQ = 12;
+  let maxLength;
+
+  if (!isNominal) {
+    domain = domain as number[];
+    maxLength = d3.max(domain.map((d: number) => d3.format('.2s')(d).length));
+    return (!isVertical ? AXIS_NAME_SIZE : (maxLength * NOPQ)) + AXIS_NAME_SIZE;
+  }
+  else {
+    const forV = isVertical ? (3.0 / 4.0) : 1;
+
+    domain = domain as string[];
+    maxLength = d3.max(domain.map((d: string) => d.length));
+    return maxLength * NOPN * forV + AXIS_NAME_SIZE;
   }
 }
 
@@ -142,7 +223,23 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, S: {A: ChartStyl
  * @param y
  * @param styles
  */
-export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
+export function getChartPositions(x: number, y: number, styles: ChartStyle[], layouts?: ChartLayout[]) {
+
+  if (layouts) {
+    // TOOD: now, only for ee chart
+    return {
+      size: {
+        width: layouts[0].left + layouts[0].right + layouts[0].width + layouts[0].legend,
+        height: layouts[0].top + layouts[0].bottom + layouts[0].height
+      },
+      positions: [{
+        width: layouts[0].width,
+        height: layouts[0].height,
+        left: layouts[0].left,
+        top: layouts[0].top
+      }]
+    }
+  }
 
   // styles that affects top or left margins of all charts
   const ifAllNoY = styles.filter(d => !d.noY).length === 0;
@@ -153,7 +250,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[]) {
   const isThereLegend = styles.filter(d => d.isLegend).length !== 0;
 
   // margin of left and top
-  const ML = ifAllNoY ? /*GAP_BETWEEN_CHARTS*/ 0 : CHART_MARGIN.left;  // GAP deprecated
+  const ML = ifAllNoY ? 0 : CHART_MARGIN.left;
   const MT = CHART_TITLE_HEIGHT + (ifThereTopX ? CHART_MARGIN.top : CHART_MARGIN_NO_AXIS.top);
 
   // max width and height

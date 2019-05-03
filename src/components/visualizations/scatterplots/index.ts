@@ -103,11 +103,7 @@ export function renderPoints(
     .attr(_opacity, SCATTER_POINT_OPACITY)
     .attr(_stroke, d => (stroke as ScaleOrdinal)(d[strokeKey ? strokeKey : _X]) as string)
     .attr(_stroke_width, stroke_width)
-    // .attr(_d, d3.symbol().type(d3.symbolCross))
-    .attr(_d, CROSS_SYMBOL)
-    // .attr(_d,
-    //   "M 10 10 L 30 30 M 30 10 L 10 30"
-    // )
+    .attr(_transform, d => isCrossMark ? translate(scales.x(d[_X]), scales.y(d[_Y])) : translate(0, 0))
     // circle mark
     .attr(_cx, d => scales.x(d[_X]))
     .attr(_cy, d => scales.y(d[_Y]))
@@ -118,7 +114,7 @@ export function renderPoints(
     .attr(_width, pointSize)
     .attr(_height, pointSize)
     // cross mark
-    .attr(_transform, d => isCrossMark ? translate(scales.x(d[_X]), scales.y(d[_Y])) : translate(0, 0));
+    .attr(_d, CROSS_SYMBOL);
 
   // TODO: redundant with upper part!
   dataCommonShape.forEach(d => {
