@@ -1,37 +1,12 @@
-import * as d3 from 'd3';
-import {translate, uniqueValues, ifUndefinedGetDefault} from 'src/useful-factory/utils';
+import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_OPACITY, CROSS_SYMBOL} from './default-design';
 import {renderAxes} from '../axes';
-import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
-import {getChartPositions} from '../chart-styles/layout-manager';
-import {getNominalColor, getConstantColor, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
+import {ChartStyle} from '../chart-styles';
+import {CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection, _path, _d} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
-import {getAggValues} from '../data-handler';
-
-export function renderSimpleScatterplot(svg: SVGSVGElement, spec: Spec) {
-
-  const {values} = spec.data;
-  const {field: xField} = spec.encoding.x, {field: yField} = spec.encoding.y;
-
-  d3.select(svg).selectAll('*').remove();
-
-  const isColorUsed = spec.encoding.color !== undefined
-  const color = isColorUsed ? getNominalColor(uniqueValues(values, spec.encoding.color.field)) : getConstantColor()
-  const domain = {x: values.map(d => d[xField]), y: values.map(d => d[yField])}
-  const {field: xKey} = spec.encoding.x, {field: yKey} = spec.encoding.y;
-  const {aggregate} = spec.encoding.y; // do not consider different aggregation functions for x and y for the simplicity
-  const aggValues = aggregate ? getAggValues(values, spec.encoding.color.field, [xKey, yKey], aggregate) : values;
-  const styles: ChartStyle = {...DEFAULT_CHART_STYLE, color, isLegend: isColorUsed, altVals: aggValues}
-  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: isColorUsed}])
-
-  d3.select(svg).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
-  const g = d3.select(svg).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top))
-
-  renderScatterplot(g, spec, {x: domain.x, y: domain.y}, color, styles)
-}
 
 export function renderScatterplot(
   svg: GSelection,

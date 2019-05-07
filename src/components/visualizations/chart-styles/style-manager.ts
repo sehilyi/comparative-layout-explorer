@@ -13,18 +13,16 @@ import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingL
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
 
-  // if single chart
-  S.A.chartId = "A";
-  S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
-  S.A.xName = getAxisName(A.encoding.x);
-  S.A.yName = getAxisName(A.encoding.y);
-  S.A.isLegend = !isUndefined(A.encoding.color);
-  S.A.legendType = !A.encoding.color ? undefined : A.encoding.color.type;
-  S.A.legendNameColor = getAxisName(A.encoding.color, undefined, undefined);
-  S.A.color = getColor(domain.A.axis["color"]);
-  //
-
   if (!C) {
+    // if single chart
+    S.A.chartId = "A";
+    S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
+    S.A.xName = getAxisName(A.encoding.x);
+    S.A.yName = getAxisName(A.encoding.y);
+    S.A.isLegend = !isUndefined(A.encoding.color);
+    S.A.legendType = !A.encoding.color ? undefined : A.encoding.color.type;
+    S.A.legendNameColor = getAxisName(A.encoding.color, undefined, undefined);
+    S.A.color = getColor(domain.A.axis["color"]);
     return S;
   }
 

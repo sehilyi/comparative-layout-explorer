@@ -23,7 +23,7 @@ export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpe
   /* correct minor issues in CompSpec and make CompSpec as _CompSpecSolid */
   const {_A, _B, solidC} = correctCompSpec({...A}, {...B}, {...C});
 
-  /* check wheather specified charts are supported */
+  /* check whether specified charts are supported */
   if (!canRenderChart(_A) || !canRenderChart(_B) || !canRenderCompChart(_A, _B, solidC)) return;
 
   /* render Comp Chart */

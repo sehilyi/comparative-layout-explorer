@@ -1,43 +1,22 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {renderSimpleBarChart, renderBarChart} from "./barcharts";
-import {renderSimpleScatterplot, renderScatterplot} from "./scatterplots";
+import {renderBarChart} from "./barcharts";
+import {renderScatterplot} from "./scatterplots";
 import {ChartStyle} from "./chart-styles";
 import {_CompSpecSolid} from "src/models/comp-spec";
-import {renderHeatmap, renderSimpleHeatmap} from "./heatmap";
+import {renderHeatmap} from "./heatmap";
 import {canRenderChart} from "./constraints";
 import {ScaleOrdinal, ScaleLinearColor, GSelection} from "src/useful-factory/d3-str";
 import {getChartType} from "src/models/chart-types";
 import {renderCompChartGeneralized} from "./comp-charts";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
+  /* check whether a specified chart is supported */
   if (!canRenderChart(spec)) return;
 
+  /* render single chart */
   renderCompChartGeneralized(ref, spec, undefined, undefined);
-
-  //deprecated
-  if (true) return;
-  switch (getChartType(spec)) {
-    case "scatterplot":
-      renderSimpleScatterplot(ref, spec);
-      break
-    case "barchart":
-      renderSimpleBarChart(ref, spec);
-      break
-    case "linechart":
-      //
-      break
-    case "heatmap":
-      renderSimpleHeatmap(ref, spec);
-      break
-    case "NULL":
-      console.log("Chart type is not defined well (NULL type).")
-      break
-    default:
-      break
-  }
 }
 
-// TODO: this should be combined with renderSimpleChart
 export function renderChart(
   g: GSelection,
   spec: Spec, // contains actual values to draw bar chart
