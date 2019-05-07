@@ -29,12 +29,11 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN};
   const spec = {A, B};
   const axis = {A: axisA, B: axisB};
-  const {consistency} = C;
 
   /* common part */
   ["A", "B"].forEach(AorB => {
 
-    if (!chartdata || !chartdata[AorB]) return; // chartdata[AorB] can be undefined if layout.type === explicit-encoding
+    if (!chartdata || !chartdata[AorB]) return; // chartdata["B"] can be undefined if layout.type === explicit-encoding
 
     const _data = chartdata[AorB];
     const _spec = spec[AorB];
@@ -50,6 +49,12 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
         : _data.map((d: any) => d[_spec.encoding[en].field]);
     });
   });
+
+  if (!C) {
+    return {A: {axis: axisA}, B: undefined};
+  }
+
+  const {consistency} = C;
 
   /* consistency */
   if (consistency && consistency.x_axis) {

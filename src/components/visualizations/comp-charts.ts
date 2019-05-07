@@ -108,7 +108,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   }
 
   /* explicit encoding */
-  if (C.explicit_encoding) {
+  if (C && C.explicit_encoding) {
     if (C.explicit_encoding.line_connection && C.explicit_encoding.line_connection.type) {
       renderLineConnection(svg, coordinateA as Coordinate[], coordinateB as Coordinate[]);
     }
@@ -126,7 +126,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   if (styles.B && styles.B.onTop) svg.selectAll(".B").raise();
   svg.selectAll("." + AXIS_ROOT_ID).lower();
   // animated
-  if (isChartAnimated(C)) {
+  if (C && isChartAnimated(C)) {
     animateChart(svg.selectAll(".A"), svg.selectAll(".B"));
   }
 }

@@ -3,9 +3,9 @@ import {Spec} from 'src/models/simple-vega-spec';
 import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {isUndefined} from 'util';
 import {renderAxes} from '../axes';
-import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
-import {getDomainData} from '../data-handler/domain-manager';
-import {getChartPositions} from '../chart-styles/layout-manager';
+import {ChartStyle} from '../chart-styles';
+import {getDomain, AxisDomainData} from '../data-handler/domain-manager';
+import {getLayouts} from '../chart-styles/layout-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray, _N, _C, _Q} from 'src/useful-factory/d3-str';
 import {getNominalColor, CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
@@ -13,22 +13,32 @@ import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 import {TICK_THICKNESS} from './default-design';
 import {getChartData} from '../data-handler/chart-data-manager';
 import {getNQofXY} from '../data-handler';
+import {getStyles} from '../chart-styles/style-manager';
+import {getLegends} from '../legends/legend-manager';
+import {renderLegend} from '../legends';
 
 export function renderSimpleBarChart(ref: SVGSVGElement, spec: Spec) {
-  const {color} = spec.encoding;
+  // all {}.B are set to undefined
+  const {...chartdata} = getChartData(spec);
+  const {...domains} = getDomain(spec, undefined, undefined, chartdata);
+  const {...styles} = getStyles(spec, undefined, undefined, domains);
+  const {...layouts} = getLayouts(spec, undefined, undefined, domains, styles);
+  const {...legends} = getLegends(spec, undefined, undefined, layouts, styles);
+
+  // TODO:
+  styles.A.altVals = getChartData(spec).A;
+  //
+
+  domains.A.axis = domains.A.axis as AxisDomainData;
 
   d3.select(ref).selectAll('*').remove();
+  const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height);
+  renderBarChart(svg, spec, {x: domains.A.axis.x, y: domains.A.axis.y}, getNominalColor(domains.A.axis.color), styles.A);
 
-  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: color !== undefined}])
-  d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height)
-  const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
-
-  const {...domains} = getDomainData(spec)
-
-  renderBarChart(g, spec, {x: domains.x, y: domains.y}, getNominalColor(domains.color), {
-    ...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color), verticalBar: spec.encoding.x.type === "nominal",
-    altVals: getChartData(spec).A
-  })
+  legends.recipe.forEach(legend => {
+    const legendG = svg.append(_g).attr(_transform, translate(legend.left, legend.top));
+    renderLegend(legendG, legend.title, legend.scale.domain() as string[], legend.scale.range() as string[], !legend.isNominal, legend.styles);
+  });
 }
 
 export function renderBarChart(

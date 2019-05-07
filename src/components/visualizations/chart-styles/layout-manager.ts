@@ -54,9 +54,28 @@ export const DEFAULT_CHART_LAYOUT: ChartLayout = {
 }
 
 export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}, S: {A: ChartStyle, B: ChartStyle}) {
-  const {type: layout, unit, arrangement} = C.layout;
+
   let L: {A: ChartLayout, B: ChartLayout} = {A: undefined, B: undefined};
   let placement, nestedBs: Position[] | Position[][];
+
+  if (!B) {
+    L.A = getSingleChartLayout(A, domain.A, S.A);
+    placement = getChartPositions(1, 1, [S.A], [L.A]);
+    S.A = {...S.A, translateX: placement.positions[0].left, translateY: placement.positions[0].top};
+    if (L.A) {
+      S.A.layout = L.A;
+    }
+    return {
+      width: placement.size.width,
+      height: placement.size.height,
+      A: {...placement.positions[0]},
+      B: isEEChart(C) ? undefined : {...placement.positions[1]},
+      // TODO: more organized way?
+      nestedBs
+    };
+  }
+
+  const {type: layout, unit, arrangement} = C.layout;
 
   if (isEEChart(C)) {
     L.A = getSingleChartLayout(A, domain.A, S.A);
@@ -167,8 +186,8 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
   }
 
   // set translate in styles
-  S.A = {...S.A, translateX: placement.positions[0].left, translateY: placement.positions[0].top}
-  if (placement.positions[1]) S.B = {...S.B, translateX: placement.positions[1].left, translateY: placement.positions[1].top}
+  S.A = {...S.A, translateX: placement.positions[0].left, translateY: placement.positions[0].top};
+  if (placement.positions[1]) S.B = {...S.B, translateX: placement.positions[1].left, translateY: placement.positions[1].top};
 
   // set layouts
   if (L.A) {
@@ -362,6 +381,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[], la
     }
   }
 
+  console.log("HERE");
   // styles that affects top or left margins of all charts
   const ifAllNoY = styles.filter(d => !d.noY).length === 0;
   const ifThereTopX = styles.filter(d => d.topX).length !== 0;

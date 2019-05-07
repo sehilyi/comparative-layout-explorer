@@ -78,14 +78,18 @@ export function getNominalColorStr(n: number, n2?: number) {
     return pallete.slice(n, (n + n2) > pallete.length ? pallete.length - 1 : n + n2);
   }
 }
+
+export function getColor(domain: string[] | number[]) {
+  return domain.length === 0 || typeof domain[0] === "string" ?
+    getNominalColor(domain) :
+    d3.scaleLinear<string>().domain(d3.extent(domain as number[])).range(getQuantitativeColorStr());
+}
 export function getConsistentColor(a: string[] | number[], b: string[] | number[], consistency: ConsistencyType) {
   let colorA, colorB;
   if (isNullOrUndefined(b)) {
-    // now, only for explicit encoding
     colorA = a.length === 0 || typeof a[0] === "string" ?
       getNominalColor(a) :
-      d3.scaleLinear<string>().domain([d3.min(a as number[]), 0, d3.max(a as number[])]).range(getDiversingColorStr());  // TODO: change to diverging
-
+      d3.scaleLinear<string>().domain([d3.min(a as number[]), 0, d3.max(a as number[])]).range(getDiversingColorStr());
     colorB = undefined;
   }
 

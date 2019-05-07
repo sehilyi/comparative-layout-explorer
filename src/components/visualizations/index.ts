@@ -7,21 +7,27 @@ import {renderHeatmap, renderSimpleHeatmap} from "./heatmap";
 import {canRenderChart} from "./constraints";
 import {ScaleOrdinal, ScaleLinearColor, GSelection} from "src/useful-factory/d3-str";
 import {getChartType} from "src/models/chart-types";
+import {renderCompChartGeneralized} from "./comp-charts";
 
 export function renderSimpleChart(ref: SVGSVGElement, spec: Spec) {
-  if (!canRenderChart(spec)) return
+  if (!canRenderChart(spec)) return;
+
+  renderCompChartGeneralized(ref, spec, undefined, undefined);
+
+  //deprecated
+  if (true) return;
   switch (getChartType(spec)) {
     case "scatterplot":
-      renderSimpleScatterplot(ref, spec)
+      renderSimpleScatterplot(ref, spec);
       break
     case "barchart":
-      renderSimpleBarChart(ref, spec)
+      renderSimpleBarChart(ref, spec);
       break
     case "linechart":
       //
       break
     case "heatmap":
-      renderSimpleHeatmap(ref, spec)
+      renderSimpleHeatmap(ref, spec);
       break
     case "NULL":
       console.log("Chart type is not defined well (NULL type).")

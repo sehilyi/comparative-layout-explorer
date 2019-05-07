@@ -112,6 +112,8 @@ export function isColorIdentical(A: Spec, B: Spec) {
 }
 
 export function isEEChart(C: _CompSpecSolid) {
+  if (!C) return undefined;
+
   const {type: layout} = C.layout;
   return layout === "explicit-encoding";
 }

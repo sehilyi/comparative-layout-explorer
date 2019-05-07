@@ -4,26 +4,38 @@ import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width, _path, _d} from 'src/useful-factory/d3-str';
 import {getQuantitativeColorStr, CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
-import {getChartPositions} from '../chart-styles/layout-manager';
-import {DEFAULT_CHART_STYLE, ChartStyle} from '../chart-styles';
-import {getDomainData} from '../data-handler/domain-manager';
-import {isUndefined, isNullOrUndefined} from 'util';
+import {getLayouts} from '../chart-styles/layout-manager';
+import {ChartStyle} from '../chart-styles';
+import {getDomain, AxisDomainData} from '../data-handler/domain-manager';
+import {isNullOrUndefined} from 'util';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 import {getChartData} from '../data-handler/chart-data-manager';
+import {getLegends} from '../legends/legend-manager';
+import {renderLegend} from '../legends';
+import {getStyles} from '../chart-styles/style-manager';
 
 export function renderSimpleHeatmap(ref: SVGSVGElement, spec: Spec) {
-  const {color} = spec.encoding;
+  // all {}.B are set to undefined
+  const {...chartdata} = getChartData(spec);
+  const {...domains} = getDomain(spec, undefined, undefined, chartdata);
+  const {...styles} = getStyles(spec, undefined, undefined, domains);
+  const {...layouts} = getLayouts(spec, undefined, undefined, domains, styles);
+  const {...legends} = getLegends(spec, undefined, undefined, layouts, styles);
+
+  // TODO:
+  styles.A.altVals = getChartData(spec).A;
+  //
+
+  domains.A.axis = domains.A.axis as AxisDomainData;
 
   d3.select(ref).selectAll('*').remove();
+  const svg = d3.select(ref).attr(_width, layouts.width).attr(_height, layouts.height);
+  renderHeatmap(svg, spec, {x: domains.A.axis.x, y: domains.A.axis.y}, d3.scaleLinear<string>().domain(d3.extent(domains.A.axis.color as number[])).range(getQuantitativeColorStr()), styles.A);
 
-  const chartsp = getChartPositions(1, 1, [{...DEFAULT_CHART_STYLE, isLegend: color !== undefined}]);
-  d3.select(ref).attr(_width, chartsp.size.width).attr(_height, chartsp.size.height);
-  const g = d3.select(ref).append(_g).attr(_transform, translate(chartsp.positions[0].left, chartsp.positions[0].top));
-
-  const {...domains} = getDomainData(spec);
-
-  renderHeatmap(g, spec, {x: domains.x, y: domains.y}, d3.scaleLinear<string>().domain(d3.extent(domains.color as number[])).range(getQuantitativeColorStr()),
-    {...DEFAULT_CHART_STYLE, isLegend: !isUndefined(color), altVals: getChartData(spec).A});
+  legends.recipe.forEach(legend => {
+    const legendG = svg.append(_g).attr(_transform, translate(legend.left, legend.top));
+    renderLegend(legendG, legend.title, legend.scale.domain() as string[], legend.scale.range() as string[], !legend.isNominal, legend.styles);
+  });
 }
 
 export function renderHeatmap(

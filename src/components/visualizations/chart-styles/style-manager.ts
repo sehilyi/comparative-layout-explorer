@@ -4,7 +4,7 @@ import {DEFAULT_CHART_STYLE} from ".";
 import {getAggregatedData, getFieldsByType, getNQofXY} from "../data-handler";
 import {isUndefined} from "util";
 import {ChartDomainData} from "../data-handler/domain-manager";
-import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING} from "../default-design-manager";
+import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDING, getColor} from "../default-design-manager";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {getAxisName} from "../axes";
 import {_white, _black, _y, _x} from "src/useful-factory/d3-str";
@@ -12,6 +12,32 @@ import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingL
 
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
+
+  // if single chart
+  S.A.chartId = "A";
+  S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
+  S.A.xName = getAxisName(A.encoding.x);
+  S.A.yName = getAxisName(A.encoding.y);
+  S.A.isLegend = !isUndefined(A.encoding.color);
+  S.A.legendType = !A.encoding.color ? undefined : A.encoding.color.type;
+  S.A.legendNameColor = getAxisName(A.encoding.color, undefined, undefined);
+  S.A.color = getColor(domain.A.axis["color"]);
+  //
+
+  if (!C) {
+    return S;
+  }
+
+  /* css selector */
+  S.A.chartId = "A";
+  S.B.chartId = "B";
+
+  // chart type
+  S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
+  S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal");
+  S.A.isTickMark = (isEEChart(C) && isBothBarChart(A, B));
+  S.A.isCrossMark = (isEEChart(C) && isBothScatterplot(A, B));
+
   const {consistency} = C;
   const {type: layout, arrangement, mirrored} = C.layout;
   const {type: colorConsis} = C.consistency.color;
@@ -36,18 +62,8 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
     }
   }
 
-  /* css selector */
-  S.A.chartId = "A";
-  S.B.chartId = "B";
-
   /* animated */
   S.B.elementAnimated = isElementAnimated(C);
-
-  // chart type
-  S.A.verticalBar = (isBarChart(A) && A.encoding.x.type === "nominal");
-  S.B.verticalBar = (isBarChart(B) && B.encoding.x.type === "nominal");
-  S.A.isTickMark = (isEEChart(C) && isBothBarChart(A, B));
-  S.A.isCrossMark = (isEEChart(C) && isBothScatterplot(A, B));
 
   /* mirrored */
   // only for chart juxtaposition (in other layouts, mirrored is set to false)

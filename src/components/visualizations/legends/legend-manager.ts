@@ -28,12 +28,8 @@ export type LegendRecipe = {
  * @param S
  */
 export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: Position, B: Position}, S: {A: ChartStyle, B: ChartStyle}) {
-  const {consistency} = C;
   let recipe: LegendRecipe[] = [];
   let lastYEnd = 0, addWidth = 0;
-
-  // all legends should be placed in one column layout
-  const isOneColumn = isOverlapLayout(C);
 
   /* A's legend */
   if (S.A.isLegend) {
@@ -43,10 +39,18 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: Position,
       left: P.A.left + S.A.width,
       top: P.A.top,
       isNominal: S.A.legendType === "nominal",
-      styles: {isCircle: isScatterplot(A) && !isNestingLayout(C)}
+      styles: {isCircle: isScatterplot(A) && C && !isNestingLayout(C)}
     });
     lastYEnd += recipe[0].top + estimateLegendSize(recipe[0]);
   }
+
+  if (!B) {
+    return {height: lastYEnd, addWidth, recipe};
+  }
+
+  const {consistency} = C;
+  // all legends should be placed in one column layout
+  const isOneColumn = isOverlapLayout(C);
 
   /* B's legend */
   if (S.B && S.B.isLegend) {
