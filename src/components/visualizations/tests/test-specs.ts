@@ -1658,31 +1658,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         },
         transform: [{filter: {field: "Distributor", oneOf: "Universal"}}]
       }
-    },
-    {
-      C: {
-        description: "#58",
-        layout: {type: "explicit-encoding", unit: "element"}
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {values},
-        mark: "point",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative"},
-          y: {field: "US_Gross", type: "quantitative"},
-          // color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      },
-      B: {
-        data: {values},
-        mark: "point",
-        encoding: {
-          x: {field: "Production_Budget", type: "quantitative"},
-          y: {field: "US_Gross", type: "quantitative"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      }
-    },
+    }
   ]
 }

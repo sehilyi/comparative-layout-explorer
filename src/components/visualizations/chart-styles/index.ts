@@ -5,6 +5,7 @@ import {ScatterplotStyle, DEFAULT_SCATTERPLOT_STYLE} from "./scatterplots";
 import {DEFAULT_HEATMAP_STYLE, HeatmapStyle} from "./heatmap";
 import {LegendStyle, DEFAULT_LEGEND_STYLE} from "./legends";
 import {AxisStyle, DEFAULT_AXIS_STYLE} from "./axis";
+import {ChartLayout} from "./layout-manager";
 
 export type ChartStyle = CommonChartStyle
 
@@ -14,6 +15,7 @@ export interface CommonChartStyle extends
   // chart
   width: number;
   height: number;
+  layout: ChartLayout;
   chartId: "A" | "B";
   onTop: boolean;
   opacity: number;
@@ -48,6 +50,7 @@ export const DEFAULT_CHART_STYLE: CommonChartStyle = {
   // chart
   width: CHART_SIZE.width,
   height: CHART_SIZE.height,
+  layout: undefined,
   chartId: "A",
   onTop: false,
   opacity: 1,

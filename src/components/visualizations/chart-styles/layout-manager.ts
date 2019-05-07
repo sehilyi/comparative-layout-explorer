@@ -46,12 +46,13 @@ export const DEFAULT_CHART_LAYOUT: ChartLayout = {
 }
 
 export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}, S: {A: ChartStyle, B: ChartStyle}) {
-  const {type: layout, unit, arrangement} = C.layout
-  let placement, nestedBs: Position[] | Position[][]
+  const {type: layout, unit, arrangement} = C.layout;
+  let L: {A: ChartLayout, B: ChartLayout} = {A: undefined, B: undefined};
+  let placement, nestedBs: Position[] | Position[][];
 
   if (isEEChart(C)) {
-    const layouts = getSingleChartLayout(A, domain.A, S.A);
-    placement = getChartPositions(1, 1, [S.A], [layouts]);
+    L.A = getSingleChartLayout(A, domain.A, S.A);
+    placement = getChartPositions(1, 1, [S.A], [L.A]);
   }
   else if (layout === "juxtaposition" && unit === "chart") {
     const numOfC = arrangement === 'adjacent' ? 2 : 1;
@@ -154,6 +155,14 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
   S.A = {...S.A, translateX: placement.positions[0].left, translateY: placement.positions[0].top}
   if (!isEEChart(C)) S.B = {...S.B, translateX: placement.positions[1].left, translateY: placement.positions[1].top}
 
+  // set layouts
+  if (L.A) {
+    S.A.layout = L.A;
+  }
+  if (L.B) {
+    S.B.layout = L.B;
+  }
+
   return {
     width: placement.size.width,
     height: placement.size.height,
@@ -182,7 +191,7 @@ export function getSingleChartLayout(spec: Spec, doamin: ChartDomainData, style:
   } = style;
 
   const WidthOfYAxis = estimateMaxTextWidth((doamin.axis as AxisDomainData).y, spec.encoding.y.type === "nominal", false);
-  const heightOfXAxis = estimateMaxTextWidth((doamin.axis as AxisDomainData).x, spec.encoding.x.type === "nominal", spec.encoding.x.type === "nominal");
+  const heightOfXAxis = estimateMaxTextWidth((doamin.axis as AxisDomainData).x, spec.encoding.x.type === "nominal", true);
 
   const top = (noX ? 5 : topX ? heightOfXAxis : 5) + CHART_TITLE_HEIGHT;
   const bottom = noX ? 5 : topX ? 5 : heightOfXAxis;
@@ -198,23 +207,36 @@ export function getSingleChartLayout(spec: Spec, doamin: ChartDomainData, style:
   return {top, bottom, right, left, width, height, legend} as ChartLayout;
 }
 
-// TODO:
-export function estimateMaxTextWidth(domain: string[] | number[], isNominal: boolean, isVertical: boolean) {
-  const NOPN = 6, AXIS_NAME_SIZE = 30, NOPQ = 12;
-  let maxLength;
+export function estimateMaxTextWidth(domain: string[] | number[], isNominal: boolean, isX: boolean) {
+  const FONT_SIZE = 12, AXIS_NAME_SIZE = 35;
 
   if (!isNominal) {
     domain = domain as number[];
-    maxLength = d3.max(domain.map((d: number) => d3.format('.2s')(d).length));
-    return (!isVertical ? AXIS_NAME_SIZE : (maxLength * NOPQ)) + AXIS_NAME_SIZE;
+    const maxLength = d3.max(domain.map((d: number) => d3.format('.2s')(d).length));
+    const index = domain.indexOf(domain.find((d: number) => d3.format('.2s')(d).length === maxLength));
+    let width = getTextWidth(d3.format('.2s')(domain[index]), FONT_SIZE);
+    if (isX) {
+      width = FONT_SIZE;
+    }
+    return width + AXIS_NAME_SIZE;
   }
   else {
-    const forV = isVertical ? (3.0 / 4.0) : 1;
-
     domain = domain as string[];
-    maxLength = d3.max(domain.map((d: string) => d.length));
-    return maxLength * NOPN * forV + AXIS_NAME_SIZE;
+    const maxLength = d3.max(domain.map((d: string) => d.length));
+    const index = domain.indexOf(domain.find((d: string) => d.length === maxLength));
+    let width = getTextWidth(domain[index], FONT_SIZE);
+    if (isX) {
+      width *= 0.766;  // sin (360 - 310 degree)
+    }
+    return width + AXIS_NAME_SIZE;
   }
+}
+
+export function getTextWidth(t: string, s: number) {
+  let canvas = document.createElement('canvas');
+  let context = canvas.getContext('2d');
+  context.font = s + 'px ' + "Roboto Condensed";
+  return context.measureText(t).width;
 }
 
 /**

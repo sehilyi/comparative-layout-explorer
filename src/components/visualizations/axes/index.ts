@@ -173,11 +173,21 @@ export function renderAxes(
       /* axis name */
       if (!animated) {
         xAxisG
-          .attr('transform', translate(0, topX ? 0 : size.height))
           .append('text')
           .classed('axis-name x-axis-name', true)
           .attr('x', size.width / 2)
-          .attr('y', topX ? -40 : (CHART_MARGIN.bottom - 40))
+          .attr('y', function () {
+            if (topX) {
+              return isXCategorical ? -60 : -40;
+            }
+            else if (styles.layout) {
+              return styles.layout.bottom - 5;
+            }
+            // TODO: should be deprecated
+            else {
+              return CHART_MARGIN.bottom - 40;
+            }
+          })
           .style('fill', 'black')
           .style('stroke', 'none')
           .style('font-weight', 'bold')
@@ -189,12 +199,6 @@ export function renderAxes(
           .selectAll(".x-axis-name")
           // transition // TODO:
           .text(xName !== undefined ? xName : getAxisName(spec.encoding.x));
-      }
-
-      if (isXCategorical) {
-        if (!animated)
-          xAxisG.selectAll(".axis-name")
-            .attr('y', topX ? -60 : (CHART_MARGIN.bottom - 5));
       }
     }
 
@@ -221,7 +225,21 @@ export function renderAxes(
             .classed('axis-name y-axis-name', true)
             .attr('transform', rotate(-90))
             .attr('x', -size.height / 2)
-            .attr('y', rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
+            .attr('y', function () {
+              if (rightY) {
+                return 50;
+              }
+              else if (styles.layout) {
+                return -styles.layout.left + 5;
+              }
+              // TOOD: these two should be deprecated
+              else if (isYCategorical) {
+                return -CHART_MARGIN.left + 5;
+              }
+              else {
+                return -60;
+              }
+            })
             .attr('dy', '.71em')
             .style('font-weight', 'bold')
             .style('fill', 'black')
