@@ -460,19 +460,21 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         data: {values},
         mark: "bar",
         encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"},
-          color: {field: "Source", type: "nominal"}
-        }
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          y: {field: "Major_Genre", type: "nominal"},
+          color: {field: "Major_Genre", type: "nominal"}
+        },
+        transform: [{filter: {field: "Distributor", oneOf: "Walt Disney Pictures"}}]
       },
       B: {
         data: {values},
         mark: "bar",
         encoding: {
-          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"},
-          color: {field: "Source", type: "nominal"}
-        }
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          y: {field: "Major_Genre", type: "nominal"},
+          color: {field: "Major_Genre", type: "nominal"}
+        },
+        transform: [{filter: {field: "Distributor", oneOf: "Universal"}}]
       }
     },
     {
