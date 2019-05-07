@@ -11,6 +11,7 @@ import {renderAxes} from "../axes";
 import {LEGEND_WIDTH} from "../legends/default-design";
 import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isScatterplot, isHeatmap, isChartsSuperimposed, isEEChart} from "src/models/chart-types";
 import {ChartDomainData, AxisDomainData} from "../data-handler/domain-manager";
+import {_width} from "src/useful-factory/d3-str";
 
 export interface Position {
   width: number;
@@ -19,8 +20,8 @@ export interface Position {
   top: number;
 }
 
-export interface ChartLayout {
-  // axis size
+export class ChartLayout {
+  // margin size (axis or title)
   top: number;
   bottom: number;
   left: number;
@@ -30,6 +31,13 @@ export interface ChartLayout {
   height: number;
   // legend size
   legend: number;
+}
+
+export function getTotalSize(l: ChartLayout) {
+  return {
+    width: l.left + l.width + l.right + l.legend,
+    height: l.top + l.height + l.bottom
+  };
 }
 
 export const DEFAULT_CHART_LAYOUT: ChartLayout = {
@@ -55,49 +63,56 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
     placement = getChartPositions(1, 1, [S.A], [L.A]);
   }
   else if (layout === "juxtaposition" && unit === "chart") {
+    L.A = getSingleChartLayout(A, domain.A, S.A);
+    L.B = getSingleChartLayout(B, domain.B, S.B);
     const numOfC = arrangement === 'adjacent' ? 2 : 1;
     const numOfR = arrangement === 'stacked' ? 2 : 1;
-    placement = getChartPositions(numOfC, numOfR, [S.A, S.B]);
+    placement = getChartPositions(numOfC, numOfR, [S.A, S.B], [L.A, L.B]);
   }
   else if (layout === "juxtaposition" && unit === "element" && getChartType(A) === getChartType(B)) {
-    placement = getChartPositions(1, 1, [S.A, S.B]);
+    L.A = getSingleChartLayout(A, domain.A, S.A);
+    L.B = getSingleChartLayout(B, domain.B, S.B);
+    placement = getChartPositions(1, 1, [S.A, S.B], [L.A, L.B]);
   }
   else if (isChartsSuperimposed(C)) {
-    placement = getChartPositions(1, 1, [S.A, S.B]);
+    L.A = getSingleChartLayout(A, domain.A, S.A);
+    L.B = getSingleChartLayout(B, domain.B, S.B);
+    placement = getChartPositions(1, 1, [S.A, S.B], [L.A, L.B]);
   }
   /* nesting */
   else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
-    placement = getChartPositions(1, 1, [S.A, S.B]);
+    L.A = getSingleChartLayout(A, domain.A, S.A);
+    placement = getChartPositions(1, 1, [S.A, S.B], [L.A]);
 
     // divide layouts
     // TODO: sub elements' layouts should be shared here
     if (isBarChart(A) && A.encoding.x.type === "nominal") { // vertical bar chart
-      const aValues = getAggregatedData(A).values
-      const numOfX = getAggregatedData(A).categories.length
+      const aValues = getAggregatedData(A).values;
+      const numOfX = getAggregatedData(A).categories.length;
       /// TODO: should be consistent with that of /barcharts/index.ts
-      const bandUnitSize = S.A.width / numOfX
-      const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.widthTimes
+      const bandUnitSize = S.A.width / numOfX;
+      const barWidth = getBarSize(S.A.width, numOfX, S.A.barGap) * S.A.widthTimes;
       /// TODO: should be consistent with that of /axes/index.ts
       const qY = d3.scaleLinear()
         .domain([d3.min([d3.min(aValues as number[]), 0]), d3.max(aValues as number[])]).nice()
         .rangeRound([S.A.height, 0]);
       //
-      nestedBs = [] as Position[]
+      nestedBs = [] as Position[];
       for (let i = 0; i < numOfX; i++) {
         nestedBs.push({
           left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + S.B.nestingPadding,
           top: qY(aValues[i]) + S.B.nestingPadding,
           width: barWidth - S.B.nestingPadding * 2,
           height: S.A.height - qY(aValues[i]) - S.B.nestingPadding // no top padding
-        })
+        });
       }
     }
     else if (isBarChart(A) && A.encoding.y.type === "nominal") { // horizontal bar chart
-      const numOfCategories = uniqueValues(A.data.values, A.encoding.y.field).length
-      const values = getAggValues(A.data.values, A.encoding.y.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
+      const numOfCategories = uniqueValues(A.data.values, A.encoding.y.field).length;
+      const values = getAggValues(A.data.values, A.encoding.y.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field]);
       /// TODO: should be consistent with that of /barcharts/index.ts
-      const bandUnitSize = S.A.height / numOfCategories
-      const barSize = getBarSize(S.A.height, numOfCategories, S.A.barGap) * S.A.widthTimes
+      const bandUnitSize = S.A.height / numOfCategories;
+      const barSize = getBarSize(S.A.height, numOfCategories, S.A.barGap) * S.A.widthTimes;
       /// TODO: should be consistent with that of /axes/index.ts
       const qX = d3.scaleLinear()
         .domain([d3.min([d3.min(values as number[]), 0]), d3.max(values as number[])]).nice()
@@ -110,41 +125,41 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
           top: i * bandUnitSize + (bandUnitSize - barSize) / 2.0 + S.B.nestingPadding,
           width: qX(values[i]) - S.B.nestingPadding, // no right padding
           height: barSize - S.B.nestingPadding * 2
-        })
+        });
       }
     }
     else if (isScatterplot(A)) {
-      const numOfCategories = uniqueValues(A.data.values, A.encoding.color.field).length
-      const xValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field])
-      const yValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.y.field], A.encoding.y.aggregate).map(d => d[A.encoding.y.field])
-      const pointSize = SCATTER_POINT_SIZE_FOR_NESTING
-      const {x, y} = renderAxes(null, xValues, yValues, A, S.A) // TODO: check styles
-      nestedBs = [] as Position[]
+      const numOfCategories = uniqueValues(A.data.values, A.encoding.color.field).length;
+      const xValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.x.field], A.encoding.x.aggregate).map(d => d[A.encoding.x.field]);
+      const yValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.y.field], A.encoding.y.aggregate).map(d => d[A.encoding.y.field]);
+      const pointSize = SCATTER_POINT_SIZE_FOR_NESTING;
+      const {x, y} = renderAxes(null, xValues, yValues, A, S.A); // TODO: check styles
+      nestedBs = [] as Position[];
       for (let i = 0; i < numOfCategories; i++) {
         nestedBs.push({
           left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
           top: (y as d3.ScaleLinear<number, number>)(yValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
           width: pointSize - S.B.nestingPadding * 2,
           height: pointSize - S.B.nestingPadding * 2
-        })
+        });
       }
     }
     else if (isHeatmap(A)) {
-      const numOfXCategories = uniqueValues(A.data.values, A.encoding.x.field).length
-      const numOfYCategories = uniqueValues(A.data.values, A.encoding.y.field).length
-      const width = S.A.width, height = S.A.height
-      const cellWidth = width / numOfXCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2
-      const cellHeight = height / numOfYCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2
-      nestedBs = [] as Position[][]
+      const numOfXCategories = uniqueValues(A.data.values, A.encoding.x.field).length;
+      const numOfYCategories = uniqueValues(A.data.values, A.encoding.y.field).length;
+      const width = S.A.width, height = S.A.height;
+      const cellWidth = width / numOfXCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2;
+      const cellHeight = height / numOfYCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2;
+      nestedBs = [] as Position[][];
       for (let i = 0; i < numOfXCategories; i++) {
-        let sub: Position[] = []
+        let sub: Position[] = [];
         for (let j = 0; j < numOfYCategories; j++) {
           sub.push({
             left: i * (cellWidth + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
             top: j * (cellHeight + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
             width: cellWidth,
             height: cellHeight
-          })
+          });
         }
         nestedBs.push(sub);
       }
@@ -153,7 +168,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
 
   // set translate in styles
   S.A = {...S.A, translateX: placement.positions[0].left, translateY: placement.positions[0].top}
-  if (!isEEChart(C)) S.B = {...S.B, translateX: placement.positions[1].left, translateY: placement.positions[1].top}
+  if (placement.positions[1]) S.B = {...S.B, translateX: placement.positions[1].left, translateY: placement.positions[1].top}
 
   // set layouts
   if (L.A) {
@@ -201,7 +216,7 @@ export function getSingleChartLayout(spec: Spec, doamin: ChartDomainData, style:
   const width = style.width;
   const height = style.height;
 
-  // TODO:
+  // TODO: adjustable size
   const legend = isLegend ? LEGEND_WIDTH : 0;
 
   return {top, bottom, right, left, width, height, legend} as ChartLayout;
@@ -248,18 +263,102 @@ export function getTextWidth(t: string, s: number) {
 export function getChartPositions(x: number, y: number, styles: ChartStyle[], layouts?: ChartLayout[]) {
 
   if (layouts) {
-    // TOOD: now, only for ee chart
-    return {
-      size: {
-        width: layouts[0].left + layouts[0].right + layouts[0].width + layouts[0].legend,
-        height: layouts[0].top + layouts[0].bottom + layouts[0].height
-      },
-      positions: [{
-        width: layouts[0].width,
-        height: layouts[0].height,
-        left: layouts[0].left,
-        top: layouts[0].top
-      }]
+    if (layouts.length === 1) {
+      return {
+        size: {
+          width: layouts[0].left + layouts[0].width + layouts[0].right + layouts[0].legend,
+          height: layouts[0].top + layouts[0].height + layouts[0].bottom
+        },
+        positions: [{
+          width: layouts[0].width,
+          height: layouts[0].height,
+          left: layouts[0].left,
+          top: layouts[0].top
+        }, {
+          width: layouts[0].width,
+          height: layouts[0].height,
+          left: layouts[0].left,
+          top: layouts[0].top
+        }]
+      };
+    }
+    // single chart OR
+    // superimposition, the length of styles can be larger than x * y
+    else if (styles.length === 1 || (x === 1 && y === 1)) {
+      const maxL = d3.max(layouts.map(d => d.left));
+      const maxW = d3.max(layouts.map(d => d.width));
+      const maxR = d3.max(layouts.map(d => d.right));
+      const maxLegend = d3.max(layouts.map(d => d.legend));
+      const maxT = d3.max(layouts.map(d => d.top));
+      const maxH = d3.max(layouts.map(d => d.height));
+      const maxB = d3.max(layouts.map(d => d.bottom));
+      return {
+        size: {
+          width: maxL + maxW + maxR + maxLegend,
+          height: maxT + maxH + maxB
+        },
+        positions: [{
+          width: maxW,
+          height: maxH,
+          left: maxL,
+          top: maxT
+        }, {
+          width: maxW,
+          height: maxH,
+          left: maxL,
+          top: maxT
+        }]
+      }
+    }
+    // vertical layout
+    // TODO: width or height should be used identically? (e.g., same width for vertical layout)
+    else if (x === 1 && y === 2) {
+      const maxL = d3.max(layouts.map(d => d.left));
+      const maxW = d3.max(layouts.map(d => d.width));
+      const maxR = d3.max(layouts.map(d => d.right));
+      const maxLegend = d3.max(layouts.map(d => d.legend));
+      const totalHeight = getTotalSize(layouts[0]).height + getTotalSize(layouts[1]).height;
+      return {
+        size: {
+          width: maxL + maxW + maxR + maxLegend,
+          height: totalHeight
+        },
+        positions: [{
+          width: maxW,
+          height: layouts[0].height,
+          left: maxL,
+          top: layouts[0].top
+        }, {
+          width: maxW,
+          height: layouts[1].height,
+          left: maxL,
+          top: getTotalSize(layouts[0]).height + layouts[1].top
+        }]
+      }
+    }
+    // horizontal layout
+    else if (x === 2 && y === 1) {
+      const maxT = d3.max(layouts.map(d => d.top));
+      const maxH = d3.max(layouts.map(d => d.height));
+      const maxB = d3.max(layouts.map(d => d.bottom));
+      const totalWidth = getTotalSize(layouts[0]).width + getTotalSize(layouts[1]).width;
+      return {
+        size: {
+          width: totalWidth,
+          height: maxT + maxH + maxB
+        },
+        positions: [{
+          width: totalWidth,
+          height: maxH,
+          left: layouts[0].left,
+          top: maxT
+        }, {
+          width: totalWidth,
+          height: maxH,
+          left: getTotalSize(layouts[0]).width + layouts[1].left,
+          top: maxT
+        }]
+      }
     }
   }
 
