@@ -3,10 +3,11 @@ import {Spec} from 'src/models/simple-vega-spec';
 import {SCATTER_POINT_OPACITY, CROSS_SYMBOL} from './default-design';
 import {renderAxes} from '../axes';
 import {ChartStyle} from '../chart-styles';
-import {CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
+import {CHART_CLASS_ID, appendPattern, Coordinate, getID} from '../default-design-manager';
 import {_width, _height, _g, _transform, _opacity, _rect, _circle, _stroke, _stroke_width, _fill, _cx, _cy, _r, _x, _y, ScaleOrdinal, ScaleLinear, ScaleLinearColor, GSelection, _path, _d} from 'src/useful-factory/d3-str';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
+import {ID_COLUMN} from '../data-handler';
 
 export function renderScatterplot(
   svg: GSelection,
@@ -46,10 +47,15 @@ export function renderPoints(
 
   let coordinates: Coordinate[] = [];
   const _X = "X", _Y = "Y", _C = "C";
-  let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
+  let dataCommonShape = data.map(d => ({
+    [ID_COLUMN]: d[ID_COLUMN],
+    X: d[keys.xKey],
+    Y: d[keys.yKey],
+    C: d[keys.cKey]
+  }));
 
   const oldPoints = g.selectAll('.point')
-    .data(dataCommonShape);
+    .data(dataCommonShape, d => getID(d[ID_COLUMN], (d[_X] + "," + d[_Y])));
 
   oldPoints
     .exit()

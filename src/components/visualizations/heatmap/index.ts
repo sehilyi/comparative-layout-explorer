@@ -2,10 +2,11 @@ import {Spec} from "src/models/simple-vega-spec";
 import {renderAxes} from "../axes";
 import {translate} from "src/useful-factory/utils";
 import {_transform, _opacity, _g, _rect, _fill, _x, _y, _width, _height, _white, ScaleOrdinal, ScaleLinearColor, ScaleBand, GSelection, _stroke, _stroke_width, _path, _d} from 'src/useful-factory/d3-str';
-import {CHART_CLASS_ID, appendPattern, Coordinate} from '../default-design-manager';
+import {CHART_CLASS_ID, appendPattern, Coordinate, getID} from '../default-design-manager';
 import {ChartStyle} from '../chart-styles';
 import {isNullOrUndefined} from 'util';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
+import {ID_COLUMN} from "../data-handler";
 
 export function renderHeatmap(
   svg: GSelection,
@@ -46,14 +47,18 @@ export function renderCells(
   const _X = "X", _Y = "Y", _C = "C";
   const _S = !sKey || sKey === keys.xKey ? _X : sKey === keys.yKey ? _Y : _C; // for stroke color
 
-  let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
-
+  let dataCommonShape = data.map(d => ({
+    [ID_COLUMN]: d[ID_COLUMN],
+    X: d[keys.xKey],
+    Y: d[keys.yKey],
+    C: d[keys.cKey]
+  }));
+  // console.log(dataCommonShape);
   const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length;
   const cellWidth = (width / numOfX - styles.cellPadding * 2) * styles.widthTimes - strokeWidth * 2;
   const cellHeight = (height / numOfY - styles.cellPadding * 2) * styles.heightTimes - strokeWidth * 2;
 
-  const oldCells = g.selectAll('.cell')
-    .data(dataCommonShape);
+  const oldCells = g.selectAll('.cell').data(dataCommonShape, d => getID(d[ID_COLUMN], d[_X] + d[_Y]));
 
   oldCells
     .exit()

@@ -196,6 +196,16 @@ export function renderAxes(
           .selectAll(".x-axis-name")
           .transition(tran)
           // TODO: no smooth transition
+          .attr(_x, size.width / 2)
+          .attr(_y, function () {
+            if (topX) {
+              return isXCategorical ? -60 : -40;
+            }
+            else {
+              if (!styles.layout) console.log("Something is wrong in axis-renderer");
+              return styles.layout.bottom - 5;
+            }
+          })
           .text(xName !== undefined ? xName : getAxisName(spec.encoding.x));
       }
     }
@@ -245,6 +255,16 @@ export function renderAxes(
             .selectAll(".y-axis-name")
             .transition(tran)
             // TODO: no smooth transition
+            .attr(_x, -size.height / 2)
+            .attr(_y, function () {
+              if (rightY) {
+                return 50;
+              }
+              else {
+                if (!styles.layout) console.log("Something is wrong in axis-renderer");
+                return -styles.layout.left + 5;
+              }
+            })
             .text(yName !== undefined ? yName : getAxisName(spec.encoding.y));
         }
       }

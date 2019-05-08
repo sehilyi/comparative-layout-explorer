@@ -20,7 +20,7 @@ export function getAggValues(values: object[], keyField: string, valueFields: st
       let value = {};
 
       // keep ids to support e.g., brushing and linking
-      value[ID_COLUMN] = data.map(d => d[ID_COLUMN]);
+      value[ID_COLUMN] = [].concat(...data.map(d => d[ID_COLUMN]));  // always should be one-dimensional array
 
       switch (aggregate) {
         case 'sum':
@@ -127,7 +127,7 @@ export function getPivotData(data: object[], keyFields: string[], valueField: st
     let value = {};
 
     // keep ids to support e.g., brushing and linking
-    value[ID_COLUMN] = data.map(d => d[ID_COLUMN]);
+    value[ID_COLUMN] = [].concat(...leaves.map(d => d[ID_COLUMN]));  // always should be one-dimensional array
 
     switch (aggregate) {
       case 'sum':

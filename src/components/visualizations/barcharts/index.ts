@@ -4,7 +4,7 @@ import {isUndefined} from 'util';
 import {renderAxes} from '../axes';
 import {ChartStyle} from '../chart-styles';
 import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray, _N, _C, _Q, _none} from 'src/useful-factory/d3-str';
-import {CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} from '../default-design-manager';
+import {CHART_CLASS_ID, getBarSize, appendPattern, Coordinate, getID} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 import {TICK_THICKNESS} from './default-design';
@@ -81,14 +81,13 @@ export function renderBars(
   }
 
   const dataCommonShape = data.map(d => ({
-    ID_COLUMN: d[ID_COLUMN],
+    [ID_COLUMN]: d[ID_COLUMN],
     N: d[keys.nKey],
     Q: d[keys.qKey],
     C: d[keys.cKey]
   }));
-  console.log(dataCommonShape);
   const cKey = keys.cKey === "" ? _N : _C;
-  const oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[ID_COLUMN]);
+  const oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => getID(d[ID_COLUMN], d[_N]));
 
   oldBars
     .exit()
@@ -98,9 +97,9 @@ export function renderBars(
     .remove();
 
   const newBars = oldBars.enter().append(_rect).attr(_class, "bar")
-    .attr(_opacity, 0)
+    .attr(_opacity, 0);
 
-  const allBars = newBars.merge(oldBars as any)
+  const allBars = newBars.merge(oldBars as any);
   const newWidth = width * chartWidthTimes;
 
   if (verticalBar) {

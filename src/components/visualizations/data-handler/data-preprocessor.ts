@@ -12,7 +12,7 @@ export function addIDItemNaive(spec: Spec) {
   let dataWithID = Object.assign([], spec.data.values);
   let cnt = 1;
   dataWithID.forEach(d => {
-    d[ID_COLUMN] = cnt++;
+    d[ID_COLUMN] = [cnt++];
   });
   return spec;
 }

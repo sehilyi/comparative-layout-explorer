@@ -50,6 +50,10 @@ export type Coordinate = {
   height: number;
 }
 
+export function getID(ids: number[], alt?: string) {
+  return ids.length === 0 ? alt : ids.map(d => d.toString()).toString();
+}
+
 export function getBarSize(cw: number, n: number, g: number) {
   return d3.min([cw / n - g as number, MAX_BAR_SIZE]);
 }
