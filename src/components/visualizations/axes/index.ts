@@ -3,7 +3,7 @@ import {Spec, Field} from "src/models/simple-vega-spec";
 import {translate, rotate, uniqueValues, shortenText, ifUndefinedGetDefault} from "src/useful-factory/utils";
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
-import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand, _stroke_width, _stroke, _fill, _font_size, _font_family, _line, _x1, _x2, _y1, _y2, _color, _stroke_dasharray, _black, _gray} from "src/useful-factory/d3-str";
+import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand, _stroke_width, _stroke, _fill, _font_size, _font_family, _line, _x1, _x2, _y1, _y2, _color, _stroke_dasharray, _black, _gray, _font_weight, _text, _bold, _middle, _none, _dy, _opacity, _white, _display} from "src/useful-factory/d3-str";
 import {AXIS_ROOT_ID, DEFAULT_FONT, AXIS_LABEL_LEN_LIMIT} from "../default-design-manager";
 import {DF_DELAY, DF_DURATION} from "../animated/default-design";
 
@@ -93,9 +93,9 @@ export function renderAxes(
     /* grid x */
     if (!isXCategorical && !noGrid) {
       if (!animated) {
-        g.append('g')
+        g.append(_g)
           .classed('grid x-grid', true)
-          .attr('transform', translate(0, size.height))
+          .attr(_transform, translate(0, size.height))
           .call(xGrid);
 
         if (d3.min([d3.min(xVals as number[]), 0]) !== 0 && d3.max(xVals as number[]) !== 0) {
@@ -121,7 +121,7 @@ export function renderAxes(
     /* grid y */
     if (!isYCategorical && !noGrid) {
       if (!animated) {
-        g.append('g')
+        g.append(_g)
           .classed('grid y-grid', true)
           .call(yGrid);
 
@@ -149,11 +149,11 @@ export function renderAxes(
     if (!noX) {
       const xAxisG: GSelection = animated ?
         g.select(".x-axis") :
-        g.append('g')
+        g.append(_g)
           .classed('axis x-axis', true)
-          .attr('stroke', '#888888')
-          .attr('stroke-width', 0.5)
-          .attr('transform', translate(0, topX ? 0 : size.height))
+          .attr(_stroke, '#888888')
+          .attr(_stroke_width, 0.5)
+          .attr(_transform, translate(0, topX ? 0 : size.height))
           .call(xAxis);
 
       if (animated) {
@@ -173,10 +173,10 @@ export function renderAxes(
       /* axis name */
       if (!animated) {
         xAxisG
-          .append('text')
+          .append(_text)
           .classed('axis-name x-axis-name', true)
-          .attr('x', size.width / 2)
-          .attr('y', function () {
+          .attr(_x, size.width / 2)
+          .attr(_y, function () {
             if (topX) {
               return isXCategorical ? -60 : -40;
             }
@@ -185,10 +185,10 @@ export function renderAxes(
               return styles.layout.bottom - 5;
             }
           })
-          .style('fill', 'black')
-          .style('stroke', 'none')
-          .style('font-weight', 'bold')
-          .style('text-anchor', 'middle')
+          .style(_fill, _black)
+          .style(_stroke, _none)
+          .style(_font_weight, _bold)
+          .style(_text_anchor, _middle)
           .text(xName !== undefined ? xName : getAxisName(spec.encoding.x));
       }
       else {
@@ -204,11 +204,11 @@ export function renderAxes(
     if (!noY) {
       const yAxisG: GSelection = animated ?
         g.select(".y-axis") :
-        g.append('g')
+        g.append(_g)
           .attr(_transform, translate(rightY ? size.width : 0, 0))
           .classed('axis y-axis', true)
-          .attr('stroke', '#888888')
-          .attr('stroke-width', 0.5)
+          .attr(_stroke, '#888888')
+          .attr(_stroke_width, 0.5)
           .call(yAxis);
 
       if (animated) {
@@ -219,11 +219,11 @@ export function renderAxes(
       if (!noYTitle) {
         if (!animated) {
           yAxisG
-            .append('text')
+            .append(_text)
             .classed('axis-name y-axis-name', true)
-            .attr('transform', rotate(-90))
-            .attr('x', -size.height / 2)
-            .attr('y', function () {
+            .attr(_transform, rotate(-90))
+            .attr(_x, -size.height / 2)
+            .attr(_y, function () {
               if (rightY) {
                 return 50;
               }
@@ -232,12 +232,12 @@ export function renderAxes(
                 return -styles.layout.left + 5;
               }
             })
-            .attr('dy', '.71em')
-            .style('font-weight', 'bold')
-            .style('fill', 'black')
-            .style('stroke', 'none')
-            .style('text-anchor', 'middle')
-            .style("opacity", 1)
+            .attr(_dy, '.71em')
+            .style(_font_weight, _bold)
+            .style(_fill, _black)
+            .style(_stroke, _none)
+            .style(_text_anchor, _middle)
+            .style(_opacity, 1)
             .text(yName !== undefined ? yName : getAxisName(spec.encoding.y));
         }
         else {
@@ -252,32 +252,32 @@ export function renderAxes(
 
     /* styles */
     /* grid */
-    g.selectAll('.axis path').attr(_stroke_width, '1px').attr('stroke', 'black');
+    g.selectAll('.axis path').attr(_stroke_width, '1px').attr(_stroke, _black);
 
     /* hide grid */
     if (isYCategorical) g.selectAll('.x-axis path').attr(_stroke_width, '0px');
     if (isXCategorical) g.selectAll('.y-axis path').attr(_stroke_width, '0px');
-    if (simpleY) g.selectAll('.y-axis path').attr(_stroke, 'white');
+    if (simpleY) g.selectAll('.y-axis path').attr(_stroke, _white);
     // if (simpleY) g.selectAll('.axis text').attr(_fill, 'gray')
 
     // remove ticks in axes
     g.selectAll('.axis line')
       .attr(_stroke_width, '0px')
-      .attr('stroke', 'black');
+      .attr(_stroke, _black);
 
     // ticks' labels
     g.selectAll('.axis text')
       .style(_stroke_width, '0')
-      .style(_stroke, 'none')
-      .attr(_fill, 'black')
+      .style(_stroke, _none)
+      .attr(_fill, _black)
       .style(_font_size, '12px')
       .attr(_font_family, DEFAULT_FONT);
 
     // axis name, line, grid
     g.selectAll('.axis .axis-name')
-      .style('font-size', '12px');
+      .style(_font_size, '12px');
     g.selectAll('.grid text')
-      .style('display', 'none'); // don't need this
+      .style(_display, 'none'); // don't need this
     g.selectAll('.grid path') // don't need this
       .attr(_stroke, 'rgb(221, 221, 221)')
       .attr(_stroke_width, '0px');
