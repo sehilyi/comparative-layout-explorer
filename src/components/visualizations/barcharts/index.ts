@@ -3,13 +3,12 @@ import {translate, ifUndefinedGetDefault} from 'src/useful-factory/utils';
 import {isUndefined} from 'util';
 import {renderAxes} from '../axes';
 import {ChartStyle} from '../chart-styles';
-import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray, _N, _C, _Q} from 'src/useful-factory/d3-str';
+import {_width, _height, _g, _transform, _opacity, _rect, _fill, _stroke, _stroke_width, _y, _x, ScaleBand, ScaleLinear, ScaleOrdinal, ScaleLinearColor, GSelection, BTSelection, _id, _black, _circle, _class, _white, _lightgray, _N, _C, _Q, _none} from 'src/useful-factory/d3-str';
 import {CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} from '../default-design-manager';
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 import {TICK_THICKNESS} from './default-design';
 import {getNQofXY} from '../data-handler';
-
 
 export function renderBarChart(
   svg: GSelection,
@@ -25,7 +24,7 @@ export function renderBarChart(
   const {x, y} = renderAxes(svg, domain.x, domain.y, spec, styles);  // TODO: consider chartShiftX/Y or chartWidth/HeightTimes
   const g: GSelection = styles.elementAnimated ?
     svg.select(`${"."}${CHART_CLASS_ID}${"A"}`) :
-    svg.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true)
+    svg.append(_g).attr(_transform, translate(styles.translateX + styles.width * styles.chartWidthTimes * styles.chartShiftX, styles.translateY)).attr(_opacity, styles.opacity).classed(`${CHART_CLASS_ID}${styles.chartId} ${styles.chartId}`, true);
 
   if (styles.isChartStroke && !styles.elementAnimated) {
     const strokeWidth = .5;
@@ -35,7 +34,7 @@ export function renderBarChart(
       .attr(_height, styles.height - strokeWidth)
       .attr(_stroke, _lightgray)
       .attr(_stroke_width, .5)
-      .attr(_fill, "none")
+      .attr(_fill, _none)
       .attr(_opacity, styles.opacity);
   }
   const visualReciepe = renderBars(g, Object.assign([], styles.altVals), {qKey, nKey, cKey}, {x, y, color}, {...styles});

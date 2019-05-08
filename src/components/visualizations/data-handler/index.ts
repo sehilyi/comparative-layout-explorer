@@ -130,19 +130,30 @@ export function getPivotData(data: object[], keyFields: string[], valueField: st
     value[ID_COLUMN] = data.map(d => d[ID_COLUMN]);
 
     switch (aggregate) {
-      case 'sum': value[valueField] = d3.sum(leaves, _d => _d[valueField]) as undefined;
-      case 'mean': value[valueField] = d3.mean(leaves, _d => _d[valueField]) as undefined;
-      case 'median': value[valueField] = d3.median(leaves, _d => _d[valueField]) as undefined;
-      case 'min': value[valueField] = d3.min(leaves, _d => _d[valueField]) as undefined;
-      case 'max': value[valueField] = d3.max(leaves, _d => _d[valueField]) as undefined;
-      case 'count': value[valueField] = leaves.length as undefined;
-      default: value[valueField] = d3.sum(leaves, _d => _d[valueField]) as undefined;
+      case 'sum':
+        value[valueField] = d3.sum(leaves, _d => _d[valueField]);
+        break;
+      case 'mean':
+        value[valueField] = d3.mean(leaves, _d => _d[valueField])
+        break;
+      case 'median':
+        value[valueField] = d3.median(leaves, _d => _d[valueField])
+        break;
+      case 'min':
+        value[valueField] = d3.min(leaves, _d => _d[valueField])
+        break;
+      case 'max':
+        value[valueField] = d3.max(leaves, _d => _d[valueField])
+        break;
+      case 'count':
+        value[valueField] = leaves.length
+        break;
+      default:
+        value[valueField] = d3.sum(leaves, _d => _d[valueField])
+        break;
     }
-
     return value as undefined;
   }).entries(data);
-
-  console.log(nestedData);
 
   if (!domains) {
     domains = [];
