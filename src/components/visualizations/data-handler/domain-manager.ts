@@ -116,7 +116,6 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
       if (isChartDataAggregated(B)) {
         const allNs = ANs.concat(BNs).map(d => d.field);
         const pivotData = getPivotData(A.data.values, allNs, Q.field, B.encoding[Q.channel].aggregate);
-        console.log(pivotData);
         BQValues[Q.field] = pivotData.map(d => d[Q.field]);
       }
       else {
@@ -153,7 +152,6 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
       resB = {...resB, axis: axes};
     }
   }
-  console.log(resB);
   return {A: resA, B: isEEChart(C) ? undefined : resB};
 }
 

@@ -8,7 +8,7 @@ import {CHART_CLASS_ID, getBarSize, appendPattern, Coordinate} from '../default-
 import {deepObjectValue} from 'src/models/comp-spec-manager';
 import {DF_DELAY, DF_DURATION} from '../animated/default-design';
 import {TICK_THICKNESS} from './default-design';
-import {getNQofXY} from '../data-handler';
+import {getNQofXY, ID_COLUMN} from '../data-handler';
 
 export function renderBarChart(
   svg: GSelection,
@@ -80,9 +80,15 @@ export function renderBars(
     numOfC = nY.domain().length;
   }
 
-  const dataCommonShape = data.map(d => ({N: d[keys.nKey], Q: d[keys.qKey], C: d[keys.cKey]}));
-  const cKey = keys.cKey === "" ? _N : _C
-  const oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[_N])
+  const dataCommonShape = data.map(d => ({
+    ID_COLUMN: d[ID_COLUMN],
+    N: d[keys.nKey],
+    Q: d[keys.qKey],
+    C: d[keys.cKey]
+  }));
+  console.log(dataCommonShape);
+  const cKey = keys.cKey === "" ? _N : _C;
+  const oldBars: BTSelection = g.selectAll(".bar").data(dataCommonShape, d => d[ID_COLUMN]);
 
   oldBars
     .exit()

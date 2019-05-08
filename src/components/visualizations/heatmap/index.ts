@@ -34,19 +34,18 @@ export function renderCells(
   const {
     width,
     height,
-  } = styles;
-
-  if (height < 0 || width < 0) return []; // when height or width of nesting root is too small
-  const {
     elementAnimated: animated,
     strokeKey: sKey,
     stroke_width: strokeWidth,
     triangularCell: triangleCell
   } = styles;
 
+  if (height < 0 || width < 0) return []; // when height or width of nesting root is too small
+
   let coordinates: Coordinate[] = [];
   const _X = "X", _Y = "Y", _C = "C";
   const _S = !sKey || sKey === keys.xKey ? _X : sKey === keys.yKey ? _Y : _C; // for stroke color
+
   let dataCommonShape = data.map(d => ({X: d[keys.xKey], Y: d[keys.yKey], C: d[keys.cKey]}));
 
   const numOfX = scales.x.domain().length, numOfY = scales.y.domain().length;
