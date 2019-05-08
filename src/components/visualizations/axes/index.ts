@@ -4,7 +4,7 @@ import {translate, rotate, uniqueValues, shortenText, ifUndefinedGetDefault} fro
 import {ChartStyle} from "../chart-styles";
 import {isNullOrUndefined} from "util";
 import {_g, _transform, _x, _y, _text_anchor, _start, _end, GSelection, ScaleLinear, ScaleBand, _stroke_width, _stroke, _fill, _font_size, _font_family, _line, _x1, _x2, _y1, _y2, _color, _stroke_dasharray, _black, _gray} from "src/useful-factory/d3-str";
-import {AXIS_ROOT_ID, CHART_MARGIN, DEFAULT_FONT, AXIS_LABEL_LEN_LIMIT} from "../default-design-manager";
+import {AXIS_ROOT_ID, DEFAULT_FONT, AXIS_LABEL_LEN_LIMIT} from "../default-design-manager";
 import {DF_DELAY, DF_DURATION} from "../animated/default-design";
 
 export type Domain = string[] | number[]
@@ -180,12 +180,9 @@ export function renderAxes(
             if (topX) {
               return isXCategorical ? -60 : -40;
             }
-            else if (styles.layout) {
-              return styles.layout.bottom - 5;
-            }
-            // TODO: should be deprecated
             else {
-              return CHART_MARGIN.bottom - 40;
+              if (!styles.layout) console.log("Something is wrong in axis-renderer");
+              return styles.layout.bottom - 5;
             }
           })
           .style('fill', 'black')
@@ -197,7 +194,8 @@ export function renderAxes(
       else {
         xAxisG
           .selectAll(".x-axis-name")
-          // transition // TODO:
+          .transition(tran)
+          // TODO: no smooth transition
           .text(xName !== undefined ? xName : getAxisName(spec.encoding.x));
       }
     }
@@ -229,15 +227,9 @@ export function renderAxes(
               if (rightY) {
                 return 50;
               }
-              else if (styles.layout) {
-                return -styles.layout.left + 5;
-              }
-              // TOOD: these two should be deprecated
-              else if (isYCategorical) {
-                return -CHART_MARGIN.left + 5;
-              }
               else {
-                return -60;
+                if (!styles.layout) console.log("Something is wrong in axis-renderer");
+                return -styles.layout.left + 5;
               }
             })
             .attr('dy', '.71em')
@@ -245,19 +237,14 @@ export function renderAxes(
             .style('fill', 'black')
             .style('stroke', 'none')
             .style('text-anchor', 'middle')
+            .style("opacity", 1)
             .text(yName !== undefined ? yName : getAxisName(spec.encoding.y));
         }
         else {
           yAxisG
             .selectAll(".y-axis-name")
-            // .transition(tran)  // TODO:
-            // .attr('x', -size.height / 2)
-            // .attr('y', rightY ? 50 : isYCategorical ? -CHART_MARGIN.left + 5 : -60)
-            .attr('dy', '.71em')
-            .style('font-weight', 'bold')
-            .style('fill', 'black')
-            .style('stroke', 'none')
-            .style('text-anchor', 'middle')
+            .transition(tran)
+            // TODO: no smooth transition
             .text(yName !== undefined ? yName : getAxisName(spec.encoding.y));
         }
       }

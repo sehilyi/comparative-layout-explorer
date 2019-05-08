@@ -22,9 +22,7 @@ export function getExamples() {
     /// filter for debugging
     // .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
     // .filter(d => d.C.overlap_reduction != null)
-    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.type === "juxtaposition")
-    // correctCompSpec(d.A, d.B, {...d.C}).layout.unit === "chart" &&
-    // correctCompSpec(d.A, d.B, {...d.C}).layout.arrangement !== "animated")
+    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.arrangement === "animated")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
