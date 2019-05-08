@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {ChartStyle} from "../chart-styles";
-import {PositionAndSize} from "../chart-styles/layout-manager";
+import {PositionAndSize, estimateMaxLegendWidth} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
 import {LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_MARK_LABEL_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
 import {getChartTitle} from "../constraints";
@@ -41,7 +41,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
       isNominal: S.A.legendType === "nominal",
       styles: {isCircle: isScatterplot(A) && C && !isNestingLayout(C)}
     });
-    lastYEnd += recipe[0].top + estimateLegendSize(recipe[0]);
+    lastYEnd += recipe[0].top + estimateLegendHeight(recipe[0]);
   }
 
   if (!B) {
@@ -66,18 +66,14 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
       isNominal: S.B.legendType === "nominal",
       styles: {isCircle: isScatterplot(B) && !isNestingLayout(C)}
     });
-    lastYEnd += estimateLegendSize(recipe[recipe.length - 1]);
+    lastYEnd += estimateLegendHeight(recipe[recipe.length - 1]);
   }
 
   /* consistency legends */
   {
     if (consistency.color.type === "distinct" || consistency.stroke === "distinct" || consistency.texture === "distinct") {
-      // put additional space for consistency legend
-      addWidth = LEGEND_WIDTH;
-      if (isOverlapLayout(C) && (S.A.isLegend || S.B.isLegend) || C.consistency.color.type === "shared") {
-        addWidth -= LEGEND_WIDTH;
-      }
 
+      let widthOfLegends: number[] = []; // for calculating max legend width
       const left = P.B.left + S.B.width + (!isOverlapLayout(C) && S.B.isLegend && C.consistency.color.type !== "shared" ? LEGEND_WIDTH : 0);
       lastYEnd = lastYEnd === 0 ? P.A.top : lastYEnd
 
@@ -97,6 +93,8 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
           isNominal: true,
           styles: legendStyles
         });
+        widthOfLegends.push(estimateMaxLegendWidth(getChartTitle(A)));
+        widthOfLegends.push(estimateMaxLegendWidth(getChartTitle(B)));
       }
       // distinct quantitative color
       else if (isHeatmap(A)) {
@@ -111,11 +109,20 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
           title: S.B.legendNameColor,
           scale: S.B.color,
           left,
-          top: lastYEnd + estimateLegendSize(recipe[recipe.length - 1]),
+          top: lastYEnd + estimateLegendHeight(recipe[recipe.length - 1]),
           isNominal: false
         });
+        widthOfLegends.push(estimateMaxLegendWidth(S.A.legendNameColor));
+        widthOfLegends.push(estimateMaxLegendWidth(S.B.legendNameColor));
       }
-      lastYEnd += estimateLegendSize(recipe[recipe.length - 1]);
+      lastYEnd += estimateLegendHeight(recipe[recipe.length - 1]);
+
+      // put additional space for consistency legend
+      addWidth = d3.max(widthOfLegends);
+      if (isOverlapLayout(C) && (S.A.isLegend || S.B.isLegend) || C.consistency.color.type === "shared") {
+        // TODO: this should tight up the size
+        addWidth = addWidth - S.A.layout.legend;
+      }
     }
     // TODO: and more ...
   }
@@ -128,7 +135,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
   return {height: lastYEnd, addWidth, recipe};
 }
 
-export function estimateLegendSize(recipe: LegendRecipe) {
+export function estimateLegendHeight(recipe: LegendRecipe) {
   if (!recipe.isNominal) {
     return LEGEND_QUAN_TOTAL_HEIGHT;
   }

@@ -8,7 +8,7 @@ import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
-import {LEGEND_WIDTH, LEGEND_PADDING, LEGEND_MARK_SIZE, LEGEND_MARK_LABEL_GAP} from "../legends/default-design";
+import {LEGEND_WIDTH, LEGEND_MARK_SIZE, LEGEND_MARK_LABEL_GAP, LEGEND_RIGHT_PADDING, LEGEND_LEFT_PADDING, LEGEND_WIDTH_WITHOUT_PADDING} from "../legends/default-design";
 import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isScatterplot, isHeatmap, isChartsSuperimposed, isEEChart} from "src/models/chart-types";
 import {ChartDomainData, AxisDomainData} from "../data-handler/domain-manager";
 import {_width} from "src/useful-factory/d3-str";
@@ -95,7 +95,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
   }
   /* nesting */
   else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
-    placement = getChartPositions(1, 1, [S.A, S.B], [L.A]);
+    placement = getChartPositions(1, 1, [S.A, S.B], [L.A, L.B]);
 
     // divide layouts
     // TODO: sub elements' layouts should be shared here
@@ -208,14 +208,26 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
  */
 export function getSingleChartLayout(spec: Spec, domain: ChartDomainData, style: ChartStyle) {
 
-  if (!spec || !domain || !style || style.nestDim !== 0) return undefined;
+  // TODO: consider moving this to legend-manager.ts
+  // nested chart can have legend
+  let legend = 0;
+  if (style && style.isLegend) {
+    if (isBarChart(spec) || isScatterplot(spec)) {
+      // TODO: when nested?
+      legend = estimateMaxLegendWidth(style.legendNameColor, (domain.axis as AxisDomainData).color);
+    }
+    else if (isHeatmap(spec)) {
+      legend = estimateMaxLegendWidth(style.legendNameColor);
+    }
+  }
+
+  if (!spec || !domain || !style || style.nestDim !== 0) return {...DEFAULT_CHART_LAYOUT, legend};
 
   const {
     noX,
     noY,
     topX,
-    rightY,
-    isLegend
+    rightY
   } = style;
 
   const AXIS_NAME_SIZE = 35;
@@ -230,32 +242,25 @@ export function getSingleChartLayout(spec: Spec, domain: ChartDomainData, style:
   const width = style.width;
   const height = style.height;
 
-  let legend = 0;
-  if (isLegend) {
-    if (isBarChart(spec) || isScatterplot(spec)) {
-      const maxNominalW =
-        LEGEND_PADDING +
-        LEGEND_MARK_SIZE.width +
-        LEGEND_MARK_LABEL_GAP +
-        estimateMaxTextWidth((domain.axis as AxisDomainData).color, 10, true, false);
-      const titleW =
-        LEGEND_PADDING +
-        estimateMaxTextWidth([style.legendNameColor], 10, true, false);
-      legend = d3.max([maxNominalW, titleW]);
-    }
-    else if (isHeatmap(spec)) {
-      const titleW =
-        LEGEND_PADDING +
-        estimateMaxTextWidth([style.legendNameColor], 10, true, false);
-      legend = d3.max([titleW, LEGEND_WIDTH]);
-    }
-  }
-
   return {top, bottom, right, left, width, height, legend} as ChartLayout;
+}
+
+export function estimateMaxLegendWidth(title: string, domain?: string[] | number[]) {
+  return (
+    LEGEND_LEFT_PADDING +
+    (
+      domain ? d3.max([
+        estimateMaxTextWidth([title], 10, true, false),
+        LEGEND_MARK_SIZE.width + LEGEND_MARK_LABEL_GAP + estimateMaxTextWidth(domain, 10, true, false)]) :
+        LEGEND_WIDTH_WITHOUT_PADDING
+    ) +
+    LEGEND_RIGHT_PADDING
+  );
 }
 
 // TODO: generalize!
 export function estimateMaxTextWidth(domain: string[] | number[], fontSize: number, isNominal: boolean, isX: boolean) {
+  if (!domain) return 0;
 
   if (!isNominal) {
     domain = domain as number[];
@@ -295,6 +300,7 @@ export function getTextWidth(t: string, s: number) {
 export function getChartPositions(x: number, y: number, styles: ChartStyle[], layouts?: ChartLayout[]) {
 
   if (layouts) {
+    // explicit-encoding chart
     if (layouts.length === 1) {
       return {
         size: {

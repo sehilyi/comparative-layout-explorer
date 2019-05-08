@@ -1,4 +1,4 @@
-import {LEGEND_MARK_SIZE, LEGEND_MARK_LABEL_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_PADDING, LEGEND_LABEL_LEN_LIMIT, LEGEND_QUAN_MARK_HEIGHT} from "./default-design";
+import {LEGEND_MARK_SIZE, LEGEND_MARK_LABEL_GAP, LEGEND_VISIBLE_LIMIT, LEGEND_WIDTH, LEGEND_LEFT_PADDING, LEGEND_LABEL_LEN_LIMIT, LEGEND_QUAN_MARK_HEIGHT} from "./default-design";
 import {_rect, _x, _y, _width, _height, _fill, _stroke, _text, _text_anchor, _start, _alignment_baseline, _middle, _font_size, _font_weight, _bold, _transform, _g, _id, _offset, _stop_color, _x1, _y1, _x2, _y2, _color, _end, GSelection, _cx, _cy, _rx, _ry} from "src/useful-factory/d3-str";
 import d3 = require("d3");
 import {translate, shortenText} from "src/useful-factory/utils";
@@ -14,7 +14,7 @@ export function renderLegend(
 
   const isDiversing = isQuantitative && range.length === 3;
 
-  const left = LEGEND_PADDING, right = LEGEND_PADDING
+  const left = LEGEND_LEFT_PADDING, right = LEGEND_LEFT_PADDING
   // title
   g.append('text')
     .classed('legend-title', true)
@@ -31,7 +31,7 @@ export function renderLegend(
   if (!isQuantitative) {
     // Notice: domain.length is always equal or larger than range.length
     for (let i = 0; i < domain.length; i++) {
-      if (isNullOrUndefined(domain[i])) continue // TODO: what is the problem continuously getting undefined or null??
+      if (isNullOrUndefined(domain[i])) continue; // TODO: what is the problem continuously getting undefined or null??
 
       g.append(_rect)
         .attr(_x, left)
@@ -60,7 +60,7 @@ export function renderLegend(
             return color;
           }
         })  // handle corner case
-        .attr(_stroke, stylesDistinct && stylesDistinct["stroke"] ? stylesDistinct["stroke"][i] : "none")
+        .attr(_stroke, stylesDistinct && stylesDistinct["stroke"] ? stylesDistinct["stroke"][i] : "none");
 
       g.append(_text)
         .attr(_x, left + LEGEND_MARK_SIZE.width + LEGEND_MARK_LABEL_GAP)
@@ -72,7 +72,7 @@ export function renderLegend(
         .text(shortenText(domain[i].toString(), LEGEND_LABEL_LEN_LIMIT))
         // interactions
         .on("mouseover", (d, _i, n) => d3.select(n[_i]).text(domain[i].toString()))
-        .on("mouseout", (d, _i, n) => d3.select(n[_i]).text(shortenText(domain[i].toString(), LEGEND_LABEL_LEN_LIMIT)))
+        .on("mouseout", (d, _i, n) => d3.select(n[_i]).text(shortenText(domain[i].toString(), LEGEND_LABEL_LEN_LIMIT)));
 
       // omit rest of us when two many of them
       if (i == LEGEND_VISIBLE_LIMIT) {
@@ -84,8 +84,8 @@ export function renderLegend(
           .attr(_fill, "black")
           .attr(_font_weight, _bold)
           .attr(_font_size, "18px")
-          .text("...")
-        break
+          .text("...");
+        break;
       }
     }
   }
