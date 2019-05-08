@@ -13,7 +13,7 @@ import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isS
 import {ChartDomainData, AxisDomainData} from "../data-handler/domain-manager";
 import {_width} from "src/useful-factory/d3-str";
 
-export interface Position {
+export interface PositionAndSize {
   width: number;
   height: number;
   left: number;
@@ -56,10 +56,12 @@ export const DEFAULT_CHART_LAYOUT: ChartLayout = {
 export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}, S: {A: ChartStyle, B: ChartStyle}) {
 
   let L: {A: ChartLayout, B: ChartLayout} = {A: undefined, B: undefined};
-  let placement, nestedBs: Position[] | Position[][];
+  let placement, nestedBs: PositionAndSize[] | PositionAndSize[][];
+
+  L.A = getSingleChartLayout(A, domain.A, S.A);
+  L.B = getSingleChartLayout(B, domain.B, S.B);
 
   if (!B) {
-    L.A = getSingleChartLayout(A, domain.A, S.A);
     placement = getChartPositions(1, 1, [S.A], [L.A]);
     S.A = {...S.A, translateX: placement.positions[0].left, translateY: placement.positions[0].top};
     if (L.A) {
@@ -78,29 +80,21 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
   const {type: layout, unit, arrangement} = C.layout;
 
   if (isEEChart(C)) {
-    L.A = getSingleChartLayout(A, domain.A, S.A);
     placement = getChartPositions(1, 1, [S.A], [L.A]);
   }
   else if (layout === "juxtaposition" && unit === "chart") {
-    L.A = getSingleChartLayout(A, domain.A, S.A);
-    L.B = getSingleChartLayout(B, domain.B, S.B);
     const numOfC = arrangement === 'adjacent' ? 2 : 1;
     const numOfR = arrangement === 'stacked' ? 2 : 1;
     placement = getChartPositions(numOfC, numOfR, [S.A, S.B], [L.A, L.B]);
   }
   else if (layout === "juxtaposition" && unit === "element" && getChartType(A) === getChartType(B)) {
-    L.A = getSingleChartLayout(A, domain.A, S.A);
-    L.B = getSingleChartLayout(B, domain.B, S.B);
     placement = getChartPositions(1, 1, [S.A, S.B], [L.A, L.B]);
   }
   else if (isChartsSuperimposed(C)) {
-    L.A = getSingleChartLayout(A, domain.A, S.A);
-    L.B = getSingleChartLayout(B, domain.B, S.B);
     placement = getChartPositions(1, 1, [S.A, S.B], [L.A, L.B]);
   }
   /* nesting */
   else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
-    L.A = getSingleChartLayout(A, domain.A, S.A);
     placement = getChartPositions(1, 1, [S.A, S.B], [L.A]);
 
     // divide layouts
@@ -116,7 +110,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
         .domain([d3.min([d3.min(aValues as number[]), 0]), d3.max(aValues as number[])]).nice()
         .rangeRound([S.A.height, 0]);
       //
-      nestedBs = [] as Position[];
+      nestedBs = [] as PositionAndSize[];
       for (let i = 0; i < numOfX; i++) {
         nestedBs.push({
           left: (bandUnitSize - barWidth) / 2.0 + i * bandUnitSize + S.B.nestingPadding,
@@ -137,7 +131,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
         .domain([d3.min([d3.min(values as number[]), 0]), d3.max(values as number[])]).nice()
         .rangeRound([0, S.A.width]);
       //
-      nestedBs = [] as Position[]
+      nestedBs = [] as PositionAndSize[]
       for (let i = 0; i < numOfCategories; i++) {
         nestedBs.push({
           left: 0,
@@ -153,7 +147,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
       const yValues = getAggValues(A.data.values, A.encoding.color.field, [A.encoding.y.field], A.encoding.y.aggregate).map(d => d[A.encoding.y.field]);
       const pointSize = SCATTER_POINT_SIZE_FOR_NESTING;
       const {x, y} = renderAxes(null, xValues, yValues, A, S.A); // TODO: check styles
-      nestedBs = [] as Position[];
+      nestedBs = [] as PositionAndSize[];
       for (let i = 0; i < numOfCategories; i++) {
         nestedBs.push({
           left: (x as d3.ScaleLinear<number, number>)(xValues[i]) - pointSize / 2.0 + S.B.nestingPadding,
@@ -169,9 +163,9 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
       const width = S.A.width, height = S.A.height;
       const cellWidth = width / numOfXCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2;
       const cellHeight = height / numOfYCategories - S.A.cellPadding * 2 - S.B.nestingPadding * 2;
-      nestedBs = [] as Position[][];
+      nestedBs = [] as PositionAndSize[][];
       for (let i = 0; i < numOfXCategories; i++) {
-        let sub: Position[] = [];
+        let sub: PositionAndSize[] = [];
         for (let j = 0; j < numOfYCategories; j++) {
           sub.push({
             left: i * (cellWidth + S.A.cellPadding * 2 + S.B.nestingPadding * 2) + S.A.cellPadding + S.B.nestingPadding,
@@ -212,9 +206,9 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
  * @param spec
  * @param style
  */
-export function getSingleChartLayout(spec: Spec, doamin: ChartDomainData, style: ChartStyle) {
+export function getSingleChartLayout(spec: Spec, domain: ChartDomainData, style: ChartStyle) {
 
-  if (style.nestDim !== 0) return undefined;
+  if (!spec || !domain || !style || style.nestDim !== 0) return undefined;
 
   const {
     noX,
@@ -224,8 +218,8 @@ export function getSingleChartLayout(spec: Spec, doamin: ChartDomainData, style:
     isLegend
   } = style;
 
-  const WidthOfYAxis = estimateMaxTextWidth((doamin.axis as AxisDomainData).y, spec.encoding.y.type === "nominal", false);
-  const heightOfXAxis = estimateMaxTextWidth((doamin.axis as AxisDomainData).x, spec.encoding.x.type === "nominal", true);
+  const WidthOfYAxis = estimateMaxTextWidth((domain.axis as AxisDomainData).y, spec.encoding.y.type === "nominal", false);
+  const heightOfXAxis = estimateMaxTextWidth((domain.axis as AxisDomainData).x, spec.encoding.x.type === "nominal", true);
 
   const top = (noX ? 5 : topX ? heightOfXAxis : 5) + CHART_TITLE_HEIGHT;
   const bottom = noX ? 5 : topX ? 5 : heightOfXAxis;
@@ -381,7 +375,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[], la
     }
   }
 
-  console.log("HERE");
+  console.log("Something is wrong in managing layout");
   // styles that affects top or left margins of all charts
   const ifAllNoY = styles.filter(d => !d.noY).length === 0;
   const ifThereTopX = styles.filter(d => d.topX).length !== 0;
@@ -409,7 +403,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[], la
     (ifAllNoX ? CHART_MARGIN_NO_AXIS.bottom : CHART_MARGIN.bottom);
 
   // width and height includes margins
-  let positions: Position[] = [];
+  let positions: PositionAndSize[] = [];
   let totalSize = {width: 0, height: 0};
   let lastRight = 0, lastBottom = 0;
 

@@ -10,8 +10,13 @@ import {getAxisName} from "../axes";
 import {_white, _black, _y, _x} from "src/useful-factory/d3-str";
 import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot, isChartsJuxtaposed, isElementsJuxtaposed, isChartsSuperimposed, isColorIdentical, isEEChart} from "src/models/chart-types";
 
-export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: ChartDomainData, B: ChartDomainData}) {
+export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: object[], B: object[]}, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
+
+  if (chartdata.A)
+    S.A.altVals = chartdata.A;
+  if (S.B && chartdata.B)
+    S.B.altVals = chartdata.B;
 
   if (!C) {
     // if single chart

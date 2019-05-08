@@ -92,6 +92,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
       A.encoding[Q].field, B.encoding[Q].field
     );
   }
+
   // nesting: separate B's Q domains by A and B's N fields
   if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
 
@@ -123,6 +124,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
     });
 
     /* determin domains */
+
     // nest by only one N field
     if (ANs.length === 1) {
       let axes: AxisDomainData[] = [];
@@ -140,8 +142,8 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
       for (let i = 0; i < axisA[ANs[0].channel].length; i++) {
         let subAxes: AxisDomainData[] = [];
         for (let j = 0; j < axisA[ANs[1].channel].length; j++) {
-          BQs.forEach(q => {
-            axisB[q.channel] = BQValues[q.field];
+          BQs.forEach(Q => {
+            axisB[Q.channel] = BQValues[Q.field];
           });
           subAxes.push({...axisB});
         }

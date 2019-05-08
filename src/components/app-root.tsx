@@ -63,14 +63,14 @@ export class AppRootBase extends React.PureComponent<AppRootProps, {}> {
       renderSimpleChart(ref, specs.B);
     }
     let onBarChartC = (ref: SVGSVGElement) => {
-      renderCompChart(ref, specs.A, specs.B, specs.C)
+      renderCompChart(ref, specs.A, specs.B, specs.C);
     }
-    let _A = JSON.parse(JSON.stringify(specs.A))
-    _A.data.values = "..."
-    let _B = JSON.parse(JSON.stringify(specs.B))
-    _B.data.values = "..."
-    let _C = JSON.parse(JSON.stringify(specs.C))
-    const key = JSON.stringify(_A) + JSON.stringify(_B) + JSON.stringify(_C)
+    let _A = JSON.parse(JSON.stringify(specs.A));
+    _A.data.values = "...";
+    let _B = JSON.parse(JSON.stringify(specs.B));
+    _B.data.values = "...";
+    let _C = JSON.parse(JSON.stringify(specs.C));
+    const key = JSON.stringify(_A) + JSON.stringify(_B) + JSON.stringify(_C);
     // console.log(_A)
     // console.log(_B)
     // console.log(_C)

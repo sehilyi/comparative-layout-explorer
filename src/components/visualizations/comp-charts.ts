@@ -18,10 +18,14 @@ import {DF_DELAY, DF_DURATION} from "./animated/default-design";
 import {isScatterplot, isChartAnimated} from "src/models/chart-types";
 import {renderLineConnection} from "./line-connection";
 import {getChartData} from "./data-handler/chart-data-manager";
+import {preprocessData} from "./data-handler/data-preprocessor";
 
 export function renderCompChart(ref: SVGSVGElement, A: Spec, B: Spec, C: CompSpec) {
+  /* data manipulate (e.g., add id column) */
+  const {_A: _dA, _B: _dB} = preprocessData({...A}, {...B});
+
   /* correct minor issues in CompSpec and make CompSpec as _CompSpecSolid */
-  const {_A, _B, solidC} = correctCompSpec({...A}, {...B}, {...C});
+  const {_A, _B, solidC} = correctCompSpec({..._dA}, {..._dB}, {...C});
 
   /* check whether specified charts are supported */
   if (!canRenderChart(_A) || !canRenderChart(_B) || !canRenderCompChart(_A, _B, solidC)) return;
@@ -34,18 +38,11 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   // all {}.B are set to undefined if layout === explicit encoding
   const {...chartdata} = getChartData(A, B, C);
   const {...domains} = getDomain(A, B, C, chartdata);
-  const {...styles} = getStyles(A, B, C, domains);
+  const {...styles} = getStyles(A, B, C, chartdata, domains);
   const {...layouts} = getLayouts(A, B, C, domains, styles); // set translateX, translateY, and chartLayout
   const {...legends} = getLegends(A, B, C, {A: layouts.A, B: layouts.B}, styles);
 
   let coordinateA: Coordinate[] | void, coordinateB: Coordinate[] | void;
-
-  // TODO:
-  if (chartdata.A)
-    styles.A.altVals = chartdata.A;
-  if (styles.B && chartdata.B)
-    styles.B.altVals = chartdata.B;
-  //
 
   d3.select(ref).selectAll('*').remove();
   const svg = d3.select(ref).attr(_width, layouts.width + legends.addWidth).attr(_height, d3.max([legends.height, layouts.height]));
@@ -107,14 +104,14 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
     }
   }
 
-  /* explicit encoding */
+  /* explicit encoding overlay */
   if (C && C.explicit_encoding) {
     if (C.explicit_encoding.line_connection && C.explicit_encoding.line_connection.type) {
       renderLineConnection(svg, coordinateA as Coordinate[], coordinateB as Coordinate[]);
     }
   }
 
-  /* render legends */
+  /* legends */
   legends.recipe.forEach(legend => {
     const legendG = svg.append(_g).attr(_transform, translate(legend.left, legend.top));
     renderLegend(legendG, legend.title, legend.scale.domain() as string[], legend.scale.range() as string[], !legend.isNominal, legend.styles);

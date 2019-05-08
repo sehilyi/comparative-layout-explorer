@@ -5,6 +5,7 @@ import {getAggValues, getPivotData, getNQofXY, getFilteredData} from ".";
 import {isNullOrUndefined} from "util";
 import {_y} from "src/useful-factory/d3-str";
 
+// TODO: this should contain id field
 export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: string[][]) {
 
   const specs = {A, B};
@@ -16,7 +17,6 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
     if (!B && AorB === "B") return;
 
     const spec: Spec = specs[AorB];
-    // const {values} = spec.data;
     const filteredData = getFilteredData(spec);
     const {field: xField, aggregate: xAggregate} = spec.encoding.x;
     const {field: yField, aggregate: yAggregate} = spec.encoding.y;
@@ -26,6 +26,7 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
 
       // TODO: when xField and yField same
       chartdata[AorB] = getPivotData(filteredData, [xField, yField], cField, cAggregate, domains);
+      // console.log(chartdata[AorB]);
     }
     else if (isBarChart(spec)) {
       const {N, Q} = getNQofXY(spec);
@@ -34,6 +35,7 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
       const {field: nField} = spec.encoding[N], {field: qField} = spec.encoding[Q];
 
       chartdata[AorB] = getAggValues(filteredData, nField, [qField], qAggregate);
+      // console.log(chartdata[AorB]);
     }
     else if (isScatterplot(spec)) {
       // do not consider different aggregation functions for x and y for the simplicity

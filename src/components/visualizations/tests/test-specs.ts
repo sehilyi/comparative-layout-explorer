@@ -10,7 +10,7 @@ export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
     "(" + deepObjectValue(mC.layout).toString().slice(0, 3).toUpperCase() + "|" + mC.layout.unit.slice(0, 3).toUpperCase() + "|" +
     mC.layout.arrangement.toString().slice(0, 1).toUpperCase() + "|" + (mC.layout.mirrored ? "M|" : "F|") +
     "|Consistency{x:" + mC.consistency.x_axis + ",y:" + mC.consistency.y_axis + ",c:" + mC.consistency.color +
-    "}) " + mC.description
+    "}) " + mC.description;
 }
 export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
   return getChartType(A) + " x " + getChartType(B);
@@ -26,7 +26,7 @@ export function getExamples() {
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
-    // .filter(d => d.C.description === "#1" || d.C.description === "#2")
+    .filter(d => d.C.description === "#3")
     // .filter(d => d.C.description === "#55" || d.C.description === "#56" || d.C.description === "#57" || d.C.description === "#58")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;

@@ -1,9 +1,10 @@
 import {Aggregate, Spec, DataType} from "src/models/simple-vega-spec";
-
 import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
 import {_x, _y} from "src/useful-factory/d3-str";
 import {isBarChart} from "src/models/chart-types";
+
+export const ID_COLUMN = "VISCOMPFRAMEWORK_IDCOLUMN";
 
 /**
  * return type: { key: [...categories by keyField], value: {valueFields[0]: aggregated value, valueFields[1]: aggregated value, ..., valueField[valueFields.length - 1]: aggregated value} }
@@ -13,36 +14,40 @@ import {isBarChart} from "src/models/chart-types";
  * @param aggregate
  */
 export function getAggValues(values: object[], keyField: string, valueFields: string[], aggregate: Aggregate) {
-  return changeKeys(d3.nest()
-    .key(d => d[keyField])
-    .rollup(function (d) {
-      let value = {}
+  return changeKeysNaive(d3.nest()
+    .key(data => data[keyField])
+    .rollup(function (data) {
+      let value = {};
+
+      // keep ids to support e.g., brushing and linking
+      value[ID_COLUMN] = data.map(d => d[ID_COLUMN]);
+
       switch (aggregate) {
         case 'sum':
-          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.sum(d, _d => _d[valueFields[i]])
-          break
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.sum(data, d => d[valueFields[i]]);
+          break;
         case 'mean':
-          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.mean(d, _d => _d[valueFields[i]])
-          break
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.mean(data, _d => _d[valueFields[i]]);
+          break;
         case 'median':
-          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.median(d, _d => _d[valueFields[i]])
-          break
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.median(data, _d => _d[valueFields[i]]);
+          break;
         case 'min':
-          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.min(d, _d => _d[valueFields[i]])
-          break
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.min(data, _d => _d[valueFields[i]]);
+          break;
         case 'max':
-          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.max(d, _d => _d[valueFields[i]])
-          break
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.max(data, _d => _d[valueFields[i]]);
+          break;
         case 'count':
-          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d.length
-          break
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = data.length;
+          break;
         default:
-          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.sum(d, _d => _d[valueFields[i]])
-          break
+          for (let i = 0; i < valueFields.length; i++) value[valueFields[i]] = d3.sum(data, _d => _d[valueFields[i]]);
+          break;
       }
-      return value as undefined
+      return value as undefined;
     })
-    .entries(values), keyField, valueFields)
+    .entries(values), keyField, valueFields);
 }
 
 /**
@@ -52,21 +57,22 @@ export function getAggValues(values: object[], keyField: string, valueFields: st
  * @param keyField
  * @param valueFields
  */
-export function changeKeys(aggValues: object[], keyField: string, valueFields: string[]) {
-  let newVal: object[] = new Array(aggValues.length)
+export function changeKeysNaive(aggValues: object[], keyField: string, valueFields: string[]) {
+  let newVal: object[] = new Array(aggValues.length);
 
   for (let i = 0; i < aggValues.length; i++) {
-    newVal[i] = {}
-    newVal[i][keyField] = aggValues[i]["key"]
+    newVal[i] = {};
+    newVal[i][keyField] = aggValues[i]["key"];
 
     for (let j = 0; j < valueFields.length; j++) {
-      newVal[i][valueFields[j]] = aggValues[i]["value"][valueFields[j]]
+      newVal[i][valueFields[j]] = aggValues[i]["value"][valueFields[j]];
+      newVal[i][ID_COLUMN] = aggValues[i]["value"][ID_COLUMN];
     }
   }
-  // console.log(aggValues)
-  // console.log("changed to")
-  // console.log(newVal)
-  return newVal
+  // console.log(aggValues);
+  // console.log("changed to");
+  // console.log(newVal);
+  return newVal;
 }
 
 /**
@@ -78,25 +84,30 @@ export function changeKeys(aggValues: object[], keyField: string, valueFields: s
  * @param valueField name of quantitative field
  */
 export function tabularizeData(data: object[], keyss: string[][], keyFields: string[], valueField: string) {
-  let newData: object[] = []
-  recTabularizeData(data, keyss, keyFields, valueField, newData, {}, false)
-  return newData
+  let newData: object[] = [];
+  recursiveTabularizeData(data, keyss, keyFields, valueField, newData, {}, false);
+  return newData;
 }
-export function recTabularizeData(data: object[], keyss: string[][], keyFields: string[], valueField: string, resData: object[], curRes: object, isAlreadyNull: boolean) {
+export function recursiveTabularizeData(data: object[], keyss: string[][], keyFields: string[], valueField: string, resData: object[], curRes: object, isAlreadyNull: boolean) {
   keyss[0].forEach(k => {
-    const isNull = isAlreadyNull || data.find(d => d["key"] === k) === undefined
-    const val = isNull ? null : data.find(d => d["key"] === k)[keyFields.length === 1 ? "value" : "values"]
-    let newRes = {...curRes, [keyFields[0]]: k}
+    const isNull = isAlreadyNull || data.find(d => d["key"] === k) === undefined;
+    const val = isNull ? null : data.find(d => d["key"] === k)[keyFields.length === 1 ? "value" : "values"];
+    let newRes = {...curRes, [keyFields[0]]: k};
     if (keyFields.length == 1) {
-      newRes = {...newRes, [valueField]: val}
-      resData.push(newRes)
+      newRes = {
+        ...newRes,
+        [valueField]: val ? val[valueField] : null,
+        [ID_COLUMN]: val ? val[ID_COLUMN] : []
+      };
+      resData.push(newRes);
     }
     else {
-      recTabularizeData(val, keyss.slice(1, keyss.length), keyFields.slice(1, keyFields.length), valueField, resData, newRes, isNull)
+      recursiveTabularizeData(val, keyss.slice(1, keyss.length), keyFields.slice(1, keyFields.length), valueField, resData, newRes, isNull);
     }
-  })
+  });
 }
 
+// TODO: combine getAggValues with this?
 /**
  * This is a more generalized version of getAggValues.
  * To be more generalized, valueField should be array of fields.
@@ -105,39 +116,46 @@ export function recTabularizeData(data: object[], keyss: string[][], keyFields: 
  * @param keyFields
  * @param valueField
  * @param aggregate
- * @param domains pivot data using only these categories (???)
+ * @param domains pivot data using these categories (for the consistency to support e.g., empty column in bar chart)
  */
 export function getPivotData(data: object[], keyFields: string[], valueField: string, aggregate: Aggregate, domains?: string[][]) {
-  let nest = d3.nest()
+  let nest = d3.nest();
   keyFields.forEach(k => {
     nest.key(d => d[k]) // nest by keys
-  })
-  let nestedData = nest
-    .rollup(function (leaves) {
-      switch (aggregate) {
-        case 'sum': return d3.sum(leaves, _d => _d[valueField]) as undefined
-        case 'mean': return d3.mean(leaves, _d => _d[valueField]) as undefined
-        case 'median': return d3.median(leaves, _d => _d[valueField]) as undefined
-        case 'min': return d3.min(leaves, _d => _d[valueField]) as undefined
-        case 'max': return d3.max(leaves, _d => _d[valueField]) as undefined
-        case 'count': return leaves.length as undefined
-        default: return d3.sum(leaves, _d => _d[valueField]) as undefined
-      }
-    })
-    .entries(data)
+  });
+  let nestedData = nest.rollup(function (leaves) {
+    let value = {};
 
-  if (!domains) { // TODO: purpose of this???
-    domains = []
+    // keep ids to support e.g., brushing and linking
+    value[ID_COLUMN] = data.map(d => d[ID_COLUMN]);
+
+    switch (aggregate) {
+      case 'sum': value[valueField] = d3.sum(leaves, _d => _d[valueField]) as undefined;
+      case 'mean': value[valueField] = d3.mean(leaves, _d => _d[valueField]) as undefined;
+      case 'median': value[valueField] = d3.median(leaves, _d => _d[valueField]) as undefined;
+      case 'min': value[valueField] = d3.min(leaves, _d => _d[valueField]) as undefined;
+      case 'max': value[valueField] = d3.max(leaves, _d => _d[valueField]) as undefined;
+      case 'count': value[valueField] = leaves.length as undefined;
+      default: value[valueField] = d3.sum(leaves, _d => _d[valueField]) as undefined;
+    }
+
+    return value as undefined;
+  }).entries(data);
+
+  console.log(nestedData);
+
+  if (!domains) {
+    domains = [];
     keyFields.forEach(d => {
       domains.push(uniqueValues(data, d))
-    })
+    });
   }
-  return tabularizeData(nestedData, domains, keyFields, valueField)
+  return tabularizeData(nestedData, domains, keyFields, valueField);
 }
 
 /**
  * get aggregated data by one nominal and one quantitative values of x and y
- * @param s
+ * @param s spec
  */
 export function getAggregatedData(s: Spec) {
   const {N, Q} = getNQofXY(s);
@@ -183,7 +201,7 @@ export function getFilteredData(s: Spec) {
 }
 
 /**
- * filter data by nominal value
+ * filter data by a nominal value
  * @param d
  * @param k
  * @param v

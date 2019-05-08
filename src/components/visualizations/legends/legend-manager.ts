@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {ChartStyle} from "../chart-styles";
-import {Position} from "../chart-styles/layout-manager";
+import {PositionAndSize} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
 import {LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
 import {getChartTitle} from "../constraints";
@@ -27,7 +27,7 @@ export type LegendRecipe = {
  * @param P
  * @param S
  */
-export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: Position, B: Position}, S: {A: ChartStyle, B: ChartStyle}) {
+export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionAndSize, B: PositionAndSize}, S: {A: ChartStyle, B: ChartStyle}) {
   let recipe: LegendRecipe[] = [];
   let lastYEnd = 0, addWidth = 0;
 
