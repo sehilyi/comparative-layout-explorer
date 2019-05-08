@@ -51,7 +51,7 @@ export type Coordinate = {
 }
 
 export function getID(ids: number[], alt?: string) {
-  return ids.length === 0 ? alt : ids.map(d => d.toString()).toString();
+  return !ids || ids.length === 0 ? alt : ids.map(d => d.toString()).toString();
 }
 
 export function getBarSize(cw: number, n: number, g: number) {

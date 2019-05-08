@@ -13,10 +13,12 @@ import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingL
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: object[], B: object[]}, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
 
-  if (chartdata.A)
+  if (chartdata.A) {
     S.A.altVals = chartdata.A;
-  if (S.B && chartdata.B)
+  }
+  if (S.B && chartdata.B) {
     S.B.altVals = chartdata.B;
+  }
 
   if (!C) {
     // if single chart
@@ -224,7 +226,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
     }
 
     /* cross consistency */
-    // TODO:
+    // TODO: not supporting this for the simplicity for now
     // if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "foreground") S.B.color = colorB
     if (consistency.color.secondary_target.element === "mark" && consistency.color.secondary_target.property === "stroke") {
       S.B.stroke = S.A.color;

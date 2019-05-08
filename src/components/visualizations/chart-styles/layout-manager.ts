@@ -8,7 +8,7 @@ import d3 = require("d3");
 import {uniqueValues} from "src/useful-factory/utils";
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {renderAxes} from "../axes";
-import {LEGEND_WIDTH} from "../legends/default-design";
+import {LEGEND_WIDTH, LEGEND_PADDING, LEGEND_MARK_SIZE, LEGEND_MARK_LABEL_GAP} from "../legends/default-design";
 import {getChartType, isNestingLayout, isNestingLayoutVariation, isBarChart, isScatterplot, isHeatmap, isChartsSuperimposed, isEEChart} from "src/models/chart-types";
 import {ChartDomainData, AxisDomainData} from "../data-handler/domain-manager";
 import {_width} from "src/useful-factory/d3-str";
@@ -218,8 +218,9 @@ export function getSingleChartLayout(spec: Spec, domain: ChartDomainData, style:
     isLegend
   } = style;
 
-  const WidthOfYAxis = estimateMaxTextWidth((domain.axis as AxisDomainData).y, spec.encoding.y.type === "nominal", false);
-  const heightOfXAxis = estimateMaxTextWidth((domain.axis as AxisDomainData).x, spec.encoding.x.type === "nominal", true);
+  const AXIS_NAME_SIZE = 35;
+  const WidthOfYAxis = AXIS_NAME_SIZE + estimateMaxTextWidth((domain.axis as AxisDomainData).y, 12, spec.encoding.y.type === "nominal", false);
+  const heightOfXAxis = AXIS_NAME_SIZE + estimateMaxTextWidth((domain.axis as AxisDomainData).x, 12, spec.encoding.x.type === "nominal", true);
 
   const top = (noX ? 5 : topX ? heightOfXAxis : 5) + CHART_TITLE_HEIGHT;
   const bottom = noX ? 5 : topX ? 5 : heightOfXAxis;
@@ -229,34 +230,52 @@ export function getSingleChartLayout(spec: Spec, domain: ChartDomainData, style:
   const width = style.width;
   const height = style.height;
 
-  // TODO: adjustable size
-  const legend = isLegend ? LEGEND_WIDTH : 0;
+  let legend = 0;
+  if (isLegend) {
+    if (isBarChart(spec) || isScatterplot(spec)) {
+      const maxNominalW =
+        LEGEND_PADDING +
+        LEGEND_MARK_SIZE.width +
+        LEGEND_MARK_LABEL_GAP +
+        estimateMaxTextWidth((domain.axis as AxisDomainData).color, 10, true, false);
+      const titleW =
+        LEGEND_PADDING +
+        estimateMaxTextWidth([style.legendNameColor], 10, true, false);
+      legend = d3.max([maxNominalW, titleW]);
+    }
+    else if (isHeatmap(spec)) {
+      const titleW =
+        LEGEND_PADDING +
+        estimateMaxTextWidth([style.legendNameColor], 10, true, false);
+      legend = d3.max([titleW, LEGEND_WIDTH]);
+    }
+  }
 
   return {top, bottom, right, left, width, height, legend} as ChartLayout;
 }
 
-export function estimateMaxTextWidth(domain: string[] | number[], isNominal: boolean, isX: boolean) {
-  const FONT_SIZE = 12, AXIS_NAME_SIZE = 35;
+// TODO: generalize!
+export function estimateMaxTextWidth(domain: string[] | number[], fontSize: number, isNominal: boolean, isX: boolean) {
 
   if (!isNominal) {
     domain = domain as number[];
     const maxLength = d3.max(domain.map((d: number) => d3.format('.2s')(d).length));
     const index = domain.indexOf(domain.find((d: number) => d3.format('.2s')(d).length === maxLength));
-    let width = getTextWidth(d3.format('.2s')(domain[index]), FONT_SIZE);
+    let width = getTextWidth(d3.format('.2s')(domain[index]), fontSize);
     if (isX) {
-      width = FONT_SIZE;
+      width = fontSize;
     }
-    return width + AXIS_NAME_SIZE;
+    return width;
   }
   else {
     domain = domain as string[];
     const maxLength = d3.max(domain.map((d: string) => d.length));
     const index = domain.indexOf(domain.find((d: string) => d.length === maxLength));
-    let width = getTextWidth(domain[index], FONT_SIZE);
+    let width = getTextWidth(domain[index], fontSize);
     if (isX) {
       width *= 0.766;  // sin (360 - 310 degree)
     }
-    return width + AXIS_NAME_SIZE;
+    return width;
   }
 }
 

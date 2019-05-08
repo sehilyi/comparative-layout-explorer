@@ -22,11 +22,11 @@ export function getExamples() {
     /// filter for debugging
     // .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
     // .filter(d => d.C.overlap_reduction != null)
-    .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.arrangement === "animated")
+    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.arrangement === "animated")
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
-    // .filter(d => d.C.description === "#17")
+    // .filter(d => d.C.description === "#1")
     // .filter(d => d.C.description === "#55" || d.C.description === "#56" || d.C.description === "#57" || d.C.description === "#58")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;

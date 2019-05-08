@@ -4,7 +4,7 @@ import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {ChartStyle} from "../chart-styles";
 import {PositionAndSize} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
-import {LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
+import {LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_MARK_LABEL_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
 import {getChartTitle} from "../constraints";
 import {isOverlapLayout, isScatterplot, isNestingLayout, isBarChart, isHeatmap} from "src/models/chart-types";
 
@@ -54,7 +54,10 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
 
   /* B's legend */
   if (S.B && S.B.isLegend) {
-    if (lastYEnd === 0) lastYEnd = P.B.top;
+    if (lastYEnd === 0) {
+      lastYEnd = P.B.top;
+    }
+
     recipe.push({
       title: S.B.legendNameColor,
       scale: S.B.color,
@@ -133,7 +136,7 @@ export function estimateLegendSize(recipe: LegendRecipe) {
     let n = d3.min([recipe.scale.domain().length, LEGEND_VISIBLE_LIMIT])
     return (
       20 /* title */ +
-      (LEGEND_GAP + LEGEND_MARK_SIZE.height) * n +
+      (LEGEND_MARK_LABEL_GAP + LEGEND_MARK_SIZE.height) * n +
       (LEGEND_VISIBLE_LIMIT === n ? 30 : 0) /* height of "..." */
     );
   }
