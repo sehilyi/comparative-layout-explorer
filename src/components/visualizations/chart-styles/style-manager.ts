@@ -127,7 +127,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Chart
   }
   else {
     S.A.legendNameColor = getAxisName(A.encoding.color, colorConsis === "shared" ? B.encoding.color : undefined, diffStr);
-    S.B.legendNameColor = getAxisName(A.encoding.color, colorConsis === "shared" ? B.encoding.color : undefined, diffStr);
+    S.B.legendNameColor = getAxisName(B.encoding.color, colorConsis === "shared" ? B.encoding.color : undefined, diffStr);
   }
 
   /* z index */
