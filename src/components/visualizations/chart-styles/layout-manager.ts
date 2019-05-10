@@ -20,7 +20,7 @@ export interface PositionAndSize {
   top: number;
 }
 
-export class ChartLayout {
+export interface ChartLayout {
   // margin size (axis or title)
   top: number;
   bottom: number;
@@ -214,10 +214,10 @@ export function getSingleChartLayout(spec: Spec, domain: ChartDomainData, style:
   if (style && style.isLegend) {
     if (isBarChart(spec) || isScatterplot(spec)) {
       // TODO: when nested?
-      legend = estimateMaxLegendWidth(style.legendNameColor, (domain.axis as AxisDomainData).color);
+      legend = getMaxNomLegendWidth(style.legendNameColor, (domain.axis as AxisDomainData).color);
     }
     else if (isHeatmap(spec)) {
-      legend = estimateMaxLegendWidth(style.legendNameColor);
+      legend = getMaxQuanLegendWidth(style.legendNameColor);
     }
   }
 
@@ -241,18 +241,28 @@ export function getSingleChartLayout(spec: Spec, domain: ChartDomainData, style:
 
   const width = style.width;
   const height = style.height;
-
   return {top, bottom, right, left, width, height, legend} as ChartLayout;
 }
 
-export function estimateMaxLegendWidth(title: string, domain?: string[] | number[]) {
+export function getMaxNomLegendWidth(title: string, domain: string[] | number[]) {
   return (
     LEGEND_LEFT_PADDING +
     (
-      domain ? d3.max([
+      d3.max([
         estimateMaxTextWidth([title], 10, true, false),
-        LEGEND_MARK_SIZE.width + LEGEND_MARK_LABEL_GAP + estimateMaxTextWidth(domain, 10, true, false)]) :
-        LEGEND_WIDTH_WITHOUT_PADDING
+        LEGEND_MARK_SIZE.width + LEGEND_MARK_LABEL_GAP + estimateMaxTextWidth(domain, 10, true, false)])
+    ) +
+    LEGEND_RIGHT_PADDING
+  );
+}
+
+export function getMaxQuanLegendWidth(title: string) {
+  return (
+    LEGEND_LEFT_PADDING +
+    (
+      d3.max([
+        estimateMaxTextWidth([title], 10, true, false),
+        LEGEND_WIDTH_WITHOUT_PADDING])
     ) +
     LEGEND_RIGHT_PADDING
   );

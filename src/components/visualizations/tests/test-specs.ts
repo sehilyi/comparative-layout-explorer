@@ -26,8 +26,8 @@ export function getExamples() {
     // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
-    .filter(d => d.C.description === "#27")
-    // .filter(d => d.C.description === "#55" || d.C.description === "#56" || d.C.description === "#57" || d.C.description === "#58")
+    // .filter(d => d.C.description === "#27")
+    .filter(d => d.C.description.includes("#14") || d.C.description === "#29" || d.C.description === "#32" || d.C.description === "#46")
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 

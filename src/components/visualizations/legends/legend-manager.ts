@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import {Spec} from "src/models/simple-vega-spec";
 import {_CompSpecSolid, _ConsistencySolid} from "src/models/comp-spec";
 import {ChartStyle} from "../chart-styles";
-import {PositionAndSize, estimateMaxLegendWidth} from "../chart-styles/layout-manager";
+import {PositionAndSize, getMaxNomLegendWidth, getMaxQuanLegendWidth} from "../chart-styles/layout-manager";
 import {ScaleLinearColor, ScaleOrdinal} from "src/useful-factory/d3-str";
 import {LEGEND_QUAN_TOTAL_HEIGHT, LEGEND_VISIBLE_LIMIT, LEGEND_MARK_LABEL_GAP, LEGEND_MARK_SIZE, LEGEND_WIDTH} from "./default-design";
 import {getChartTitle} from "../constraints";
@@ -93,8 +93,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
           isNominal: true,
           styles: legendStyles
         });
-        widthOfLegends.push(estimateMaxLegendWidth(getChartTitle(A)));
-        widthOfLegends.push(estimateMaxLegendWidth(getChartTitle(B)));
+        widthOfLegends.push(getMaxNomLegendWidth("Chart", [getChartTitle(A), getChartTitle(B)]));
       }
       // distinct quantitative color
       else if (isHeatmap(A)) {
@@ -112,8 +111,8 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
           top: lastYEnd + estimateLegendHeight(recipe[recipe.length - 1]),
           isNominal: false
         });
-        widthOfLegends.push(estimateMaxLegendWidth(S.A.legendNameColor));
-        widthOfLegends.push(estimateMaxLegendWidth(S.B.legendNameColor));
+        widthOfLegends.push(getMaxQuanLegendWidth(S.A.legendNameColor));
+        widthOfLegends.push(getMaxQuanLegendWidth(S.B.legendNameColor));
       }
       lastYEnd += estimateLegendHeight(recipe[recipe.length - 1]);
 

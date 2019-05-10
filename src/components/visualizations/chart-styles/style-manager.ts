@@ -169,7 +169,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
 
     if (colorConsis === "shared") {
       if (A.encoding.color || B.encoding.color) {
-        if ((layout === "superimposition") || (layout === "juxtaposition" && arrangement === "stacked")) {
+        if (isOverlapLayout(C) || (layout === "juxtaposition" && arrangement === "stacked")) {
           S.A.isLegend = true;
           S.A.legendType = colorType.A || colorType.B;
         }
