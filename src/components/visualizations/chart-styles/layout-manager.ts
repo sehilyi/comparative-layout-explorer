@@ -213,8 +213,7 @@ export function getSingleChartLayout(spec: Spec, domain: ChartDomainData, style:
   let legend = 0;
   if (style && style.isLegend) {
     if (isBarChart(spec) || isScatterplot(spec)) {
-      // TODO: when nested?
-      legend = getMaxNomLegendWidth(style.legendNameColor, (domain.axis as AxisDomainData).color);
+      legend = getMaxNomLegendWidth(style.legendNameColor, style.color.domain()); // TODO: should I have separate color domain for legend?
     }
     else if (isHeatmap(spec)) {
       legend = getMaxQuanLegendWidth(style.legendNameColor);

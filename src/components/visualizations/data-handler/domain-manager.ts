@@ -25,7 +25,7 @@ export const DEFAULT_AXIS_DOMAIN = {
  * * This does not returns unique values of domains.
  */
 export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: object[], B: object[]}) {
-  let resA: ChartDomainData, resB: ChartDomainData;
+  let domainA: ChartDomainData, domainB: ChartDomainData;
   let axisA: AxisDomainData = {...DEFAULT_AXIS_DOMAIN}, axisB: AxisDomainData = {...DEFAULT_AXIS_DOMAIN};
   const spec = {A, B};
   const axis = {A: axisA, B: axisB};
@@ -77,8 +77,8 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
         (axis.A.color as number[]).concat(axis.B.color as number[]);
   }
 
-  resA = {axis: axisA};
-  resB = {axis: axisB};
+  domainA = {axis: axisA};
+  domainB = {axis: axisB};
 
   /* exceptions */
   // stacked Bar Chart: Q data should be aggregated values
@@ -134,7 +134,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
         });
         axes.push({...axisB});
       }
-      resB = {...resB, axis: axes};
+      domainB = {...domainB, axis: axes};
     }
     // nest by two N fields
     else if (ANs.length === 2) {
@@ -149,10 +149,10 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
         }
         axes.push(subAxes);
       }
-      resB = {...resB, axis: axes};
+      domainB = {...domainB, axis: axes};
     }
   }
-  return {A: resA, B: isEEChart(C) ? undefined : resB};
+  return {A: domainA, B: isEEChart(C) ? undefined : domainB};
 }
 
 /**

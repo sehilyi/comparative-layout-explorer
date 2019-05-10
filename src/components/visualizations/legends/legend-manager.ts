@@ -119,8 +119,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
       // put additional space for consistency legend
       addWidth = d3.max(widthOfLegends);
       if (isOverlapLayout(C) && (S.A.isLegend || S.B.isLegend) || C.consistency.color.type === "shared") {
-        // TODO: this should tight up the size
-        addWidth = addWidth - S.A.layout.legend;
+        addWidth = d3.max([0, addWidth - (S.A.isLegend ? S.A.layout.legend : S.B.layout.legend)]);
       }
     }
     // TODO: and more ...
