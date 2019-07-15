@@ -1,13 +1,13 @@
 import {_CompSpecSolid} from "./comp-spec";
 import {Spec} from "./simple-vega-spec";
 
-export type ChartTypes = "scatterplot" | "barchart" | "linechart" | "heatmap" | "NULL";
+export type ChartType = "scatterplot" | "barchart" | "linechart" | "heatmap" | "NULL";
 
 /**
  * Get chart type.
  * @param spec
  */
-export function getChartType(spec: Spec): ChartTypes {
+export function getChartType(spec: Spec): ChartType {
   if (isScatterplot(spec)) return "scatterplot";
   else if (isBarChart(spec)) return "barchart";
   else if (isHeatmap(spec)) return "heatmap";
