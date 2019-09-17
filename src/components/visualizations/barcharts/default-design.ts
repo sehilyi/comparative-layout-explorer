@@ -5,4 +5,4 @@ export const MAX_BAR_SIZE = 100;
 export const BAR_COLOR = '#4E79A7';
 export const BAR_COLOR2 = '#F28E2B';
 
-export const TICK_THICKNESS = 2;
+export const TICK_THICKNESS = 4;

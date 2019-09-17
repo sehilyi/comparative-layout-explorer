@@ -22,8 +22,8 @@ export function getExamples() {
     /// filter for debugging
     // .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
     // .filter(d => d.C.overlap_reduction != null)
-    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.arrangement === "animated")
-    // .filter(d => d.A.mark === "rect" || d.B.mark === "rect")
+    .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.arrangement !== "animated")
+    .filter(d => d.A.mark === d.B.mark)
     // .filter(d => d.A.mark === "point" || d.B.mark === "point")
     // .filter(d => d.C.name.includes("element-wise juxtaposition test"))
     // .filter(d => d.C.description.includes("#46"))
@@ -42,6 +42,261 @@ export function getExamples() {
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   const values = DATASET_MOVIES.rawData.splice(0, 500)
   return [
+    {
+      C: {
+        description: "chart-wise jux bar",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        description: "sup bar",
+        layout: {type: "superimposition", unit: "chart"},
+        consistency: {
+          x_axis: true, y_axis: true, texture: "distinct"
+        },
+        overlap_reduction: {
+          jitter_x: true, opacity: true,
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        description: "ee bar",
+        layout: {type: "explicit-encoding"},
+      },
+      // https://vega.github.io/vega-lite/examples/
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        description: "chart-wise mirrored jux bar",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
+        consistency: {
+          x_axis: false, y_axis: true, color: "shared"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          y: {field: "Source", type: "nominal"},
+          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          y: {field: "Source", type: "nominal"},
+          x: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        description: "element-wise jux bar",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "distinct"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        description: "element-wise jux bar",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "distinct"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
+        description: "item-wise jux heatmap adjacent",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        description: "item-wise jux heatmap diagonal",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "diagonal"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        description: "sup heatmap resize",
+        layout: {type: "superimposition", unit: "chart"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        },
+        overlap_reduction: {
+          resize: true
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values},
+        mark: "rect",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Creative_Type", type: "nominal"},
+          color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
     {
       C: {
         description: "#1",
