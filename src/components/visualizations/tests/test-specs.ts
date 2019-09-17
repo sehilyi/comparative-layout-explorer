@@ -40,7 +40,7 @@ export function getExamples() {
 
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
-  const values = DATASET_MOVIES.rawData.splice(0, 500)
+  const values = DATASET_MOVIES.rawData.splice(0, 200)//.filter(d => d["Source"] !== null)
   return [
     {
       C: {
@@ -131,7 +131,10 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         description: "chart-wise mirrored jux bar",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {
-          x_axis: false, y_axis: true, color: "shared"
+          x_axis: true, y_axis: true, color: "shared"
+        },
+        style: {
+          width: 450,
         }
       },
       // https://vega.github.io/vega-lite/examples/
