@@ -37,7 +37,7 @@ export function canRenderCompChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   if (layout === "superimposition" && unit === "element" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false;
   if (arrangement === "animated" && layout === "superimposition") can = false;
   if (arrangement === "animated" && getChartType(A) !== getChartType(B)) can = false; // do not support animated transition between different charts
-  if (arrangement === "diagonal" && (layout !== "juxtaposition" || unit !== "element" || !isBothHeatmap(A, B))) can = false;
+  if (arrangement === "diagonal" && (layout !== "juxtaposition" /* || unit !== "element" */ || !isBothHeatmap(A, B))) can = false;
 
   if (!can) console.log("error: such comparison is not supported.");
   return can;

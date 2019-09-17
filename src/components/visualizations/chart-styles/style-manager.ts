@@ -8,7 +8,7 @@ import {getConsistentColor, DEFAULT_STROKE_WIDTH, DEFAULT_STROKE, NESTING_PADDIN
 import {SCATTER_POINT_SIZE_FOR_NESTING} from "../scatterplots/default-design";
 import {getAxisName} from "../axes";
 import {_white, _black, _y, _x} from "src/useful-factory/d3-str";
-import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot, isChartsJuxtaposed, isElementsJuxtaposed, isChartsSuperimposed, isColorIdentical, isEEChart} from "src/models/chart-types";
+import {isElementAnimated, isBarChart, isBothBarChart, isBothHeatmap, isNestingLayoutVariation, isNestingLayout, isOverlapLayout, isBothScatterplot, isStackedBarChart, isGroupedBarChart, isDivisionHeatmap, isHeatmap, isScatterplot, isChartsJuxtaposed, isElementsJuxtaposed, isChartsSuperimposed, isColorIdentical, isEEChart, isChartDiagonalHeatmap} from "src/models/chart-types";
 
 export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: object[], B: object[]}, domain: {A: ChartDomainData, B: ChartDomainData}) {
   const S = {A: {...DEFAULT_CHART_STYLE}, B: {...DEFAULT_CHART_STYLE}};
@@ -286,6 +286,12 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
       S.A.heightTimes = 0.5;
       S.B.heightTimes = 0.5;
     }
+  }
+  else if (isChartDiagonalHeatmap(A, B, C)) {
+    S.A.diagonalPart = "bottom";
+    S.B.diagonalPart = "top";
+
+    S.B.noAxes = true;
   }
   else if (isNestingLayout(C) || isNestingLayoutVariation(A, B, C)) {
     S.B.barGap = 0;

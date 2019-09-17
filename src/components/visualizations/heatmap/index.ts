@@ -38,7 +38,8 @@ export function renderCells(
     elementAnimated: animated,
     strokeKey: sKey,
     stroke_width: strokeWidth,
-    triangularCell: triangleCell
+    triangularCell: triangleCell,
+    diagonalPart
   } = styles;
 
   if (height < 0 || width < 0) return []; // when height or width of nesting root is too small
@@ -77,6 +78,10 @@ export function renderCells(
     .attr(_stroke, d => (styles.stroke as ScaleOrdinal)(d[_S]) as string)
     .attr(_stroke_width, styles.stroke_width)
     .attr(_fill, function (d) {
+
+      if (diagonalPart === "top" && scales.x.domain().indexOf(d[_X]) > scales.x.domain().indexOf(d[_Y])) return "none";
+      else if (diagonalPart === "bottom" && scales.x.domain().indexOf(d[_X]) < scales.x.domain().indexOf(d[_Y])) return "none";
+
       // d[cKey] can be either null or undefined
       const colorStr = isNullOrUndefined(d[_C]) ? styles.nullCellFill : (scales.color as ScaleLinearColor)(d[_C]);
       if (!styles.texture) {

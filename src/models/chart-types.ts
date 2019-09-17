@@ -130,6 +130,10 @@ export function isDivisionHeatmap(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = C.layout;
   return layout === "juxtaposition" && unit === "element" && arrangement !== "animated" && isBothHeatmap(A, B);
 }
+export function isChartDiagonalHeatmap(A: Spec, B: Spec, C: _CompSpecSolid) {
+  const {type: layout, unit, arrangement} = C.layout;
+  return layout === "juxtaposition" && unit === "chart" && arrangement === "diagonal" && isBothHeatmap(A, B);
+}
 export function isChartUnitScatterplots(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit} = C.layout;
   return ((layout === "juxtaposition" && unit === "chart") || (layout === "superimposition" && unit === "chart")) &&

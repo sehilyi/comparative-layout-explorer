@@ -3,6 +3,7 @@ import {CompSpec} from "src/models/comp-spec";
 import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import {getChartType} from "src/models/chart-types";
+import {DATASET_MTCAR_SYN} from "src/datasets/mtcar_syn";
 
 export function getCompTitle(A: Spec, B: Spec, C: CompSpec) {
   const mC = correctCompSpec({...A}, {...B}, {...C}).solidC;
@@ -40,7 +41,8 @@ export function getExamples() {
 
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
-  const values = DATASET_MOVIES.rawData.splice(0, 200)//.filter(d => d["Source"] !== null)
+  const values = DATASET_MOVIES.rawData.splice(0, 200);//.filter(d => d["Source"] !== null)
+  const mValues = DATASET_MTCAR_SYN.rawData;
   return [
     {
       C: {
@@ -269,6 +271,125 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
           x: {field: "Source", type: "nominal"},
           y: {field: "Creative_Type", type: "nominal"},
           color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        description: "item-wise jux heatmap adjacent",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        },
+        style: {width: 300}
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values: mValues},
+        mark: "rect",
+        encoding: {
+          x: {field: "Variable_1", type: "nominal"},
+          y: {field: "Variable_2", type: "nominal"},
+          color: {field: "Correlation_1", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values: mValues},
+        mark: "rect",
+        encoding: {
+          x: {field: "Variable_1", type: "nominal"},
+          y: {field: "Variable_2", type: "nominal"},
+          color: {field: "Correlation_2", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        description: "item-wise jux heatmap diagonal",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "diagonal"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        },
+        style: {width: 300}
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values: mValues},
+        mark: "rect",
+        encoding: {
+          x: {field: "Variable_1", type: "nominal"},
+          y: {field: "Variable_2", type: "nominal"},
+          color: {field: "Correlation_1", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values: mValues},
+        mark: "rect",
+        encoding: {
+          x: {field: "Variable_1", type: "nominal"},
+          y: {field: "Variable_2", type: "nominal"},
+          color: {field: "Correlation_2", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        description: "sup heatmap resize",
+        layout: {type: "superimposition", unit: "chart"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        },
+        overlap_reduction: {
+          resize: true
+        },
+        style: {width: 300}
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values: mValues},
+        mark: "rect",
+        encoding: {
+          x: {field: "Variable_1", type: "nominal"},
+          y: {field: "Variable_2", type: "nominal"},
+          color: {field: "Correlation_1", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values: mValues},
+        mark: "rect",
+        encoding: {
+          x: {field: "Variable_1", type: "nominal"},
+          y: {field: "Variable_2", type: "nominal"},
+          color: {field: "Correlation_2", type: "quantitative", aggregate: "mean"}
+        }
+      },
+    },
+    {
+      C: {
+        description: "chart-wise jux heatmap diagonal",
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "diagonal"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "shared"
+        },
+        style: {width: 300}
+      },
+      // https://vega.github.io/vega-lite/examples/
+      A: {
+        data: {values: mValues},
+        mark: "rect",
+        encoding: {
+          x: {field: "Variable_1", type: "nominal"},
+          y: {field: "Variable_2", type: "nominal"},
+          color: {field: "Correlation_1", type: "quantitative", aggregate: "mean"}
+        }
+      },
+      B: {
+        data: {values: mValues},
+        mark: "rect",
+        encoding: {
+          x: {field: "Variable_1", type: "nominal"},
+          y: {field: "Variable_2", type: "nominal"},
+          color: {field: "Correlation_2", type: "quantitative", aggregate: "mean"}
         }
       },
     },
