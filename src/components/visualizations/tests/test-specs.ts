@@ -281,7 +281,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
-        style: {width: 300}
+        style: {width: 260}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
@@ -310,7 +310,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
-        style: {width: 300}
+        style: {width: 260}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
@@ -342,7 +342,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         overlap_reduction: {
           resize: true
         },
-        style: {width: 300}
+        style: {width: 260}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
@@ -371,7 +371,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
-        style: {width: 300}
+        style: {width: 260}
       },
       // https://vega.github.io/vega-lite/examples/
       A: {
