@@ -34,6 +34,7 @@ export type SupCompUnit = commonCompUnit | "area";  // deprecated
 /* explicit encoding */
 export type ExplicitEncoding = {
   line_connection?: LineConnection;
+  difference_mark?: boolean;
   // add more...
 }
 export type LineConnection = {

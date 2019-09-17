@@ -15,7 +15,7 @@ import {canRenderChart, canRenderCompChart} from "./constraints";
 import {animateChart} from "./animated";
 import {getLegends} from "./legends/legend-manager";
 import {DF_DELAY, DF_DURATION} from "./animated/default-design";
-import {isScatterplot, isChartAnimated} from "src/models/chart-types";
+import {isScatterplot, isChartAnimated, getChartType} from "src/models/chart-types";
 import {renderLineConnection} from "./line-connection";
 import {getChartData} from "./data-handler/chart-data-manager";
 import {preprocessData} from "./data-handler/data-preprocessor";
@@ -108,6 +108,35 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
   if (C && C.explicit_encoding) {
     if (C.explicit_encoding.line_connection && C.explicit_encoding.line_connection.type) {
       renderLineConnection(svg, coordinateA as Coordinate[], coordinateB as Coordinate[]);
+    }
+    if (C.explicit_encoding.difference_mark) {
+      // TODO: now only works for vertical bar charts
+      if (getChartType(A) === getChartType(B) && getChartType(A) === "barchart") {
+
+        const newC = {...C, layout: {type: "explicit-encoding"}} as _CompSpecSolid;
+
+        // change color of tick marks
+        const newColor = d3.scaleOrdinal()
+          // no domain
+          .domain(["NULL"])
+          .range(["#D60000"]);
+
+        const {...chartdata} = getChartData(A, B, newC);
+        const {...domains} = getDomain(A, B, newC, chartdata);
+        const {...styles} = getStyles(A, B, newC, chartdata, domains);
+        let newStyle = {...styles, A: {...styles.A, noAxes: true, noGrid: true, color: newColor}};
+        getLayouts(A, B, newC, domains, newStyle); // set translateX, translateY, and chartLayout
+        newStyle = {...styles, A: {...newStyle.A, translateX: newStyle.A.translateX + 4}};
+
+        /// Debug
+        console.log(newStyle);
+        console.log(domains);
+        //
+
+        if (!Array.isArray(domains.A.axis)) {
+          renderChart(svg, A, {x: domains.A.axis.x, y: domains.A.axis.y}, newStyle.A.color, newStyle.A);
+        }
+      }
     }
   }
 

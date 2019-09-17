@@ -187,6 +187,37 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
+        description: "element-wise jux bar + ee overlay",
+        layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        consistency: {
+          x_axis: true, y_axis: true, color: "distinct"
+        },
+        explicit_encoding: {
+          difference_mark: true
+        }
+      },
+      // https://vega.github.io/vega-lite/examples/
+      B: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      },
+      A: {
+        data: {values},
+        mark: "bar",
+        encoding: {
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          color: {field: "Source", type: "nominal"}
+        }
+      }
+    },
+    {
+      C: {
         description: "element-wise jux bar",
         layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
         consistency: {
