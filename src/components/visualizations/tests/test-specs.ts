@@ -129,12 +129,12 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         description: "chart-wise mirrored jux bar",
-        layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
+        layout: {type: "juxtaposition", unit: "chart", arrangement: "stacked", mirrored: true},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
         style: {
-          width: 450,
+          height: 350,
         }
       },
       // https://vega.github.io/vega-lite/examples/
@@ -142,8 +142,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         data: {values},
         mark: "bar",
         encoding: {
-          y: {field: "Source", type: "nominal"},
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
+          x: {field: "Source", type: "nominal"},
+          y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
           color: {field: "Source", type: "nominal"}
         }
       },
@@ -151,8 +151,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         data: {values},
         mark: "bar",
         encoding: {
-          y: {field: "Source", type: "nominal"},
-          x: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
+          x: {field: "Source", type: "nominal"},
+          y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
           color: {field: "Source", type: "nominal"}
         }
       }

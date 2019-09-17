@@ -63,7 +63,7 @@ export function getChartData(A: Spec, B?: Spec, C?: _CompSpecSolid, domains?: st
         // TODO: if x and y are different?
         // TODO: determine field name!
         newValue[anKey] = aav[anKey];
-        newValue[aqKey] = aav[aqKey] - chartdata.B.find((d: any) => d[bnKey] === aav[anKey])[bqKey];
+        newValue[aqKey] = Math.abs(aav[aqKey] - chartdata.B.find((d: any) => d[bnKey] === aav[anKey])[bqKey]);
         data.push(newValue);
       });
 
