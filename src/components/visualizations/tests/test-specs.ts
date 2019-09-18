@@ -18,6 +18,8 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 }
 
 export function getExamples() {
+  // console.log(getExampleSpec());
+
   let examples = getExampleSpec()
     // .map(d => ({...d, C: correctCompSpec(d.C)}))
     /// filter for debugging
@@ -31,7 +33,7 @@ export function getExamples() {
     // .filter(d => isNestingLayout(correctCompSpec(d.C)))
     ;
 
-  return examples;
+  return JSON.parse(JSON.stringify(examples));
   // .sort((a, b) => a.C.layout.mirrored > b.C.layout.mirrored ? -1 : 1)
   // .sort((a, b) => (a.A.mark + a.B.mark) > (b.A.mark + b.B.mark) ? -1 : 1)
   // .sort((a, b) => a.C.layout.unit > b.C.layout.unit ? -1 : 1)
@@ -41,7 +43,7 @@ export function getExamples() {
 
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
-  const values = DATASET_MOVIES.rawData.splice(0, 200);//.filter(d => d["Source"] !== null)
+  const values = DATASET_MOVIES.rawData.slice(0, 200);//.filter(d => d["Source"] !== null)
   const mValues = DATASET_MTCAR_SYN.rawData;
   return [
     {

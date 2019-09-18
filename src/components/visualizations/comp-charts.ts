@@ -46,6 +46,7 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
 
   d3.select(ref).selectAll('*').remove();
   const svg = d3.select(ref).attr(_width, layouts.width + legends.addWidth).attr(_height, d3.max([legends.height, layouts.height]));
+  d3.select(ref).attr("viewBox", `0 0 ${layouts.width + legends.addWidth} ${d3.max([legends.height, layouts.height])}`);
 
   // render A and (not nested) B
   function loopABRender() {
@@ -129,8 +130,8 @@ export function renderCompChartGeneralized(ref: SVGSVGElement, A: Spec, B: Spec,
         newStyle = {...styles, A: {...newStyle.A, translateX: newStyle.A.translateX + 4}};
 
         /// Debug
-        console.log(newStyle);
-        console.log(domains);
+        // console.log(newStyle);
+        // console.log(domains);
         //
 
         if (!Array.isArray(domains.A.axis)) {

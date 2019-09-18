@@ -3,16 +3,23 @@
   font-family: "Roboto Condensed";
 
   .header {
-    background: #424242;
+    // background: #424242;
+    background: #292929;
     padding-left: 10px;
     height: 50px;
     line-height: 50px;
     color: white;
     font-weight: 500;
-    font-size: 1.2em;
+    font-size: 1.7em;
+    text-align: center;
+    cursor: pointer;
 
     .trade-mark {
       color: #ffffff;
+    }
+
+    .gallaryBtn{
+      color: white;
     }
   }
 
@@ -39,6 +46,34 @@
   .main-pane {
     overflow-y: auto;
     height: calc(100% - 50px);
+
+    .previews{
+      align-content: center;
+      display: flex;
+      flex-wrap: wrap;
+      display: grid;
+      // grid-gap: 2px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      // grid-template-columns: repeat(auto-fill, minmax(580px, 1fr));
+
+      .preview{
+        // margin: 2px;
+        cursor: pointer;
+        padding: 4px;
+        background: white;
+        display: block;
+        text-align: center;
+        border: #f3f2f2 solid 1px;
+        flex-grow: 1;
+        position: relative;
+      }
+
+      .preview:hover{
+        // box-shadow: inset 0px 0px 10px rgba(0,0,0,0.5);
+        // box-shadow: inset 0px 0px 0px 5px rgba(34, 147, 247, 0.64);
+        box-shadow: inset 0px 0px 0px 5px #bfbfbf96;
+      }
+    }
 
     h1 {
       margin-left: 12px;
