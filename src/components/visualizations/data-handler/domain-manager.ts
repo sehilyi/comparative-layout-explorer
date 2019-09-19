@@ -69,7 +69,7 @@ export function getDomain(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
       (axis.A.y as string[]).concat(axis.B.y as string[]) :
       (axis.A.y as number[]).concat(axis.B.y as number[]);
   }
-  if (consistency && consistency.color.type === "shared") {
+  if (consistency && consistency.color === "shared") {
     // TODO: should consider numerical color encoding
     axisA.color = axisB.color = A.encoding.color && B.encoding.color && A.encoding.color.type !== B.encoding.color.type ?
       (axis.A.color as string[]).concat(axis.B.color as string[]) :

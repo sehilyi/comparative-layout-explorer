@@ -51,11 +51,11 @@ export type Anchor = "auto" | "top" | "bottom" | "left" | "right" | "center-midd
  * This is used in the system and not for users.
  */
 export interface _ConsistencySolid extends Consistency {
-  color?: ConsistencyTypeAndTarget;
+  color?: ConsistencyType;//ConsistencyTypeAndTarget;
 }
 export type Consistency = {
   // color refers to hue. we use the term "color" for the consistency with Vega. color does not includes saturation (#51)
-  color?: ConsistencyType | ConsistencyTypeAndTarget;
+  color?: ConsistencyType;// | ConsistencyTypeAndTarget;
   x_axis?: boolean;
   y_axis?: boolean;
   stroke?: ConsistencyType;  // TODO: this will be removed eventually
@@ -66,11 +66,11 @@ export type Consistency = {
 
 /* consistency settings */
 export type ConsistencyType = "shared" | "independent" | "distinct"
-export type ConsistencyTypeAndTarget = {
-  type: ConsistencyType;
-  primary_target?: {element: ElementType, property: PropertyType};
-  secondary_target?: {element: ElementType, property: PropertyType};
-}
+// export type ConsistencyTypeAndTarget = {
+//   type: ConsistencyType;
+//   primary_target?: {element: ElementType, property: PropertyType};
+//   secondary_target?: {element: ElementType, property: PropertyType};
+// }
 export type ElementType = "mark" | "axis";
 export type PropertyType = "foreground" | "background" | "stroke";
 
@@ -98,17 +98,18 @@ export const DEFAULT_LAYOUT_JUX: LayoutTypeAndStyle = {
 }
 export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
   type: "superimposition",
+  unit: "chart",
   mirrored: false,
   arrangement: "null"
 }
 
-export const DEFAULT_CONSISTENCY_TARGET: ConsistencyTypeAndTarget = {
-  type: "independent",
-  primary_target: {element: "mark", property: "foreground"},
-  secondary_target: {element: "mark", property: "foreground"}
-}
+// export const DEFAULT_CONSISTENCY_TARGET: ConsistencyTypeAndTarget = {
+//   type: "independent",
+//   primary_target: {element: "mark", property: "foreground"},
+//   secondary_target: {element: "mark", property: "foreground"}
+// }
 export const DEFAULT_CONSISTENCY: _ConsistencySolid = {
-  color: DEFAULT_CONSISTENCY_TARGET,
+  color: "independent",//DEFAULT_CONSISTENCY_TARGET,
   x_axis: false,
   y_axis: false,
   stroke: "independent",
@@ -130,6 +131,6 @@ export const DEFAULT_COMP_SPEC: CompSpec = {
 }
 export const DEFAULT_COMP_SPECS = {
   juxtaposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX},
-  superimposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP},
-  "explicit-encoding": {...DEFAULT_COMP_SPEC}
+  superimposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP, consistency: {...DEFAULT_COMP_SPEC.consistency, x_axis: true, y_axis: true}},
+  "explicit-encoding": {...DEFAULT_COMP_SPEC, layout: {type: "explicit-encoding"}}
 }

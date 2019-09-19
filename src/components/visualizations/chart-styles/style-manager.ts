@@ -45,7 +45,7 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
 
   const {consistency} = C;
   const {type: layout, arrangement, mirrored} = C.layout;
-  const {type: colorConsis} = C.consistency.color;
+  const {color: colorConsis} = C.consistency;
 
   /* size */
   const width = C.style && C.style.width ? C.style.width : undefined;
@@ -228,15 +228,15 @@ export function getStyles(A: Spec, B: Spec, C: _CompSpecSolid, chartdata: {A: ob
     /* cross consistency */
     // TODO: not supporting this for the simplicity for now
     // if (consistency.color.target.secondary.element === "mark" && consistency.color.target.secondary.property === "foreground") S.B.color = colorB
-    if (consistency.color.secondary_target.element === "mark" && consistency.color.secondary_target.property === "stroke") {
-      S.B.stroke = S.A.color;
-      S.B.strokeKey = B.encoding.x.field;  // TODO: how to determine stroke reference?
-      S.B.stroke_width = 1;
-    }
-    if (consistency.color.secondary_target.element === "axis" && consistency.color.secondary_target.property === "foreground") {
-      S.B.axisLabelColor = S.A.color;
-      S.B.axisLabelColorKey = B.encoding.x.field;  // TODO: how to determine color reference?
-    }
+    // if (consistency.color.secondary_target.element === "mark" && consistency.color.secondary_target.property === "stroke") {
+    //   S.B.stroke = S.A.color;
+    //   S.B.strokeKey = B.encoding.x.field;  // TODO: how to determine stroke reference?
+    //   S.B.stroke_width = 1;
+    // }
+    // if (consistency.color.secondary_target.element === "axis" && consistency.color.secondary_target.property === "foreground") {
+    //   S.B.axisLabelColor = S.A.color;
+    //   S.B.axisLabelColorKey = B.encoding.x.field;  // TODO: how to determine color reference?
+    // }
   }
 
   /* overlap reduction */

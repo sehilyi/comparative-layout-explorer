@@ -29,7 +29,6 @@ export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
 
   /* consistency */
   let solidC = {..._C, consistency: correctConsistency(A, B, C)} as _CompSpecSolid;
-
   /* explicit encoding */
   // regular ee
   // if (solidC.layout.type === "explicit-encoding") solidC.consistency = undefined;

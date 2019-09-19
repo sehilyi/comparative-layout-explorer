@@ -71,10 +71,10 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
 
   /* consistency legends */
   {
-    if (consistency.color.type === "distinct" || consistency.stroke === "distinct" || consistency.texture === "distinct") {
+    if (consistency.color === "distinct" || consistency.stroke === "distinct" || consistency.texture === "distinct") {
 
       let widthOfLegends: number[] = []; // for calculating max legend width
-      const left = P.B.left + S.B.width + (!isOverlapLayout(C) && S.B.isLegend && C.consistency.color.type !== "shared" ? LEGEND_WIDTH : 0);
+      const left = P.B.left + S.B.width + (!isOverlapLayout(C) && S.B.isLegend && C.consistency.color !== "shared" ? LEGEND_WIDTH : 0);
       lastYEnd = lastYEnd === 0 ? P.A.top : lastYEnd
 
       // distinct nominal color
@@ -118,7 +118,7 @@ export function getLegends(A: Spec, B: Spec, C: _CompSpecSolid, P: {A: PositionA
 
       // put additional space for consistency legend
       addWidth = d3.max(widthOfLegends);
-      if (isOverlapLayout(C) && (S.A.isLegend || S.B.isLegend) || C.consistency.color.type === "shared") {
+      if (isOverlapLayout(C) && (S.A.isLegend || S.B.isLegend) || C.consistency.color === "shared") {
         addWidth = d3.max([0, addWidth - (S.A.isLegend ? S.A.layout.legend : S.B.layout.legend)]);
       }
     }

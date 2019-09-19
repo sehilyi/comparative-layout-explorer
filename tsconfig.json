@@ -1,3 +1,75 @@
+// {
+//   "compileOnSave": true,
+//   "compilerOptions": {
+//     "rootDir": "./src",
+//     "baseUrl": ".",
+//     "outDir": "build/dist",
+//     "module": "commonjs",
+//     "target": "es6",
+//     // "lib": [
+//     //   "es6",
+//     //   "dom"
+//     // ],
+//     "sourceMap": true,
+//     "allowJs": true,
+//     "jsx": "react",
+//     "moduleResolution": "node",
+//     "forceConsistentCasingInFileNames": true,
+//     "noImplicitReturns": true,
+//     "noImplicitThis": true,
+//     "noImplicitAny": true,
+//     // "importHelpers": true,
+//     "strictNullChecks": false,
+//     "suppressImplicitAnyIndexErrors": true,
+//     "resolveJsonModule": true,
+//     "esModuleInterop": true,
+//     "noUnusedParameters": false,
+//     "noUnusedLocals": false,
+//   },
+//   "exclude": [
+//     "node_modules",
+//     "build",
+//     "scripts",
+//     "acceptance-tests",
+//     "webpack",
+//     "jest",
+//     "src/setupTests.ts"
+//   ]
+// }
+// {
+//   "compilerOptions": {
+//     "baseUrl": ".",
+//     "outDir": "build/dist",
+//     "module": "esnext",
+//     "target": "es6",
+//     "lib": [
+//       "es6",
+//       "dom"
+//     ],
+//     "sourceMap": true,
+//     "allowJs": true,
+//     "jsx": "react",
+//     "moduleResolution": "node",
+//     "rootDir": "src",
+//     "forceConsistentCasingInFileNames": true,
+//     "noImplicitReturns": true,
+//     "noImplicitThis": true,
+//     "noImplicitAny": true,
+//     "importHelpers": true,
+//     "strictNullChecks": true,
+//     "suppressImplicitAnyIndexErrors": true,
+//     "noUnusedLocals": true
+//   },
+//   "exclude": [
+//     "node_modules",
+//     "build",
+//     "scripts",
+//     "acceptance-tests",
+//     "webpack",
+//     "jest",
+//     "src/setupTests.ts"
+//   ]
+// }
 {
   "compileOnSave": true,
   "compilerOptions": {
@@ -21,7 +93,7 @@
     // "importHelpers": true,
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "resolveJsonModule": true,
     "esModuleInterop": true
   },

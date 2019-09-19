@@ -29,9 +29,9 @@ export function shortenText(t: string, len: number) {
 }
 
 /* deprecated */
-export function isDeepTrue(o: boolean | object) {
-  return o === true || o['value'] === true;
-}
+// export function isDeepTrue(o: boolean | object) {
+//   return o === true || o['value'] === true;
+// }
 
 export function isUndefinedOrFalse(o: boolean) {
   return o === undefined || o === false;
