@@ -9,7 +9,7 @@ export const AXIS_ROOT_ID = "axis-root--";
 export const CHART_CLASS_ID = "D3-CHART-";
 // general
 export const CHART_TITLE_HEIGHT = 30;
-export const CHART_SIZE = {width: 320, height: 240};
+export const CHART_SIZE = {width: 280, height: 240};//{width: 320, height: 240};
 export const CHART_MARGIN = {top: 100, right: 120, bottom: 100, left: 120};
 export const CHART_MARGIN_NO_AXIS = {top: 5, right: 5, bottom: 5, left: 5};
 export const CHART_PADDING = {right: 20};

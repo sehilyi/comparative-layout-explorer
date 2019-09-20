@@ -121,7 +121,7 @@ export const DEFAULT_OVERLAP_REDUCTION: OverlapReduction = {
   jitter_y: false,
   resize: false
 }
-export const DEFAULT_COMP_SPEC: CompSpec = {
+export const DEFAULT_COMP_SPEC: _CompSpecSolid = {
   title: "",
   description: "",
   layout: DEFAULT_LAYOUT_JUX,
@@ -130,7 +130,7 @@ export const DEFAULT_COMP_SPEC: CompSpec = {
   reference: DEFAULT_COMP_REFERENCE
 }
 export const DEFAULT_COMP_SPECS = {
-  juxtaposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX},
+  juxtaposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX, consistency: {...DEFAULT_COMP_SPEC.consistency, x_axis: false, y_axis: false}},
   superimposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP, consistency: {...DEFAULT_COMP_SPEC.consistency, x_axis: true, y_axis: true}},
-  "explicit-encoding": {...DEFAULT_COMP_SPEC, layout: {type: "explicit-encoding"}}
+  "explicit-encoding": {...DEFAULT_COMP_SPEC, layout: {type: "explicit-encoding", unit: ("chart" as CompUnit)}, consistency: {...DEFAULT_COMP_SPEC.consistency, x_axis: false, y_axis: false}}
 }
