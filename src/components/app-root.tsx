@@ -228,7 +228,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     }
     else if (group === "arrangement") {
       if (conValue === "animated") {
-        this.setState({C: {...C, layout: {...C.layout, arrangement: conValue as CompArrangement, unit: "element" as CompUnit}}});
+        this.setState({C: {...C, layout: {...C.layout, arrangement: conValue as CompArrangement, unit: "element" as CompUnit}, explicit_encoding: {}}});
       }
       else {
         if (getChartType(this.state.A) === "scatterplot" && C.layout.arrangement === "animated") {
@@ -422,7 +422,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <h2>Explicit-Encoding Overlay</h2>
               <form className="form-inline">
                 <label className="col-sm-6">difference_mark</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"difference_mark"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.A.mark !== "bar")} value={specs.C.explicit_encoding.difference_mark ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"difference_mark"} disabled={(specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.A.mark !== "bar")} value={specs.C.explicit_encoding.difference_mark ? "true" : "false"} onChange={this.handleChange.bind(this)}>
                   {/* <option>none</option> */}
                   <option>false</option>
                   <option>true</option>

@@ -236,14 +236,14 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        description: "IJ + EE",
+        // description: "IJ + EE",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
         },
         overlap_reduction: {},
         explicit_encoding: {
-          difference_mark: true
+          // difference_mark: true
         }
       },
       // https://vega.github.io/vega-lite/examples/
