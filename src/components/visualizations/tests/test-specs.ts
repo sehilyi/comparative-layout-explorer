@@ -45,7 +45,7 @@ export function getExamples() {
 
 }
 export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
-  const values = DATASET_MOVIES.rawData.slice(0, 200);//.filter(d => d["Source"] !== null)
+  const values = DATASET_MOVIES.rawData.slice(0, 400);//.filter(d => d["Source"] !== null)
   const mValues = DATASET_MTCAR_SYN.rawData;
 
   /// DEBUG
@@ -363,7 +363,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         description: "EE",
         layout: {type: "explicit-encoding"},
         consistency: {
-          x_axis: true, y_axis: true, color: "shared"
+          x_axis: true, y_axis: true, color: "independent"
         },
         overlap_reduction: {},
         explicit_encoding: {},
@@ -423,37 +423,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         description: "item-wise juxaposition (adjacent)",
-        layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
-        consistency: {
-          x_axis: true, y_axis: true, color: "shared"
-        },
-        overlap_reduction: {},
-        explicit_encoding: {},
-        // style: {width: 260}
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {values: mValues},
-        mark: "rect",
-        encoding: {
-          x: {field: "Variable_1", type: "nominal"},
-          y: {field: "Variable_2", type: "nominal"},
-          color: {field: "Correlation_1", type: "quantitative", aggregate: "mean"}
-        }
-      },
-      B: {
-        data: {values: mValues},
-        mark: "rect",
-        encoding: {
-          x: {field: "Variable_1", type: "nominal"},
-          y: {field: "Variable_2", type: "nominal"},
-          color: {field: "Correlation_2", type: "quantitative", aggregate: "mean"}
-        }
-      },
-    },
-    {
-      C: {
-        description: "item-wise juxaposition (adjacent)",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -482,6 +451,37 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
     },
+    // {
+    //   C: {
+    //     description: "item-wise juxaposition (adjacent)",
+    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     consistency: {
+    //       x_axis: true, y_axis: true, color: "shared"
+    //     },
+    //     overlap_reduction: {},
+    //     explicit_encoding: {},
+    //     // style: {width: 260}
+    //   },
+    //   // https://vega.github.io/vega-lite/examples/
+    //   A: {
+    //     data: {values: mValues},
+    //     mark: "rect",
+    //     encoding: {
+    //       x: {field: "Variable_1", type: "nominal"},
+    //       y: {field: "Variable_2", type: "nominal"},
+    //       color: {field: "Correlation_1", type: "quantitative", aggregate: "mean"}
+    //     }
+    //   },
+    //   B: {
+    //     data: {values: mValues},
+    //     mark: "rect",
+    //     encoding: {
+    //       x: {field: "Variable_1", type: "nominal"},
+    //       y: {field: "Variable_2", type: "nominal"},
+    //       color: {field: "Correlation_2", type: "quantitative", aggregate: "mean"}
+    //     }
+    //   },
+    // },
     {
       C: {
         description: "item-wise juxtaposition (diagonal)",
@@ -1212,40 +1212,40 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    {
-      C: {
-        // description: "#18",
-        layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
-        consistency: {
-          x_axis: true, y_axis: true, color: "shared"
-        },
-        overlap_reduction: {},
-        explicit_encoding: {}
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {
-          values
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"},
-          color: {field: "Source", type: "nominal"}
-        }
-      },
-      B: {
-        data: {
-          values
-        },
-        mark: "bar",
-        encoding: {
-          x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "Source", type: "nominal"},
-          color: {field: "Source", type: "nominal"}
-        }
-      }
-    },
+    // {
+    //   C: {
+    //     // description: "#18",
+    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     consistency: {
+    //       x_axis: true, y_axis: true, color: "shared"
+    //     },
+    //     overlap_reduction: {},
+    //     explicit_encoding: {}
+    //   },
+    //   // https://vega.github.io/vega-lite/examples/
+    //   A: {
+    //     data: {
+    //       values
+    //     },
+    //     mark: "bar",
+    //     encoding: {
+    //       x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+    //       y: {field: "Source", type: "nominal"},
+    //       color: {field: "Source", type: "nominal"}
+    //     }
+    //   },
+    //   B: {
+    //     data: {
+    //       values
+    //     },
+    //     mark: "bar",
+    //     encoding: {
+    //       x: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+    //       y: {field: "Source", type: "nominal"},
+    //       color: {field: "Source", type: "nominal"}
+    //     }
+    //   }
+    // },
     {
       C: {
         // description: "#19",
@@ -1432,36 +1432,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     {
       C: {
         // description: "#25",
-        layout: {type: "juxtaposition", unit: "chart", arrangement: "animated"},
-        consistency: {
-          x_axis: false, y_axis: true, color: "shared"
-        },
-        overlap_reduction: {},
-        explicit_encoding: {}
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {values},
-        mark: "point",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative"},
-          y: {field: "IMDB_Rating", type: "quantitative"},
-          color: {field: "Major_Genre", type: "nominal"}
-        }
-      },
-      B: {
-        data: {values},
-        mark: "point",
-        encoding: {
-          x: {field: "US_Gross", type: "quantitative"},
-          y: {field: "IMDB_Rating", type: "quantitative"},
-          color: {field: "Major_Genre", type: "nominal"}
-        }
-      }
-    },
-    {
-      C: {
-        // description: "#26",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: true, color: "shared"
@@ -1489,36 +1459,66 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    {
-      C: {
-        // description: "#27",
-        layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
-        consistency: {
-          x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
-        },
-        overlap_reduction: {},
-        explicit_encoding: {}
-      },
-      // https://vega.github.io/vega-lite/examples/
-      A: {
-        data: {values},
-        mark: "point",
-        encoding: {
-          x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      },
-      B: {
-        data: {values},
-        mark: "point",
-        encoding: {
-          x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
-          y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-          color: {field: "MPAA_Rating", type: "nominal"}
-        }
-      }
-    },
+    // {
+    //   C: {
+    //     // description: "#26",
+    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     consistency: {
+    //       x_axis: false, y_axis: true, color: "shared"
+    //     },
+    //     overlap_reduction: {},
+    //     explicit_encoding: {}
+    //   },
+    //   // https://vega.github.io/vega-lite/examples/
+    //   A: {
+    //     data: {values},
+    //     mark: "point",
+    //     encoding: {
+    //       x: {field: "Worldwide_Gross", type: "quantitative"},
+    //       y: {field: "IMDB_Rating", type: "quantitative"},
+    //       color: {field: "Major_Genre", type: "nominal"}
+    //     }
+    //   },
+    //   B: {
+    //     data: {values},
+    //     mark: "point",
+    //     encoding: {
+    //       x: {field: "US_Gross", type: "quantitative"},
+    //       y: {field: "IMDB_Rating", type: "quantitative"},
+    //       color: {field: "Major_Genre", type: "nominal"}
+    //     }
+    //   }
+    // },
+    // {
+    //   C: {
+    //     // description: "#27",
+    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     consistency: {
+    //       x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
+    //     },
+    //     overlap_reduction: {},
+    //     explicit_encoding: {}
+    //   },
+    //   // https://vega.github.io/vega-lite/examples/
+    //   A: {
+    //     data: {values},
+    //     mark: "point",
+    //     encoding: {
+    //       x: {field: "Worldwide_Gross", type: "quantitative", aggregate: "max"},
+    //       y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+    //       color: {field: "MPAA_Rating", type: "nominal"}
+    //     }
+    //   },
+    //   B: {
+    //     data: {values},
+    //     mark: "point",
+    //     encoding: {
+    //       x: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
+    //       y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
+    //       color: {field: "MPAA_Rating", type: "nominal"}
+    //     }
+    //   }
+    // },
     {
       C: {
         // description: "#28",

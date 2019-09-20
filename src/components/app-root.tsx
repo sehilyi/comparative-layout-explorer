@@ -16,6 +16,7 @@ import {CompSpec, _CompSpecSolid, LayoutType, DEFAULT_COMP_SPECS, CompUnit, Comp
 import {deepObjectValue, correctCompSpec} from 'src/models/comp-spec-manager';
 import * as d3 from 'd3';
 import {shuffle} from 'd3';
+import {getChartType} from 'src/models/chart-types';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome)
 
 export interface AppRootProps {
@@ -214,7 +215,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
         this.setState({C: {...C, layout: {...DEFAULT_COMP_SPECS[value].layout, type: value as LayoutType}, consistency: {...C.consistency, x_axis: true, y_axis: true}}});
       }
       else if (value === "explicit-encoding") {
-        this.setState({C: {...C, layout: {...DEFAULT_COMP_SPECS[value].layout, type: value as LayoutType}}});
+        this.setState({C: {...C, layout: {...DEFAULT_COMP_SPECS[value].layout, type: value as LayoutType}, consistency: {...C.consistency, color: "independent", texture: "independent", stroke: "independent"}, explicit_encoding: {difference_mark: false}}});
       }
     }
     else if (group === "unit") {
@@ -226,7 +227,17 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
       }
     }
     else if (group === "arrangement") {
-      this.setState({C: {...C, layout: {...C.layout, arrangement: conValue as CompArrangement}}});
+      if (conValue === "animated") {
+        this.setState({C: {...C, layout: {...C.layout, arrangement: conValue as CompArrangement, unit: "element" as CompUnit}}});
+      }
+      else {
+        if (getChartType(this.state.A) === "scatterplot" && C.layout.arrangement === "animated") {
+          this.setState({C: {...C, layout: {...C.layout, arrangement: conValue as CompArrangement, unit: "chart" as CompUnit}}});
+        }
+        else {
+          this.setState({C: {...C, layout: {...C.layout, arrangement: conValue as CompArrangement}}});
+        }
+      }
     }
     else if (group === "mirrored") {
       this.setState({C: {...C, layout: {...C.layout, mirrored: conValue === "true"}}});
@@ -303,7 +314,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">unit</label>
-                <select className={"form-control form-control-sm col-sm-6"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"unit"} value={specs.C.layout.unit} onChange={this.handleChange.bind(this)}>
+                <select className={"form-control form-control-sm col-sm-6"} disabled={(getChartType(specs.A) === "scatterplot" || specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"unit"} value={specs.C.layout.unit} onChange={this.handleChange.bind(this)}>
                   <option>chart</option>
                   <option>element</option>
                 </select>
