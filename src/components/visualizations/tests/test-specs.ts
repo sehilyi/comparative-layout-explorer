@@ -1,5 +1,5 @@
 import {Spec} from "src/models/simple-vega-spec";
-import {CompSpec} from "src/models/comp-spec";
+import {CompSpec, _CompSpecSolid} from "src/models/comp-spec";
 import {deepObjectValue, correctCompSpec} from "src/models/comp-spec-manager";
 import {DATASET_MOVIES} from "src/datasets/movies";
 import {getChartType} from "src/models/chart-types";
@@ -17,7 +17,7 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
   return getChartType(A) + " x " + getChartType(B);
 }
 
-export function getExamples() {
+export function getExamples(): {A: Spec, B: Spec, C: _CompSpecSolid}[] {
 
   let examples = getExampleSpec()
     /// filters for debugging

@@ -7,7 +7,7 @@ import {CompCasesLoad, loadCompCases, CompCasesImageDataLoad, onCompCaseImgDataL
 import {CompareCase, ScatterPlot} from 'src/models/dataset';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome} from '@fortawesome/free-solid-svg-icons';
+import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome, faFilter} from '@fortawesome/free-solid-svg-icons';
 import {renderCompChart} from './visualizations/comp-charts';
 import {renderSimpleChart} from './visualizations';
 import {getExamples, getCompTitle, getSimpleCompTitle} from './visualizations/tests/test-specs';
@@ -16,7 +16,7 @@ import {CompSpec, _CompSpecSolid, LayoutType, DEFAULT_COMP_SPECS, CompUnit, Comp
 import {deepObjectValue, correctCompSpec} from 'src/models/comp-spec-manager';
 import * as d3 from 'd3';
 import {getChartType} from 'src/models/chart-types';
-library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome)
+library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome, faFilter)
 
 export interface AppRootProps {
   chartPairList: CompareCase[];
@@ -31,6 +31,19 @@ export interface AppRootStates {
   B: Spec;
   C: _CompSpecSolid;
   view: "overview" | "detail";
+
+  filters: {
+    CJ: boolean,
+    IJ: boolean,
+    S: boolean,
+    A: boolean,
+    E: boolean,
+    H: boolean,
+
+    bar: boolean,
+    heat: boolean,
+    scatter: boolean
+  }
 }
 
 export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates> {
@@ -42,7 +55,20 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
       A: defaultExample["A"],
       B: defaultExample["B"],
       C: defaultExample["C"],
-      view: "overview"
+      view: "overview",
+
+      filters: {
+        CJ: true,
+        IJ: true,
+        S: true,
+        A: true,
+        E: true,
+        H: true,
+
+        bar: true,
+        heat: true,
+        scatter: true
+      }
     };
   }
 
@@ -53,11 +79,28 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
 
   }
 
+  public getFilteredExamples(examples: {A: Spec, B: Spec, C: _CompSpecSolid}[], filters: Object): {A: Spec, B: Spec, C: _CompSpecSolid}[] {
+    let fexamples = examples;
+    if (!filters["CJ"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "juxtaposition" && d.C.layout.unit === "chart" && d.C.layout.arrangement !== "animated"));
+    if (!filters["IJ"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "juxtaposition" && d.C.layout.unit === "element" && d.C.layout.arrangement !== "animated"));
+    if (!filters["S"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "superimposition" && d.C.layout.arrangement !== "animated"));
+    if (!filters["A"]) fexamples = fexamples.filter(d => !(d.C.layout.arrangement === "animated"));
+    if (!filters["E"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "explicit-encoding"));
+    if (!filters["H"]) fexamples = fexamples.filter(d => !d.C.explicit_encoding.difference_mark && !d.C.explicit_encoding.line_connection);
+
+    if (!filters["bar"]) fexamples = fexamples.filter(d => !(getChartType(d.A) === "barchart"));
+    if (!filters["heat"]) fexamples = fexamples.filter(d => !(getChartType(d.A) === "heatmap"));
+    if (!filters["scatter"]) fexamples = fexamples.filter(d => !(getChartType(d.A) === "scatterplot"));
+    return fexamples;
+  }
+
   render() {
-    const {A, B, C, view} = this.state;
+    const {A, B, C, view, filters} = this.state;
     // const Examples = getExamples().map(this.renderExamples, this)
     // const Galleries = shuffle(getExamples()).map(this.renderGallery, this)
-    const Galleries = getExamples().map(this.renderGallery, this);
+    const Examples = getExamples();
+    const FilteredExamples = this.getFilteredExamples(Examples, filters);
+    const Galleries = FilteredExamples.map(this.renderGallery, this);
     let editor = null;
     if (view === "detail") {
       editor = this.renderEditor({A, B, C});
@@ -95,23 +138,58 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
 
             /* Show Gallery */
             <div className='main-pane'>
+              <div className="gallery-options py-5 px-5 bg-light">
+                <div className="container-fluid">
+
+                  <p className="font-weight-bold text-primary">
+                    {`A total of ${FilteredExamples.length} examples are shown below (${Examples.length - FilteredExamples.length} out of ${Examples.length} examples are filtered).`}
+                  </p>
+
+                  <h3> <FontAwesomeIcon icon="filter" className="trade-mark font-weight-normal" />{" "} Layout</h3>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="cj-filter" value="CJ" checked={filters["CJ"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">chart-wise juxtaposition</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="ij-filter" value="IJ" checked={filters["IJ"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">item-wise juxtaposition</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="s-filter" value="S" checked={filters["S"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">superposition</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="a-filter" value="A" checked={filters["A"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">animated transition</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="e-filter" value="E" checked={filters["E"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">explicit-encoding</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="h-filter" value="H" checked={filters["H"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">hybrid layout</label>
+                  </div>
+
+                  <p></p>
+
+                  <h3> <FontAwesomeIcon icon="filter" className="trade-mark font-weight-normal" />{" "} Visualization Type</h3>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="bar-filter" value="bar" checked={filters["bar"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">bar chart</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="heatmap-filter" value="heat" checked={filters["heat"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">heatmap</label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input className="form-check-input" type="checkbox" id="scatter-filter" value="scatter" checked={filters["scatter"]} onChange={this.onFilterChange.bind(this)} />
+                    <label className="form-check-label">scatterplot</label>
+                  </div>
+                </div>
+              </div>
               <div className="album py-5 px-5">
                 <div className="container-fluid">
-                  <div className="gallery-options">
-                    <label>Layout:</label>
-                    <div className="form-check form-check-inline">
-                      <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
-                      <label className="form-check-label">1</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
-                      <label className="form-check-label">1</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
-                      <label className="form-check-label">1</label>
-                    </div>
-                  </div>
                   <div className="card-columns">
                     {Galleries}
                   </div>
@@ -184,6 +262,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
   getLayoutName(A: Spec, B: Spec, C: CompSpec) {
     const {solidC} = correctCompSpec(A, B, {...C});
     const {layout} = solidC;
+
     if (solidC.explicit_encoding.difference_mark || solidC.explicit_encoding.line_connection) return "Hybrid Layout";
     else if (layout.type === "explicit-encoding") return "Explicit-Encoding";
     else if (layout.type === "juxtaposition" && layout.arrangement === "animated") return "Animated Transition";
@@ -204,7 +283,17 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     return tags;
   }
 
-  handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  onFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const key = e.target.value;
+    this.setState({
+      filters: {
+        ...this.state.filters,
+        [key]: !this.state.filters[key]
+      }
+    });
+  }
+
+  onSpecChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 
     const group = e.target.getAttribute('data-id');
     const value = e.target.value;
@@ -309,7 +398,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <h2>Layout</h2>
               <form className="form-inline">
                 <label className="col-sm-6">type</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"type"} value={specs.C.layout.type} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"type"} value={specs.C.layout.type} onChange={this.onSpecChange.bind(this)}>
                   <option>juxtaposition</option>
                   <option>superimposition</option>
                   <option>explicit-encoding</option>
@@ -317,14 +406,14 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">unit</label>
-                <select className={"form-control form-control-sm col-sm-6"} disabled={(getChartType(specs.A) === "scatterplot" || specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"unit"} value={specs.C.layout.unit} onChange={this.handleChange.bind(this)}>
+                <select className={"form-control form-control-sm col-sm-6"} disabled={(getChartType(specs.A) === "scatterplot" || specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"unit"} value={specs.C.layout.unit} onChange={this.onSpecChange.bind(this)}>
                   <option>chart</option>
                   <option>element</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">arrangement</label>
-                <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"arrangement"} value={specs.C.layout.arrangement} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"arrangement"} value={specs.C.layout.arrangement} onChange={this.onSpecChange.bind(this)}>
                   <option>adjacent</option>
                   <option>stacked</option>
                   <option>animated</option>
@@ -337,7 +426,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">mirrored</label>
-                <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} data-id={"mirrored"} value={specs.C.layout.mirrored ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} data-id={"mirrored"} value={specs.C.layout.mirrored ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -345,7 +434,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <h2>Consistency</h2>
               <form className="form-inline">
                 <label className="col-sm-6">color</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"color"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.color} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"color"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.color} onChange={this.onSpecChange.bind(this)}>
                   <option>independent</option>
                   <option>shared</option>
                   <option>distinct</option>
@@ -353,21 +442,21 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">x_axis</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"x_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} value={specs.C.consistency.x_axis ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"x_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} value={specs.C.consistency.x_axis ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">y_axis</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"y_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} value={specs.C.consistency.y_axis ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"y_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} value={specs.C.consistency.y_axis ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">stroke</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"stroke"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.stroke} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"stroke"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.stroke} onChange={this.onSpecChange.bind(this)}>
                   <option>independent</option>
                   <option>shared</option>
                   <option>distinct</option>
@@ -375,7 +464,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">texture</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"texture"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.texture} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"texture"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.texture} onChange={this.onSpecChange.bind(this)}>
                   <option>independent</option>
                   <option>shared</option>
                   <option>distinct</option>
@@ -384,28 +473,28 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <h2>Overlap Reduction</h2>
               <form className="form-inline">
                 <label className="col-sm-6">opacity</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"opacity"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.opacity ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"opacity"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.opacity ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">offset_x</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"jitter_x"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.jitter_x ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"jitter_x"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.jitter_x ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">offset_y</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"jitter_y"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.jitter_y ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"jitter_y"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.jitter_y ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">resize</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"resize"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.resize ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"resize"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.resize ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -413,14 +502,14 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <h2>Explicit-Encoding Overlay</h2>
               <form className="form-inline">
                 <label className="col-sm-6">difference_mark</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"difference_mark"} disabled={(specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.A.mark !== "bar")} value={specs.C.explicit_encoding.difference_mark ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"difference_mark"} disabled={(specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.A.mark !== "bar")} value={specs.C.explicit_encoding.difference_mark ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">line_connection</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"line_connection"} disabled={true} value={specs.C.explicit_encoding.line_connection ? "true" : "false"} onChange={this.handleChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"line_connection"} disabled={true} value={specs.C.explicit_encoding.line_connection ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
