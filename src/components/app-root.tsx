@@ -240,13 +240,13 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
           {tags.length === 0 ? null :
             tags.length === 1 ?
               <h5 className="card-title">
-                <span className={"badge badge-pill " + (tags[0] === "adjacent" ? "badge-primary" : tags[0] === "stacked" ? "badge-success" : tags[0] === "diagonal" ? "badge-warning" : "badge-info")}>{tags[0]}</span>
+                <span className={"badge badge-pill " + (tags[0] === "adjacent" ? "badge-primary" : tags[0] === "stacked" ? "badge-success" : tags[0] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[0]}</span>
               </h5>
               :
               <h5 className="card-title">
-                <span className={"badge badge-pill " + (tags[0] === "adjacent" ? "badge-primary" : tags[0] === "stacked" ? "badge-success" : tags[0] === "diagonal" ? "badge-warning" : "badge-info")}>{tags[0]}</span>
+                <span className={"badge badge-pill " + (tags[0] === "adjacent" ? "badge-primary" : tags[0] === "stacked" ? "badge-success" : tags[0] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[0]}</span>
                 {" "}
-                <span className={"badge badge-pill " + (tags[1] === "adjacent" ? "badge-primary" : tags[1] === "stacked" ? "badge-success" : tags[1] === "diagonal" ? "badge-warning" : "badge-info")}>{tags[1]}</span>
+                <span className={"badge badge-pill " + (tags[1] === "adjacent" ? "badge-primary" : tags[1] === "stacked" ? "badge-success" : tags[1] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[1]}</span>
               </h5>
           }
           <div className="d-flex justify-content-between align-items-center">
