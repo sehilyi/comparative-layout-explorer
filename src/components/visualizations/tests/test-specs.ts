@@ -18,22 +18,20 @@ export function getSimpleCompTitle(A: Spec, B: Spec, C: CompSpec) {
 }
 
 export function getExamples() {
-  // console.log(getExampleSpec());
 
   let examples = getExampleSpec()
-    // .map(d => ({...d, C: correctCompSpec(d.C)}))
-    /// filter for debugging
-    // .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
-    // .filter(d => d.C.overlap_reduction != null)
-    // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.arrangement !== "animated")
+    /// filters for debugging
     .filter(d => d.A.mark === d.B.mark)
     .filter(d => !d.C.explicit_encoding.line_connection)
     .filter(d => !(correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.unit === "element" && correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.type === "superimposition"))
-    // .filter(d => d.A.mark === "point" || d.B.mark === "point")
-    // .filter(d => d.C.name.includes("item-wise juxtaposition test"))
-    // .filter(d => d.C.description.includes("#46"))
-    // .filter(d => isNestingLayout(correctCompSpec(d.C)))
-    ;
+  // .map(d => ({...d, C: correctCompSpec(d.C)}))
+  // .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
+  // .filter(d => d.C.overlap_reduction != null)
+  // .filter(d => correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.arrangement !== "animated")
+  // .filter(d => d.A.mark === "point" || d.B.mark === "point")
+  // .filter(d => d.C.name.includes("item-wise juxtaposition test"))
+  // .filter(d => d.C.description.includes("#46"))
+  // .filter(d => isNestingLayout(correctCompSpec(d.C)))
 
   return JSON.parse(JSON.stringify(examples));
   // .sort((a, b) => a.C.layout.mirrored > b.C.layout.mirrored ? -1 : 1)
@@ -51,7 +49,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   /// DEBUG
   // if (true) return [{
   //   C: {
-  //     description: "chart-wise jux bar",
   //     layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
   //     consistency: {
   //       x_axis: true, y_axis: true, color: "shared"
@@ -83,7 +80,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
   return [
     {
       C: {
-        description: "chart-wise juxtaposition (adjacent)",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -113,7 +109,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "superposition",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, texture: "distinct"
@@ -145,7 +140,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "explicit-encoding (difference)",
         layout: {type: "explicit-encoding"},
         consistency: {},
         overlap_reduction: {},
@@ -173,16 +167,12 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "chart-wise juxtaposition (stacked, mirrored)",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "stacked", mirrored: true},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
         overlap_reduction: {},
-        explicit_encoding: {},
-        // style: {
-        // height: 350,
-        // }
+        explicit_encoding: {}
       },
       // https://vega.github.io/vega-lite/examples/
       B: {
@@ -204,39 +194,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    // {
-    //   C: {
-    //     description: "item-wise juxtaposition (adjacent)",
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
-    //     consistency: {
-    //       x_axis: true, y_axis: true, color: "distinct"
-    //     },
-    //     overlap_reduction: {},
-    //     explicit_encoding: {}
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   B: {
-    //     data: {values},
-    //     mark: "bar",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"},
-    //       color: {field: "Source", type: "nominal"}
-    //     }
-    //   },
-    //   A: {
-    //     data: {values},
-    //     mark: "bar",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "US_Gross", type: "quantitative", aggregate: "mean"},
-    //       color: {field: "Source", type: "nominal"}
-    //     }
-    //   }
-    // },
     {
       C: {
-        // description: "IJ + EE",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
@@ -268,7 +227,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "IJ + EE",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
@@ -300,7 +258,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "item-wise juxtaposition (stacked)",
         layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
@@ -328,39 +285,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    // {
-    //   C: {
-    //     description: "item-wise juxtaposition (adjacent)",
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
-    //     consistency: {
-    //       x_axis: true, y_axis: true, color: "shared"
-    //     },
-    //     overlap_reduction: {},
-    //     explicit_encoding: {}
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    // },
     {
       C: {
-        description: "EE",
         layout: {type: "explicit-encoding"},
         consistency: {
           x_axis: true, y_axis: true, color: "independent"
@@ -391,7 +317,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "item-wise juxaposition (adjacent)",
         layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -422,7 +347,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "item-wise juxaposition (adjacent)",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -451,40 +375,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
     },
-    // {
-    //   C: {
-    //     description: "item-wise juxaposition (adjacent)",
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
-    //     consistency: {
-    //       x_axis: true, y_axis: true, color: "shared"
-    //     },
-    //     overlap_reduction: {},
-    //     explicit_encoding: {},
-    //     // style: {width: 260}
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {values: mValues},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Variable_1", type: "nominal"},
-    //       y: {field: "Variable_2", type: "nominal"},
-    //       color: {field: "Correlation_1", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {values: mValues},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Variable_1", type: "nominal"},
-    //       y: {field: "Variable_2", type: "nominal"},
-    //       color: {field: "Correlation_2", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    // },
     {
       C: {
-        description: "item-wise juxtaposition (diagonal)",
         layout: {type: "juxtaposition", unit: "element", arrangement: "diagonal"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -515,7 +407,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "superposition (different cell size)",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -548,7 +439,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "chart-wise juxtaposition (adjacent, mirrored)",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -578,7 +468,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "chart-wise juxtaposition (adjacent)",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
@@ -608,7 +497,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "chart-wise juxtaposition (adjacent)",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -638,7 +526,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "chart-wise juxtaposition (diagonal)",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "diagonal", mirrored: true},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -669,7 +556,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        description: "chart-wise juxtaposition (diagonal)",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "diagonal", mirrored: true},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
@@ -700,7 +586,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#1",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -730,7 +615,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#2",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -760,7 +644,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#3",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -788,7 +671,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#4",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -818,7 +700,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     // description: "#5",
     //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
     //     consistency: {
     //       x_axis: false, y_axis: false, color: "shared"
@@ -848,7 +729,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     // description: "#6",
     //     layout: {type: "superimposition", unit: "element"},
     //     consistency: {
     //       x_axis: false, y_axis: false, color: "independent"
@@ -878,7 +758,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     description: "#7 resize test",
     //     layout: {type: "superimposition", unit: "chart"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "shared"
@@ -910,7 +789,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     // description: "#8",
     //     layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "shared"
@@ -940,7 +818,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     // description: "#9",
     //     layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
     //     consistency: {x_axis: false, y_axis: true, color: "shared"},
     //     overlap_reduction: {},
@@ -968,7 +845,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     // description: "",
+    //     // : "",
     //     layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
     //     consistency: {x_axis: true, y_axis: true, color: "distinct"},
     //     overlap_reduction: {},
@@ -1029,7 +906,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },*/
     // {
     //   C: {
-    //     description: "#12 visual linking test",
     //     layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
     //     consistency: {
     //       color: {
@@ -1061,7 +937,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        // description: "#13",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "stacked"},
         consistency: {
           x_axis: true, y_axis: false, color: "distinct"
@@ -1091,7 +966,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "texture",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", texture: "distinct"//, stroke: "distinct"
@@ -1122,7 +996,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#15",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
@@ -1154,7 +1027,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     // description: "#16",
     //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
     //     consistency: {
     //       x_axis: false, y_axis: false, color: "shared"
@@ -1184,7 +1056,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        // description: "#17",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "shared"
@@ -1214,7 +1085,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     // description: "#18",
     //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "shared"
@@ -1248,7 +1118,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        // description: "#19",
         layout: {type: "juxtaposition", unit: "element", arrangement: "stacked", mirrored: false},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
@@ -1282,7 +1151,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#20",
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "stacked"},
         consistency: {
           x_axis: false, y_axis: true, color: "distinct"
@@ -1311,7 +1179,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     description: "#21",
     //     layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "stacked"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "distinct"
@@ -1341,7 +1208,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        // description: "#22",
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -1371,7 +1237,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#23",
         layout: {type: "juxtaposition", unit: "chart", mirrored: true, arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
@@ -1401,7 +1266,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#24",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {
           x_axis: false, y_axis: true, color: "shared"
@@ -1431,7 +1295,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#25",
         layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: true, color: "shared"
@@ -1461,7 +1324,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     // description: "#26",
     //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
     //     consistency: {
     //       x_axis: false, y_axis: true, color: "shared"
@@ -1491,7 +1353,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     // description: "#27",
     //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
@@ -1521,7 +1382,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        // description: "#28",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
@@ -1551,7 +1411,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#29",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: true, color: "independent"
@@ -1581,7 +1440,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#30",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: true, color: "independent"
@@ -1610,7 +1468,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#31",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -1639,7 +1496,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#32",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -1668,7 +1524,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#33",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -1697,7 +1552,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#34",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -1726,7 +1580,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#35",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -1755,7 +1608,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#36",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -1785,7 +1637,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#37",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {x_axis: true, y_axis: true, color: "independent"},
         overlap_reduction: {
@@ -1816,7 +1667,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#38",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {x_axis: false, y_axis: true, color: "independent"},
         overlap_reduction: {
@@ -1846,7 +1696,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#39",
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -1876,7 +1725,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#40 distinct legend test",
         layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct", texture: "distinct", stroke: "distinct"
@@ -1906,7 +1754,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#41 texture test 2",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", texture: "distinct", stroke: "distinct"
@@ -1938,7 +1785,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#42 scatterplot texture test",
         layout: {type: "superimposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", stroke: "distinct", texture: "distinct"
@@ -1966,68 +1812,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    // {
-    //   C: {
-    //     name: "#43 heatmap texture test",
-    //     layout: {type: "superimposition", unit: "chart", arrangement: "adjacent"},
-    //     consistency: {
-    //       x_axis: true, y_axis: true, color: "shared", texture: "distinct"
-    //     },
-    //     overlap_reduction: {
-    //       resize: true
-    //     }
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    // },
-    // {
-    //   C: {
-    //     name: "#44 item-wise juxtaposition test",
-    //     layout: {type: "juxtaposition", unit: "element"},
-    //     consistency: {
-    //       x_axis: false, y_axis: false, color: "independent"
-    //     }
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {values},
-    //     mark: "bar",
-    //     encoding: {
-    //       x: {field: "MPAA_Rating", type: "nominal"},
-    //       y: {field: "Production_Budget", type: "quantitative", aggregate: "max"},
-    //       color: {field: "MPAA_Rating", type: "nominal"}
-    //     }
-    //   },
-    // },
     {
       C: {
-        // description: "#45",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {x_axis: false, y_axis: true, color: "shared"},
         overlap_reduction: {},
@@ -2055,7 +1841,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#46",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
@@ -2085,7 +1870,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#47",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: true},
         consistency: {
           x_axis: false, y_axis: true, color: "shared"
@@ -2115,7 +1899,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#48",
         layout: {type: "juxtaposition", unit: "chart", mirrored: false, arrangement: "adjacent"},
         consistency: {
           x_axis: false, y_axis: true, color: "distinct"
@@ -2144,7 +1927,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#49",
         layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent", mirrored: false},
         consistency: {x_axis: false, y_axis: true, color: "shared"},
         explicit_encoding: {line_connection: {type: true}},
@@ -2170,42 +1952,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       },
     },
-    // {
-    //   C: {
-    //     description: "#50 cross-element consistency",
-    //     layout: {type: "juxtaposition", unit: "chart", arrangement: "adjacent"},
-    //     consistency: {
-    //       color: {
-    //         type: "shared",
-    //         secondary_target: {element: "axis", property: "background"}
-    //       },
-    //       x_axis: false, y_axis: false
-    //     }
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {values},
-    //     mark: "bar",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "US_Gross", type: "quantitative", aggregate: "max"},
-    //       color: {field: "Source", type: "nominal"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "IMDB_Rating", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   }
-    // },
     {
       C: {
-        // description: "#51 width test",
-        // style: {width: 500},
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -2234,8 +1982,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#52",
-        // style: {height: 300},
         layout: {type: "superimposition", unit: "element"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
@@ -2262,98 +2008,8 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
         }
       }
     },
-    // {
-    //   C: {
-    //     description: "#53",
-    //     style: {height: 400},
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
-    //     consistency: {
-    //       x_axis: true, y_axis: true, color: "shared"
-    //     },
-    //     overlap_reduction: {},
-    //     explicit_encoding: {}
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    // },
-    // {
-    //   C: {
-    //     description: "#54",
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "diagonal"},
-    //     consistency: {
-    //       x_axis: true, y_axis: true, color: "shared"
-    //     },
-    //     overlap_reduction: {},
-    //     explicit_encoding: {}
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "US_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    // },
-    // {
-    //   C: {
-    //     // description: "#55",
-    //     layout: {type: "explicit-encoding", unit: "element"},
-    //     consistency: {},
-    //     overlap_reduction: {},
-    //     explicit_encoding: {}
-    //   },
-    //   // https://vega.github.io/vega-lite/examples/
-    //   A: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "Worldwide_Gross", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    //   B: {
-    //     data: {values},
-    //     mark: "rect",
-    //     encoding: {
-    //       x: {field: "Source", type: "nominal"},
-    //       y: {field: "Creative_Type", type: "nominal"},
-    //       color: {field: "Production_Budget", type: "quantitative", aggregate: "mean"}
-    //     }
-    //   },
-    // },
     {
       C: {
-        // description: "#56",
         layout: {type: "explicit-encoding", unit: "element"},
         consistency: {},
         overlap_reduction: {},
@@ -2381,7 +2037,6 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        // description: "#57",
         layout: {type: "explicit-encoding", unit: "element"},
         consistency: {},
         overlap_reduction: {},

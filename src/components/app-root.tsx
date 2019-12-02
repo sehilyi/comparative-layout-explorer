@@ -15,7 +15,6 @@ import {Spec} from 'src/models/simple-vega-spec';
 import {CompSpec, _CompSpecSolid, LayoutType, DEFAULT_COMP_SPECS, CompUnit, CompArrangement, ConsistencyType, DEFAULT_COMP_SPEC} from 'src/models/comp-spec';
 import {deepObjectValue, correctCompSpec} from 'src/models/comp-spec-manager';
 import * as d3 from 'd3';
-import {shuffle} from 'd3';
 import {getChartType} from 'src/models/chart-types';
 library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome)
 
@@ -57,7 +56,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
   render() {
     const {A, B, C, view} = this.state;
     // const Examples = getExamples().map(this.renderExamples, this)
-    const Galleries = getExamples().map(this.renderGallery, this) //shuffle(getExamples()).map(this.renderGallery, this)
+    const Galleries = getExamples().map(this.renderGallery, this); //shuffle(getExamples()).map(this.renderGallery, this)
     let editor = null;
     if (view === "detail") {
       editor = this.renderEditor({A, B, C});
@@ -67,15 +66,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
       <div className='app-root'>
         <div className='header sticky-top'>
           <div className="navbar navbar-dark bg-dark">
-            {/* navbar-light bg-light */}
             <div className="container">
               <a className="navbar-brand" href="#" onClick={() => {this.setState({view: "overview"});}}>
-                {/* <img src="/docs/4.3/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="" /> */}
-                {/* <FontAwesomeIcon icon="chart-bar" className='trade-mark' /> {' '} */}
-                {/* <FontAwesomeIcon icon="times" className='trade-mark' /> <sub>{' '}</sub> */}
-                {/* <FontAwesomeIcon icon="chart-line" className='trade-mark' /> {' for comparison '} */}
-                {/* <FontAwesomeIcon icon="equals" className='trade-mark' /> {' '}
-                <FontAwesomeIcon icon="question" className='trade-mark' /> */}
                 <span className="navbar-brand mb-0 h1">
                   <FontAwesomeIcon icon="chart-bar" className='trade-mark' /> {' '}
                   <FontAwesomeIcon icon="times" className='trade-mark' /> {" "}
@@ -163,7 +155,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
             <div className="btn-group">
               <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => {this.setState({A: specs.A, B: specs.B, C: correctCompSpec(specs.A, specs.B, specs.C).solidC, view: "detail"});}}>Edit</button>
             </div>
-            {/* <small className="text-muted">9 mins</small> */}
           </div>
         </div>
       </div>
@@ -187,16 +178,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     if (layout.type === "juxtaposition" && layout.arrangement !== "animated") {
       if (layout.arrangement !== "null") tags.push(layout.arrangement);
       if (layout.mirrored) tags.push("mirrored");
-
-      // if (tags.length === 1) {
-      //   return `(${tags[0]})`;
-      // }
-      // else { //(tags.length === 2)
-      //   return `(${tags[0]}, ${tags[1]})`;
-      // }
-    }
-    else {
-      // return "";
     }
     return tags;
   }
@@ -322,7 +303,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">arrangement</label>
                 <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"arrangement"} value={specs.C.layout.arrangement} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>adjacent</option>
                   <option>stacked</option>
                   <option>animated</option>
@@ -336,7 +316,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">mirrored</label>
                 <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} data-id={"mirrored"} value={specs.C.layout.mirrored ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -345,7 +324,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">color</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"color"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.color} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>independent</option>
                   <option>shared</option>
                   <option>distinct</option>
@@ -354,7 +332,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">x_axis</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"x_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} value={specs.C.consistency.x_axis ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -362,7 +339,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">y_axis</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"y_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} value={specs.C.consistency.y_axis ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -370,7 +346,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">stroke</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"stroke"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.stroke} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>independent</option>
                   <option>shared</option>
                   <option>distinct</option>
@@ -379,7 +354,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">texture</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"texture"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.texture} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>independent</option>
                   <option>shared</option>
                   <option>distinct</option>
@@ -389,7 +363,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">opacity</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"opacity"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.opacity ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -397,7 +370,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">offset_x</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"jitter_x"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.jitter_x ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -405,8 +377,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">offset_y</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"jitter_y"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.jitter_y ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
-
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -414,7 +384,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">resize</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"resize"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.resize ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -423,7 +392,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">difference_mark</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"difference_mark"} disabled={(specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.A.mark !== "bar")} value={specs.C.explicit_encoding.difference_mark ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>none</option> */}
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -431,7 +399,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               <form className="form-inline">
                 <label className="col-sm-6">line_connection</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"line_connection"} disabled={true} value={specs.C.explicit_encoding.line_connection ? "true" : "false"} onChange={this.handleChange.bind(this)}>
-                  {/* <option>undefined</option> */}
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -469,11 +436,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
             </div>
           </div>
         </div>
-        {/* <div className="row">
-
-        </div> */}
-        {/* <svg ref={onBarChartA} className="img-thumbnail"></svg>
-        <svg ref={onBarChartB} className="img-thumbnail"></svg> */}
       </div >
     );
   }
