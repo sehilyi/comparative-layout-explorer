@@ -57,7 +57,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
   render() {
     const {A, B, C, view} = this.state;
     // const Examples = getExamples().map(this.renderExamples, this)
-    const Galleries = shuffle(getExamples()).map(this.renderGallery, this)
+    const Galleries = getExamples().map(this.renderGallery, this) //shuffle(getExamples()).map(this.renderGallery, this)
     let editor = null;
     if (view === "detail") {
       editor = this.renderEditor({A, B, C});
