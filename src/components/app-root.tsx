@@ -56,7 +56,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
   render() {
     const {A, B, C, view} = this.state;
     // const Examples = getExamples().map(this.renderExamples, this)
-    const Galleries = getExamples().map(this.renderGallery, this); //shuffle(getExamples()).map(this.renderGallery, this)
+    // const Galleries = shuffle(getExamples()).map(this.renderGallery, this)
+    const Galleries = getExamples().map(this.renderGallery, this);
     let editor = null;
     if (view === "detail") {
       editor = this.renderEditor({A, B, C});
@@ -91,16 +92,35 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
         </div>
         <main role="main">
           {this.state.view === "overview" ?
+
+            /* Show Gallery */
             <div className='main-pane'>
               <div className="album py-5 px-5">
                 <div className="container-fluid">
+                  <div className="gallery-options">
+                    <label>Layout:</label>
+                    <div className="form-check form-check-inline">
+                      <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
+                      <label className="form-check-label">1</label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
+                      <label className="form-check-label">1</label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
+                      <label className="form-check-label">1</label>
+                    </div>
+                  </div>
                   <div className="card-columns">
                     {Galleries}
                   </div>
                 </div>
               </div>
             </div>
+
             :
+            /* Show Editor */
             <div className='main-pane'>
               {editor}
             </div>
@@ -162,11 +182,13 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
   }
 
   getLayoutName(A: Spec, B: Spec, C: CompSpec) {
-    const {layout} = correctCompSpec(A, B, {...C}).solidC;
-    if (layout.type === "explicit-encoding") return "Explicit-encoding";
-    else if (layout.type === "juxtaposition" && layout.arrangement === "animated") return "Animated transition";
-    else if (layout.type === "juxtaposition" && layout.unit === "chart") return "Chart-wise juxtaposition";
-    else if (layout.type === "juxtaposition" && layout.unit === "element") return "Item-wise juxtaposition";
+    const {solidC} = correctCompSpec(A, B, {...C});
+    const {layout} = solidC;
+    if (solidC.explicit_encoding.difference_mark || solidC.explicit_encoding.line_connection) return "Hybrid Layout";
+    else if (layout.type === "explicit-encoding") return "Explicit-Encoding";
+    else if (layout.type === "juxtaposition" && layout.arrangement === "animated") return "Animated Transition";
+    else if (layout.type === "juxtaposition" && layout.unit === "chart") return "Chart-wise Juxtaposition";
+    else if (layout.type === "juxtaposition" && layout.unit === "element") return "Item-wise Juxtaposition";
     else return "Superposition";
   }
 
