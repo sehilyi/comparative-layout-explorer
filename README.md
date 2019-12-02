@@ -1,1 +1,1 @@
-# vis-comparison-framework
+# Comparative Layout Explorer
