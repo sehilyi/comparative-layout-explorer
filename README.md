@@ -1,8 +1,8 @@
 # Comparative Layout Explorer
 An interactive tool to explore the design space of comparative layouts.
 
-<img width="1199" alt="screenshot1" src="https://user-images.githubusercontent.com/9922882/72879700-c32e1580-3d40-11ea-91cf-5e299662e0ba.png">
-<img width="1201" alt="screenshot2" src="https://user-images.githubusercontent.com/9922882/72879699-c32e1580-3d40-11ea-95c9-e9107e33d020.png">
+![screenshot](https://user-images.githubusercontent.com/9922882/72881001-4b151f00-3d43-11ea-943e-f8b530a709f7.png)
+
 
 ## Development
 
