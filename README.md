@@ -4,6 +4,17 @@ An interactive tool to explore the design space of comparative layouts.
 ![screenshot](https://user-images.githubusercontent.com/9922882/72881001-4b151f00-3d43-11ea-943e-f8b530a709f7.png)
 
 
+## Conceptual Framework
+### Layouts
+```javascript
+Layout := Unit, Type, Arrangement, Mirrored
+Type := Juxtaposition | Superposition | Explicit-Encoding
+Unit := Chart | Item
+Arrangement := Adjacent | Stacked | Diagonal | Animated
+Mirrored := True | False
+
+```
+
 ## Development
 
 Install Yarn from https://yarnpkg.com/lang/en/.
