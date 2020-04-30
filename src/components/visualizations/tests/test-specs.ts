@@ -23,7 +23,7 @@ export function getExamples(): {A: Spec, B: Spec, C: _CompSpecSolid}[] {
     /// filters for debugging
     .filter(d => d.A.mark === d.B.mark)
     .filter(d => !d.C.explicit_encoding.line_connection)
-    .filter(d => !(correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.unit === "element" && correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.type === "superimposition"))
+    .filter(d => !(correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.unit === "item" && correctCompSpec(d.A, d.B, {...d.C}).solidC.layout.type === "superposition"))
   // .map(d => ({...d, C: correctCompSpec(d.C)}))
   // .filter(d => d.C.explicit_encoding && d.C.explicit_encoding.line_connection)
   // .filter(d => d.C.overlap_reduction != null)
@@ -109,7 +109,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "chart"},
+        layout: {type: "superposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, texture: "distinct"
         },
@@ -196,7 +196,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
         },
@@ -227,7 +227,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
         },
@@ -258,7 +258,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "stacked"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
         },
@@ -317,7 +317,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "stacked"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "stacked"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
@@ -347,7 +347,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
@@ -377,7 +377,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "diagonal"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "diagonal"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
@@ -407,7 +407,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "chart"},
+        layout: {type: "superposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared"
         },
@@ -586,7 +586,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -615,7 +615,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -644,7 +644,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         }
@@ -671,7 +671,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -700,7 +700,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
     //     consistency: {
     //       x_axis: false, y_axis: false, color: "shared"
     //     },
@@ -729,7 +729,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     layout: {type: "superimposition", unit: "element"},
+    //     layout: {type: "superposition", unit: "item"},
     //     consistency: {
     //       x_axis: false, y_axis: false, color: "independent"
     //     },
@@ -758,7 +758,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     layout: {type: "superimposition", unit: "chart"},
+    //     layout: {type: "superposition", unit: "chart"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "shared"
     //     },
@@ -789,7 +789,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+    //     layout: {type: "juxtaposition", unit: "item", arrangement: "adjacent"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "shared"
     //     },
@@ -966,7 +966,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "chart"},
+        layout: {type: "superposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", texture: "distinct"//, stroke: "distinct"
         },
@@ -996,7 +996,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
         },
@@ -1027,7 +1027,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
     //     consistency: {
     //       x_axis: false, y_axis: false, color: "shared"
     //     },
@@ -1056,7 +1056,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: false, color: "shared"
         },
@@ -1085,7 +1085,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "shared"
     //     },
@@ -1118,7 +1118,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "stacked", mirrored: false},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "stacked", mirrored: false},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct"
         },
@@ -1295,7 +1295,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
         consistency: {
           x_axis: false, y_axis: true, color: "shared"
         },
@@ -1324,7 +1324,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     // {
     //   C: {
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
     //     consistency: {
     //       x_axis: false, y_axis: true, color: "shared"
     //     },
@@ -1353,7 +1353,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     // {
     //   C: {
-    //     layout: {type: "juxtaposition", unit: "element", arrangement: "animated"},
+    //     layout: {type: "juxtaposition", unit: "item", arrangement: "animated"},
     //     consistency: {
     //       x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
     //     },
@@ -1382,7 +1382,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     // },
     {
       C: {
-        layout: {type: "superimposition", unit: "chart"},
+        layout: {type: "superposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", stroke: "distinct"
         },
@@ -1411,7 +1411,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: true, color: "independent"
         },
@@ -1440,7 +1440,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: true, color: "independent"
         },
@@ -1468,7 +1468,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -1496,7 +1496,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -1524,7 +1524,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -1552,7 +1552,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -1580,7 +1580,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -1608,7 +1608,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -1637,7 +1637,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "chart"},
+        layout: {type: "superposition", unit: "chart"},
         consistency: {x_axis: true, y_axis: true, color: "independent"},
         overlap_reduction: {
           jitter_x: true,
@@ -1667,7 +1667,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "chart"},
+        layout: {type: "superposition", unit: "chart"},
         consistency: {x_axis: false, y_axis: true, color: "independent"},
         overlap_reduction: {
           opacity: true
@@ -1696,7 +1696,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -1725,7 +1725,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "juxtaposition", unit: "element", arrangement: "adjacent"},
+        layout: {type: "juxtaposition", unit: "item", arrangement: "adjacent"},
         consistency: {
           x_axis: true, y_axis: true, color: "distinct", texture: "distinct", stroke: "distinct"
         },
@@ -1754,7 +1754,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "chart"},
+        layout: {type: "superposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", texture: "distinct", stroke: "distinct"
         },
@@ -1785,7 +1785,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "chart"},
+        layout: {type: "superposition", unit: "chart"},
         consistency: {
           x_axis: true, y_axis: true, color: "shared", stroke: "distinct", texture: "distinct"
         },
@@ -1954,7 +1954,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -1982,7 +1982,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "superimposition", unit: "element"},
+        layout: {type: "superposition", unit: "item"},
         consistency: {
           x_axis: false, y_axis: false, color: "independent"
         },
@@ -2010,7 +2010,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "explicit-encoding", unit: "element"},
+        layout: {type: "explicit-encoding", unit: "item"},
         consistency: {},
         overlap_reduction: {},
         explicit_encoding: {},
@@ -2037,7 +2037,7 @@ export function getExampleSpec(): {A: Spec, B: Spec, C: CompSpec}[] {
     },
     {
       C: {
-        layout: {type: "explicit-encoding", unit: "element"},
+        layout: {type: "explicit-encoding", unit: "item"},
         consistency: {},
         overlap_reduction: {},
         explicit_encoding: {}

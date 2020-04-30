@@ -29,15 +29,15 @@ export function canRenderCompChart(A: Spec, B: Spec, C: _CompSpecSolid) {
 
   // exceptions
   if ((isScatterplot(A) || isScatterplot(B)) &&
-    layout === "juxtaposition" && unit === "element" && arrangement !== "animated") can = false;
-  // if (C.layout.type === "juxtaposition" && C.layout.unit === "element" &&
+    layout === "juxtaposition" && unit === "item" && arrangement !== "animated") can = false;
+  // if (C.layout.type === "juxtaposition" && C.layout.unit === "item" &&
   //   (A.encoding.x.type !== B.encoding.x.type || A.encoding.y.type !== B.encoding.y.type)) can = false
   // nesting
   // visual elements (e.g., bars or points) of A should be aggregated
-  if (layout === "superimposition" && unit === "element" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false;
-  if (arrangement === "animated" && layout === "superimposition") can = false;
+  if (layout === "superposition" && unit === "item" && isScatterplot(A) && isUndefined(A.encoding.color)) can = false;
+  if (arrangement === "animated" && layout === "superposition") can = false;
   if (arrangement === "animated" && getChartType(A) !== getChartType(B)) can = false; // do not support animated transition between different charts
-  if (arrangement === "diagonal" && (layout !== "juxtaposition" /* || unit !== "element" */ || !isBothHeatmap(A, B))) can = false;
+  if (arrangement === "diagonal" && (layout !== "juxtaposition" /* || unit !== "item" */ || !isBothHeatmap(A, B))) can = false;
 
   if (!can) console.log("error: such comparison is not supported.");
   return can;

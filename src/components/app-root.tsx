@@ -82,8 +82,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
   public getFilteredExamples(examples: {A: Spec, B: Spec, C: _CompSpecSolid}[], filters: Object): {A: Spec, B: Spec, C: _CompSpecSolid}[] {
     let fexamples = examples;
     if (!filters["CJ"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "juxtaposition" && d.C.layout.unit === "chart" && d.C.layout.arrangement !== "animated"));
-    if (!filters["IJ"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "juxtaposition" && d.C.layout.unit === "element" && d.C.layout.arrangement !== "animated"));
-    if (!filters["S"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "superimposition" && d.C.layout.arrangement !== "animated"));
+    if (!filters["IJ"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "juxtaposition" && d.C.layout.unit === "item" && d.C.layout.arrangement !== "animated"));
+    if (!filters["S"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "superposition" && d.C.layout.arrangement !== "animated"));
     if (!filters["A"]) fexamples = fexamples.filter(d => !(d.C.layout.arrangement === "animated"));
     if (!filters["E"]) fexamples = fexamples.filter(d => !(d.C.layout.type === "explicit-encoding"));
     if (!filters["H"]) fexamples = fexamples.filter(d => !d.C.explicit_encoding.difference_mark && !d.C.explicit_encoding.line_connection);
@@ -266,7 +266,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     else if (layout.type === "explicit-encoding") return "Explicit-Encoding";
     else if (layout.type === "juxtaposition" && layout.arrangement === "animated") return "Animated Transition";
     else if (layout.type === "juxtaposition" && layout.unit === "chart") return "Chart-wise Juxtaposition";
-    else if (layout.type === "juxtaposition" && layout.unit === "element") return "Item-wise Juxtaposition";
+    else if (layout.type === "juxtaposition" && layout.unit === "item") return "Item-wise Juxtaposition";
     else return "Superposition";
   }
 
@@ -302,7 +302,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
       if (value === "juxtaposition") {
         this.setState({C: {...C, layout: {...DEFAULT_COMP_SPECS[value].layout, type: value as LayoutType}}});
       }
-      else if (value === "superimposition") {
+      else if (value === "superposition") {
         this.setState({C: {...C, layout: {...DEFAULT_COMP_SPECS[value].layout, type: value as LayoutType}, consistency: {...C.consistency, x_axis: true, y_axis: true}}});
       }
       else if (value === "explicit-encoding") {
@@ -310,7 +310,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
       }
     }
     else if (group === "unit") {
-      if (conValue === "element") {
+      if (conValue === "item") {
         this.setState({C: {...C, layout: {...C.layout, unit: conValue as CompUnit}, consistency: {...C.consistency, x_axis: true, y_axis: true}}});
       }
       else {
@@ -319,7 +319,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     }
     else if (group === "arrangement") {
       if (conValue === "animated") {
-        this.setState({C: {...C, layout: {...C.layout, arrangement: conValue as CompArrangement, unit: "element" as CompUnit}, explicit_encoding: {}}});
+        this.setState({C: {...C, layout: {...C.layout, arrangement: conValue as CompArrangement, unit: "item" as CompUnit}, explicit_encoding: {}}});
       }
       else {
         if (getChartType(this.state.A) === "scatterplot" && C.layout.arrangement === "animated") {
@@ -399,20 +399,20 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
                 <label className="col-sm-6">type</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"type"} value={specs.C.layout.type} onChange={this.onSpecChange.bind(this)}>
                   <option>juxtaposition</option>
-                  <option>superimposition</option>
+                  <option>superposition</option>
                   <option>explicit-encoding</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">unit</label>
-                <select className={"form-control form-control-sm col-sm-6"} disabled={(getChartType(specs.A) === "scatterplot" || specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"unit"} value={specs.C.layout.unit} onChange={this.onSpecChange.bind(this)}>
+                <select className={"form-control form-control-sm col-sm-6"} disabled={(getChartType(specs.A) === "scatterplot" || specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superposition")} data-id={"unit"} value={specs.C.layout.unit} onChange={this.onSpecChange.bind(this)}>
                   <option>chart</option>
-                  <option>element</option>
+                  <option>item</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">arrangement</label>
-                <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superimposition")} data-id={"arrangement"} value={specs.C.layout.arrangement} onChange={this.onSpecChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.type === "superposition")} data-id={"arrangement"} value={specs.C.layout.arrangement} onChange={this.onSpecChange.bind(this)}>
                   <option>adjacent</option>
                   <option>stacked</option>
                   <option>animated</option>
@@ -425,7 +425,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">mirrored</label>
-                <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} data-id={"mirrored"} value={specs.C.layout.mirrored ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "item" || specs.C.layout.type === "superposition")} data-id={"mirrored"} value={specs.C.layout.mirrored ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
@@ -441,14 +441,14 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">x_axis</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"x_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} value={specs.C.consistency.x_axis ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"x_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "item" || specs.C.layout.type === "superposition")} value={specs.C.consistency.x_axis ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>
               </form>
               <form className="form-inline">
                 <label className="col-sm-6">y_axis</label>
-                <select className="form-control form-control-sm col-sm-6" data-id={"y_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "element" || specs.C.layout.type === "superimposition")} value={specs.C.consistency.y_axis ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
+                <select className="form-control form-control-sm col-sm-6" data-id={"y_axis"} disabled={(specs.C.layout.type === "explicit-encoding" || specs.C.layout.arrangement === "animated" || specs.C.layout.unit === "item" || specs.C.layout.type === "superposition")} value={specs.C.consistency.y_axis ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
                   <option>false</option>
                   <option>true</option>
                 </select>

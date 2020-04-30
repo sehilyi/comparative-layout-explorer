@@ -17,7 +17,7 @@ export type CompSpec = {
   style?: CompStyle;
   reference?: CompReference;
 }
-export type LayoutType = "juxtaposition" | "superimposition" | "explicit-encoding";
+export type LayoutType = "juxtaposition" | "superposition" | "explicit-encoding";
 export type Layout = LayoutType | LayoutTypeAndStyle;
 export type LayoutTypeAndStyle = {
   type: LayoutType;
@@ -27,7 +27,7 @@ export type LayoutTypeAndStyle = {
 }
 export type CompArrangement = "stacked" | "adjacent" | "animated" | "diagonal" | "null";
 export type CompUnit = JuxCompUnit | SupCompUnit;
-export type commonCompUnit = "chart" | "element";
+export type commonCompUnit = "chart" | "item";
 export type JuxCompUnit = commonCompUnit | "time";  // deprecated
 export type SupCompUnit = commonCompUnit | "area";  // deprecated
 
@@ -97,7 +97,7 @@ export const DEFAULT_LAYOUT_JUX: LayoutTypeAndStyle = {
   arrangement: "adjacent"
 }
 export const DEFAULT_LAYOUT_SUP: LayoutTypeAndStyle = {
-  type: "superimposition",
+  type: "superposition",
   unit: "chart",
   mirrored: false,
   arrangement: "null"
@@ -131,6 +131,6 @@ export const DEFAULT_COMP_SPEC: _CompSpecSolid = {
 }
 export const DEFAULT_COMP_SPECS = {
   juxtaposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_JUX, consistency: {...DEFAULT_COMP_SPEC.consistency, x_axis: false, y_axis: false}},
-  superimposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP, consistency: {...DEFAULT_COMP_SPEC.consistency, x_axis: true, y_axis: true}},
+  superposition: {...DEFAULT_COMP_SPEC, layout: DEFAULT_LAYOUT_SUP, consistency: {...DEFAULT_COMP_SPEC.consistency, x_axis: true, y_axis: true}},
   "explicit-encoding": {...DEFAULT_COMP_SPEC, layout: {type: "explicit-encoding", unit: ("chart" as CompUnit)}, consistency: {...DEFAULT_COMP_SPEC.consistency, x_axis: false, y_axis: false}}
 }

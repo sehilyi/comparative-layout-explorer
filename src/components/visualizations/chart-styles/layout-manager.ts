@@ -87,7 +87,7 @@ export function getLayouts(A: Spec, B: Spec, C: _CompSpecSolid, domain: {A: Char
     const numOfR = arrangement === 'stacked' ? 2 : 1;
     placement = getChartPositions(numOfC, numOfR, [S.A, S.B], [L.A, L.B]);
   }
-  else if (layout === "juxtaposition" && unit === "element" && getChartType(A) === getChartType(B)) {
+  else if (layout === "juxtaposition" && unit === "item" && getChartType(A) === getChartType(B)) {
     placement = getChartPositions(1, 1, [S.A, S.B], [L.A, L.B]);
   }
   else if (isChartsSuperimposed(C)) {
@@ -330,7 +330,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[], la
       };
     }
     // single chart OR
-    // superimposition, the length of styles can be larger than x * y
+    // superposition, the length of styles can be larger than x * y
     else if (styles.length === 1 || (x === 1 && y === 1)) {
       const maxL = d3.max(layouts.map(d => d.left));
       const maxW = d3.max(layouts.map(d => d.width));
@@ -442,7 +442,7 @@ export function getChartPositions(x: number, y: number, styles: ChartStyle[], la
   let lastRight = 0, lastBottom = 0;
 
   // single chart OR
-  // superimposition, the length of styles can be larger than x * y
+  // superposition, the length of styles can be larger than x * y
   if (styles.length === 1 || (x === 1 && y === 1)) {
     styles.forEach(s => {
       const position = {

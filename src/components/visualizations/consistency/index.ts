@@ -31,11 +31,11 @@ export function correctConsistency(A: Spec, B: Spec, C: CompSpec): _ConsistencyS
       A.encoding.x.type === B.encoding.x.type),
     // TODO: we should consider what to do when consistency is false for grouped bar chart
     // ||
-    // (C.layout.type === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated"), // always true for element-wise jux
+    // (C.layout.type === "juxtaposition" && C.layout.unit === "item" && C.layout.arrangement !== "animated"), // always true for element-wise jux
     y_axis: (C.consistency.y_axis &&
       A.encoding.y.type === B.encoding.y.type),
     //  ||
-    // (C.layout.type === "juxtaposition" && C.layout.unit === "element" && C.layout.arrangement !== "animated"), // always true for element-wise jux
+    // (C.layout.type === "juxtaposition" && C.layout.unit === "item" && C.layout.arrangement !== "animated"), // always true for element-wise jux
     stroke: ifUndefinedGetDefault(C.consistency.stroke, DEFAULT_CONSISTENCY.stroke),
     texture: ifUndefinedGetDefault(C.consistency.texture, DEFAULT_CONSISTENCY.texture),
   };

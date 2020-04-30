@@ -34,9 +34,9 @@ export function correctCompSpec(A: Spec, B: Spec, C: CompSpec) {
   // if (solidC.layout.type === "explicit-encoding") solidC.consistency = undefined;
 
   // line connection
-  // for superimposition and animated, do not use line connections
+  // for superposition and animated, do not use line connections
   if (solidC.explicit_encoding && solidC.explicit_encoding.line_connection) {
-    if (solidC.layout.arrangement === "animated" || solidC.layout.type === "superimposition") {
+    if (solidC.layout.arrangement === "animated" || solidC.layout.type === "superposition") {
       solidC.explicit_encoding.line_connection = {...solidC.explicit_encoding.line_connection, type: false};
     }
   }

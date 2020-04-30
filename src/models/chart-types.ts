@@ -20,39 +20,39 @@ export function isChartsJuxtaposed(spec: _CompSpecSolid) {
 }
 export function isElementsJuxtaposed(spec: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = spec.layout;
-  return (layout === "juxtaposition" && unit === "element" && arrangement !== "animated");
+  return (layout === "juxtaposition" && unit === "item" && arrangement !== "animated");
 }
 export function isChartsSuperimposed(spec: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = spec.layout;
   // arrangement cannot be animated when superimposed
-  return (layout === "superimposition" && unit === "chart" && arrangement !== "animated");
+  return (layout === "superposition" && unit === "chart" && arrangement !== "animated");
 }
 export function isElementsSuperimposed(spec: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = spec.layout;
   // arrangement cannot be animated when superimposed
-  return (layout === "superimposition" && unit === "element" && arrangement !== "animated");
+  return (layout === "superposition" && unit === "item" && arrangement !== "animated");
 }
 
 export function isOverlapLayout(spec: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = spec.layout;
-  return (layout === "superimposition") || (layout === "juxtaposition" && unit === "element") || (arrangement === "animated");
+  return (layout === "superposition") || (layout === "juxtaposition" && unit === "item") || (arrangement === "animated");
 }
 
 export function isNoOverlapLayout(spec: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = spec.layout;
   return (layout === "juxtaposition" && unit === "chart" && arrangement !== "animated") ||
-    (layout === "superimposition" && unit === "chart");
+    (layout === "superposition" && unit === "chart");
 }
 
 export function isNestingLayout(spec: _CompSpecSolid) {
   const {type: layout, unit} = spec.layout;
-  return (layout === "superimposition" && unit === "element");
+  return (layout === "superposition" && unit === "item");
 }
 
 // TODO: clearer name?
 export function isNestingLayoutVariation(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = C.layout;
-  return (layout === "juxtaposition" && unit === "element" && arrangement !== "animated" && getChartType(A) !== getChartType(B));
+  return (layout === "juxtaposition" && unit === "item" && arrangement !== "animated" && getChartType(A) !== getChartType(B));
 }
 
 export function isChartAnimated(spec: _CompSpecSolid) {
@@ -61,7 +61,7 @@ export function isChartAnimated(spec: _CompSpecSolid) {
 }
 export function isElementAnimated(spec: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = spec.layout;
-  return layout === "juxtaposition" && unit === "element" && arrangement === "animated";
+  return layout === "juxtaposition" && unit === "item" && arrangement === "animated";
 }
 
 /**
@@ -119,16 +119,16 @@ export function isEEChart(C: _CompSpecSolid) {
 }
 export function isStackedBarChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = C.layout;
-  return layout === "juxtaposition" && unit === "element" && arrangement === "stacked" && isBothBarChart(A, B);
+  return layout === "juxtaposition" && unit === "item" && arrangement === "stacked" && isBothBarChart(A, B);
 }
 export function isGroupedBarChart(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = C.layout;
-  return layout === "juxtaposition" && unit === "element" && arrangement === "adjacent" && isBothBarChart(A, B);
+  return layout === "juxtaposition" && unit === "item" && arrangement === "adjacent" && isBothBarChart(A, B);
 }
 // Alper et al. Weighted Graph Comparison Techniques for Brain Connectivity Analysis
 export function isDivisionHeatmap(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = C.layout;
-  return layout === "juxtaposition" && unit === "element" && arrangement !== "animated" && isBothHeatmap(A, B);
+  return layout === "juxtaposition" && unit === "item" && arrangement !== "animated" && isBothHeatmap(A, B);
 }
 export function isChartDiagonalHeatmap(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit, arrangement} = C.layout;
@@ -136,6 +136,6 @@ export function isChartDiagonalHeatmap(A: Spec, B: Spec, C: _CompSpecSolid) {
 }
 export function isChartUnitScatterplots(A: Spec, B: Spec, C: _CompSpecSolid) {
   const {type: layout, unit} = C.layout;
-  return ((layout === "juxtaposition" && unit === "chart") || (layout === "superimposition" && unit === "chart")) &&
+  return ((layout === "juxtaposition" && unit === "chart") || (layout === "superposition" && unit === "chart")) &&
     isBothScatterplot(A, B);
 }
