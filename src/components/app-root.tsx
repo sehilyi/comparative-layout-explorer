@@ -106,9 +106,9 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
 
     return (
       <div className='app-root'>
-        <nav className="navbar navbar-light bg-light sticky-top">
+        <nav className="navbar navbar-dark bg-dark sticky-top">
           <div className="container-xl">
-            <a className="navbar-brand h1 mb-0 pb-0 mr-2 text-truncate" href="#" onClick={() => {this.setState({view: "overview"});}}>
+            <a className="navbar-brand text-light h1 mb-0 pb-0 mr-2 text-truncate" href="#" onClick={() => {this.setState({view: "overview"});}}>
               {/* <FontAwesomeIcon icon="chart-bar" className='trade-mark' /> {' '} */}
               {/* <FontAwesomeIcon icon="times" className='trade-mark' /> {" "} */}
               {/* <FontAwesomeIcon icon="chart-bar" className='trade-mark' />{" "} */}
@@ -116,7 +116,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
             </a>
             {this.state.view !== "overview" ?
               <span className="nav-item d-flex">
-                <a className="nav-link text-dark pr-0 pl-0" href="#" onClick={() => {this.setState({view: "overview"});}}>
+                <a className="nav-link text-light pr-0 pl-0" href="#" onClick={() => {this.setState({view: "overview"});}}>
                   {/* <FontAwesomeIcon icon="home" className='trade-mark' />{" "} */}
                   {"Return to Gallery"}
                 </a>
@@ -124,7 +124,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               null}
             {this.state.view === "overview" ?
               <span className="nav-item d-flex">
-                <a className="nav-link text-dark pr-0 pl-0" href="#collapseFilter" data-toggle="collapse">
+                <a className="nav-link text-light pr-0 pl-0" href="#collapseFilter" data-toggle="collapse">
                   <FontAwesomeIcon icon="filter" className='trade-mark' />
                 </a>
               </span>
@@ -132,12 +132,14 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
           </div>
         </nav>
 
-        <main role="main">
+        <main role="main" style={{
+          background: this.state.view === "overview" ? "#F6F6F6" : "white"
+        }}>
           {this.state.view === "overview" ?
 
             /* Show Gallery */
             <div className='main-pane'>
-              <div className="gallery-options py-5 px-5 bg-light collapse show" id="collapseFilter">
+              <div className="gallery-options py-5 px-5 collapse show" id="collapseFilter">
                 <div className="container-xl">
 
                   <p className="font-weight-bold text-primary">
@@ -231,29 +233,21 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     const name = this.getLayoutName(specs.A, specs.B, specs.C);
     const tags = this.getLayoutTags(specs.A, specs.B, specs.C);
     return (
-      <div className="card bg-light rounded-lg mb-3" key={key}>
-        <svg ref={onBarChartC} className="img-thumbnail rounded-lg"></svg>
-        <div className="card-body">
-          <h5 className="card-text">{name}</h5>
-
-          {tags.length === 0 ? null :
-            tags.length === 1 ?
-              <h5 className="card-title">
-                <span className={"badge badge-pill " + (tags[0] === "adjacent" ? "badge-primary" : tags[0] === "stacked" ? "badge-success" : tags[0] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[0]}</span>
-              </h5>
-              :
-              <h5 className="card-title">
-                <span className={"badge badge-pill " + (tags[0] === "adjacent" ? "badge-primary" : tags[0] === "stacked" ? "badge-success" : tags[0] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[0]}</span>
-                {" "}
-                <span className={"badge badge-pill " + (tags[1] === "adjacent" ? "badge-primary" : tags[1] === "stacked" ? "badge-success" : tags[1] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[1]}</span>
-              </h5>
-          }
-          <div className="d-flex justify-content-between align-items-center">
-            <div className="btn-group">
-              <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => {this.setState({A: specs.A, B: specs.B, C: correctCompSpec(specs.A, specs.B, specs.C).solidC, view: "detail"});}}>Edit</button>
-            </div>
-          </div>
-        </div>
+      <div className="card preview-root" key={key} onClick={() => {this.setState({A: specs.A, B: specs.B, C: correctCompSpec(specs.A, specs.B, specs.C).solidC, view: "detail"});}}>
+        <svg ref={onBarChartC} className="img-thumbnail preview-container"></svg>
+        <h5 className="card-text chart-title">{name}</h5>
+        {tags.length === 0 ? null :
+          tags.length === 1 ?
+            <h5 className="card-text chart-title">
+              <span className={"badge badge-pill " + (tags[0] === "adjacent" ? "badge-primary" : tags[0] === "stacked" ? "badge-success" : tags[0] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[0]}</span>
+            </h5>
+            :
+            <h5 className="card-text chart-title">
+              <span className={"badge badge-pill " + (tags[0] === "adjacent" ? "badge-primary" : tags[0] === "stacked" ? "badge-success" : tags[0] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[0]}</span>
+              {" "}
+              <span className={"badge badge-pill " + (tags[1] === "adjacent" ? "badge-primary" : tags[1] === "stacked" ? "badge-success" : tags[1] === "diagonal" ? "badge-warning" : "badge-danger")}>{tags[1]}</span>
+            </h5>
+        }
       </div>
     );
   }
@@ -263,7 +257,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     const {layout} = solidC;
 
     if (solidC.explicit_encoding.difference_mark || solidC.explicit_encoding.line_connection) return "Hybrid Layout";
-    else if (layout.type === "explicit-encoding") return "Explicit-Encoding";
+    else if (layout.type === "explicit-encoding") return "Explicit-encoding";
     else if (layout.type === "juxtaposition" && layout.arrangement === "animated") return "Animated Transition";
     else if (layout.type === "juxtaposition" && layout.unit === "chart") return "Chart-wise Juxtaposition";
     else if (layout.type === "juxtaposition" && layout.unit === "item") return "Item-wise Juxtaposition";
@@ -389,12 +383,11 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     const key = JSON.stringify(_A) + JSON.stringify(_B) + JSON.stringify(_C);
 
     return (
-      <div key={key} className="container-xl py-4">
+      <div key={key} className="container-xl">
         <div className="row align-items-center">
-
-          <div className="option-view py-3 px-4 col-md-auto bg-light rounded-lg">
+          <div className="option-view py-3 px-3 col-md-auto bg-light">
             <div>
-              <h2>Layout</h2>
+              <h1>Layout</h1>
               <form className="form-inline">
                 <label className="col-sm-6">type</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"type"} value={specs.C.layout.type} onChange={this.onSpecChange.bind(this)}>
@@ -430,7 +423,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
                   <option>true</option>
                 </select>
               </form>
-              <h2>Consistency</h2>
+              <h1>Consistency</h1>
               <form className="form-inline">
                 <label className="col-sm-6">color</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"color"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.consistency.color} onChange={this.onSpecChange.bind(this)}>
@@ -469,7 +462,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
                   <option>distinct</option>
                 </select>
               </form>
-              <h2>Overlap Reduction</h2>
+              <h1>Overlap Reduction</h1>
               <form className="form-inline">
                 <label className="col-sm-6">opacity</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"opacity"} disabled={(specs.C.layout.type === "explicit-encoding")} value={specs.C.overlap_reduction.opacity ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
@@ -498,7 +491,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
                   <option>true</option>
                 </select>
               </form>
-              <h2>Explicit-Encoding Overlay</h2>
+              <h1>Explicit-encoding Overlay</h1>
               <form className="form-inline">
                 <label className="col-sm-6">difference_mark</label>
                 <select className="form-control form-control-sm col-sm-6" data-id={"difference_mark"} disabled={(specs.C.layout.arrangement === "animated" || specs.C.layout.type === "explicit-encoding" || specs.A.mark !== "bar")} value={specs.C.explicit_encoding.difference_mark ? "true" : "false"} onChange={this.onSpecChange.bind(this)}>
@@ -515,26 +508,35 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               </form>
             </div>
           </div>
+          <div className="col" style={{
+            textAlign: "center"
+          }}>
+            <h1 style={{textAlign: "left"}}>Result</h1>
+            <svg ref={onBarChartC} className="img-thumbnail border-0 configure-chart"></svg>
+          </div>
           <div className="col-md-auto">
-            <h2>Specification</h2>
+            <h1>Specification</h1>
             <pre className="mx-auto"><code>
               {JSON.stringify(_C, null, 2)}
             </code></pre>
           </div>
-          <div className="col">
-            <h2>Result</h2>
-            <svg ref={onBarChartC} className="img-thumbnail border-0"></svg>
-          </div>
-
-          <div className="container-xl text-muted px-3 py-2 my-3 boder border rounded-lg">
-            <h2>Base Visualizations</h2>
+        </div>
+        <div className="row align-items-center">
+          <div className="container-xl" style={{
+            border: "5px solid #F8F9FA",
+            paddingBottom: "20px"
+          }}>
+            <h1>Base Visualizations</h1>
             <div className="row align-items-center">
               <div className="col-1"></div>
               <div className="col-4">
                 <svg ref={onBarChartA} className="img-thumbnail border-0"></svg>
               </div>
               <div className="col-2">
-                <h1 className="text-muted text-center mx-0 my-0"><FontAwesomeIcon icon="times" className='trade-mark' /></h1>
+                <h1 className="text-center mx-0 my-0" style={{
+                  color: "lightgray",
+                  fontSize: "50px"
+                }}><FontAwesomeIcon icon="times" className='trade-mark' /></h1>
               </div>
               <div className="col-4">
                 <svg ref={onBarChartB} className="img-thumbnail border-0"></svg>
