@@ -145,6 +145,7 @@ export function getConstantColor(indexOrColorStr?: number | string) {
 }
 
 export function appendPattern(g: GSelection, textureId: string, color: string) {
+  if (isNullOrUndefined(textureId)) textureId = "null";
   textureId = "diagonalTexture-" + textureId.replace(/ /g, '');
   const pattern = g.append("pattern")
     .attr(_id, textureId)

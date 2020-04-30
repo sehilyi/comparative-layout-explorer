@@ -96,8 +96,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
 
   render() {
     const {A, B, C, view, filters} = this.state;
-    // const Examples = getExamples().map(this.renderExamples, this)
-    // const Galleries = shuffle(getExamples()).map(this.renderGallery, this)
     const Examples = getExamples();
     const FilteredExamples = this.getFilteredExamples(Examples, filters);
     const Galleries = FilteredExamples.map(this.renderGallery, this);
@@ -108,38 +106,39 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
 
     return (
       <div className='app-root'>
-        <div className='header sticky-top'>
-          <div className="navbar navbar-dark bg-dark">
-            <div className="container">
-              <a className="navbar-brand" href="#" onClick={() => {this.setState({view: "overview"});}}>
-                <span className="navbar-brand mb-0 h1">
-                  <FontAwesomeIcon icon="chart-bar" className='trade-mark' /> {' '}
-                  <FontAwesomeIcon icon="times" className='trade-mark' /> {" "}
-                  <FontAwesomeIcon icon="chart-bar" className='trade-mark' />{" "}
-                  {"Comparative Layout Explorer"}
-                </span>
-              </a>
-
-              <div id="navbarSupportedContent">
-                <ul className="navbar-nav">
-                  <li className="nav-item">
-                    <a className="nav-link" href="#" onClick={() => {this.setState({view: "overview"});}}>
-                      <FontAwesomeIcon icon="home" className='trade-mark' />{" "}
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-            </div>
+        <nav className="navbar navbar-light bg-light sticky-top">
+          <div className="container-xl">
+            <a className="navbar-brand h1 mb-0 pb-0 mr-2 text-truncate" href="#" onClick={() => {this.setState({view: "overview"});}}>
+              {/* <FontAwesomeIcon icon="chart-bar" className='trade-mark' /> {' '} */}
+              {/* <FontAwesomeIcon icon="times" className='trade-mark' /> {" "} */}
+              {/* <FontAwesomeIcon icon="chart-bar" className='trade-mark' />{" "} */}
+              {"Comparative Layout Explorer"}
+            </a>
+            {this.state.view !== "overview" ?
+              <span className="nav-item d-flex">
+                <a className="nav-link text-dark pr-0 pl-0" href="#" onClick={() => {this.setState({view: "overview"});}}>
+                  {/* <FontAwesomeIcon icon="home" className='trade-mark' />{" "} */}
+                  {"Return to Gallery"}
+                </a>
+              </span> :
+              null}
+            {this.state.view === "overview" ?
+              <span className="nav-item d-flex">
+                <a className="nav-link text-dark pr-0 pl-0" href="#collapseFilter" data-toggle="collapse">
+                  <FontAwesomeIcon icon="filter" className='trade-mark' />
+                </a>
+              </span>
+              : null}
           </div>
-        </div>
+        </nav>
+
         <main role="main">
           {this.state.view === "overview" ?
 
             /* Show Gallery */
             <div className='main-pane'>
-              <div className="gallery-options py-5 px-5 bg-light">
-                <div className="container-fluid">
+              <div className="gallery-options py-5 px-5 bg-light collapse show" id="collapseFilter">
+                <div className="container-xl">
 
                   <p className="font-weight-bold text-primary">
                     {`A total of ${FilteredExamples.length} examples are shown below (${Examples.length - FilteredExamples.length} out of ${Examples.length} examples are filtered).`}
@@ -189,7 +188,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
                 </div>
               </div>
               <div className="album py-5 px-5">
-                <div className="container-fluid">
+                <div className="container-xl">
                   <div className="card-columns">
                     {Galleries}
                   </div>
@@ -206,7 +205,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
 
         </main>
         <footer className="text-muted">
-          <div className="container">
+          <div className="container-xl">
             <p className="float-right">
               {/* <a href="#">Back to top</a> */}
             </p>
@@ -232,8 +231,8 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     const name = this.getLayoutName(specs.A, specs.B, specs.C);
     const tags = this.getLayoutTags(specs.A, specs.B, specs.C);
     return (
-      <div className="card bg-light border-dark rounded-0 mb-3" key={key}>
-        <svg ref={onBarChartC} className="img-thumbnail rounded-0"></svg>
+      <div className="card bg-light rounded-lg mb-3" key={key}>
+        <svg ref={onBarChartC} className="img-thumbnail rounded-lg"></svg>
         <div className="card-body">
           <h5 className="card-text">{name}</h5>
 
@@ -390,10 +389,10 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
     const key = JSON.stringify(_A) + JSON.stringify(_B) + JSON.stringify(_C);
 
     return (
-      <div key={key} className="container px-5 py-2">
+      <div key={key} className="container-xl py-4">
         <div className="row align-items-center">
 
-          <div className="py-3 px-4 col-md-auto bg-light rounded-lg ">
+          <div className="option-view py-3 px-4 col-md-auto bg-light rounded-lg">
             <div>
               <h2>Layout</h2>
               <form className="form-inline">
@@ -514,9 +513,6 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
                   <option>true</option>
                 </select>
               </form>
-              <form className="form-inline">
-                <label className="col-sm-6">...</label>
-              </form>
             </div>
           </div>
           <div className="col-md-auto">
@@ -530,7 +526,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
             <svg ref={onBarChartC} className="img-thumbnail border-0"></svg>
           </div>
 
-          <div className="container-flex text-muted px-3 py-3 my-3 boder border rounded-4">
+          <div className="container-xl text-muted px-3 py-2 my-3 boder border rounded-lg">
             <h2>Base Visualizations</h2>
             <div className="row align-items-center">
               <div className="col-1"></div>
