@@ -7,7 +7,7 @@ import {CompCasesLoad, loadCompCases, CompCasesImageDataLoad, onCompCaseImgDataL
 import {CompareCase, ScatterPlot} from 'src/models/dataset';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome, faFilter} from '@fortawesome/free-solid-svg-icons';
+import {faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome, faFilter, faTable} from '@fortawesome/free-solid-svg-icons';
 import {renderCompChart} from './visualizations/comp-charts';
 import {renderSimpleChart} from './visualizations';
 import {getExamples, getCompTitle, getSimpleCompTitle} from './visualizations/tests/test-specs';
@@ -16,7 +16,7 @@ import {CompSpec, _CompSpecSolid, LayoutType, DEFAULT_COMP_SPECS, CompUnit, Comp
 import {deepObjectValue, correctCompSpec} from 'src/models/comp-spec-manager';
 import * as d3 from 'd3';
 import {getChartType} from 'src/models/chart-types';
-library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome, faFilter)
+library.add(faChartBar, faChartLine, faTimes, faQuestion, faEquals, faArrowCircleRight, faBookOpen, faHome, faFilter, faTable)
 
 export interface AppRootProps {
   chartPairList: CompareCase[];
@@ -124,7 +124,11 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               null}
             {this.state.view === "overview" ?
               <span className="nav-item d-flex">
-                <a className="nav-link text-light pr-0 pl-0" href="#collapseFilter" data-toggle="collapse">
+                <a className="nav-link text-light pr-0 pl-0" href="http://sehilyi.com">
+                  <FontAwesomeIcon icon="table" className='trade-mark' />
+                  {' survey result spreadsheet'}
+                </a>
+                <a className="nav-link text-light pr-0 pl-10" href="#collapseFilter" data-toggle="collapse">
                   <FontAwesomeIcon icon="filter" className='trade-mark' />
                 </a>
               </span>
