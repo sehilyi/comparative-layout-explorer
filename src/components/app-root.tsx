@@ -124,7 +124,7 @@ export class AppRootBase extends React.PureComponent<AppRootProps, AppRootStates
               null}
             {this.state.view === "overview" ?
               <span className="nav-item d-flex">
-                <a className="nav-link text-light pr-0 pl-0" href="http://sehilyi.com">
+                <a className="nav-link text-light pr-0 pl-0" href="https://github.com/sehilyi/comparative-layout-explorer/files/5145479/survey_results.v1.08-29-2020.xlsx">
                   <FontAwesomeIcon icon="table" className='trade-mark' />
                   {' survey result spreadsheet'}
                 </a>
