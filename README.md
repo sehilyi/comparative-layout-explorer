@@ -1,5 +1,8 @@
 # Comparative Layout Explorer
-An interactive tool to explore the design space of comparative layouts.
+An online gallery to explore the design space of comparative layouts.
+
+> **Sehi L'Yi**, Jaemin Jo, and Jinwook Seo, Comparative Layouts Revisited: Design Space, Guidelines, and Future Directions, IEEE Transactions on Visualization and Computer Graphics (TVCG), 2020, (Proc. InfoVis 2020). [arXiv Link](https://arxiv.org/abs/2009.00192)
+
 
 ![screenshot](https://user-images.githubusercontent.com/9922882/72881001-4b151f00-3d43-11ea-943e-f8b530a709f7.png)
 
