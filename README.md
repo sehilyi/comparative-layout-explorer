@@ -1,5 +1,5 @@
 # Comparative Layout Explorer
-An online gallery to explore the design space of comparative layouts based on a literature survey.
+An online gallery to explore the design space of comparative layouts using on a flexible declaratie grammar built based on a literature survey.
 
 citation:
 > **Sehi L'Yi**, Jaemin Jo, and Jinwook Seo, Comparative Layouts Revisited: Design Space, Guidelines, and Future Directions, IEEE Transactions on Visualization and Computer Graphics (TVCG), 2020, (Proc. InfoVis 2020). [[arXiv](https://arxiv.org/abs/2009.00192)]
